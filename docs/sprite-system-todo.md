@@ -7,7 +7,7 @@
 ## A. 基础设施（Registry）
 
 1) 实现统一入口（已创建，继续完善）
-- [x] 新建 `com.coladungeon.sprites.SpriteRegistry`
+- [x] 新建 `com.zootdungeon.sprites.coladungeon.SpriteRegistry`
   - [x] Items：`itemImageId(key, elseId)`、`itemMapping(key, elseId)`、`staticItemMapping(id)`
   - [x] Mobs：`registerMob(key, MobDef)`、`mobTextureOr(fallback, key)`、`mobFilm(key, fallback, w, h)`
   - [x] 任何动态查询都要求 fallback

@@ -15,7 +15,7 @@ allprojects {
 
     ext {
         appName = '可乐地牢'
-        appPackageName = 'com.coladungeon'
+        appPackageName = 'com.zootdungeon'
 
         appVersionCode = 1
         appVersionName = '0.0.1'

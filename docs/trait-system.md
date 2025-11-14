@@ -6,11 +6,11 @@
 - 与旧有 `Char.Property` 并行，且通过桥接保持兼容
 
 核心类：
-- `com.coladungeon.traits.Trait`：简洁的静态 API（推荐）
-- `com.coladungeon.traits.TraitDefinition`：Trait 类型定义
-- `com.coladungeon.traits.TraitInstance`：Trait 实例（可序列化）
-- `com.coladungeon.traits.TraitRegistry`：全局注册表
-- `com.coladungeon.traits.PropertyTraitBridge`：旧 `Property` 与新 Trait 的桥接
+- `com.zootdungeon.traits.coladungeon.Trait`：简洁的静态 API（推荐）
+- `com.zootdungeon.traits.coladungeon.TraitDefinition`：Trait 类型定义
+- `com.zootdungeon.traits.coladungeon.TraitInstance`：Trait 实例（可序列化）
+- `com.zootdungeon.traits.coladungeon.TraitRegistry`：全局注册表
+- `com.zootdungeon.traits.coladungeon.PropertyTraitBridge`：旧 `Property` 与新 Trait 的桥接
 
 现状：`Property` 尚未被完全替代。老代码继续使用 `properties().contains(Property.X)`；新代码建议使用 `hasTrait("x")`。桥接保证两边一致性。
 

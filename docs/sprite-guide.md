@@ -34,7 +34,7 @@
 注册：在任意初始化时机（建议在游戏启动或 Mod 初始化）调用：
 
 ```java
-import com.coladungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.coladungeon.SpriteRegistry;
 
 // 注册一张 16x16 的纹理并按顺序分配 ID 段
 SpriteRegistry.registerItemTexture("my_mod/my_items.png", 16)
@@ -60,7 +60,7 @@ SpriteRegistry.ImageMapping mapping =
 注册：
 
 ```java
-import com.coladungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.coladungeon.SpriteRegistry;
 
 SpriteRegistry.registerMob(
     "mod:slime_king",
@@ -116,8 +116,8 @@ int size = map.size; // 若不是 16 会建议缩放到 16 的比例
 使用 `TextureBuilder` 即时创建纹理并返回 `ImageMapping`：
 
 ```java
-import com.coladungeon.sprites.TextureBuilder;
-import com.coladungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.coladungeon.TextureBuilder;
+import com.zootdungeon.sprites.coladungeon.SpriteRegistry;
 
 TextureBuilder builder = new TextureBuilder(16, 16);
 builder.setColor(0xFFFF0000).fillCircle(8, 8, 6);
@@ -137,8 +137,8 @@ SpriteRegistry.ImageMapping map = builder.build(); // 直接拿到贴图使用
 最常见的做法是在物品类中设置 `image` 字段：
 
 ```java
-import com.coladungeon.sprites.SpriteRegistry;
-import com.coladungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.coladungeon.SpriteRegistry;
+import com.zootdungeon.sprites.coladungeon.ItemSpriteSheet;
 
 public class MyItem extends Item {
     {

@@ -23,7 +23,7 @@ package com.coladungeon.desktop;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowListener;
-import com.coladungeon.CDSettings;
+import com.zootdungeon.CDSettings;
 import com.watabou.noosa.audio.Music;
 
 public class DesktopWindowListener implements Lwjgl3WindowListener {

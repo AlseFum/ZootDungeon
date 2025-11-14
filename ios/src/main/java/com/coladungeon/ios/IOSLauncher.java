@@ -26,12 +26,12 @@ import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
 import com.badlogic.gdx.backends.iosrobovm.IOSPreferences;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
-import com.coladungeon.CDSettings;
-import com.coladungeon.ColaDungeon;
-import com.coladungeon.services.news.News;
-import com.coladungeon.services.news.NewsImpl;
-import com.coladungeon.services.updates.UpdateImpl;
-import com.coladungeon.services.updates.Updates;
+import com.zootdungeon.CDSettings;
+import com.zootdungeon.ColaDungeon;
+import com.zootdungeon.services.news.News;
+import com.zootdungeon.services.news.NewsImpl;
+import com.zootdungeon.services.updates.UpdateImpl;
+import com.zootdungeon.services.updates.Updates;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
 
