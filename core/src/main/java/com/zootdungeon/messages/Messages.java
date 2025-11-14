@@ -99,7 +99,7 @@ public class Messages {
 	public static String get(Class c, String k, Object...args){
 		String key;
 		if (c != null){
-			key = c.getName().replace("com.coladungeon.", "");
+			key = c.getName().replace("com.zootdungeon.", "");
 			key += "." + k;
 		} else
 			key = k;
