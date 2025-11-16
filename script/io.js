@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 /**
  * 缓存管理类
  * 用于记录所有的插入操作，方便回退
@@ -225,31 +226,36 @@ async function removeContent(filePath, identifier) {
 /**
  * 从模板生成新文件
  * @param {string} templatePath - 模板文件路径 (*.tpl 或 *.template)
- * @param {string} outputName - 输出文件名 (不含后缀)
- * @param {Object} config - 配置对象，包含要插入的内容
+ * @param {string} outputName   - 输出文件名（不含后缀）
+ * @param {Object} config       - 配置对象，包含要插入的内容
+ *
+ * 约定：模板中所有出现的 `$$` 都会被替换为实际的 outputName
+ * 例如：`//@@$$-init` → `//@@Apple-init`，`class $$Item` → `class AppleItem`
  */
 async function generateFromTemplate(templatePath, outputName, config) {
     try {
         // 读取模板文件
         let templateContent = await fs.promises.readFile(templatePath, 'utf8');
         const templateExtension = path.extname(templatePath);
-        const outputExtension = path.extname(templatePath).replace(/tpl|template/, 'java'); // 或其他输出格式
-        
-        // 替换 //@@$$ 为具体的文件名标识
-        templateContent = templateContent.replace(/\/\/@@\$\$/g, `//@@${outputName}`);
+        const outputExtension = templateExtension.replace(/\.tpl$|\.template$/i, '.java'); // 或其他输出格式
+
+        const resolvedOutputName = outputName;
+
+        // 全局替换 $$ 为具体的文件名（不再要求前面必须有 //@@）
+        templateContent = templateContent.replace(/\$\$/g, resolvedOutputName);
 
         // 获取输出文件的目录
         const outputDir = path.dirname(templatePath);
-        const outputPath = path.join(outputDir, `${outputName}.java`);
+        const outputPath = path.join(outputDir, `${resolvedOutputName}${outputExtension || '.java'}`);
 
         // 创建输出文件
         await fs.promises.writeFile(outputPath, templateContent, 'utf8');
         console.log(`✓ 已生成文件: ${outputPath}`);
 
-        // 将内容插入到生成的文件中
+        // 将配置内容插入到生成的文件中（仍使用 //@@<name>-<key> 作为标记）
         let insertCount = 0;
-        for (const [key, value] of Object.entries(config)) {
-            const identifier = `${outputName}-${key}`;
+        for (const [key, value] of Object.entries(config || {})) {
+            const identifier = `${resolvedOutputName}-${key}`;
             if (await insertContent(outputPath, identifier, value)) {
                 insertCount++;
             }
@@ -259,7 +265,7 @@ async function generateFromTemplate(templatePath, outputName, config) {
 
         // 记录到缓存
         const cache = Cache.load();
-        cache.recordTemplate(templatePath, outputPath, outputName, config);
+        cache.recordTemplate(templatePath, outputPath, resolvedOutputName, config);
         cache.save();
 
         return outputPath;
@@ -364,7 +370,7 @@ async function scanDirectory(directory) {
 }
 
 /**
- * 主函数
+ * 主函数：扫描当前工作目录并输出所有模板与标记
  */
 async function main() {
     const startDir = process.cwd();
@@ -394,8 +400,9 @@ async function main() {
     return results;
 }
 
-// 如果直接运行此脚本
-if (import.meta.url === `file://${process.argv[1]}`) {
+// 如果直接运行此脚本（ESM 环境下的等价 __filename 判断）
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
     main().catch(error => {
         console.error('✗ 扫描出错:', error);
         process.exit(1);

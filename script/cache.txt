@@ -7,6 +7,109 @@
       "timestamp": "2025-11-16T11:20:18.803Z"
     }
   ],
-  "templates": {},
-  "timestamp": "2025-11-16T11:20:18.804Z"
+  "templates": {
+    "build\\testpipeline\\templates\\food.tpl": [
+      {
+        "generatedFile": "build\\testpipeline\\templates\\GoldenApple.java",
+        "identifier": "GoldenApple",
+        "config": {
+          "classname": "GoldenApple",
+          "hunger": 120,
+          "init": "System.out.println(\"Init GoldenApple\");",
+          "execute": "System.out.println(\"Eat GoldenApple, hunger + 120\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\GoldenApple.java",
+        "identifier": "GoldenApple",
+        "config": {
+          "classname": "GoldenApple",
+          "hunger": 120,
+          "init": "System.out.println(\"Init GoldenApple\");",
+          "execute": "System.out.println(\"Eat GoldenApple, hunger + 120\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\GoldenApple.java",
+        "identifier": "GoldenApple",
+        "config": {
+          "classname": "GoldenApple",
+          "hunger": 120,
+          "init": "System.out.println(\"Init GoldenApple\");",
+          "execute": "System.out.println(\"Eat GoldenApple, hunger + 120\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\GoldenApple.java",
+        "identifier": "GoldenApple",
+        "config": {
+          "classname": "GoldenApple",
+          "hunger": 120,
+          "init": "System.out.println(\"Init GoldenApple\");",
+          "execute": "System.out.println(\"Eat GoldenApple, hunger + 120\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\GoldenApple.java",
+        "identifier": "GoldenApple",
+        "config": {
+          "classname": "GoldenApple",
+          "hunger": 120,
+          "init": "System.out.println(\"Init GoldenApple\");",
+          "execute": "System.out.println(\"Eat GoldenApple, hunger + 120\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\BronzeApple.java",
+        "identifier": "BronzeApple",
+        "config": {
+          "classname": "BronzeApple",
+          "hunger": 40,
+          "init": "System.out.println(\"Init BronzeApple\");",
+          "execute": "System.out.println(\"Eat BronzeApple, hunger + 40\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\SilverApple.java",
+        "identifier": "SilverApple",
+        "config": {
+          "classname": "SilverApple",
+          "hunger": 80,
+          "init": "System.out.println(\"Init SilverApple\");",
+          "execute": "System.out.println(\"Eat SilverApple, hunger + 80\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\GoldenApple.java",
+        "identifier": "GoldenApple",
+        "config": {
+          "classname": "GoldenApple",
+          "hunger": 120,
+          "init": "System.out.println(\"Init GoldenApple\");",
+          "execute": "System.out.println(\"Eat GoldenApple, hunger + 120\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\SilverApple.java",
+        "identifier": "SilverApple",
+        "config": {
+          "classname": "SilverApple",
+          "hunger": 80,
+          "init": "System.out.println(\"Init SilverApple\");",
+          "execute": "System.out.println(\"Eat SilverApple, hunger + 80\");"
+        }
+      },
+      {
+        "generatedFile": "build\\testpipeline\\templates\\BronzeApple.java",
+        "identifier": "BronzeApple",
+        "config": {
+          "classname": "BronzeApple",
+          "hunger": 40,
+          "init": "System.out.println(\"Init BronzeApple\");",
+          "execute": "System.out.println(\"Eat BronzeApple, hunger + 40\");"
+        }
+      }
+    ]
+  },
+  "timestamp": "2025-11-16T14:40:15.298Z"
 }
