@@ -14,7 +14,7 @@ buildscript {
 allprojects {
 
     ext {
-        appName = '可乐地牢'
+        appName = '可露希尔地牢'
         appPackageName = 'com.zootdungeon'
 
         appVersionCode = 1

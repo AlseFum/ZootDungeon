@@ -63,7 +63,7 @@ public class SewerLevel extends RegularLevel {
         color2 = 0x59994a;
         
         // 使用自定义 Chel 地图贴图
-        tilemapKey = "cola:chel_sewer";
+        // tilemapKey = "cola:chel_sewer";
     }
 
     public static final String[] SEWER_TRACK_LIST
