@@ -1,0 +1,12 @@
+{
+  "insertions": [
+    {
+      "file": "./test.js",
+      "identifier": "test",
+      "content": "test content",
+      "timestamp": "2025-11-16T11:20:18.803Z"
+    }
+  ],
+  "templates": {},
+  "timestamp": "2025-11-16T11:20:18.804Z"
+}

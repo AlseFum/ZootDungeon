@@ -1,0 +1,15 @@
+{
+  "name": "cola-dungeon-scripts",
+  "version": "1.0.0",
+  "description": "代码生成和管理脚本",
+  "type": "module",
+  "main": "script/io.js",
+  "scripts": {
+    "test": "node script/test-io.js",
+    "scan": "node script/io.js",
+    "demo": "node script/test-io.js --demo"
+  },
+  "keywords": ["codegen", "templates", "automation"],
+  "author": "",
+  "license": "MIT"
+}
