@@ -206,3 +206,49 @@ SpriteRegistry.ImageMapping fire = SpriteRegistry.itemMapping("gunfire", ItemSpr
 ```
 
 
+## 八、地图贴图（Tilemap）管理
+
+`SpriteRegistry` 现在也支持地图贴图的动态管理，详见 [tilemap-guide.md](tilemap-guide.md)。
+
+### 快速示例
+
+注册地图贴图：
+
+```java
+import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.SpriteRegistry.TilemapDef;
+
+// 注册完整的地图主题（地形 + 水）
+SpriteRegistry.registerTilemap(
+    "mymod:shadow_forest",
+    new TilemapDef(
+        "mymod/tiles_shadow_forest.png",
+        "mymod/water_shadow_forest.png"
+    )
+);
+```
+
+在关卡中使用：
+
+```java
+public class ShadowForestLevel extends Level {
+    public ShadowForestLevel() {
+        // 设置动态贴图 key，Level 会自动从 SpriteRegistry 查询
+        tilemapKey = "mymod:shadow_forest";
+    }
+}
+```
+
+或者手动查询：
+
+```java
+@Override
+public String tilesTex() {
+    return SpriteRegistry.tilemapTilesTextureOr(
+        Assets.Environment.TILES_CAVES,  // fallback
+        "mymod:shadow_forest"            // 动态 key
+    );
+}
+```
+
+

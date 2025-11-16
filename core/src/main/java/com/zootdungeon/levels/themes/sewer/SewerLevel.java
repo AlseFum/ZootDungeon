@@ -61,6 +61,9 @@ public class SewerLevel extends RegularLevel {
     {
         color1 = 0x48763c;
         color2 = 0x59994a;
+        
+        // 使用自定义 Chel 地图贴图
+        tilemapKey = "cola:chel_sewer";
     }
 
     public static final String[] SEWER_TRACK_LIST
@@ -112,12 +115,19 @@ public class SewerLevel extends RegularLevel {
 
     @Override
     public String tilesTex() {
-        return Assets.Environment.TILES_SEWERS;
+        // 使用 SpriteRegistry 查询，如果没有注册则 fallback 到原版贴图
+        return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+            Assets.Environment.TILES_SEWERS,
+            tilemapKey
+        );
     }
 
     @Override
     public String waterTex() {
-        return Assets.Environment.WATER_SEWERS;
+        return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+            Assets.Environment.WATER_SEWERS,
+            tilemapKey
+        );
     }
 
     @Override

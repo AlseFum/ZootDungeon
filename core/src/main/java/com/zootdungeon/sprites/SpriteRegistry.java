@@ -1,12 +1,18 @@
 package com.zootdungeon.sprites;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.zootdungeon.Assets;
+import com.zootdungeon.tiles.DungeonTileSheet;
 import com.zootdungeon.utils.EventBus;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.RectF;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -285,6 +291,65 @@ public final class SpriteRegistry {
         DynamicSpriteExample.createGoldenApple("golden_apple");
     }
 
+    // ---------------------------
+    // Tilemap & Tileset definitions (must be before static block)
+    // ---------------------------
+
+    /**
+     * Tilemap texture definition for legacy APIs that only care about textures.
+     * New code should prefer Tileset, which carries sheet information as well.
+     */
+    public static final class TilemapDef {
+        public final String tilesTexture;   // path to tiles texture (e.g., "environment/tiles_custom.png")
+        public final String waterTexture;   // path to water texture (e.g., "environment/water_custom.png")
+        public final Map<String, String> meta = new HashMap<>();
+
+        public TilemapDef(String tilesTexture, String waterTexture){
+            this.tilesTexture = tilesTexture;
+            this.waterTexture = waterTexture;
+        }
+
+        public TilemapDef(String tilesTexture){
+            this(tilesTexture, null);
+        }
+    }
+
+    /**
+     * Tileset definition backed by a JSON sheet describing tile names and coordinates.
+     * This is the recommended way to define map graphics for content packs.
+     */
+    public static final class Tileset {
+        public final String key;
+        public final String texture;
+        public final int tileSize;
+        public final String author;
+        public final String version;
+
+        // tile id (DungeonTileSheet constant) -> tile coordinate (x,y in tile grid, 1-based)
+        public final Map<Integer, TileCoord> tiles = new HashMap<>();
+
+        public Tileset(String key, String texture, int tileSize, String author, String version) {
+            this.key = key;
+            this.texture = texture;
+            this.tileSize = tileSize;
+            this.author = author;
+            this.version = version;
+        }
+    }
+
+    public static final class TileCoord {
+        public final int x;
+        public final int y;
+
+        public TileCoord(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    private static final Map<String, TilemapDef> tilemapDefs = new HashMap<>();
+    private static final Map<String, Tileset> tilesets = new HashMap<>();
+
     static {
         registerItemTexture("minecraft/misc.png", 16)
                 .span(144).label("skel");
@@ -305,6 +370,21 @@ public final class SpriteRegistry {
         registerItemTexture("cola/mask64.png", 64)
                 .label("mask64");
         registerItemTexture("cola/arksupply.png", 64).label("arksupply");
+
+        // Register tilemap textures (legacy, texture-only)
+        registerTilemap(
+                "cola:chel_sewer",
+                new TilemapDef("cola/tiles_chel.png", Assets.Environment.WATER_SEWERS)
+        );
+
+        // Register tileset with JSON sheet for cola:chel_sewer
+        // This allows the tiles_chel.png image to define its own layout via JSON,
+        // instead of relying on the built-in DungeonTileSheet layout.
+        registerTilesetFromJson(
+                "cola:chel_sewer",
+                "cola/tiles_chel.png",
+                "cola/tiles_chel.json"
+        );
 
         // Keep legacy event name for compatibility with existing listeners
         EventBus.fire("ItemSpriteManager:init");
@@ -408,8 +488,201 @@ public final class SpriteRegistry {
         SmartTexture tx = TextureCache.get(fallbackTexture);
         return new TextureFilm(tx, fallbackFrameW, fallbackFrameH);
     }
+
+    /**
+     * Registers a dynamic tilemap texture set.
+     * Key format suggestion: "mod:region_name" (e.g., "mymod:shadow_forest")
+     *
+     * @param key Unique identifier for this tilemap
+     * @param def TilemapDef containing tiles and optional water texture paths
+     */
+    public static void registerTilemap(String key, TilemapDef def){
+        if (key == null || def == null) return;
+        tilemapDefs.put(key, def);
+    }
+
+    /**
+     * Resolves tilemap tiles texture by key, or returns fallback if key missing.
+     *
+     * @param key Dynamic tilemap key (can be null)
+     * @param fallbackTexture Default texture path (e.g., Assets.Environment.TILES_SEWERS)
+     * @return Resolved texture path
+     */
+    public static String tilemapTilesTextureOr(String fallbackTexture, String key){
+        if (key != null){
+            TilemapDef def = tilemapDefs.get(key);
+            if (def != null && def.tilesTexture != null){
+                return def.tilesTexture;
+            }
+        }
+        return fallbackTexture;
+    }
+
+    /**
+     * Resolves tilemap water texture by key, or returns fallback if key missing.
+     *
+     * @param key Dynamic tilemap key (can be null)
+     * @param fallbackTexture Default texture path (e.g., Assets.Environment.WATER_SEWERS)
+     * @return Resolved texture path
+     */
+    public static String tilemapWaterTextureOr(String fallbackTexture, String key){
+        if (key != null){
+            TilemapDef def = tilemapDefs.get(key);
+            if (def != null && def.waterTexture != null){
+                return def.waterTexture;
+            }
+        }
+        return fallbackTexture;
+    }
+
+    /**
+     * Gets registered tilemap definition by key.
+     *
+     * @param key Dynamic tilemap key
+     * @return TilemapDef or null if not found
+     */
+    public static TilemapDef getTilemapDef(String key){
+        return tilemapDefs.get(key);
+    }
+
+    /**
+     * Checks if a tilemap key is registered.
+     *
+     * @param key Dynamic tilemap key
+     * @return true if registered, false otherwise
+     */
+    public static boolean hasTilemap(String key){
+        return key != null && tilemapDefs.containsKey(key);
+    }
+
+    // ---------------------------
+    // Tileset side
+    // ---------------------------
+
+    /**
+     * Returns a Tileset by key, or null if not found.
+     */
+    public static Tileset getTileset(String key) {
+        if (key == null) return null;
+        return tilesets.get(key);
+    }
+
+    /**
+     * Registers a tileset from a JSON sheet:
+     * - texturePath is the tiles image (e.g. "cola/tiles_chel.png")
+     * - jsonPath is the sheet (e.g. "cola/tiles_chel.json")
+     *
+     * JSON format example:
+     * {
+     *   "author": "Cola Dungeon Team",
+     *   "version": "1.0.0",
+     *   "pixelsize": 16,
+     *   "FLOOR": [1, 1],
+     *   "GRASS": [3, 1]
+     * }
+     *
+     * All keys other than author/version/pixelsize are interpreted as
+     * tile names that correspond to static int fields in DungeonTileSheet,
+     * e.g. "FLOOR" -> DungeonTileSheet.FLOOR.
+     */
+    public static Tileset registerTilesetFromJson(String key, String texturePath, String jsonPath) {
+        try {
+            JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
+
+            String author = root.getString("author", null);
+            String version = root.getString("version", null);
+            int pixelSize = root.getInt("pixelsize", 16);
+
+            Tileset tileset = new Tileset(key, texturePath, pixelSize, author, version);
+
+            for (JsonValue child : root) {
+                String name = child.name;
+                if ("author".equals(name) || "version".equals(name) || "pixelsize".equals(name)) {
+                    continue;
+                }
+
+                // Expect [x, y] array
+                if (!child.isArray() || child.size < 2) {
+                    System.out.println("Invalid tileset entry for " + key + ": " + name);
+                    continue;
+                }
+
+                int x = child.getInt(0);
+                int y = child.getInt(1);
+
+                try {
+                    Field field = DungeonTileSheet.class.getField(name);
+                    int tileId = field.getInt(null);
+                    tileset.tiles.put(tileId, new TileCoord(x, y));
+                } catch (NoSuchFieldException nsfe) {
+                    System.out.println("Tileset " + key + " refers to unknown tile name: " + name);
+                } catch (IllegalAccessException iae) {
+                    System.out.println("Cannot access DungeonTileSheet field for tile name: " + name);
+                }
+            }
+
+            tilesets.put(key, tileset);
+            System.out.println("Registered tileset: " + key + " (texture=" + texturePath + ")");
+            return tileset;
+        } catch (Exception e) {
+            System.out.println("Failed to load tileset JSON for key " + key + " from " + jsonPath);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Applies a tileset's sheet layout to a given TextureFilm by remapping all known
+     * DungeonTileSheet tile ids to coordinates defined in the tileset JSON.
+     *
+     * Any tile id that is not explicitly present in the tileset will fall back to:
+     * - the coordinate defined for DungeonTileSheet.FLOOR if present, or
+     * - the first entry in the tileset's map.
+     *
+     * This is primarily intended for content packs and debugging, so that a tileset
+     * can override the default Pixel Dungeon tile layout without touching core logic.
+     */
+    public static void applyTilesetToFilm(TextureFilm film, String tilesetKey, int tileSize) {
+        if (tilesetKey == null || film == null) return;
+
+        Tileset tilesetDef = tilesets.get(tilesetKey);
+        if (tilesetDef == null) return;
+
+        // Pick a fallback coordinate: FLOOR if defined, otherwise first entry.
+        TileCoord fallback = tilesetDef.tiles.get(DungeonTileSheet.FLOOR);
+        if (fallback == null && !tilesetDef.tiles.isEmpty()) {
+            fallback = tilesetDef.tiles.values().iterator().next();
+        }
+        if (fallback == null) return;
+
+        // Remap every public static int constant in DungeonTileSheet.
+        for (Field field : DungeonTileSheet.class.getFields()) {
+            try {
+                if (!Modifier.isStatic(field.getModifiers())) continue;
+                if (field.getType() != int.class) continue;
+
+                int tileId = field.getInt(null);
+
+                TileCoord coord = tilesetDef.tiles.get(tileId);
+                if (coord == null) {
+                    coord = fallback;
+                }
+                if (coord == null) continue;
+
+                int left   = (coord.x - 1) * tileSize;
+                int top    = (coord.y - 1) * tileSize;
+                int right  = left + tileSize;
+                int bottom = top + tileSize;
+
+                film.add(tileId, left, top, right, bottom);
+
+            } catch (IllegalAccessException e) {
+                // Should not happen for public static fields, but log just in case.
+                System.out.println("Failed to remap tile id from DungeonTileSheet field: " + field.getName());
+            }
+        }
+
+        System.out.println("Applied tileset '" + tilesetKey + "' to Tilemap film (" + tilesetDef.tiles.size() + " explicit mappings, with fallback).");
+    }
 }
-
-
-
 

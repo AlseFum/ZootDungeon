@@ -490,12 +490,32 @@ public abstract class Level implements Bundlable {
 		return length;
 	}
 	
+	// Optional: set this in subclass constructor to use dynamic tilemap from SpriteRegistry
+	// Example: tilemapKey = "mymod:shadow_forest";
+	protected String tilemapKey = null;
+	
 	public String tilesTex() {
+		// If tilemapKey is set, try to resolve from SpriteRegistry
+		if (tilemapKey != null) {
+			return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(null, tilemapKey);
+		}
 		return null;
 	}
 	
 	public String waterTex() {
+		// If tilemapKey is set, try to resolve from SpriteRegistry
+		if (tilemapKey != null) {
+			return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(null, tilemapKey);
+		}
 		return null;
+	}
+
+	/**
+	 * Exposes the current tilemap key so that rendering code (e.g. DungeonTilemap)
+	 * can look up tileset information from SpriteRegistry.
+	 */
+	public String tilemapKey() {
+		return tilemapKey;
 	}
 	
 	abstract protected boolean build();

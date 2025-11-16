@@ -28,6 +28,10 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 	
 	public RaisedTerrainTilemap() {
 		super(Dungeon.level.tilesTex());
+
+		// Apply tileset overrides for the current level (if any).
+		applyTilesetOverridesForCurrentLevel();
+
 		map( Dungeon.level.map, Dungeon.level.width() );
 	}
 	

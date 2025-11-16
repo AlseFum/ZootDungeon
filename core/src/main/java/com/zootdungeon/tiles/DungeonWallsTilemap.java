@@ -32,6 +32,10 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 
 	public DungeonWallsTilemap(){
 		super(Dungeon.level.tilesTex());
+
+		// Apply tileset overrides for the current level (if any).
+		applyTilesetOverridesForCurrentLevel();
+
 		skipCells.clear();
 		map( Dungeon.level.map, Dungeon.level.width() );
 	}

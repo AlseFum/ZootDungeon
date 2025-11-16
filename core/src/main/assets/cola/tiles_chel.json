@@ -1,0 +1,48 @@
+{
+  "author": "Cola Dungeon",
+  "version": "1.0.0",
+  "pixelsize": 16,
+
+  "FLOOR":      [1, 1],
+  "FLOOR_DECO": [2, 1],
+  "GRASS":      [3, 1],
+  "EMBERS":     [4, 1],
+  "FLOOR_SP":   [5, 1],
+
+  "FLOOR_ALT_1":    [7, 1],
+  "FLOOR_DECO_ALT": [8, 1],
+  "GRASS_ALT":      [9, 1],
+  "EMBERS_ALT":     [10, 1],
+  "FLOOR_SP_ALT":   [11, 1],
+
+  "FLOOR_ALT_2": [13, 1],
+
+  "ENTRANCE":    [1, 2],
+  "EXIT":        [2, 2],
+  "WELL":        [3, 2],
+  "EMPTY_WELL":  [4, 2],
+  "PEDESTAL":    [5, 2],
+  "ENTRANCE_SP": [7, 2],
+
+  "CHASM":          [9, 2],
+  "CHASM_FLOOR":    [10, 2],
+  "CHASM_FLOOR_SP": [11, 2],
+  "CHASM_WALL":     [12, 2],
+  "CHASM_WATER":    [13, 2],
+
+  "WATER": [1, 3],
+
+  "FLAT_WALL":          [1, 4],
+  "FLAT_WALL_DECO":     [2, 4],
+  "FLAT_BOOKSHELF":     [3, 4],
+  "FLAT_WALL_ALT":      [5, 4],
+  "FLAT_WALL_DECO_ALT": [6, 4],
+  "FLAT_BOOKSHELF_ALT": [7, 4],
+
+  "FLAT_DOOR":         [9, 4],
+  "FLAT_DOOR_OPEN":    [10, 4],
+  "FLAT_DOOR_LOCKED":  [11, 4],
+  "FLAT_DOOR_CRYSTAL": [12, 4],
+  "UNLOCKED_EXIT":     [13, 4],
+  "LOCKED_EXIT":       [14, 4]
+}
