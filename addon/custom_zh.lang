@@ -1,0 +1,13 @@
+author=《作者》
+version=1.0.0
+language=zh
+origin=zh
+
+ui.ok=确定
+ui.cancel=取消
+windows.welcome.title=欢迎来到可乐地牢
+windows.welcome.text=祝你玩得开心！
+actors.skeleton.name=骷髅
+items.weapon.sword.name=长剑
+journal.document.intros.dungeon.body=哦哦哦你好
+scenes.titlescene.enter=进入地♂牢

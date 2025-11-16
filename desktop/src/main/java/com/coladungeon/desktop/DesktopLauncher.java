@@ -147,20 +147,19 @@ public class DesktopLauncher {
 		Files.FileType baseFileType = null;
 		if (SharedLibraryLoader.isWindows) {
 			if (System.getProperties().getProperty("os.name").equals("Windows XP")) {
-				basePath = "Application Data/." + vendor + "/" + title + "/";
+				basePath = "Application Data/." + vendor + "/";
 			} else {
-				basePath = "AppData/Roaming/." + vendor + "/" + title + "/";
+				basePath = "AppData/Roaming/." + vendor + "/";
 			}
 			baseFileType = Files.FileType.External;
 		} else if (SharedLibraryLoader.isMac) {
-			basePath = "Library/Application Support/" + title + "/";
+			basePath = "Library/Application Support/." + vendor + "/";
 			baseFileType = Files.FileType.External;
 		} else if (SharedLibraryLoader.isLinux) {
 			String XDGHome = System.getenv("XDG_DATA_HOME");
 			if (XDGHome == null) XDGHome = System.getProperty("user.home") + "/.local/share";
 
-			String titleLinux = title.toLowerCase(Locale.ROOT).replace(" ", "-");
-			basePath = XDGHome + "/." + vendor + "/" + titleLinux + "/";
+			basePath = XDGHome + "/." + vendor + "/";
 
 			baseFileType = Files.FileType.Absolute;
 		}
