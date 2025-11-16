@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.coladungeon.android;
+package com.zootdungeon.android;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

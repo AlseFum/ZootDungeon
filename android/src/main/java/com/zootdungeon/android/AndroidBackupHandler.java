@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.coladungeon.android;
+package com.zootdungeon.android;
 
 import android.annotation.TargetApi;
 import android.app.backup.BackupAgent;
@@ -28,7 +28,7 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.FullBackupDataOutput;
 import android.os.ParcelFileDescriptor;
 
-import com.coladungeon.SaveManager;
+import com.zootdungeon.SaveManager;
 
 import java.io.File;
 

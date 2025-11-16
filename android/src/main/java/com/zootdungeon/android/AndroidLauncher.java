@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.coladungeon.android;
+package com.zootdungeon.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -37,13 +37,13 @@ import com.badlogic.gdx.backends.android.AndroidAudio;
 import com.badlogic.gdx.backends.android.AsynchronousAndroidAudio;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.utils.GdxNativesLoader;
-import com.coladungeon.CDSettings;
-import com.coladungeon.ColaDungeon;
+import com.zootdungeon.CDSettings;
+import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.services.news.News;
 import com.zootdungeon.services.news.NewsImpl;
 import com.zootdungeon.services.updates.UpdateImpl;
 import com.zootdungeon.services.updates.Updates;
-import com.coladungeon.ui.Button;
+import com.zootdungeon.ui.Button;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
 
