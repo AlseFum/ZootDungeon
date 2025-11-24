@@ -24,7 +24,6 @@ package com.zootdungeon.actors.mobs;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.abilities.Ratmogrify;
-import com.zootdungeon.traits.Trait;
 import com.zootdungeon.sprites.RatSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -38,12 +37,6 @@ public class Rat extends Mob {
 		defenseSkill = 2;
 
 		maxLvl = 5;
-
-		// 动态声明并附加示例 trait：Wartorn(int1,int2)，Overfertilized(int birthRate, String birthClass)
-		Trait.let("Wartorn", "int1", Integer.class, "int2", Integer.class);
-		Trait.let("Overfertilized", "birthRate", Integer.class, "birthClass", String.class);
-		addTrait(Trait.of("Wartorn", "int1", 0, "int2", 0));
-		addTrait(Trait.of("Overfertilized", "birthRate", 0, "birthClass", Rat.class));
 	}
 
 	@Override
