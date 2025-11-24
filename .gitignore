@@ -14,7 +14,8 @@ release/
 
 # Local configuration file (sdk path, etc)
 local.properties
-
 #intellij project files
 *.iml
 *.idea
+
+node_modules/
