@@ -40,7 +40,7 @@ public class Chakram extends Weapon {
 
         DLY = 1.0f;
         RCH = 6;
-        ACC = 1.2f;
+        ACC = 114514.4f;
     }
 
     // 飞镖状态枚举
@@ -290,6 +290,10 @@ public class Chakram extends Weapon {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'damage'");
         }
+        @Override
+        public int attackSkill( Char target ) {
+            return 1;
+        }
     };
     // 应用飞镖效果
     private void chakram_proc(Char target, int pos, boolean isPowerThrow) {
@@ -302,7 +306,7 @@ public class Chakram extends Weapon {
 
         // // 造成伤害
         // target.damage(dmg, this);
-        Damage.physical(ChakramChar, target, 0.0f, isPowerThrow ? 1.5f : 1f,0.0f);
+        Damage.physical(ChakramChar, target, 1.0f, isPowerThrow ? 1.5f : 1f,114514.0f);
 
         // 如果目标还活着，应用减速效果和视觉特效
         if (target.isAlive()) {

@@ -54,7 +54,7 @@ public class AssassinsBlade extends MeleeWeapon {
 				int diff = max() - min();
 				int damage = augment.damageFactor(Hero.heroDamageIntRange(
 						min() + Math.round(diff*0.50f),
-						max()));
+						max()+ Math.round(diff*0.50f)));
 				int exStr = hero.STR() - STRReq();
 				if (exStr > 0) {
 					damage += Hero.heroDamageIntRange(0, exStr);
