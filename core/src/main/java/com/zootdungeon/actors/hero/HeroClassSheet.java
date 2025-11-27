@@ -49,7 +49,7 @@ import com.zootdungeon.items.supply.DebugSupply;
 import com.zootdungeon.items.supply.GunSupply;
 import com.zootdungeon.items.wands.WandOfMagicMissile;
 import com.zootdungeon.items.weapon.SpiritBow;
-import com.zootdungeon.items.weapon.melee.Cudgel;
+import com.zootdungeon.items.weapon.accurateWeapon.Cudgel;
 import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
 import com.zootdungeon.items.weapon.melee.Gloves;
 import com.zootdungeon.items.weapon.melee.MagesStaff;

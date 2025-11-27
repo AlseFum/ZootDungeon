@@ -16,6 +16,7 @@ import com.zootdungeon.items.stones.StoneOfDeath;
 import com.zootdungeon.items.stones.StoneOfDummy;
 import com.zootdungeon.items.stones.StoneOfDungeonTravel;
 import com.zootdungeon.items.stones.StoneOfGeneration;
+import com.zootdungeon.items.weapon.accurateWeapon.*;
 import com.zootdungeon.items.weapon.longrangeWeapon.Glaive;
 import com.zootdungeon.items.weapon.longrangeWeapon.Spear;
 import com.zootdungeon.items.weapon.longrangeWeapon.Whip;
@@ -53,8 +54,14 @@ public class DebugSupply extends Supply {
             Dungeon.energy+=10086;
             return null;
         };
-        put_in(Glaive.class,1);
-        put_in(Spear.class,1);
-        put_in(Whip.class,1);
+//        put_in(Glaive.class,1);
+//        put_in(Spear.class,1);
+//        put_in(Whip.class,1);
+//
+        put_in(Cudgel.class,1);
+        put_in(HandAxe.class);
+        put_in(Mace.class);
+        put_in(WarHammer.class);
+        put_in(BattleAxe.class);
     }
 }

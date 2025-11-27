@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.weapon.melee;
+package com.zootdungeon.items.weapon.accurateWeapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -30,6 +30,7 @@ import com.zootdungeon.actors.buffs.Daze;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.AttackIndicator;
@@ -46,6 +47,7 @@ public class Mace extends MeleeWeapon {
 
 		tier = 3;
 		ACC = 1.28f; //28% boost to accuracy
+
 	}
 
 	@Override
