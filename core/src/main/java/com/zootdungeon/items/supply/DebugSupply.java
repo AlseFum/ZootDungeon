@@ -16,6 +16,9 @@ import com.zootdungeon.items.stones.StoneOfDeath;
 import com.zootdungeon.items.stones.StoneOfDummy;
 import com.zootdungeon.items.stones.StoneOfDungeonTravel;
 import com.zootdungeon.items.stones.StoneOfGeneration;
+import com.zootdungeon.items.weapon.longrangeWeapon.Glaive;
+import com.zootdungeon.items.weapon.longrangeWeapon.Spear;
+import com.zootdungeon.items.weapon.longrangeWeapon.Whip;
 // import com.coladungeon.items.weapon.SummonerStaff;
 
 public class DebugSupply extends Supply {
@@ -45,9 +48,13 @@ public class DebugSupply extends Supply {
         put_in(Panacea.class, 1);
         put_in(Codex.class, 1);
         put_in(RedStone.class, 1);
+        put_in(AssassinSupply.class,1);
         onOpen = () -> {
             Dungeon.energy+=10086;
             return null;
         };
+        put_in(Glaive.class,1);
+        put_in(Spear.class,1);
+        put_in(Whip.class,1);
     }
 }

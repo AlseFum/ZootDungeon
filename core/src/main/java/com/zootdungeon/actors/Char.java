@@ -394,8 +394,8 @@ public abstract class Char extends Actor {
 	}
 
 	public int attackSkill( Char target ) {
-		return 0;
-	}
+        return 0;
+    }
 	
 	public int defenseSkill( Char enemy ) {
 		return 0;

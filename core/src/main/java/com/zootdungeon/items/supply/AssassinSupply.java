@@ -1,7 +1,7 @@
 package com.zootdungeon.items.supply;
 
 import com.zootdungeon.items.artifacts.CloakOfShadows;
-
+import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
 public class AssassinSupply extends Supply {
     public AssassinSupply() {
         super();
@@ -15,7 +15,7 @@ public class AssassinSupply extends Supply {
         }
         put_in(cloak);
         
-        // put_in(Dagger.class);
+        put_in(Dagger.class);
         // put_in(Dirk.class);
         // put_in(AssassinsBlade.class);
     }

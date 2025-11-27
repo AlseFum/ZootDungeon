@@ -24,7 +24,7 @@ package com.zootdungeon.ui.changelist;
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.actors.hero.Talent;
-import com.zootdungeon.items.weapon.melee.Whip;
+import com.zootdungeon.items.weapon.longrangeWeapon.Whip;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.ChangesScene;
 import com.zootdungeon.sprites.CharSprite;

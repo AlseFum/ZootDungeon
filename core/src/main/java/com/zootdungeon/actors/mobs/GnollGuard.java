@@ -24,7 +24,7 @@ package com.zootdungeon.actors.mobs;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
-import com.zootdungeon.items.weapon.melee.Spear;
+import com.zootdungeon.items.weapon.longrangeWeapon.Spear;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.GnollGuardSprite;

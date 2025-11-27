@@ -23,7 +23,7 @@ package com.zootdungeon.ui.changelist;
 
 import com.zootdungeon.items.Stylus;
 import com.zootdungeon.items.armor.PlateArmor;
-import com.zootdungeon.items.weapon.melee.Glaive;
+import com.zootdungeon.items.weapon.longrangeWeapon.Glaive;
 import com.zootdungeon.items.weapon.melee.Longsword;
 import com.zootdungeon.items.weapon.melee.RunicBlade;
 import com.zootdungeon.messages.Messages;

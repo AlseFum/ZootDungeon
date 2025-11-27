@@ -47,7 +47,7 @@ import com.zootdungeon.items.wands.WandOfCorrosion;
 import com.zootdungeon.items.wands.WandOfCorruption;
 import com.zootdungeon.items.weapon.curses.Wayward;
 import com.zootdungeon.items.weapon.enchantments.Lucky;
-import com.zootdungeon.items.weapon.melee.Dagger;
+import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
 import com.zootdungeon.items.weapon.melee.Flail;
 import com.zootdungeon.items.weapon.melee.Greataxe;
 import com.zootdungeon.messages.Messages;

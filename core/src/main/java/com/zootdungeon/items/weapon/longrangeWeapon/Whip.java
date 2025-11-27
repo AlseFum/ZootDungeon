@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.weapon.melee;
+package com.zootdungeon.items.weapon.longrangeWeapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -34,7 +34,7 @@ import com.watabou.utils.Callback;
 
 import java.util.ArrayList;
 
-public class Whip extends MeleeWeapon {
+public class Whip extends LongRangeWeapon {
 
 	{
 		image = ItemSpriteSheet.WHIP;
@@ -43,12 +43,6 @@ public class Whip extends MeleeWeapon {
 
 		tier = 3;
 		RCH = 3;    //lots of extra reach
-	}
-
-	@Override
-	public int max(int lvl) {
-		return  5*(tier) +      //15 base, down from 20
-				lvl*(tier);     //+3 per level, down from +4
 	}
 
 	@Override
@@ -103,9 +97,5 @@ public class Whip extends MeleeWeapon {
 		} else {
 			return Messages.get(this, "typical_ability_desc", min(0), max(0));
 		}
-	}
-
-	public String upgradeAbilityStat(int level){
-		return augment.damageFactor(min(level)) + "-" + augment.damageFactor(max(level));
 	}
 }
