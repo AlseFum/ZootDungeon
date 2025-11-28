@@ -40,7 +40,7 @@ import com.zootdungeon.items.wands.WandOfLivingEarth;
 import com.zootdungeon.items.wands.WandOfRegrowth;
 import com.zootdungeon.items.wands.WandOfTransfusion;
 import com.zootdungeon.items.wands.WandOfWarding;
-import com.zootdungeon.items.weapon.melee.Gauntlet;
+import com.zootdungeon.items.weapon.fastWeapon.Gauntlet;
 import com.zootdungeon.items.weapon.missiles.Shuriken;
 import com.zootdungeon.items.weapon.missiles.Tomahawk;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;

@@ -51,7 +51,7 @@ import com.zootdungeon.items.wands.WandOfMagicMissile;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.accurateWeapon.Cudgel;
 import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
-import com.zootdungeon.items.weapon.melee.Gloves;
+import com.zootdungeon.items.weapon.fastWeapon.Gloves;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.items.weapon.blockWeapon.Rapier;
 import com.zootdungeon.items.weapon.melee.WornShortsword;

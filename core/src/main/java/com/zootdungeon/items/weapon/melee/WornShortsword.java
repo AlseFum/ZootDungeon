@@ -24,6 +24,7 @@ package com.zootdungeon.items.weapon.melee;
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.weapon.cleaveWeapon.Sword;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 

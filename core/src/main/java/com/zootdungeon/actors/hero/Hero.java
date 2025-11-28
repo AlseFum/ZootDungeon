@@ -121,7 +121,7 @@ import com.zootdungeon.items.weapon.melee.Flail;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.items.weapon.blockWeapon.Quarterstaff;
 import com.zootdungeon.items.weapon.blockWeapon.RoundShield;
-import com.zootdungeon.items.weapon.melee.Sai;
+import com.zootdungeon.items.weapon.fastWeapon.Sai;
 import com.zootdungeon.items.weapon.melee.Scimitar;
 import com.zootdungeon.items.weapon.melee.WornShortsword;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;

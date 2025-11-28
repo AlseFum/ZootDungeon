@@ -26,7 +26,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.weapon.curses.Sacrificial;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.items.weapon.melee.Sickle;
+import com.zootdungeon.items.weapon.crowdWeapon.Sickle;
 import com.zootdungeon.levels.features.Chasm;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;

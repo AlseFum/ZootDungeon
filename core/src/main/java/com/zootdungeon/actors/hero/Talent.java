@@ -53,7 +53,7 @@ import com.zootdungeon.items.trinkets.ShardOfOblivion;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.Weapon;
-import com.zootdungeon.items.weapon.melee.Gloves;
+import com.zootdungeon.items.weapon.fastWeapon.Gloves;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.levels.Level;

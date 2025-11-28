@@ -92,7 +92,7 @@ import com.zootdungeon.items.weapon.enchantments.Blazing;
 import com.zootdungeon.items.weapon.enchantments.Grim;
 import com.zootdungeon.items.weapon.enchantments.Kinetic;
 import com.zootdungeon.items.weapon.enchantments.Shocking;
-import com.zootdungeon.items.weapon.melee.Sickle;
+import com.zootdungeon.items.weapon.crowdWeapon.Sickle;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.ShockingDart;
 import com.zootdungeon.levels.Terrain;
