@@ -19,10 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.weapon.melee;
+package com.zootdungeon.items.weapon.blockWeapon;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
@@ -30,7 +29,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.BuffIndicator;
 
-public class Quarterstaff extends MeleeWeapon {
+public class Quarterstaff extends BlockWeapon {
 
 	{
 		image = ItemSpriteSheet.QUARTERSTAFF;
@@ -39,16 +38,12 @@ public class Quarterstaff extends MeleeWeapon {
 
 		tier = 2;
 	}
-
-	@Override
-	public int max(int lvl) {
-		return  4*(tier+1) +    //12 base, down from 15
-				lvl*(tier+1);   //scaling unchanged
+	public int DRMax() {
+		return 2;
 	}
-
-	@Override
-	public int defenseFactor( Char owner ) {
-		return 2;	//2 extra defence
+	
+	public int DRMax(int lvl) {
+		return 2; // 铁头棍的防御值是固定的
 	}
 
 	@Override

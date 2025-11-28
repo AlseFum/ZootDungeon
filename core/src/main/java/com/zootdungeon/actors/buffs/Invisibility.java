@@ -28,7 +28,7 @@ import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.items.artifacts.CloakOfShadows;
 import com.zootdungeon.items.artifacts.TimekeepersHourglass;
-import com.zootdungeon.items.weapon.melee.RoundShield;
+import com.zootdungeon.items.weapon.blockWeapon.RoundShield;
 import com.zootdungeon.plants.Swiftthistle;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.ui.BuffIndicator;

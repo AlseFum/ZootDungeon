@@ -22,7 +22,7 @@
 package com.zootdungeon.ui.changelist;
 
 import com.zootdungeon.items.Stylus;
-import com.zootdungeon.items.weapon.melee.Quarterstaff;
+import com.zootdungeon.items.weapon.blockWeapon.Quarterstaff;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.ChangesScene;
 import com.zootdungeon.sprites.ItemSprite;

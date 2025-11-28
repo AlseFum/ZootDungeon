@@ -19,15 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.weapon.melee;
+package com.zootdungeon.items.weapon.blockWeapon;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 
-public class Katana extends MeleeWeapon {
+public class Katana extends BlockWeapon {
 
 	{
 		image = ItemSpriteSheet.KATANA;
@@ -37,38 +35,21 @@ public class Katana extends MeleeWeapon {
 		tier = 4;
 	}
 
-	@Override
-	public int max(int lvl) {
-		return  4*(tier+1) +    //20 base, down from 25
-				lvl*(tier+1);   //scaling unchanged
+	public int DRMax() {
+		return 3;
 	}
-
-	@Override
-	public int defenseFactor( Char owner ) {
-		return 3;	//3 extra defence
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
+	
+	public int DRMax(int lvl) {
+		return 3; // 武士刀的防御值是固定的
 	}
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
 		//+(8+2*lvl) damage, roughly +67% damage
 		int dmgBoost = augment.damageFactor(8 + Math.round(2f*buffedLvl()));
-		Rapier.lungeAbility(hero, target, 1, dmgBoost, this);
+		BlockWeapon.lungeAbility(hero, target, 1, dmgBoost, this);
 	}
 
-	@Override
-	public String abilityInfo() {
-		int dmgBoost = levelKnown ? 8 + Math.round(2f*buffedLvl()) : 8;
-		if (levelKnown){
-			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
-		} else {
-			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
-		}
-	}
 
 	public String upgradeAbilityStat(int level){
 		int dmgBoost = 8 + Math.round(2f*level);

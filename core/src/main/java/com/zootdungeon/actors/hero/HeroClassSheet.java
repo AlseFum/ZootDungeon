@@ -53,7 +53,7 @@ import com.zootdungeon.items.weapon.accurateWeapon.Cudgel;
 import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
 import com.zootdungeon.items.weapon.melee.Gloves;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
-import com.zootdungeon.items.weapon.melee.Rapier;
+import com.zootdungeon.items.weapon.blockWeapon.Rapier;
 import com.zootdungeon.items.weapon.melee.WornShortsword;
 import com.zootdungeon.items.weapon.missiles.ThrowingKnife;
 import com.zootdungeon.items.weapon.missiles.ThrowingSpike;

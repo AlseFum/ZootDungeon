@@ -37,7 +37,7 @@ import com.zootdungeon.items.wands.WandOfRegrowth;
 import com.zootdungeon.items.wands.WandOfWarding;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.melee.Flail;
-import com.zootdungeon.items.weapon.melee.Quarterstaff;
+import com.zootdungeon.items.weapon.blockWeapon.Quarterstaff;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.ChangesScene;
 import com.zootdungeon.scenes.PixelScene;
