@@ -59,6 +59,7 @@ import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.enchantments.Lucky;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;
+import com.zootdungeon.loot.LootRegistry;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Notes;
 import com.zootdungeon.levels.Level;
@@ -972,9 +973,23 @@ public abstract class Mob extends Char {
 	
 	protected Object loot = null;
 	protected float lootChance = 0;
+
+	// Optional loot table id for LootRegistry. If set, createLoot will prefer that table.
+	protected String lootTableId = null;
 	
 	@SuppressWarnings("unchecked")
 	public Item createLoot() {
+
+		// 新系统：优先使用 LootRegistry 表
+		if (lootTableId != null){
+			LootRegistry.LootContext ctx = LootRegistry.LootContext.forMobKill(this, Dungeon.hero, pos);
+			Item fromTable = LootRegistry.rollOne(lootTableId, ctx);
+			if (fromTable != null){
+				return fromTable;
+			}
+		}
+
+		// 兼容旧逻辑：沿用 loot 字段与 Generator 的行为
 		Item item;
 		if (loot instanceof Generator.Category) {
 

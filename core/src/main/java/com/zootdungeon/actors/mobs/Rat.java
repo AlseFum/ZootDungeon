@@ -24,11 +24,27 @@ package com.zootdungeon.actors.mobs;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.abilities.Ratmogrify;
+import com.zootdungeon.items.potions.PotionOfHealing;
+import com.zootdungeon.items.potions.PotionOfStrength;
+import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
+import com.zootdungeon.loot.LootRegistry;
 import com.zootdungeon.sprites.RatSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class Rat extends Mob {
+
+	static {
+		// 额外的 Rat 掉落表：小概率掉三种基础资源之一
+		LootRegistry.LootTable table = new LootRegistry.LootTable()
+				// 力量药水
+				.add(LootRegistry.forItemClass(1, PotionOfStrength.class))
+				// 升级卷轴
+				.add(LootRegistry.forItemClass(1, ScrollOfUpgrade.class))
+				// 治疗药水
+				.add(LootRegistry.forItemClass(2, PotionOfHealing.class));
+		LootRegistry.register("mob:rat:basic_loot", table);
+	}
 
 	{
 		spriteClass = RatSprite.class;
@@ -37,6 +53,10 @@ public class Rat extends Mob {
 		defenseSkill = 2;
 
 		maxLvl = 5;
+
+		// 使用 LootRegistry 的 Rat 掉落表，小概率掉基础资源
+		lootTableId = "mob:rat:basic_loot";
+		lootChance = 1f;
 	}
 
 	@Override
