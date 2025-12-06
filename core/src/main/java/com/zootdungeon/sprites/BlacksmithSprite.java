@@ -37,9 +37,7 @@ public class BlacksmithSprite extends MobSprite {
 	public BlacksmithSprite() {
 		super();
 		
-		texture( Assets.Sprites.TROLL );
-		
-		TextureFilm frames = new TextureFilm( texture, 13, 16 );
+		TextureFilm frames = textureWithFallback("mod:blacksmith", com.zootdungeon.Assets.Sprites.TROLL, 13, 16);
 		
 		idle = new Animation( 15, true );
 		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 3 );

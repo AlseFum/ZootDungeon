@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class CrabSprite extends MobSprite {
@@ -29,9 +28,7 @@ public class CrabSprite extends MobSprite {
 	public CrabSprite() {
 		super();
 
-		texture( Assets.Sprites.CRAB );
-
-		TextureFilm frames = new TextureFilm( texture, 16, 16 );
+		TextureFilm frames = textureWithFallback("mod:crab", com.zootdungeon.Assets.Sprites.CRAB, 16, 16);
 
 		idle = new Animation( 5, true );
 		idle.frames( frames, 0, 1, 0, 2 );

@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class AlbinoSprite extends MobSprite {
@@ -29,9 +28,7 @@ public class AlbinoSprite extends MobSprite {
 	public AlbinoSprite() {
 		super();
 		
-		texture( Assets.Sprites.RAT );
-		
-		TextureFilm frames = new TextureFilm( texture, 16, 15 );
+		TextureFilm frames = textureWithFallback("mod:rat_albino", com.zootdungeon.Assets.Sprites.RAT, 16, 15);
 		
 		idle = new Animation( 2, true );
 		idle.frames( frames, 16, 16, 16, 17 );

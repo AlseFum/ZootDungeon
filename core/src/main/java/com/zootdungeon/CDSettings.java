@@ -36,6 +36,7 @@ public class CDSettings extends GameSettings {
 	public static final String KEY_GRID 	    = "visual_grid";
 	public static final String KEY_CAMERA_FOLLOW= "camera_follow";
 	public static final String KEY_SCREEN_SHAKE = "screen_shake";
+	public static final String KEY_TEXTURE_PACK = "texture_pack";
 	
 	public static void fullscreen( boolean value ) {
 		put( KEY_FULLSCREEN, value );
@@ -111,6 +112,14 @@ public class CDSettings extends GameSettings {
 
 	public static int screenShake() {
 		return getInt( KEY_SCREEN_SHAKE, 2, 0, 4 );
+	}
+
+	public static void texturePack(String packId) {
+		put(KEY_TEXTURE_PACK, packId);
+	}
+
+	public static String texturePack() {
+		return getString(KEY_TEXTURE_PACK, "");
 	}
 	
 	//Interface

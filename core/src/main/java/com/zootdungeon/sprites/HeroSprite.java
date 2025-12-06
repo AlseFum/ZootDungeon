@@ -52,7 +52,7 @@ public class HeroSprite extends CharSprite {
 	public HeroSprite() {
 		super();
 		
-		texture( Dungeon.hero.heroClass.spritesheet() );
+		texture( SpriteRegistry.heroTextureOr(Dungeon.hero.heroClass, Dungeon.hero.heroClass.spritesheet()) );
 		updateArmor();
 		
 		link( Dungeon.hero );
@@ -64,7 +64,7 @@ public class HeroSprite extends CharSprite {
 	}
 
 	public void disguise(HeroClass cls){
-		texture( cls.spritesheet() );
+		texture( SpriteRegistry.heroTextureOr(cls, cls.spritesheet()) );
 		updateArmor();
 	}
 	

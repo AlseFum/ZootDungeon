@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.watabou.noosa.TextureFilm;
@@ -31,9 +30,7 @@ public class SuccubusSprite extends MobSprite {
 	public SuccubusSprite() {
 		super();
 		
-		texture( Assets.Sprites.SUCCUBUS );
-		
-		TextureFilm frames = new TextureFilm( texture, 12, 15 );
+		TextureFilm frames = textureWithFallback("mod:succubus", com.zootdungeon.Assets.Sprites.SUCCUBUS, 12, 15);
 		
 		idle = new Animation( 8, true );
 		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 1 );

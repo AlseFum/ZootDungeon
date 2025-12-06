@@ -117,12 +117,18 @@ public class PrisonLevel extends RegularLevel {
 	
 	@Override
 	public String tilesTex() {
-		return Assets.Environment.TILES_PRISON;
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+				Assets.Environment.TILES_PRISON,
+				tilemapKey
+		);
 	}
 	
 	@Override
 	public String waterTex() {
-		return Assets.Environment.WATER_PRISON;
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+				Assets.Environment.WATER_PRISON,
+				tilemapKey
+		);
 	}
 	
 	@Override

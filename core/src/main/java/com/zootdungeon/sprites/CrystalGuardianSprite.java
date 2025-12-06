@@ -34,9 +34,7 @@ public abstract class CrystalGuardianSprite extends MobSprite {
 	public CrystalGuardianSprite() {
 		super();
 
-		texture( Assets.Sprites.CRYSTAL_GUARDIAN );
-
-		TextureFilm frames = new TextureFilm( texture, 12, 15 );
+		TextureFilm frames = textureWithFallback("mod:crystal_guardian", com.zootdungeon.Assets.Sprites.CRYSTAL_GUARDIAN, 12, 15);
 
 		int c = texOffset();
 

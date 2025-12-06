@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class BanditSprite extends MobSprite {
@@ -29,8 +28,7 @@ public class BanditSprite extends MobSprite {
 	public BanditSprite() {
 		super();
 		
-		texture( Assets.Sprites.THIEF );
-		TextureFilm film = new TextureFilm( texture, 12, 13 );
+		TextureFilm film = textureWithFallback("mod:bandit", com.zootdungeon.Assets.Sprites.THIEF, 12, 13);
 		
 		idle = new Animation( 1, true );
 		idle.frames( film, 21, 21, 21, 22, 21, 21, 21, 21, 22 );

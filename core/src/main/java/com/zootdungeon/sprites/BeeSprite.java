@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class BeeSprite extends MobSprite {
@@ -29,9 +28,7 @@ public class BeeSprite extends MobSprite {
 	public BeeSprite() {
 		super();
 		
-		texture( Assets.Sprites.BEE );
-		
-		TextureFilm frames = new TextureFilm( texture, 16, 16 );
+		TextureFilm frames = textureWithFallback("mod:bee", com.zootdungeon.Assets.Sprites.BEE, 16, 16);
 		
 		idle = new Animation( 12, true );
 		idle.frames( frames, 0, 1, 1, 0, 2, 2 );

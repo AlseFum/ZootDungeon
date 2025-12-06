@@ -25,12 +25,18 @@ public class DebugLevel extends Level {
 
     @Override
     public String tilesTex() {
-        return Assets.Environment.TILES_CAVES;
+        return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+                Assets.Environment.TILES_CAVES,
+                tilemapKey
+        );
     }
 
     @Override
     public String waterTex() {
-        return Assets.Environment.WATER_HALLS;
+        return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+                Assets.Environment.WATER_HALLS,
+                tilemapKey
+        );
     }
 
     @Override

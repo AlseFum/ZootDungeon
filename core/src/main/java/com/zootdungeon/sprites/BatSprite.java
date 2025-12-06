@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class BatSprite extends MobSprite {
@@ -29,9 +28,7 @@ public class BatSprite extends MobSprite {
 	public BatSprite() {
 		super();
 		
-		texture( Assets.Sprites.BAT );
-		
-		TextureFilm frames = new TextureFilm( texture, 15, 15 );
+		TextureFilm frames = textureWithFallback("mod:bat", com.zootdungeon.Assets.Sprites.BAT, 15, 15);
 		
 		idle = new Animation( 8, true );
 		idle.frames( frames, 0, 1 );

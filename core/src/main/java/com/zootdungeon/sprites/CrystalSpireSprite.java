@@ -40,9 +40,7 @@ public abstract class CrystalSpireSprite extends MobSprite {
 	}
 
 	public CrystalSpireSprite(){
-		texture( Assets.Sprites.CRYSTAL_SPIRE );
-
-		TextureFilm frames = new TextureFilm( texture, 24, 41 );
+		TextureFilm frames = textureWithFallback("mod:crystal_spire", com.zootdungeon.Assets.Sprites.CRYSTAL_SPIRE, 24, 41);
 
 		int c = texOffset();
 

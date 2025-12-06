@@ -107,12 +107,18 @@ public class CityBossLevel extends Level {
 
 	@Override
 	public String tilesTex() {
-		return Assets.Environment.TILES_CITY;
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+				Assets.Environment.TILES_CITY,
+				tilemapKey
+		);
 	}
 
 	@Override
 	public String waterTex() {
-		return Assets.Environment.WATER_CITY;
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+				Assets.Environment.WATER_CITY,
+				tilemapKey
+		);
 	}
 
 	private static final String IMP_SHOP = "imp_shop";

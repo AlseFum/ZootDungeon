@@ -21,8 +21,8 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 
@@ -37,13 +37,13 @@ public class BuffIcon extends Image {
 	private final boolean large;
 
 	public BuffIcon(Buff buff, boolean large){
-		super( large ? Assets.Interfaces.BUFFS_LARGE : Assets.Interfaces.BUFFS_SMALL );
+		super( SpriteRegistry.resolveBuffTexture(large) );
 		this.large = large;
 		refresh(buff);
 	}
 
 	public BuffIcon(int icon, boolean large){
-		super( large ? Assets.Interfaces.BUFFS_LARGE : Assets.Interfaces.BUFFS_SMALL );
+		super( SpriteRegistry.resolveBuffTexture(large) );
 		this.large = large;
 		refresh(icon);
 	}

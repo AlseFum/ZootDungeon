@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class BruteSprite extends MobSprite {
@@ -29,9 +28,7 @@ public class BruteSprite extends MobSprite {
 	public BruteSprite() {
 		super();
 		
-		texture( Assets.Sprites.BRUTE );
-		
-		TextureFilm frames = new TextureFilm( texture, 12, 16 );
+		TextureFilm frames = textureWithFallback("mod:brute", com.zootdungeon.Assets.Sprites.BRUTE, 12, 16);
 		
 		idle = new Animation( 2, true );
 		idle.frames( frames, 0, 0, 0, 1, 0, 0, 1, 1 );

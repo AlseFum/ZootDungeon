@@ -66,12 +66,18 @@ public class CrystalTempleThemePack {
         
         @Override
         public String tilesTex() {
-            return Assets.Environment.TILES_CAVES;
+            return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+                    Assets.Environment.TILES_CAVES,
+                    tilemapKey
+            );
         }
         
         @Override
         public String waterTex() {
-            return Assets.Environment.WATER_CAVES;
+            return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+                    Assets.Environment.WATER_CAVES,
+                    tilemapKey
+            );
         }
         
         @Override
@@ -249,12 +255,18 @@ public class CrystalTempleThemePack {
         
         @Override
         public String tilesTex() {
-            return Assets.Environment.TILES_CAVES;
+            return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+                    Assets.Environment.TILES_CAVES,
+                    tilemapKey
+            );
         }
         
         @Override
         public String waterTex() {
-            return Assets.Environment.WATER_CAVES;
+            return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+                    Assets.Environment.WATER_CAVES,
+                    tilemapKey
+            );
         }
         
         @Override

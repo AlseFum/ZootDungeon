@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class AcidicSprite extends ScorpioSprite {
@@ -29,9 +28,7 @@ public class AcidicSprite extends ScorpioSprite {
 	public AcidicSprite() {
 		super();
 		
-		texture( Assets.Sprites.SCORPIO );
-		
-		TextureFilm frames = new TextureFilm( texture, 17, 17 );
+		TextureFilm frames = textureWithFallback("mod:scorpio_acidic", com.zootdungeon.Assets.Sprites.SCORPIO, 17, 17);
 		
 		idle = new Animation( 12, true );
 		idle.frames( frames, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 16, 17, 16, 17 );

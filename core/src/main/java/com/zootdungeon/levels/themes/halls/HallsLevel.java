@@ -127,12 +127,18 @@ public class HallsLevel extends RegularLevel {
 	
 	@Override
 	public String tilesTex() {
-		return Assets.Environment.TILES_HALLS;
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+				Assets.Environment.TILES_HALLS,
+				tilemapKey
+		);
 	}
 	
 	@Override
 	public String waterTex() {
-		return Assets.Environment.WATER_HALLS;
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
+				Assets.Environment.WATER_HALLS,
+				tilemapKey
+		);
 	}
 	
 	@Override

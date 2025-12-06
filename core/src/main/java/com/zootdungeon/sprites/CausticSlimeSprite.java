@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class CausticSlimeSprite extends MobSprite {
@@ -29,9 +28,7 @@ public class CausticSlimeSprite extends MobSprite {
 	public CausticSlimeSprite() {
 		super();
 		
-		texture( Assets.Sprites.SLIME );
-		
-		TextureFilm frames = new TextureFilm( texture, 14, 12 );
+		TextureFilm frames = textureWithFallback("mod:slime_caustic", com.zootdungeon.Assets.Sprites.SLIME, 14, 12);
 		
 		int c = 9;
 		

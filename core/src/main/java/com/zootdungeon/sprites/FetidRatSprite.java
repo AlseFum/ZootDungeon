@@ -21,9 +21,9 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.effects.Speck;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.particles.Emitter;
 
@@ -34,9 +34,8 @@ public class FetidRatSprite extends MobSprite {
 	public FetidRatSprite() {
 		super();
 
-		texture( Assets.Sprites.RAT );
-
-		TextureFilm frames = new TextureFilm( texture, 16, 15 );
+		// 使用 SpriteRegistry 以便材质包可以覆盖 Fetid Rat 贴图
+		TextureFilm frames = textureWithFallback("mod:rat_fetid", com.zootdungeon.Assets.Sprites.RAT, 16, 15);
 
 		idle = new Animation( 2, true );
 		idle.frames( frames, 32, 32, 32, 33 );

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.zootdungeon.Assets;
+import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.tiles.DungeonTileSheet;
 import com.zootdungeon.utils.EventBus;
 import com.watabou.gltextures.SmartTexture;
@@ -349,6 +350,59 @@ public final class SpriteRegistry {
 
     private static final Map<String, TilemapDef> tilemapDefs = new HashMap<>();
     private static final Map<String, Tileset> tilesets = new HashMap<>();
+
+    // ---------------------------
+    // Buff & UI icon (atlas) side
+    // ---------------------------
+
+    /**
+     * Buff/UI atlases are intentionally simple for now: we allow a material pack to
+     * override the small/large buff sheets and the generic UI icons sheet,
+     * while the existing code (BuffIcon, various UI classes) continues to index
+     * into them by integer.
+     *
+     * This keeps compatibility while routing all underlying textures through
+     * SpriteRegistry so that packs can swap them out.
+     */
+    private static Object buffSmallTexture = Assets.Interfaces.BUFFS_SMALL;
+    private static Object buffLargeTexture = Assets.Interfaces.BUFFS_LARGE;
+    private static Object uiIconsTexture   = Assets.Interfaces.ICONS;
+
+    // hero class -> overridden spritesheet handle
+    private static final Map<HeroClass, Object> heroTextures = new HashMap<>();
+
+    public static void setBuffTextures(Object small, Object large) {
+        if (small != null) buffSmallTexture = small;
+        if (large != null) buffLargeTexture = large;
+    }
+
+    public static void setUiIconsTexture(Object uiIcons) {
+        if (uiIcons != null) uiIconsTexture = uiIcons;
+    }
+
+    public static Object resolveBuffTexture(boolean large) {
+        return large ? buffLargeTexture : buffSmallTexture;
+    }
+
+    public static Object resolveUiIconsTexture() {
+        return uiIconsTexture;
+    }
+
+    public static void registerHeroTexture(HeroClass cls, Object texture) {
+        if (cls != null && texture != null) {
+            heroTextures.put(cls, texture);
+        }
+    }
+
+    public static Object heroTextureOr(HeroClass cls, Object fallbackTexture) {
+        if (cls != null) {
+            Object tx = heroTextures.get(cls);
+            if (tx != null) {
+                return tx;
+            }
+        }
+        return fallbackTexture;
+    }
 
     static {
         registerItemTexture("minecraft/misc.png", 16)

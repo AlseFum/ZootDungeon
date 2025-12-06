@@ -50,9 +50,7 @@ public abstract class ElementalSprite extends MobSprite {
 		
 		int c = texOffset();
 		
-		texture( Assets.Sprites.ELEMENTAL );
-		
-		TextureFilm frames = new TextureFilm( texture, 12, 14 );
+		TextureFilm frames = textureWithFallback("mod:elemental", com.zootdungeon.Assets.Sprites.ELEMENTAL, 12, 14);
 		
 		idle = new Animation( 10, true );
 		idle.frames( frames, c+0, c+1, c+2 );

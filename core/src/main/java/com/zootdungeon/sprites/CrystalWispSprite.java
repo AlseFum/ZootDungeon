@@ -42,9 +42,7 @@ public abstract class CrystalWispSprite extends MobSprite {
 
 		int c = texOffset();
 
-		texture( Assets.Sprites.CRYSTAL_WISP );
-
-		TextureFilm frames = new TextureFilm( texture, 12, 14 );
+		TextureFilm frames = textureWithFallback("mod:crystal_wisp", com.zootdungeon.Assets.Sprites.CRYSTAL_WISP, 12, 14);
 
 		idle = new Animation( 1, true );
 		idle.frames( frames, c+0 );
