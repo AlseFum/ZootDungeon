@@ -6,6 +6,7 @@ import com.zootdungeon.items.DivineAnkh;
 import com.zootdungeon.items.ItemRemover;
 import com.zootdungeon.items.Panacea;
 import com.zootdungeon.items.RedStone;
+import com.zootdungeon.items.AllItemsBox;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfInvisibility;
 import com.zootdungeon.items.potions.PotionOfStrength;
@@ -16,6 +17,8 @@ import com.zootdungeon.items.stones.StoneOfDeath;
 import com.zootdungeon.items.stones.StoneOfDummy;
 import com.zootdungeon.items.stones.StoneOfDungeonTravel;
 import com.zootdungeon.items.stones.StoneOfGeneration;
+import com.zootdungeon.items.stones.StoneOfLevelSelect;
+import com.zootdungeon.items.stones.StoneOfSummoning;
 import com.zootdungeon.items.weapon.accurateWeapon.*;
 import com.zootdungeon.items.weapon.blockWeapon.*;
 import com.zootdungeon.items.weapon.longrangeWeapon.Glaive;
@@ -37,6 +40,8 @@ public class DebugSupply extends Supply {
         put_in(PotionOfStrength.class, 100);
         put_in(StoneOfGeneration.class, 300);
         put_in(StoneOfDungeonTravel.class, 300);
+        put_in(StoneOfSummoning.class, 300);
+        put_in(StoneOfLevelSelect.class, 50);
         put_in(ScrollOfUpgrade.class, 100);
         put_in(StoneOfDummy.class, 300);
         put_in(StoneOfDeath.class, 300);
@@ -50,6 +55,7 @@ public class DebugSupply extends Supply {
         put_in(Panacea.class, 1);
         put_in(Codex.class, 1);
         put_in(RedStone.class, 1);
+        put_in(AllItemsBox.class, 1);
         put_in(AssassinSupply.class,1);
         onOpen = () -> {
             Dungeon.energy+=10086;

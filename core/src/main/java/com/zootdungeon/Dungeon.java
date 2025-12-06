@@ -83,6 +83,8 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.SparseArray;
+import com.zootdungeon.world.LevelGraph;
+import com.zootdungeon.world.LevelGraph.LevelNode;
 
 public class Dungeon {
 
@@ -182,6 +184,9 @@ public class Dungeon {
     // 1 is for quest sub-floors
     public static int branch;
 
+    // logical identifier of the current level in the new graph-based map system
+    public static String currentLevelId;
+
     //keeps track of what levels the game should try to load instead of creating fresh
     public static ArrayList<Integer> generatedLevels = new ArrayList<>();
 
@@ -251,6 +256,12 @@ public class Dungeon {
         depth = 1;
         branch = 0;
         generatedLevels.clear();
+        // initialize graph-based view of the dungeon layout
+        LevelGraph.reset();
+        LevelGraph.initMainPath(LevelGraph.DEFAULT_MAIN_MAX_DEPTH);
+        LevelGraph.markGenerated(depth, branch);
+        LevelNode startNode = LevelGraph.forDepthBranch(depth, branch);
+        currentLevelId = startNode != null ? startNode.id : null;
 
         gold = 0;
         energy = 0;
@@ -298,9 +309,12 @@ public class Dungeon {
         if (!(level instanceof DeadEndLevel)) {
             //this assumes that we will never have a depth value outside the range 0 to 999
             // or -500 to 499, etc.
-            if (!generatedLevels.contains(depth + 1000 * branch)) {
-                generatedLevels.add(depth + 1000 * branch);
+            int legacyCode = depth + 1000 * branch;
+            if (!generatedLevels.contains(legacyCode)) {
+                generatedLevels.add(legacyCode);
             }
+            // keep graph in sync
+            LevelGraph.markGenerated(depth, branch);
 
             if (depth > Statistics.deepestFloor && branch == 0) {
                 Statistics.deepestFloor = depth;
@@ -316,6 +330,20 @@ public class Dungeon {
         Statistics.qualifiedForBossRemainsBadge = false;
 
         level.create();
+
+        // If this is a special side-level, wire its regular exit back to
+        // the parent floor recorded in the level graph node.
+        LevelNode node = LevelGraph.forDepthBranch(depth, branch);
+        if (node != null && node.special) {
+            LevelTransition exit = level.getTransition(LevelTransition.Type.REGULAR_EXIT);
+            if (exit != null) {
+                if (node.parentDepth != 0 || node.parentBranch != 0) {
+                    exit.destDepth = node.parentDepth;
+                    exit.destBranch = node.parentBranch;
+                    exit.destType = LevelTransition.Type.REGULAR_ENTRANCE;
+                }
+            }
+        }
 
         if (branch == 0) {
             Statistics.qualifiedForNoKilling = !bossLevel();
@@ -404,6 +432,11 @@ public class Dungeon {
 
         Dungeon.level = level;
         hero.pos = pos;
+
+        // keep graph-based metadata in sync with engine-level depth/branch
+        LevelGraph.markGenerated(depth, branch);
+        LevelNode node = LevelGraph.forDepthBranch(depth, branch);
+        currentLevelId = node != null ? node.id : null;
 
         if (hero.buff(AscensionChallenge.class) != null) {
             hero.buff(AscensionChallenge.class).onLevelSwitch();
@@ -548,6 +581,7 @@ public class Dungeon {
     private static final String HERO = "hero";
     private static final String DEPTH = "depth";
     private static final String BRANCH = "branch";
+    private static final String CURRENT_LEVEL_ID = "current_level_id";
     private static final String GENERATED_LEVELS = "generated_levels";
     private static final String GOLD = "gold";
     private static final String ENERGY = "energy";
@@ -575,6 +609,7 @@ public class Dungeon {
             bundle.put(HERO, hero);
             bundle.put(DEPTH, depth);
             bundle.put(BRANCH, branch);
+            bundle.put(CURRENT_LEVEL_ID, currentLevelId);
 
             bundle.put(GOLD, gold);
             bundle.put(ENERGY, energy);
@@ -755,6 +790,19 @@ public class Dungeon {
 
         depth = bundle.getInt(DEPTH);
         branch = bundle.getInt(BRANCH);
+
+        // rebuild graph-based view from legacy data
+        LevelGraph.reset();
+        LevelGraph.initMainPath(LevelGraph.DEFAULT_MAIN_MAX_DEPTH);
+        LevelGraph.initFromGeneratedCodes(generatedLevels);
+
+        String savedId = bundle.getString(CURRENT_LEVEL_ID);
+        if (savedId != null && !savedId.isEmpty()) {
+            currentLevelId = savedId;
+        } else {
+            LevelNode node = LevelGraph.forDepthBranch(depth, branch);
+            currentLevelId = node != null ? node.id : null;
+        }
 
         gold = bundle.getInt(GOLD);
         energy = bundle.getInt(ENERGY);

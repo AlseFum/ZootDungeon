@@ -303,6 +303,12 @@ abstract public class ClassArmor extends Armor {
 	}
 
 	public Badges.Badge masteryBadge() {
+		// owner can be null for items that were created outside a normal hero-class flow
+		// (e.g. debug generation, AllItemsBox, etc.), so guard against NPE here.
+		if (owner == null) {
+			return null;
+		}
+
 		if (owner.equals(HeroClass.WARRIOR)) {
 			return Badges.Badge.MASTERY_WARRIOR;
 		} else if (owner.equals(HeroClass.MAGE)) {
