@@ -38,21 +38,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.utils.GLog;
-import com.zootdungeon.Assets;
-import com.zootdungeon.Dungeon;
-import com.zootdungeon.actors.Actor;
-import com.zootdungeon.actors.Char;
-import com.zootdungeon.actors.buffs.Buff;
-import com.zootdungeon.actors.buffs.Invisibility;
-import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.actors.mobs.Mob;
-import com.zootdungeon.effects.CellEmitter;
-import com.zootdungeon.effects.Speck;
-import com.zootdungeon.messages.Messages;
-import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.scenes.PixelScene;
-import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.utils.Dice;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
@@ -81,15 +67,27 @@ public class AmbushWeapon extends MeleeWeapon{
             Hero hero = (Hero)owner;
             Char enemy = hero.enemy();
             if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
-                //deals 75% toward max to max on surprise, instead of min to max.
-                int diff = max() - min();
-                int damage = augment.damageFactor(Hero.heroDamageIntRange(
-                        min() + Math.round(diff*ambushRate),
-                        max() + Math.round(diff*ambushRate)));
-                int exStr = hero.STR() - STRReq();
-                if (exStr > 0) {
-                    damage += Hero.heroDamageIntRange(0, exStr);
-                }
+                // surprise hit: 偏向高端（75%~100%）的基础伤害，再加上 exSTR 骰
+                int lvl = buffedLvl();
+                int mn = min(lvl);
+                int mx = max(lvl);
+                int diff = mx - mn;
+
+                // 基础部分：将 [mn, mx] 区间压缩到 [mn+0.75*diff, mx]
+                int biasedMin = mn + Math.round(diff * ambushRate);
+                int biasedMax = mx + Math.round(diff * ambushRate);
+                if (biasedMin > biasedMax) biasedMin = biasedMax;
+
+                // 用 Dice 表达该区间并掷出一次
+                int span = biasedMax - biasedMin;
+                Dice base = span > 0
+                        ? Dice.of(new Dice.Die(1, span + 1), biasedMin - 1)
+                        : Dice.of(biasedMin);
+
+                int damage = augment.damageFactor(base.rollTotalGame());
+
+                // 追加 exSTR 骰
+                damage += exSTRDice(hero).rollTotalGame();
                 return damage;
             }
         }

@@ -26,6 +26,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.utils.Dice;
 
 public class ThrowingKnife extends MissileWeapon {
 	
@@ -53,14 +54,22 @@ public class ThrowingKnife extends MissileWeapon {
 			Char enemy = hero.enemy();
 			if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
 				//deals 75% toward max to max on surprise, instead of min to max.
-				int diff = max() - min();
-				int damage = augment.damageFactor(Hero.heroDamageIntRange(
-						min() + Math.round(diff*0.75f),
-						max()));
-				int exStr = hero.STR() - STRReq();
-				if (exStr > 0) {
-					damage += Hero.heroDamageIntRange(0, exStr);
-				}
+				int lvl = buffedLvl();
+				int mn = min(lvl);
+				int mx = max(lvl);
+				int diff = mx - mn;
+
+				// 75% toward max to max
+				int biasedMin = mn + Math.round(diff * 0.75f);
+				if (biasedMin > mx) biasedMin = mx;
+
+				int span = mx - biasedMin;
+				Dice base = span > 0
+						? Dice.of(new Dice.Die(1, span + 1), biasedMin - 1)
+						: Dice.of(biasedMin);
+
+				int damage = augment.damageFactor(base.rollTotalGame());
+				damage += exSTRDice(hero).rollTotalGame();
 				return damage;
 			}
 		}

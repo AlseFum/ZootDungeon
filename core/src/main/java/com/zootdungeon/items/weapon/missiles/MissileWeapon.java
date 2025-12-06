@@ -370,10 +370,6 @@ abstract public class MissileWeapon extends Weapon {
 		int damage = augment.damageFactor(super.damageRoll( owner ));
 		
 		if (owner instanceof Hero) {
-			int exStr = ((Hero)owner).STR() - STRReq();
-			if (exStr > 0) {
-				damage += Hero.heroDamageIntRange( 0, exStr );
-			}
 			if (owner.buff(Momentum.class) != null && owner.buff(Momentum.class).freerunning()) {
 				damage = Math.round(damage * (1f + 0.15f * ((Hero) owner).pointsInTalent(Talent.PROJECTILE_MOMENTUM)));
 			}
@@ -473,8 +469,12 @@ abstract public class MissileWeapon extends Weapon {
 		} else {
 			info += " " + Messages.get(this, "unlimited_uses");
 		}
-		
-		
+
+		// 追加伤害骰描述
+		if (Dungeon.hero != null){
+			info += "\n" + "伤害骰: " + damageDice(Dungeon.hero).describe();
+		}
+
 		return info;
 	}
 	

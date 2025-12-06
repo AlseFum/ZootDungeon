@@ -154,4 +154,196 @@
 3. 设计并实现 Buff/Icon 子模块与最小材质包 JSON 格式，完成一个“示例材质包”的从配置到渲染闭环。
 4. 在此基础上再扩展到更多怪物/物品/职业，并逐步削减直接硬编码 `Assets.*` 路径的使用。
 
+---
+
+## 全局骰点系统改造规划（Dice / D&D 风格骰点）
+
+### 1. 总体目标
+
+- **统一 RNG 表达方式**：将当前“`Random.Int(a, b)` / NormalIntRange 等 a-b 区间随机”的写法，统一抽象为 D&D 风格的骰点表达（如 `2d6+3`、`1d20+5` 等），并通过 `com.zootdungeon.utils.Dice` 作为唯一入口。
+- **可读 / 可调**：伤害、命中、防御、暴击、掉落几率等核心公式用骰表达，方便策划/跑团玩家阅读和调数。
+- **保持/可控的平衡**：在不破坏现有数值手感的前提下，尽量用等价或相近的骰表达替换旧随机逻辑（例如 NormalIntRange 用若干 dX 的和来近似）。
+- **可选日志与 Debug**：在需要时输出骰表达与每次掷骰结果（`Dice.RollResult.describe()`），方便排查数值问题。
+
+---
+
+### 2. 现状梳理
+
+- **Dice 实现现状（`com.zootdungeon.utils.Dice`）**
+  - 支持由多个组件构成的骰表达：
+    - `Die(amount, sides)`：代表 `amount d sides`，并支持：
+      - `withMaxOf(k)`：只保留最大 k 个骰（`k` / keep highest）。
+      - `withMinOf(k)`：只保留最小 k 个骰（`l` / keep lowest）。
+      - `withExpandMorethan(threshold)`：大于等于某值时追加骰（类似 exploding dice）。
+    - `Integer`：常数加减（支持负数）。
+  - 掷骰接口：
+    - `Dice.of(...)` 组合表达式；
+    - `roll(Random)` 返回 `RollResult`，可 `getTotal()` 与 `describe()`。
+  - 目前使用 `java.util.Random`，与游戏全局的 `com.watabou.utils.Random` / `Dungeon.seed` 分离（后续需统一 RNG 源）。
+
+- **关键随机点（需要迁移到骰系统）**
+  - **伤害系统**：
+    - `Damage.physical(...)` 调用 `attacker.damageRoll()`，最终走到：
+      - `KindOfWeapon.damageRoll(Char owner)`：Hero 用 `Hero.heroDamageIntRange(min, max)`，非 Hero 用 `Random.NormalIntRange(min, max)`。
+      - 各 `Char` 子类（mob）覆写 `damageRoll()` / `drRoll()`。
+  - **命中 / 闪避**：
+    - `Char.hit(...)` 中通过 `Random.Float(acuStat)` / `Random.Float(defStat)` 做类对抗。
+  - **防御 / DR 波动**：
+    - `Char.drRoll()`、`Armor`/glyphs、Barkskin 等使用 `Random.NormalIntRange(...)`。
+  - **掉落与随机事件**：
+    - `Generator`、各类 `proc`（附魔/天赋）、陷阱/房间生成、食物效果（`FrozenCarpaccio` / `MysteryMeat`）等大量使用 `Random.Int(...)` / `Random.Float()`。
+  - **音效 pitch / 视觉粒子抖动**：
+    - 这些是“纯表现随机”，不需要用 D&D 式骰表达（继续保留简单 Random 即可，但也可以通过 Dice 做包装）。
+
+---
+
+### 3. 目标架构（骰点 API 设计）
+
+- **Dice 作为“表达层 + 执行层”**
+  - 表达层：
+    - 提供从字符串解析的入口（便于在配置/调试中写 `"2d6+3k1e6-1"`）：
+      - `static Dice parse(String expr)`，支持：
+        - 基本：`NdM`、`+/-K`；
+        - 修饰：`kX`（keep highest）、`lX`、`eX`（explode on >=X）。
+  - 执行层：
+    - 保留已有 `roll(Random)` 返回 `RollResult` 的接口；
+    - 增加对游戏 RNG 的适配：
+      - `int rollTotal()`：内部使用 `com.watabou.utils.Random`；
+      - `RollResult rollWithDetails()`：同上，但保留明细。
+
+- **常用辅助函数（便于在业务代码里直接用）**
+  - 静态工具：
+    - `int Dice.roll(String expr)` → `Dice.parse(expr).rollTotal()`；
+    - `int Dice.uniform(int min, int max)` → 用等价骰表达实现，如 `1d(max-min+1) + (min-1)`；
+    - `int Dice.normalLike(int min, int max)` → 用 `NdM` 的和近似 NormalIntRange（例如 `3dX` 或 `2dX+K`）。
+  - 针对本项目语义的快捷封装（可选）：
+    - `int DamageDice.weaponDamage(KindOfWeapon wep, Char owner)`；
+    - `int DamageDice.drRoll(Char ch)`；  
+    - `boolean DiceRolls.checkChance(float p)` → 映射到 `1d100` 或 `1d20` 之类的表达。
+
+- **随机源统一**
+  - 在 Dice 内部不再直接 new `java.util.Random`，而是：
+    - 默认使用 `com.watabou.utils.Random`（其本身已与存档/种子系统集成）；
+    - 仅在单元测试/示例中允许外部传入 `java.util.Random`。
+
+---
+
+### 4. 阶段实施计划
+
+#### Phase 1：核心数值（伤害 / DR / 命中）
+
+- [ ] 扩展 `Dice`：
+  - [ ] 添加 `parse(String)`、`rollTotal()`、`rollWithDetails()`。
+  - [ ] 添加 `uniform(int min, int max)` / `normalLike(int min, int max)` 等静态工具，并统一通过 `com.watabou.utils.Random`。
+- [ ] 改造伤害主通路：
+  - [ ] `KindOfWeapon.damageRoll(Char owner)`：
+    - Hero：保留原 `Hero.heroDamageIntRange(min,max)` 语义，但改成通过 Dice 表达（例如 `Dice.normalLike(min, max)` / 显式 `NdM`）。
+    - 非 Hero：`Random.NormalIntRange(min,max)` → `Dice.normalLike(min, max)`。
+  - [ ] 各 `Char` 子类中自定义 `damageRoll()` / `drRoll()` 的地方，统一改成 Dice 写法：
+    - 例如：`return Random.NormalIntRange(1, 8);` → `return Dice.normalLike(1, 8);` 或 `Dice.roll("2d4");`。
+- [ ] 命中/闪避：
+  - [ ] 在 `Char.hit(...)` 中，引入“命中骰 vs 闪避骰”的概念（可选）：
+    - 方案 A：继续使用浮点比较，但内部用 Dice 生成 `acuRoll`、`defRoll`；
+    - 方案 B（更 D&D）：`1d20 + attackBonus >= 1d20 + defenseBonus`，逐步迁移并微调数值。
+  - [ ] 保持 PVP/PVE 命中率尽量接近当前实现。
+
+#### Phase 2：掉落 / 触发几率 / 特效
+
+- [ ] 在 `Generator` 中，将关键掉落逻辑改为骰表达：
+  - 例如：`Random.Float() < p` → 基于 `1d100` 的比较（`Dice.roll("1d100") <= p*100`）。
+- [ ] Enchant / 天赋 / Buff 触发几率统一用骰封装的工具方法：
+  - 如 `Random.Int(20) < 1 + hero.pointsInTalent(...)` → `Dice.roll("1d20") <= 1 + ...`。
+- [ ] 房间特性、陷阱生成等关卡逻辑中的分支概率统一改造为清晰的骰表达（便于今后挂在配置上）。
+
+#### Phase 3：日志 / Debug 与可视化
+
+- [ ] 为 `Damage` / `Char.hit` 等关键流程增加可选的 debug 开关：
+  - 当开启（例如 dev console 或某个配置）时，输出：
+    - 使用的骰表达（如 `"2d6+3"`）；
+    - 本次掷骰结果 `RollResult.describe()`。
+- [ ] 在 UI 或日志中为调试版增加“上一次伤害骰点详情”查看入口（可选）。
+
+#### Phase 4：清理与文档
+
+- [ ] 全局扫描 `Random.Int` / `Random.NormalIntRange` / `Random.Float`：
+  - 对数值相关调用点（影响战斗/掉落的）逐个审查并改为 Dice；
+  - 对纯视觉/音效随机保留现状，但可统一封装到 `VisualRandom` / `AudioRandom`（可选）。
+- [ ] 增补文档：
+  - `docs/dice-guide.md`：说明游戏内各主要数值的骰表达，方便后续调参和 Mod。
+
+---
+
+### 5. 预期示例（Target 使用方式示例）
+
+这里先用伪代码说明我们打算让项目里“怎么看到骰点”的形式，等你确认后再按此风格落地实现。
+
+#### 5.1 武器伤害（KindOfWeapon）
+
+```java
+// 例：短剑基础伤害 1d6+STR 修正
+public int damageRoll(Char owner) {
+    int baseMin = min(buffedLvl());
+    int baseMax = max(buffedLvl());
+
+    // 使用骰表达近似原来的范围（例如：1dN + K）
+    return Dice.normalLike(baseMin, baseMax);
+    // 或者显式表达（示意）：
+    // return Dice.roll("1d6+2");
+}
+```
+
+#### 5.2 角色 DR 掷骰（Char.drRoll）
+
+```java
+@Override
+public int drRoll() {
+    int bark = Barkskin.currentLevel(this);
+    // 原本：Random.NormalIntRange(0, bark)
+    return Dice.normalLike(0, bark);
+    // 或者如果觉得更跑团味：return Dice.roll("1d" + bark);
+}
+```
+
+#### 5.3 命中判定（Char.hit 的 D&D 化示意）
+
+```java
+public static boolean hit(Char attacker, Char defender, float accMulti, boolean magic) {
+    int attackBonus = Math.round(attacker.attackSkill(defender) * accMulti);
+    int defenseBonus = defender.defenseSkill(attacker);
+
+    int attackRoll = Dice.roll("1d20+" + attackBonus);
+    int defenseRoll = Dice.roll("1d20+" + defenseBonus);
+
+    return attackRoll >= defenseRoll;
+}
+```
+
+> 实际实现时会小心调整，使得在典型数值下命中率与现在接近，避免整体难度大幅跳变。
+
+#### 5.4 掉落概率（Generator 中的概率事件）
+
+```java
+// 原：if (Random.Float() < ExoticCrystals.consumableExoticChance()) { ... }
+float p = ExoticCrystals.consumableExoticChance(); // 例如 0.15
+if (Dice.roll("1d100") <= Math.round(p * 100)) {
+    // 触发掉落
+}
+```
+
+#### 5.5 调试日志中的骰点说明
+
+```java
+Dice dice = Dice.parse("2d6+3");
+Dice.RollResult res = dice.rollWithDetails();
+System.out.println("Damage roll: " + dice.describe() + " -> " + res.describe());
+// 示例输出：Damage roll: 2d6+3 -> [4, 2] + 3 = 9
+```
+
+---
+
+### 6. 接下来要做的事（骰点相关）
+
+1. 在你确认上面“骰点写法风格”（尤其是命中/伤害用 1d20 还是继续用 NormalIntRange 的近似骰）之后，完善 `Dice` 工具 API（`parse`/`normalLike` 等），并在一个小范围（例如某几把武器 + 少量怪物）试点替换。  
+2. 检查测试/实战手感，对比旧版数据，微调骰表达后，再批量迁移关键数值点。  
+3. 增加简单的 debug 输出/开关，方便你调试和验证跑团式骰点的行为。  
 

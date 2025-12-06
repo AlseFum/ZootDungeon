@@ -59,6 +59,32 @@ public class Dice {
         return dice;
     }
 
+    /**
+     * 向当前骰组添加一个骰子组件（如 2d6）。
+     */
+    public Dice addDie(int amount, int sides) {
+        this.components.add(new Die(amount, sides));
+        return this;
+    }
+
+    /**
+     * 向当前骰组添加一个常数（可以为负数）。
+     */
+    public Dice addConstant(int value) {
+        this.components.add(value);
+        return this;
+    }
+
+    /**
+     * 将另一个 Dice 的所有组件合并进当前骰组。
+     */
+    public Dice addAll(Dice other) {
+        if (other != null && other.components != null && !other.components.isEmpty()) {
+            this.components.addAll(other.components);
+        }
+        return this;
+    }
+
     public String describe() {
         if (components.isEmpty()) {
             return "0";
@@ -120,6 +146,23 @@ public class Dice {
         }
 
         return new RollResult(this, results);
+    }
+
+    /**
+     * 使用游戏全局 RNG（com.watabou.utils.Random）掷一次骰并返回总和。
+     * 这避免了在游戏逻辑中再引入新的 java.util.Random 实例。
+     */
+    public int rollTotalGame() {
+        // 适配器：仅重写 nextInt，使其走 com.watabou.utils.Random
+        Random adapter = new Random() {
+            @Override
+            public int nextInt(int bound) {
+                // 使用 Shattered/Cola Dungeon 的全局 RNG
+                return com.watabou.utils.Random.Int(bound);
+            }
+        };
+        RollResult res = roll(adapter);
+        return res.getTotal();
     }
 
     private int[] rollDie(Die die, Random random) {
