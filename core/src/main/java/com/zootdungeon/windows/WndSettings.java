@@ -24,6 +24,7 @@ package com.zootdungeon.windows;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Chrome;
 import com.zootdungeon.CDSettings;
+import com.zootdungeon.SaveManager;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.messages.Languages;
 import com.zootdungeon.messages.Messages;
@@ -854,6 +855,8 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkUpdates;
 		CheckBox chkBetas;
 		CheckBox chkWifi;
+		RedButton btnExportData;
+		RedButton btnImportData;
 
 		@Override
 		protected void createChildren() {
@@ -912,6 +915,34 @@ public class WndSettings extends WndTabbed {
 				chkWifi.checked(CDSettings.WiFi());
 				add(chkWifi);
 			}
+			
+			// 导出全局数据到剪贴板按钮
+			btnExportData = new RedButton(Messages.get(this, "export_data")){
+				@Override
+				protected void onClick() {
+					if (SaveManager.exportGlobalToClipboard()) {
+						parent.add(new WndMessage(Messages.get(DataTab.class, "export_success")));
+					} else {
+						parent.add(new WndMessage(Messages.get(DataTab.class, "export_failed")));
+					}
+				}
+			};
+			btnExportData.icon(Icons.get(Icons.COPY));
+			add(btnExportData);
+			
+			// 从剪贴板导入全局数据按钮
+			btnImportData = new RedButton(Messages.get(this, "import_data")){
+				@Override
+				protected void onClick() {
+					if (SaveManager.importGlobalFromClipboard()) {
+						parent.add(new WndMessage(Messages.get(DataTab.class, "import_success")));
+					} else {
+						parent.add(new WndMessage(Messages.get(DataTab.class, "import_failed")));
+					}
+				}
+			};
+			btnImportData.icon(Icons.get(Icons.PASTE));
+			add(btnImportData);
 		}
 
 		@Override
@@ -943,6 +974,11 @@ public class WndSettings extends WndTabbed {
 				chkWifi.setRect(0, pos + GAP, width, BTN_HEIGHT);
 				pos = chkWifi.bottom();
 			}
+			
+			// 导出导入按钮布局
+			btnExportData.setRect(0, pos + GAP, width/2 - GAP/2, BTN_HEIGHT);
+			btnImportData.setRect(width/2 + GAP/2, pos + GAP, width/2 - GAP/2, BTN_HEIGHT);
+			pos = btnExportData.bottom();
 
 			height = pos;
 

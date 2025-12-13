@@ -270,7 +270,7 @@ public class SaveManager {
     // ========================================
     
     /**
-     * 保存全局数据（图鉴、成就、排行榜等）
+     * 保存全局数据（图鉴、成就、排行榜、设置等）
      * 
      * @param bundle 全局数据Bundle
      * @throws IOException 保存失败
@@ -310,6 +310,48 @@ public class SaveManager {
     public static boolean globalExists() {
         return FileUtils.fileExists(GLOBAL_FILE);
     }
+    
+    /**
+     * 导出全局数据到剪贴板（用于设置界面）
+     * 直接导出JSON，不加密
+     */
+    public static boolean exportGlobalToClipboard() {
+        try {
+            Bundle global = loadGlobal();
+            String json = global.toString();
+            
+            Gdx.app.getClipboard().setContents(json);
+            log("EXPORT_GLOBAL", "to clipboard", true);
+            return true;
+        } catch (Exception e) {
+            log("EXPORT_GLOBAL", "to clipboard", false);
+            return false;
+        }
+    }
+    
+    /**
+     * 从剪贴板导入全局数据（用于设置界面）
+     */
+    public static boolean importGlobalFromClipboard() {
+        try {
+            String json = Gdx.app.getClipboard().getContents();
+            
+            if (json == null || json.isEmpty()) {
+                return false;
+            }
+            
+            // 从JSON字符串重建Bundle
+            Bundle imported = Bundle.read(new java.io.ByteArrayInputStream(json.getBytes("UTF-8")));
+            
+            saveGlobal(imported);
+            log("IMPORT_GLOBAL", "from clipboard", true);
+            return true;
+        } catch (Exception e) {
+            log("IMPORT_GLOBAL", "from clipboard", false);
+            return false;
+        }
+    }
+    
     
     // ========================================
     // 存档信息查询
@@ -413,7 +455,8 @@ public class SaveManager {
     // ========================================
     
     /**
-     * 导出存档到剪贴板（Base64编码）
+     * 导出存档到剪贴板
+     * 直接导出JSON，不加密
      * 
      * @param slot 存档槽
      * @return 是否成功
@@ -423,10 +466,7 @@ public class SaveManager {
             Bundle bundle = loadGame(slot);
             String json = bundle.toString();
             
-            // 简单Base64编码（实际项目应该压缩）
-            String encoded = "COLADUNGEON_SAVE:" + encodeBase64(json);
-            
-            Gdx.app.getClipboard().setContents(encoded);
+            Gdx.app.getClipboard().setContents(json);
             log("EXPORT", "slot " + slot + " to clipboard", true);
             return true;
         } catch (Exception e) {
@@ -437,23 +477,20 @@ public class SaveManager {
     
     /**
      * 从剪贴板导入存档
+     * 直接读取JSON，不解密
      * 
      * @return 导入到的槽位，失败返回-1
      */
     public static int importFromClipboard() {
         try {
-            String data = Gdx.app.getClipboard().getContents();
+            String json = Gdx.app.getClipboard().getContents();
             
-            if (data == null || !data.startsWith("COLADUNGEON_SAVE:")) {
+            if (json == null || json.isEmpty()) {
                 return -1;
             }
             
-            // 解码
-            String json = decodeBase64(data.substring("COLADUNGEON_SAVE:".length()));
-            
-            // 解析Bundle（简化版，实际需要更复杂的解析）
-            // 这里假设Bundle有一个fromString方法，实际需要实现
-            Bundle bundle = Bundle.read(new java.io.ByteArrayInputStream(json.getBytes()));
+            // 从JSON字符串重建Bundle
+            Bundle bundle = Bundle.read(new java.io.ByteArrayInputStream(json.getBytes("UTF-8")));
             
             // 找空槽位
             int slot = getFirstEmptySlot();
@@ -483,27 +520,6 @@ public class SaveManager {
         }
     }
     
-    /**
-     * 简单的Base64编码
-     */
-    private static String encodeBase64(String str) {
-        try {
-            return java.util.Base64.getEncoder().encodeToString(str.getBytes("UTF-8"));
-        } catch (Exception e) {
-            return str;
-        }
-    }
-    
-    /**
-     * 简单的Base64解码
-     */
-    private static String decodeBase64(String str) {
-        try {
-            return new String(java.util.Base64.getDecoder().decode(str), "UTF-8");
-        } catch (Exception e) {
-            return str;
-        }
-    }
     
     /**
      * 记录日志

@@ -143,7 +143,7 @@ public class GamesInProgress {
 	
 	/**
 	 * 将指定存档复制到剪贴板
-	 * 存档会被压缩并编码为Base64字符串，便于分享和备份
+	 * 直接导出JSON格式，便于分享和备份
 	 */
 	public static boolean copyToClipboard(int slot) {
 		return SaveManager.exportToClipboard(slot);
