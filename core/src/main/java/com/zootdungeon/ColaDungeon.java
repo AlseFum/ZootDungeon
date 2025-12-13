@@ -24,7 +24,6 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.scenes.TitleScene;
 import com.zootdungeon.scenes.WelcomeScene;
-import com.zootdungeon.sprites.TexturePackManager;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -48,9 +47,6 @@ public class ColaDungeon extends Game {
     @Override
     public void create() {
         super.create();
-
-        // Apply texture pack from settings before any scenes start using sprites.
-        TexturePackManager.initFromSettings();
 
         updateSystemUI();
         CDKeyBinding.loadBindings();
