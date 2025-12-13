@@ -22,7 +22,7 @@
 package com.zootdungeon.scenes;
 
 import com.zootdungeon.Badges;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.GamesInProgress;
 import com.zootdungeon.Rankings;

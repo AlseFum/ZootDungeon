@@ -31,10 +31,10 @@ import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
+// this file handles key binding
+public class CDKeyBinding extends GameAction {
 
-public class CDAction extends GameAction {
-
-	protected CDAction(String name ){
+	protected CDKeyBinding(String name ){
 		super( name );
 	}
 
@@ -47,112 +47,112 @@ public class CDAction extends GameAction {
 	public static final GameAction MIDDLE_CLICK = GameAction.MIDDLE_CLICK;
 	//--
 
-	public static final GameAction N            = new CDAction("n");
-	public static final GameAction W            = new CDAction("w");
-	public static final GameAction S            = new CDAction("s");
-	public static final GameAction E            = new CDAction("e");
-	public static final GameAction NW           = new CDAction("nw");
-	public static final GameAction NE           = new CDAction("ne");
-	public static final GameAction SW           = new CDAction("sw");
-	public static final GameAction SE           = new CDAction("se");
-	public static final GameAction WAIT_OR_PICKUP   = new CDAction("wait_or_pickup");
+	public static final GameAction N            = new CDKeyBinding("n");
+	public static final GameAction W            = new CDKeyBinding("w");
+	public static final GameAction S            = new CDKeyBinding("s");
+	public static final GameAction E            = new CDKeyBinding("e");
+	public static final GameAction NW           = new CDKeyBinding("nw");
+	public static final GameAction NE           = new CDKeyBinding("ne");
+	public static final GameAction SW           = new CDKeyBinding("sw");
+	public static final GameAction SE           = new CDKeyBinding("se");
+	public static final GameAction WAIT_OR_PICKUP   = new CDKeyBinding("wait_or_pickup");
 
-	public static final GameAction INVENTORY    = new CDAction("inventory");
-	public static final GameAction INVENTORY_SELECTOR   = new CDAction("inventory_selector");
-	public static final GameAction QUICKSLOT_SELECTOR   = new CDAction("quickslot_selector");
-	public static final GameAction QUICKSLOT_1  = new CDAction("quickslot_1");
-	public static final GameAction QUICKSLOT_2  = new CDAction("quickslot_2");
-	public static final GameAction QUICKSLOT_3  = new CDAction("quickslot_3");
-	public static final GameAction QUICKSLOT_4  = new CDAction("quickslot_4");
-	public static final GameAction QUICKSLOT_5  = new CDAction("quickslot_5");
-	public static final GameAction QUICKSLOT_6  = new CDAction("quickslot_6");
+	public static final GameAction INVENTORY    = new CDKeyBinding("inventory");
+	public static final GameAction INVENTORY_SELECTOR   = new CDKeyBinding("inventory_selector");
+	public static final GameAction QUICKSLOT_SELECTOR   = new CDKeyBinding("quickslot_selector");
+	public static final GameAction QUICKSLOT_1  = new CDKeyBinding("quickslot_1");
+	public static final GameAction QUICKSLOT_2  = new CDKeyBinding("quickslot_2");
+	public static final GameAction QUICKSLOT_3  = new CDKeyBinding("quickslot_3");
+	public static final GameAction QUICKSLOT_4  = new CDKeyBinding("quickslot_4");
+	public static final GameAction QUICKSLOT_5  = new CDKeyBinding("quickslot_5");
+	public static final GameAction QUICKSLOT_6  = new CDKeyBinding("quickslot_6");
 
-	public static final GameAction BAG_1        = new CDAction("bag_1");
-	public static final GameAction BAG_2        = new CDAction("bag_2");
-	public static final GameAction BAG_3        = new CDAction("bag_3");
-	public static final GameAction BAG_4        = new CDAction("bag_4");
-	public static final GameAction BAG_5        = new CDAction("bag_5");
+	public static final GameAction BAG_1        = new CDKeyBinding("bag_1");
+	public static final GameAction BAG_2        = new CDKeyBinding("bag_2");
+	public static final GameAction BAG_3        = new CDKeyBinding("bag_3");
+	public static final GameAction BAG_4        = new CDKeyBinding("bag_4");
+	public static final GameAction BAG_5        = new CDKeyBinding("bag_5");
 
-	public static final GameAction EXAMINE      = new CDAction("examine");
-	public static final GameAction WAIT         = new CDAction("wait");
-	public static final GameAction REST         = new CDAction("rest");
+	public static final GameAction EXAMINE      = new CDKeyBinding("examine");
+	public static final GameAction WAIT         = new CDKeyBinding("wait");
+	public static final GameAction REST         = new CDKeyBinding("rest");
 
-	public static final GameAction TAG_ATTACK   = new CDAction("tag_attack");
-	public static final GameAction TAG_ACTION   = new CDAction("tag_action");
-	public static final GameAction TAG_LOOT     = new CDAction("tag_loot");
-	public static final GameAction TAG_RESUME   = new CDAction("tag_resume");
+	public static final GameAction TAG_ATTACK   = new CDKeyBinding("tag_attack");
+	public static final GameAction TAG_ACTION   = new CDKeyBinding("tag_action");
+	public static final GameAction TAG_LOOT     = new CDKeyBinding("tag_loot");
+	public static final GameAction TAG_RESUME   = new CDKeyBinding("tag_resume");
 
-	public static final GameAction CYCLE        = new CDAction("cycle");
+	public static final GameAction CYCLE        = new CDKeyBinding("cycle");
 
-	public static final GameAction HERO_INFO    = new CDAction("hero_info");
-	public static final GameAction JOURNAL      = new CDAction("journal");
+	public static final GameAction HERO_INFO    = new CDKeyBinding("hero_info");
+	public static final GameAction JOURNAL      = new CDKeyBinding("journal");
 
-	public static final GameAction ZOOM_IN      = new CDAction("zoom_in");
-	public static final GameAction ZOOM_OUT     = new CDAction("zoom_out");
+	public static final GameAction ZOOM_IN      = new CDKeyBinding("zoom_in");
+	public static final GameAction ZOOM_OUT     = new CDKeyBinding("zoom_out");
 
 	// custom: open in-game command console
-	public static final GameAction CONSOLE      = new CDAction("console");
+	public static final GameAction CONSOLE      = new CDKeyBinding("console");
 
 	private static final LinkedHashMap<Integer, GameAction> defaultBindings = new LinkedHashMap<>();
 	static {
-		defaultBindings.put( Input.Keys.ESCAPE,         CDAction.BACK );
-		defaultBindings.put( Input.Keys.BACKSPACE,      CDAction.BACK );
+		defaultBindings.put( Input.Keys.ESCAPE,         CDKeyBinding.BACK );
+		defaultBindings.put( Input.Keys.BACKSPACE,      CDKeyBinding.BACK );
 
-		defaultBindings.put( Input.Keys.W,              CDAction.N );
-		defaultBindings.put( Input.Keys.A,              CDAction.W );
-		defaultBindings.put( Input.Keys.S,              CDAction.S );
-		defaultBindings.put( Input.Keys.D,              CDAction.E );
-		defaultBindings.put( Input.Keys.SPACE,          CDAction.WAIT_OR_PICKUP);
+		defaultBindings.put( Input.Keys.W,              CDKeyBinding.N );
+		defaultBindings.put( Input.Keys.A,              CDKeyBinding.W );
+		defaultBindings.put( Input.Keys.S,              CDKeyBinding.S );
+		defaultBindings.put( Input.Keys.D,              CDKeyBinding.E );
+		defaultBindings.put( Input.Keys.SPACE,          CDKeyBinding.WAIT_OR_PICKUP);
 
-		defaultBindings.put( Input.Keys.UP,             CDAction.N );
-		defaultBindings.put( Input.Keys.LEFT,           CDAction.W );
-		defaultBindings.put( Input.Keys.DOWN,           CDAction.S );
-		defaultBindings.put( Input.Keys.RIGHT,          CDAction.E );
+		defaultBindings.put( Input.Keys.UP,             CDKeyBinding.N );
+		defaultBindings.put( Input.Keys.LEFT,           CDKeyBinding.W );
+		defaultBindings.put( Input.Keys.DOWN,           CDKeyBinding.S );
+		defaultBindings.put( Input.Keys.RIGHT,          CDKeyBinding.E );
 
-		defaultBindings.put( Input.Keys.NUMPAD_8,       CDAction.N );
-		defaultBindings.put( Input.Keys.NUMPAD_4,       CDAction.W );
-		defaultBindings.put( Input.Keys.NUMPAD_2,       CDAction.S );
-		defaultBindings.put( Input.Keys.NUMPAD_6,       CDAction.E );
-		defaultBindings.put( Input.Keys.NUMPAD_7,       CDAction.NW );
-		defaultBindings.put( Input.Keys.NUMPAD_9,       CDAction.NE );
-		defaultBindings.put( Input.Keys.NUMPAD_1,       CDAction.SW );
-		defaultBindings.put( Input.Keys.NUMPAD_3,       CDAction.SE );
-		defaultBindings.put( Input.Keys.NUMPAD_5,       CDAction.WAIT_OR_PICKUP );
+		defaultBindings.put( Input.Keys.NUMPAD_8,       CDKeyBinding.N );
+		defaultBindings.put( Input.Keys.NUMPAD_4,       CDKeyBinding.W );
+		defaultBindings.put( Input.Keys.NUMPAD_2,       CDKeyBinding.S );
+		defaultBindings.put( Input.Keys.NUMPAD_6,       CDKeyBinding.E );
+		defaultBindings.put( Input.Keys.NUMPAD_7,       CDKeyBinding.NW );
+		defaultBindings.put( Input.Keys.NUMPAD_9,       CDKeyBinding.NE );
+		defaultBindings.put( Input.Keys.NUMPAD_1,       CDKeyBinding.SW );
+		defaultBindings.put( Input.Keys.NUMPAD_3,       CDKeyBinding.SE );
+		defaultBindings.put( Input.Keys.NUMPAD_5,       CDKeyBinding.WAIT_OR_PICKUP );
 
-		defaultBindings.put( Input.Keys.F,              CDAction.INVENTORY );
-		defaultBindings.put( Input.Keys.I,              CDAction.INVENTORY );
-		defaultBindings.put( Input.Keys.NUM_1,          CDAction.QUICKSLOT_1 );
-		defaultBindings.put( Input.Keys.NUM_2,          CDAction.QUICKSLOT_2 );
-		defaultBindings.put( Input.Keys.NUM_3,          CDAction.QUICKSLOT_3 );
-		defaultBindings.put( Input.Keys.NUM_4,          CDAction.QUICKSLOT_4 );
-		defaultBindings.put( Input.Keys.NUM_5,          CDAction.QUICKSLOT_5 );
-		defaultBindings.put( Input.Keys.NUM_6,          CDAction.QUICKSLOT_6 );
+		defaultBindings.put( Input.Keys.F,              CDKeyBinding.INVENTORY );
+		defaultBindings.put( Input.Keys.I,              CDKeyBinding.INVENTORY );
+		defaultBindings.put( Input.Keys.NUM_1,          CDKeyBinding.QUICKSLOT_1 );
+		defaultBindings.put( Input.Keys.NUM_2,          CDKeyBinding.QUICKSLOT_2 );
+		defaultBindings.put( Input.Keys.NUM_3,          CDKeyBinding.QUICKSLOT_3 );
+		defaultBindings.put( Input.Keys.NUM_4,          CDKeyBinding.QUICKSLOT_4 );
+		defaultBindings.put( Input.Keys.NUM_5,          CDKeyBinding.QUICKSLOT_5 );
+		defaultBindings.put( Input.Keys.NUM_6,          CDKeyBinding.QUICKSLOT_6 );
 
-		defaultBindings.put( Input.Keys.F1,             CDAction.BAG_1 );
-		defaultBindings.put( Input.Keys.F2,             CDAction.BAG_2 );
-		defaultBindings.put( Input.Keys.F3,             CDAction.BAG_3 );
-		defaultBindings.put( Input.Keys.F4,             CDAction.BAG_4 );
-		defaultBindings.put( Input.Keys.F5,             CDAction.BAG_5 );
+		defaultBindings.put( Input.Keys.F1,             CDKeyBinding.BAG_1 );
+		defaultBindings.put( Input.Keys.F2,             CDKeyBinding.BAG_2 );
+		defaultBindings.put( Input.Keys.F3,             CDKeyBinding.BAG_3 );
+		defaultBindings.put( Input.Keys.F4,             CDKeyBinding.BAG_4 );
+		defaultBindings.put( Input.Keys.F5,             CDKeyBinding.BAG_5 );
 
-		defaultBindings.put( Input.Keys.E,              CDAction.EXAMINE );
-		defaultBindings.put( Input.Keys.Z,              CDAction.REST );
+		defaultBindings.put( Input.Keys.E,              CDKeyBinding.EXAMINE );
+		defaultBindings.put( Input.Keys.Z,              CDKeyBinding.REST );
 
-		defaultBindings.put( Input.Keys.Q,              CDAction.TAG_ATTACK );
-		defaultBindings.put( Input.Keys.TAB,            CDAction.CYCLE);
-		defaultBindings.put( Input.Keys.X,              CDAction.TAG_ACTION );
-		defaultBindings.put( Input.Keys.C,              CDAction.TAG_LOOT );
-		defaultBindings.put( Input.Keys.ENTER,          CDAction.TAG_LOOT );
-		defaultBindings.put( Input.Keys.R,              CDAction.TAG_RESUME );
+		defaultBindings.put( Input.Keys.Q,              CDKeyBinding.TAG_ATTACK );
+		defaultBindings.put( Input.Keys.TAB,            CDKeyBinding.CYCLE);
+		defaultBindings.put( Input.Keys.X,              CDKeyBinding.TAG_ACTION );
+		defaultBindings.put( Input.Keys.C,              CDKeyBinding.TAG_LOOT );
+		defaultBindings.put( Input.Keys.ENTER,          CDKeyBinding.TAG_LOOT );
+		defaultBindings.put( Input.Keys.R,              CDKeyBinding.TAG_RESUME );
 
-		defaultBindings.put( Input.Keys.H,              CDAction.HERO_INFO );
-		defaultBindings.put( Input.Keys.J,              CDAction.JOURNAL );
+		defaultBindings.put( Input.Keys.H,              CDKeyBinding.HERO_INFO );
+		defaultBindings.put( Input.Keys.J,              CDKeyBinding.JOURNAL );
 
-		defaultBindings.put( Input.Keys.PLUS,           CDAction.ZOOM_IN );
-		defaultBindings.put( Input.Keys.EQUALS,         CDAction.ZOOM_IN );
-		defaultBindings.put( Input.Keys.MINUS,          CDAction.ZOOM_OUT );
+		defaultBindings.put( Input.Keys.PLUS,           CDKeyBinding.ZOOM_IN );
+		defaultBindings.put( Input.Keys.EQUALS,         CDKeyBinding.ZOOM_IN );
+		defaultBindings.put( Input.Keys.MINUS,          CDKeyBinding.ZOOM_OUT );
 
 		// default binding for opening the console on desktop keyboards (the ` key)
-		defaultBindings.put( Input.Keys.GRAVE,          CDAction.CONSOLE );
+		defaultBindings.put( Input.Keys.GRAVE,          CDKeyBinding.CONSOLE );
 	}
 
 	public static LinkedHashMap<Integer, GameAction> getDefaults() {
@@ -161,27 +161,27 @@ public class CDAction extends GameAction {
 
 	private static final LinkedHashMap<Integer, GameAction> defaultControllerBindings = new LinkedHashMap<>();
 	static {
-		defaultControllerBindings.put( Input.Keys.BUTTON_START,     CDAction.BACK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    CDAction.JOURNAL );
+		defaultControllerBindings.put( Input.Keys.BUTTON_START,     CDKeyBinding.BACK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    CDKeyBinding.JOURNAL );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        CDAction.LEFT_CLICK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    CDAction.LEFT_CLICK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        CDAction.RIGHT_CLICK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        CDKeyBinding.LEFT_CLICK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    CDKeyBinding.LEFT_CLICK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        CDKeyBinding.RIGHT_CLICK );
 
-		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     CDAction.TAG_ACTION );
-		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   CDAction.TAG_LOOT );
-		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   CDAction.TAG_RESUME );
-		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  CDAction.CYCLE );
+		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     CDKeyBinding.TAG_ACTION );
+		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   CDKeyBinding.TAG_LOOT );
+		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   CDKeyBinding.TAG_RESUME );
+		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  CDKeyBinding.CYCLE );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    CDAction.WAIT_OR_PICKUP );
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    CDKeyBinding.WAIT_OR_PICKUP );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        CDAction.ZOOM_IN );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        CDAction.ZOOM_OUT );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        CDKeyBinding.ZOOM_IN );
+		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        CDKeyBinding.ZOOM_OUT );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_A,         CDAction.TAG_ATTACK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_B,         CDAction.EXAMINE );
-		defaultControllerBindings.put( Input.Keys.BUTTON_X,         CDAction.QUICKSLOT_SELECTOR );
-		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         CDAction.INVENTORY_SELECTOR );
+		defaultControllerBindings.put( Input.Keys.BUTTON_A,         CDKeyBinding.TAG_ATTACK );
+		defaultControllerBindings.put( Input.Keys.BUTTON_B,         CDKeyBinding.EXAMINE );
+		defaultControllerBindings.put( Input.Keys.BUTTON_X,         CDKeyBinding.QUICKSLOT_SELECTOR );
+		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         CDKeyBinding.INVENTORY_SELECTOR );
 	}
 
 	public static LinkedHashMap<Integer, GameAction> getControllerDefaults() {
@@ -190,14 +190,14 @@ public class CDAction extends GameAction {
 
 	static {
 		//hard bindings for android devices
-		KeyBindings.addHardBinding( Input.Keys.BACK, CDAction.BACK );
-		KeyBindings.addHardBinding( Input.Keys.MENU, CDAction.INVENTORY );
+		KeyBindings.addHardBinding( Input.Keys.BACK, CDKeyBinding.BACK );
+		KeyBindings.addHardBinding( Input.Keys.MENU, CDKeyBinding.INVENTORY );
 
 		//hard bindings for desktop fullscreen toggle
 		//not bound to specific game actions, see PixelScene
 		//Note that user-entered bindings can override these individually, and that's fine.
-		KeyBindings.addHardBinding( Input.Keys.ALT_RIGHT, CDAction.NONE );
-		KeyBindings.addHardBinding( Input.Keys.ENTER, CDAction.NONE );
+		KeyBindings.addHardBinding( Input.Keys.ALT_RIGHT, CDKeyBinding.NONE );
+		KeyBindings.addHardBinding( Input.Keys.ENTER, CDKeyBinding.NONE );
 	}
 
 	//we only save/loads keys which differ from the default configuration.

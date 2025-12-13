@@ -22,7 +22,7 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.watabou.input.GameAction;
@@ -57,12 +57,12 @@ public class LootIndicator extends Tag {
 
 			@Override
 			public GameAction keyAction() {
-				return CDAction.TAG_LOOT;
+				return CDKeyBinding.TAG_LOOT;
 			}
 
 			@Override
 			public GameAction secondaryTooltipAction() {
-				return CDAction.WAIT_OR_PICKUP;
+				return CDKeyBinding.WAIT_OR_PICKUP;
 			}
 		};
 		slot.showExtraInfo( false );

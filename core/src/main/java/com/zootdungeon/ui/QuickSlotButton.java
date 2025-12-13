@@ -23,7 +23,7 @@ package com.zootdungeon.ui;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.QuickSlot;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Actor;
@@ -184,17 +184,17 @@ public class QuickSlotButton extends Button {
 	public GameAction keyAction() {
 		switch (slotNum){
 			case 0:
-				return CDAction.QUICKSLOT_1;
+				return CDKeyBinding.QUICKSLOT_1;
 			case 1:
-				return CDAction.QUICKSLOT_2;
+				return CDKeyBinding.QUICKSLOT_2;
 			case 2:
-				return CDAction.QUICKSLOT_3;
+				return CDKeyBinding.QUICKSLOT_3;
 			case 3:
-				return CDAction.QUICKSLOT_4;
+				return CDKeyBinding.QUICKSLOT_4;
 			case 4:
-				return CDAction.QUICKSLOT_5;
+				return CDKeyBinding.QUICKSLOT_5;
 			case 5:
-				return CDAction.QUICKSLOT_6;
+				return CDKeyBinding.QUICKSLOT_6;
 			default:
 				return super.keyAction();
 		}
@@ -202,7 +202,7 @@ public class QuickSlotButton extends Button {
 
 	@Override
 	public GameAction secondaryTooltipAction() {
-		return CDAction.QUICKSLOT_SELECTOR;
+		return CDKeyBinding.QUICKSLOT_SELECTOR;
 	}
 
 	@Override

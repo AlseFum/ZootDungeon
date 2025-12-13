@@ -24,7 +24,7 @@ package com.zootdungeon.ui;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.QuickSlot;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.HoldFast;
@@ -142,8 +142,8 @@ public class Toolbar extends Component {
 						info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.RIGHT_CLICK, true)) + ": " + Messages.get(Toolbar.class, "quickslot_assign") + "\n";
 						info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, true)) + ": " + Messages.get(Toolbar.class, "quickslot_cancel");
 					} else {
-						info += Messages.get(WndKeyBindings.class, CDAction.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "quickslot_select") + "\n";
-						info += Messages.get(WndKeyBindings.class, CDAction.RIGHT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "quickslot_assign") + "\n";
+						info += Messages.get(WndKeyBindings.class, CDKeyBinding.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "quickslot_select") + "\n";
+						info += Messages.get(WndKeyBindings.class, CDKeyBinding.RIGHT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "quickslot_assign") + "\n";
 						info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, false)) + ": " + Messages.get(Toolbar.class, "quickslot_cancel");
 					}
 
@@ -190,7 +190,7 @@ public class Toolbar extends Component {
 
 			@Override
 			public GameAction keyAction() {
-				if (btnWait.active) return CDAction.QUICKSLOT_SELECTOR;
+				if (btnWait.active) return CDKeyBinding.QUICKSLOT_SELECTOR;
 				else				return null;
 			}
 		});
@@ -206,12 +206,12 @@ public class Toolbar extends Component {
 			
 			@Override
 			public GameAction keyAction() {
-				return CDAction.WAIT;
+				return CDKeyBinding.WAIT;
 			}
 
 			@Override
 			public GameAction secondaryTooltipAction() {
-				return CDAction.WAIT_OR_PICKUP;
+				return CDKeyBinding.WAIT_OR_PICKUP;
 			}
 
 			@Override
@@ -241,7 +241,7 @@ public class Toolbar extends Component {
 
 			@Override
 			public GameAction keyAction() {
-				if (btnWait.active) return CDAction.REST;
+				if (btnWait.active) return CDKeyBinding.REST;
 				else				return null;
 			}
 		});
@@ -279,7 +279,7 @@ public class Toolbar extends Component {
 
 			@Override
 			public GameAction keyAction() {
-				if (btnWait.active) return CDAction.WAIT_OR_PICKUP;
+				if (btnWait.active) return CDKeyBinding.WAIT_OR_PICKUP;
 				else				return null;
 			}
 		});
@@ -300,7 +300,7 @@ public class Toolbar extends Component {
 			
 			@Override
 			public GameAction keyAction() {
-				return CDAction.EXAMINE;
+				return CDKeyBinding.EXAMINE;
 			}
 
 			@Override
@@ -336,12 +336,12 @@ public class Toolbar extends Component {
 			
 			@Override
 			public GameAction keyAction() {
-				return CDAction.INVENTORY;
+				return CDKeyBinding.INVENTORY;
 			}
 
 			@Override
 			public GameAction secondaryTooltipAction() {
-				return CDAction.INVENTORY_SELECTOR;
+				return CDKeyBinding.INVENTORY_SELECTOR;
 			}
 
 			@Override
@@ -406,7 +406,7 @@ public class Toolbar extends Component {
 						info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.LEFT_CLICK, true)) + ": " + Messages.get(Toolbar.class, "container_select") + "\n";
 						info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, true)) + ": " + Messages.get(Toolbar.class, "container_cancel");
 					} else {
-						info += Messages.get(WndKeyBindings.class, CDAction.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "container_select") + "\n";
+						info += Messages.get(WndKeyBindings.class, CDKeyBinding.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "container_select") + "\n";
 						info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, false)) + ": " + Messages.get(Toolbar.class, "container_cancel");
 					}
 
@@ -449,8 +449,8 @@ public class Toolbar extends Component {
 								info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.RIGHT_CLICK, true)) + ": " + Messages.get(Toolbar.class, "item_use") + "\n";
 								info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, true)) + ": " + Messages.get(Toolbar.class, "item_cancel");
 							} else {
-								info += Messages.get(WndKeyBindings.class, CDAction.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "item_select") + "\n";
-								info += Messages.get(WndKeyBindings.class, CDAction.RIGHT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "item_use") + "\n";
+								info += Messages.get(WndKeyBindings.class, CDKeyBinding.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "item_select") + "\n";
+								info += Messages.get(WndKeyBindings.class, CDKeyBinding.RIGHT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "item_use") + "\n";
 								info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, false)) + ": " + Messages.get(Toolbar.class, "item_cancel");
 							}
 
@@ -474,7 +474,7 @@ public class Toolbar extends Component {
 
 			@Override
 			public GameAction keyAction() {
-				if (btnWait.active) return CDAction.INVENTORY_SELECTOR;
+				if (btnWait.active) return CDKeyBinding.INVENTORY_SELECTOR;
 				else				return null;
 			}
 		});

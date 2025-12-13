@@ -22,7 +22,6 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.effects.CircleArc;
 import com.zootdungeon.scenes.PixelScene;

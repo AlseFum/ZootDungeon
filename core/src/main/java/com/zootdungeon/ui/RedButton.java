@@ -21,8 +21,6 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Chrome;
-
 public class RedButton extends StyledButton {
 			
 	public RedButton( String label ) {

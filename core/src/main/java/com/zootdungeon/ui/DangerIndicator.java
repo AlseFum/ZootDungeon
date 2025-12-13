@@ -22,7 +22,7 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
@@ -55,7 +55,7 @@ public class DangerIndicator extends Tag {
 	
 	@Override
 	public GameAction keyAction() {
-		return CDAction.CYCLE;
+		return CDKeyBinding.CYCLE;
 	}
 	
 	@Override

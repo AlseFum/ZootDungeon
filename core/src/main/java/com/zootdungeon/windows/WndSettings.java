@@ -22,7 +22,7 @@
 package com.zootdungeon.windows;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.SaveManager;
 import com.zootdungeon.ColaDungeon;

@@ -22,7 +22,6 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
 import com.zootdungeon.scenes.PixelScene;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;

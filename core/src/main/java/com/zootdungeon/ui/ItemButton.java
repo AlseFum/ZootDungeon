@@ -22,7 +22,6 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
 import com.zootdungeon.items.Item;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.audio.Sample;

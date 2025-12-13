@@ -24,11 +24,11 @@ package com.zootdungeon.scenes;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.Challenges;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.GamesInProgress;
 import com.zootdungeon.Rankings;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Statistics;
@@ -639,7 +639,7 @@ public class GameScene extends PixelScene {
 			consoleListener = new Signal.Listener<KeyEvent>(){
 				@Override
 				public boolean onSignal(KeyEvent keyEvent){
-					if (keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == CDAction.CONSOLE && !showingWindow()){
+					if (keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == CDKeyBinding.CONSOLE && !showingWindow()){
 						show(new WndConsole());
 						return true;
 					}
@@ -1165,7 +1165,7 @@ public class GameScene extends PixelScene {
 					if (CDSettings.interfaceSize() == 0) {
 						GLog.p(Messages.get(Guidebook.class, "hint_mobile"));
 					} else {
-						GLog.p(Messages.get(Guidebook.class, "hint_desktop", KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDAction.JOURNAL, ControllerHandler.isControllerConnected()))));
+						GLog.p(Messages.get(Guidebook.class, "hint_desktop", KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDKeyBinding.JOURNAL, ControllerHandler.isControllerConnected()))));
 					}
 				}
 				Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(Guidebook.class, "hint_status"));
@@ -1202,8 +1202,8 @@ public class GameScene extends PixelScene {
 				GLog.p(Messages.get(GameScene.class, "tutorial_ui_mobile"));
 			} else {
 				GLog.p(Messages.get(GameScene.class, "tutorial_ui_desktop",
-						KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDAction.HERO_INFO, ControllerHandler.isControllerConnected())),
-						KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDAction.INVENTORY, ControllerHandler.isControllerConnected()))));
+						KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDKeyBinding.HERO_INFO, ControllerHandler.isControllerConnected())),
+						KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDKeyBinding.INVENTORY, ControllerHandler.isControllerConnected()))));
 			}
 
 			//clear hidden doors, it's floor 1 so there are only the entrance ones

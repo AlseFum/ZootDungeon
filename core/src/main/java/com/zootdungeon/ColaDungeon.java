@@ -53,7 +53,7 @@ public class ColaDungeon extends Game {
         TexturePackManager.initFromSettings();
 
         updateSystemUI();
-        CDAction.loadBindings();
+        CDKeyBinding.loadBindings();
 
         Music.INSTANCE.enable(CDSettings.music());
         Music.INSTANCE.volume(CDSettings.musicVol() * CDSettings.musicVol() / 100f);

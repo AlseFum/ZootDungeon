@@ -1,6 +1,7 @@
-package com.zootdungeon;
+package com.zootdungeon.ui;
 
 import com.watabou.noosa.NinePatch;
+import com.zootdungeon.Assets;
 
 public class Chrome {
 

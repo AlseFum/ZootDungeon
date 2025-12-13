@@ -23,9 +23,9 @@ package com.zootdungeon.scenes;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.hero.Belongings;
@@ -253,7 +253,7 @@ public class AlchemyScene extends PixelScene {
 								info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.LEFT_CLICK, true)) + ": " + Messages.get(Toolbar.class, "container_select") + "\n";
 								info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, true)) + ": " + Messages.get(Toolbar.class, "container_cancel");
 							} else {
-								info += Messages.get(WndKeyBindings.class, CDAction.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "container_select") + "\n";
+								info += Messages.get(WndKeyBindings.class, CDKeyBinding.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "container_select") + "\n";
 								info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, false)) + ": " + Messages.get(Toolbar.class, "container_cancel");
 							}
 
@@ -286,7 +286,7 @@ public class AlchemyScene extends PixelScene {
 										info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.LEFT_CLICK, true)) + ": " + Messages.get(Toolbar.class, "item_select") + "\n";
 										info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, true)) + ": " + Messages.get(Toolbar.class, "item_cancel");
 									} else {
-										info += Messages.get(WndKeyBindings.class, CDAction.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "item_select") + "\n";
+										info += Messages.get(WndKeyBindings.class, CDKeyBinding.LEFT_CLICK.name()) + ": " + Messages.get(Toolbar.class, "item_select") + "\n";
 										info += KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(GameAction.BACK, false)) + ": " + Messages.get(Toolbar.class, "item_cancel");
 									}
 
@@ -320,7 +320,7 @@ public class AlchemyScene extends PixelScene {
 
 			@Override
 			public GameAction keyAction() {
-				return CDAction.INVENTORY_SELECTOR;
+				return CDKeyBinding.INVENTORY_SELECTOR;
 			}
 		};
 		add(invSelector);
@@ -335,7 +335,7 @@ public class AlchemyScene extends PixelScene {
 
 			@Override
 			public GameAction keyAction() {
-				return CDAction.BACK;
+				return CDKeyBinding.BACK;
 			}
 
 			@Override
@@ -358,7 +358,7 @@ public class AlchemyScene extends PixelScene {
 
 			@Override
 			public GameAction keyAction() {
-				return CDAction.TAG_RESUME;
+				return CDKeyBinding.TAG_RESUME;
 			}
 
 			@Override
@@ -460,7 +460,7 @@ public class AlchemyScene extends PixelScene {
 
 			@Override
 			public GameAction keyAction() {
-				return CDAction.TAG_ACTION;
+				return CDKeyBinding.TAG_ACTION;
 			}
 
 			@Override
@@ -510,7 +510,7 @@ public class AlchemyScene extends PixelScene {
 
 			@Override
 			public GameAction keyAction() {
-				return CDAction.JOURNAL;
+				return CDKeyBinding.JOURNAL;
 			}
 
 			@Override
@@ -1014,7 +1014,7 @@ public class AlchemyScene extends PixelScene {
 					for (InputButton i : inputs){
 						if (i.item == null || i.item instanceof WndBag.Placeholder) {
 							if (i == InputButton.this) {
-								return CDAction.INVENTORY;
+								return CDKeyBinding.INVENTORY;
 							} else {
 								return super.keyAction();
 							}
@@ -1033,7 +1033,7 @@ public class AlchemyScene extends PixelScene {
 
 				@Override
 				public GameAction secondaryTooltipAction() {
-					return CDAction.INVENTORY_SELECTOR;
+					return CDKeyBinding.INVENTORY_SELECTOR;
 				}
 			};
 			slot.enable(true);
@@ -1097,7 +1097,7 @@ public class AlchemyScene extends PixelScene {
 				@Override
 				public GameAction keyAction() {
 					if (slot == 0 && !combines[1].active && !combines[2].active){
-						return CDAction.TAG_LOOT;
+						return CDKeyBinding.TAG_LOOT;
 					}
 					return super.keyAction();
 				}

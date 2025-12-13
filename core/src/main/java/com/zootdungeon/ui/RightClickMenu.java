@@ -21,7 +21,6 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Chrome;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;

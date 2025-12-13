@@ -22,7 +22,7 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
 import com.watabou.input.GameAction;
@@ -48,7 +48,7 @@ public class ActionIndicator extends Tag {
 	
 	@Override
 	public GameAction keyAction() {
-		return CDAction.TAG_ACTION;
+		return CDKeyBinding.TAG_ACTION;
 	}
 	
 	@Override

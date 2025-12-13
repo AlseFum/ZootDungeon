@@ -3,7 +3,7 @@ package com.zootdungeon.windows;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.Statistics;
@@ -99,7 +99,7 @@ public class WndHero extends WndTabbed {
 
 	@Override
 	public boolean onSignal(KeyEvent event) {
-		if (event.pressed && KeyBindings.getActionForKey( event ) == CDAction.HERO_INFO) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == CDKeyBinding.HERO_INFO) {
 			onBackPressed();
 			return true;
 		} else {

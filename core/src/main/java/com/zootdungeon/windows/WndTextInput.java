@@ -22,7 +22,7 @@
 package com.zootdungeon.windows;
 
 import com.badlogic.gdx.Gdx;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RedButton;

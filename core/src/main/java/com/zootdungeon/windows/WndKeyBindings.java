@@ -21,7 +21,7 @@
 
 package com.zootdungeon.windows;
 
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
@@ -134,7 +134,7 @@ public class WndKeyBindings extends Window {
 			bindingsList.add(sep);
 		}
 
-		LinkedHashMap<Integer, GameAction> defaults = controller ? CDAction.getControllerDefaults() : CDAction.getDefaults();
+		LinkedHashMap<Integer, GameAction> defaults = controller ? CDKeyBinding.getControllerDefaults() : CDKeyBinding.getDefaults();
 
 		ArrayList<GameAction> actionList = GameAction.allActions();
 		for (GameAction action : actionList.toArray(new GameAction[0])) {
@@ -169,7 +169,7 @@ public class WndKeyBindings extends Window {
 		RedButton btnDefaults = new RedButton(Messages.get(this, "default"), 9){
 			@Override
 			protected void onClick() {
-				changedBindings = controller ? CDAction.getControllerDefaults() : CDAction.getDefaults();
+				changedBindings = controller ? CDKeyBinding.getControllerDefaults() : CDKeyBinding.getDefaults();
 				for (BindingItem i : listItems){
 					int key1 = 0;
 					int key2 = 0;
@@ -193,7 +193,7 @@ public class WndKeyBindings extends Window {
 			protected void onClick() {
 				if (controller) KeyBindings.setAllControllerBindings(changedBindings);
 				else            KeyBindings.setAllBindings(changedBindings);
-				CDAction.saveBindings();
+				CDKeyBinding.saveBindings();
 				hide();
 			}
 		};

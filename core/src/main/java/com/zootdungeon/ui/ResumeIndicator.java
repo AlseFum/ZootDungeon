@@ -22,7 +22,7 @@
 package com.zootdungeon.ui;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.windows.WndKeyBindings;
@@ -44,7 +44,7 @@ public class ResumeIndicator extends Tag {
 	
 	@Override
 	public GameAction keyAction() {
-		return CDAction.TAG_RESUME;
+		return CDKeyBinding.TAG_RESUME;
 	}
 
 	@Override

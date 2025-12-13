@@ -21,8 +21,7 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Chrome;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.effects.ShadowBox;
 import com.zootdungeon.scenes.PixelScene;
 import com.watabou.input.KeyBindings;
@@ -195,8 +194,8 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 	@Override
 	public boolean onSignal( KeyEvent event ) {
 		if (event.pressed) {
-			if (KeyBindings.getActionForKey( event ) == CDAction.BACK
-				|| KeyBindings.getActionForKey( event ) == CDAction.WAIT){
+			if (KeyBindings.getActionForKey( event ) == CDKeyBinding.BACK
+				|| KeyBindings.getActionForKey( event ) == CDKeyBinding.WAIT){
 				onBackPressed();
 			}
 		}

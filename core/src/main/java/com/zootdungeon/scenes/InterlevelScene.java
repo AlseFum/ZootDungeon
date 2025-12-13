@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.GamesInProgress;

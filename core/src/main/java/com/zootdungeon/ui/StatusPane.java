@@ -23,7 +23,7 @@ package com.zootdungeon.ui;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.effects.CircleArc;
@@ -98,7 +98,7 @@ public class StatusPane extends Component {
 			
 			@Override
 			public GameAction keyAction() {
-				return CDAction.HERO_INFO;
+				return CDKeyBinding.HERO_INFO;
 			}
 
 			@Override

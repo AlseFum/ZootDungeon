@@ -21,7 +21,7 @@
 
 package com.zootdungeon.scenes;
 
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.messages.Languages;

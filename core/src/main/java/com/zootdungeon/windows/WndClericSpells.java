@@ -21,7 +21,7 @@
 
 package com.zootdungeon.windows;
 
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.actors.hero.Hero;

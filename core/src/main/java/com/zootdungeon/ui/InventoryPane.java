@@ -21,9 +21,8 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Chrome;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Belongings;
@@ -136,11 +135,11 @@ public class InventoryPane extends Component {
 			@Override
 			public boolean onSignal(KeyEvent keyEvent) {
 				if (keyEvent.pressed && isSelecting() && InventoryPane.this.visible
-						&& KeyBindings.getActionForKey(keyEvent) != CDAction.BAG_1
-						&& KeyBindings.getActionForKey(keyEvent) != CDAction.BAG_2
-						&& KeyBindings.getActionForKey(keyEvent) != CDAction.BAG_3
-						&& KeyBindings.getActionForKey(keyEvent) != CDAction.BAG_4
-						&& KeyBindings.getActionForKey(keyEvent) != CDAction.BAG_5){
+						&& KeyBindings.getActionForKey(keyEvent) != CDKeyBinding.BAG_1
+						&& KeyBindings.getActionForKey(keyEvent) != CDKeyBinding.BAG_2
+						&& KeyBindings.getActionForKey(keyEvent) != CDKeyBinding.BAG_3
+						&& KeyBindings.getActionForKey(keyEvent) != CDKeyBinding.BAG_4
+						&& KeyBindings.getActionForKey(keyEvent) != CDKeyBinding.BAG_5){
 					//any windows opened as a consequence of this should be centered on the inventory
 					GameScene.centerNextWndOnInvPane();
 					selector.onSelect(null);
@@ -675,21 +674,21 @@ public class InventoryPane extends Component {
 		public GameAction keyAction() {
 			switch (index){
 				case 1: default:
-					return CDAction.BAG_1;
+					return CDKeyBinding.BAG_1;
 				case 2:
-					return CDAction.BAG_2;
+					return CDKeyBinding.BAG_2;
 				case 3:
-					return CDAction.BAG_3;
+					return CDKeyBinding.BAG_3;
 				case 4:
-					return CDAction.BAG_4;
+					return CDKeyBinding.BAG_4;
 				case 5:
-					return CDAction.BAG_5;
+					return CDKeyBinding.BAG_5;
 			}
 		}
 
 		@Override
 		public GameAction secondaryTooltipAction() {
-			return CDAction.INVENTORY_SELECTOR;
+			return CDKeyBinding.INVENTORY_SELECTOR;
 		}
 
 		@Override

@@ -24,7 +24,7 @@ package com.zootdungeon.ui;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Challenges;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.journal.Document;
@@ -227,7 +227,7 @@ public class MenuPane extends Component {
 
 		@Override
 		public GameAction keyAction() {
-			return CDAction.JOURNAL;
+			return CDKeyBinding.JOURNAL;
 		}
 
 		@Override

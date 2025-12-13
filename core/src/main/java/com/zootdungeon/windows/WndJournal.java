@@ -24,7 +24,7 @@ package com.zootdungeon.windows;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Char;
@@ -214,7 +214,7 @@ public class WndJournal extends WndTabbed {
 
 	@Override
 	public boolean onSignal(KeyEvent event) {
-		if (event.pressed && KeyBindings.getActionForKey( event ) == CDAction.JOURNAL) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == CDKeyBinding.JOURNAL) {
 			onBackPressed();
 			return true;
 		} else {

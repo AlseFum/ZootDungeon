@@ -22,7 +22,7 @@
 package com.zootdungeon.items.journal;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
@@ -59,7 +59,7 @@ public class Guidebook extends Item {
 		if (CDSettings.interfaceSize() == 0){
 			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_mobile"));
 		} else {
-			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_desktop", KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDAction.JOURNAL, ControllerHandler.isControllerConnected()))));
+			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_desktop", KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(CDKeyBinding.JOURNAL, ControllerHandler.isControllerConnected()))));
 		}
 		GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_INTRO);
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );

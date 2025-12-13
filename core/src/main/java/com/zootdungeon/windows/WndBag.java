@@ -22,7 +22,7 @@
 package com.zootdungeon.windows;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.actors.hero.Belongings;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
@@ -358,7 +358,7 @@ public class WndBag extends WndTabbed {
 
 	@Override
 	public boolean onSignal(KeyEvent event) {
-		if (event.pressed && KeyBindings.getActionForKey( event ) == CDAction.INVENTORY) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == CDKeyBinding.INVENTORY) {
 			onBackPressed();
 			return true;
 		} else {
@@ -428,15 +428,15 @@ public class WndBag extends WndTabbed {
 		public GameAction keyAction() {
 			switch (index){
 				case 1: default:
-					return CDAction.BAG_1;
+					return CDKeyBinding.BAG_1;
 				case 2:
-					return CDAction.BAG_2;
+					return CDKeyBinding.BAG_2;
 				case 3:
-					return CDAction.BAG_3;
+					return CDKeyBinding.BAG_3;
 				case 4:
-					return CDAction.BAG_4;
+					return CDKeyBinding.BAG_4;
 				case 5:
-					return CDAction.BAG_5;
+					return CDKeyBinding.BAG_5;
 			}
 		}
 

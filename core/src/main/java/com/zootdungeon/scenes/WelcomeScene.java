@@ -27,7 +27,7 @@ import java.util.Collections;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.CDSettings;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.GamesInProgress;

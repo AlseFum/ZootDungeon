@@ -22,8 +22,8 @@
 package com.zootdungeon.windows;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.ui.Chrome;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.ui.Button;
 import com.zootdungeon.ui.RenderedTextBlock;
@@ -53,7 +53,7 @@ public class WndTabbed extends Window {
 			@Override
 			public boolean onSignal(KeyEvent keyEvent) {
 
-				if (!keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == CDAction.CYCLE){
+				if (!keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == CDKeyBinding.CYCLE){
 					int idx = tabs.indexOf(selected);
 					idx++;
 					if (idx >= tabs.size()) idx = 0;

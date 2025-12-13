@@ -22,7 +22,7 @@
 package com.zootdungeon.scenes;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
@@ -247,10 +247,10 @@ public class CellSelector extends ScrollArea {
 	}
 
 	//used for movement
-	private GameAction heldAction1 = CDAction.NONE;
-	private GameAction heldAction2 = CDAction.NONE;
+	private GameAction heldAction1 = CDKeyBinding.NONE;
+	private GameAction heldAction2 = CDKeyBinding.NONE;
 	//not used for movement, but helpful if the player holds 3 keys briefly
-	private GameAction heldAction3 = CDAction.NONE;
+	private GameAction heldAction3 = CDKeyBinding.NONE;
 
 	private float heldDelay = 0f;
 	private boolean delayingForRelease = false;
@@ -278,35 +278,35 @@ public class CellSelector extends ScrollArea {
 			GameAction action = KeyBindings.getActionForKey( event );
 			if (!event.pressed){
 
-				if (action == CDAction.ZOOM_IN){
+				if (action == CDKeyBinding.ZOOM_IN){
 					zoom( camera.zoom+1 );
 					mouseZoom = camera.zoom;
 					return true;
 
-				} else if (action == CDAction.ZOOM_OUT){
+				} else if (action == CDKeyBinding.ZOOM_OUT){
 					zoom( camera.zoom-1 );
 					mouseZoom = camera.zoom;
 					return true;
 				}
 				
-				if (heldAction1 != CDAction.NONE && heldAction1 == action) {
-					heldAction1 = CDAction.NONE;
-					if (heldAction2 != CDAction.NONE){
+				if (heldAction1 != CDKeyBinding.NONE && heldAction1 == action) {
+					heldAction1 = CDKeyBinding.NONE;
+					if (heldAction2 != CDKeyBinding.NONE){
 						heldAction1 = heldAction2;
-						heldAction2 = CDAction.NONE;
-						if (heldAction3 != CDAction.NONE){
+						heldAction2 = CDKeyBinding.NONE;
+						if (heldAction3 != CDKeyBinding.NONE){
 							heldAction2 = heldAction3;
-							heldAction3 = CDAction.NONE;
+							heldAction3 = CDKeyBinding.NONE;
 						}
 					}
-				} else if (heldAction2 != CDAction.NONE && heldAction2 == action){
-					heldAction2 = CDAction.NONE;
-					if (heldAction3 != CDAction.NONE){
+				} else if (heldAction2 != CDKeyBinding.NONE && heldAction2 == action){
+					heldAction2 = CDKeyBinding.NONE;
+					if (heldAction3 != CDKeyBinding.NONE){
 						heldAction2 = heldAction3;
-						heldAction3 = CDAction.NONE;
+						heldAction3 = CDKeyBinding.NONE;
 					}
-				} else if (heldAction3 != CDAction.NONE && heldAction3 == action){
-					heldAction3 = CDAction.NONE;
+				} else if (heldAction3 != CDKeyBinding.NONE && heldAction3 == action){
+					heldAction3 = CDKeyBinding.NONE;
 				}
 
 				//move from the action immediately if it was being delayed
@@ -330,11 +330,11 @@ public class CellSelector extends ScrollArea {
 
 				Dungeon.hero.resting = false;
 				lastCellMoved = -1;
-				if (heldAction1 == CDAction.NONE){
+				if (heldAction1 == CDKeyBinding.NONE){
 					heldAction1 = action;
 					heldDelay = initialDelay();
 					delayingForRelease = false;
-				} else if (heldAction2 == CDAction.NONE){
+				} else if (heldAction2 == CDKeyBinding.NONE){
 					heldAction2 = action;
 				} else {
 					heldAction3 = action;
@@ -350,7 +350,7 @@ public class CellSelector extends ScrollArea {
 		}
 	};
 
-	private GameAction leftStickAction = CDAction.NONE;
+	private GameAction leftStickAction = CDKeyBinding.NONE;
 
 	@Override
 	public void update() {
@@ -362,16 +362,16 @@ public class CellSelector extends ScrollArea {
 		//skip logic here if there's no input, or if input is blocked
 		if ((newLeftStick == leftStickAction
 				&& leftStickAction == GameAction.NONE
-					&& heldAction1 == CDAction.NONE)
+					&& heldAction1 == CDKeyBinding.NONE)
 					|| GameScene.interfaceBlockingHero()){
 			return;
 		}
 
 		if (newLeftStick != leftStickAction){
-			if (leftStickAction == CDAction.NONE){
+			if (leftStickAction == CDKeyBinding.NONE){
 				heldDelay = initialDelay();
 				Dungeon.hero.resting = false;
-			} else if (newLeftStick == CDAction.NONE && heldDelay > 0f){
+			} else if (newLeftStick == CDKeyBinding.NONE && heldDelay > 0f){
 				heldDelay = 0f;
 				moveFromActions(leftStickAction);
 			}
@@ -382,7 +382,7 @@ public class CellSelector extends ScrollArea {
 			heldDelay -= Game.elapsed;
 		}
 
-		if ((heldAction1 != CDAction.NONE || leftStickAction != CDAction.NONE) && Dungeon.hero.ready){
+		if ((heldAction1 != CDKeyBinding.NONE || leftStickAction != CDKeyBinding.NONE) && Dungeon.hero.ready){
 			processKeyHold();
 		} else if (Dungeon.hero.ready) {
 			lastCellMoved = -1;
@@ -424,14 +424,14 @@ public class CellSelector extends ScrollArea {
 	}
 
 	private Point directionFromAction(GameAction action){
-		if (action == CDAction.N)  return new Point( 0, -1);
-		if (action == CDAction.NE) return new Point(+1, -1);
-		if (action == CDAction.E)  return new Point(+1,  0);
-		if (action == CDAction.SE) return new Point(+1, +1);
-		if (action == CDAction.S)  return new Point( 0, +1);
-		if (action == CDAction.SW) return new Point(-1, +1);;
-		if (action == CDAction.W)  return new Point(-1,  0);
-		if (action == CDAction.NW) return new Point(-1, -1);
+		if (action == CDKeyBinding.N)  return new Point( 0, -1);
+		if (action == CDKeyBinding.NE) return new Point(+1, -1);
+		if (action == CDKeyBinding.E)  return new Point(+1,  0);
+		if (action == CDKeyBinding.SE) return new Point(+1, +1);
+		if (action == CDKeyBinding.S)  return new Point( 0, +1);
+		if (action == CDKeyBinding.SW) return new Point(-1, +1);;
+		if (action == CDKeyBinding.W)  return new Point(-1,  0);
+		if (action == CDKeyBinding.NW) return new Point(-1, -1);
 		else                        return new Point();
 	}
 
@@ -439,26 +439,26 @@ public class CellSelector extends ScrollArea {
 	private GameAction actionFromStick(float x, float y){
 		if (x > 0.5f){
 			if (y < -0.5f){
-				return CDAction.NE;
+				return CDKeyBinding.NE;
 			} else if (y > 0.5f){
-				return CDAction.SE;
+				return CDKeyBinding.SE;
 			} else if (x > 0.8f){
-				return CDAction.E;
+				return CDKeyBinding.E;
 			}
 		} else if (x < -0.5f){
 			if (y < -0.5f){
-				return CDAction.NW;
+				return CDKeyBinding.NW;
 			} else if (y > 0.5f){
-				return CDAction.SW;
+				return CDKeyBinding.SW;
 			} else if (x < -0.8f){
-				return CDAction.W;
+				return CDKeyBinding.W;
 			}
 		} else if (y > 0.8f){
-			return CDAction.S;
+			return CDKeyBinding.S;
 		} else if (y < -0.8f){
-			return CDAction.N;
+			return CDKeyBinding.N;
 		}
-		return CDAction.NONE;
+		return CDKeyBinding.NONE;
 	}
 
 	public void processKeyHold() {
@@ -480,7 +480,7 @@ public class CellSelector extends ScrollArea {
 	}
 	
 	public void resetKeyHold(){
-		heldAction1 = heldAction2 = heldAction3 = CDAction.NONE;
+		heldAction1 = heldAction2 = heldAction3 = CDKeyBinding.NONE;
 	}
 	
 	public void cancel() {

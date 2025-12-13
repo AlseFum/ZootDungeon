@@ -3,7 +3,7 @@ package com.zootdungeon.windows;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.ui.OptionSlider;
 import com.zootdungeon.ui.RedButton;

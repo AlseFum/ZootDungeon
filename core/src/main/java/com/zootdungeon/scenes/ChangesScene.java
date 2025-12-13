@@ -22,7 +22,7 @@
 package com.zootdungeon.scenes;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.messages.Languages;
 import com.zootdungeon.messages.Messages;

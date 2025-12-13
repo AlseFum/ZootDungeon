@@ -21,7 +21,7 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.CDAction;
+import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.scenes.PixelScene;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -66,7 +66,7 @@ public class ScrollPane extends Component {
 			@Override
 			public boolean onSignal(KeyEvent keyEvent) {
 				GameAction action = KeyBindings.getActionForKey(keyEvent);
-				if (action == CDAction.ZOOM_IN){
+				if (action == CDKeyBinding.ZOOM_IN){
 					if (keyEvent.pressed){
 						keyScroll += 1;
 					} else {
@@ -74,7 +74,7 @@ public class ScrollPane extends Component {
 					}
 					keyScroll = GameMath.gate(-1f, keyScroll, +1f);
 					return true;
-				} else if (action == CDAction.ZOOM_OUT){
+				} else if (action == CDKeyBinding.ZOOM_OUT){
 					if (keyEvent.pressed){
 						keyScroll -= 1;
 					} else {

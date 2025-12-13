@@ -21,7 +21,7 @@
 
 package com.zootdungeon.windows;
 
-import com.zootdungeon.Chrome;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.Window;
