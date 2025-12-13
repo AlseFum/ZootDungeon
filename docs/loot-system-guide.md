@@ -117,7 +117,7 @@ public Item createLoot() {
 
 #### 2.1 `LootRegistry` 概览
 
-新文件：`com.zootdungeon.loot.LootRegistry`。
+新文件：`com.zootdungeon.items.LootRegistry`。
 
 职责：
 

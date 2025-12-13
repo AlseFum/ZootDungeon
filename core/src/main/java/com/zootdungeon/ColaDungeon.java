@@ -20,7 +20,6 @@
  */
 package com.zootdungeon;
 
-import com.zootdungeon.mod.Index;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.scenes.TitleScene;
@@ -44,8 +43,6 @@ public class ColaDungeon extends Game {
 
     public ColaDungeon(PlatformSupport platform) {
         super(sceneClass == null ? WelcomeScene.class : sceneClass, platform);
-		Index.init();
-		Index.setup();
     }
 
     @Override

@@ -12,8 +12,8 @@ import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndOptions;
-import com.zootdungeon.world.LevelGraph;
-import com.zootdungeon.world.LevelGraph.LevelNode;
+import com.zootdungeon.levels.LevelGraph;
+import com.zootdungeon.levels.LevelGraph.LevelNode;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 

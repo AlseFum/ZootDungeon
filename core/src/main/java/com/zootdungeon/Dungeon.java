@@ -83,8 +83,8 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.SparseArray;
-import com.zootdungeon.world.LevelGraph;
-import com.zootdungeon.world.LevelGraph.LevelNode;
+import com.zootdungeon.levels.LevelGraph;
+import com.zootdungeon.levels.LevelGraph.LevelNode;
 
 public class Dungeon {
 

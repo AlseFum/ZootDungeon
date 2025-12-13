@@ -1,9 +1,8 @@
-package com.zootdungeon.loot;
+package com.zootdungeon.items;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
-import com.zootdungeon.items.Item;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;

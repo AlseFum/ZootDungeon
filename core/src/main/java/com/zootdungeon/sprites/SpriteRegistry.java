@@ -9,7 +9,7 @@ import com.zootdungeon.tiles.DungeonTileSheet;
 import com.zootdungeon.utils.EventBus;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
-import com.watabou.noosa.TextureFilm;
+import com.watabou.gltextures.Atlas;
 import com.watabou.utils.RectF;
 
 import java.lang.reflect.Field;
@@ -29,6 +29,7 @@ import java.util.Objects;
  * - Any dynamic fetch MUST provide a fallback static id (items) or texture (mobs)
  * - If key not found, fallback is used
  */
+// 注意，似乎应当直接使用watabou的atlas
 public final class SpriteRegistry {
 
     private SpriteRegistry() {}
@@ -97,12 +98,13 @@ public final class SpriteRegistry {
         int size;
         int cols;
 
-        TextureFilm film;
+        Atlas atlas;      // Atlas-based implementation
 
         public ItemSegment(String texture, int id_start, int size) {
             this.path = texture;
             this.cache = TextureCache.get(texture);
-            this.film = new TextureFilm(cache, size, size);
+            this.atlas = new Atlas(cache);                  // Atlas implementation
+            this.atlas.grid(size, size);                    // Setup grid
             this.id_start = id_start;
             this.id_size = 0;
             this.size = size;
@@ -111,27 +113,38 @@ public final class SpriteRegistry {
 
         public void load() {
             this.cache = TextureCache.get(path);
-            this.film = new TextureFilm(cache, this.size, this.size);
+            this.atlas = new Atlas(cache);                            // Atlas implementation
+            this.atlas.grid(this.size, this.size);                   // Setup grid
         }
 
         private ItemSegment settle(int id) {
             int x = id % cols;
             int y = id / cols;
-            film.add(id, x * size, y * size, (x + 1) * size, (y + 1) * size);
+            // Add named frame to Atlas
+            atlas.add(id, x * size, y * size, (x + 1) * size, (y + 1) * size);
             return this;
         }
 
         public ImageMapping get(int id) {
             int where = id >= id_start ? id - id_start : id;
-            if (film.get(id) == null) {
+            
+            // Get from Atlas
+            RectF rect = atlas.get(where);
+            if (rect == null) {
                 settle(where);
+                rect = atlas.get(where);
             }
-            return new ImageMapping(cache, film.get(where), film.height(where), size);
+            
+            return new ImageMapping(cache, rect, atlas.height(rect), size);
         }
 
         public ItemSegment label(String label) {
             ITEM_TEXTURE_ID_MAP.put(label, id_start + id_size);
             settle(id_size);
+            // Also add the label directly to Atlas for named access
+            int x = id_size % cols;
+            int y = id_size / cols;
+            atlas.add(label, x * size, y * size, (x + 1) * size, (y + 1) * size);
             id_size++;
             return this;
         }
@@ -146,6 +159,13 @@ public final class SpriteRegistry {
         }
 
         public ImageMapping get(String label) {
+            // Direct Atlas lookup by name
+            RectF rect = atlas.get(label);
+            if (rect != null) {
+                return new ImageMapping(cache, rect, atlas.height(rect), size);
+            }
+            
+            // Fallback to ID-based lookup
             Integer id = ITEM_TEXTURE_ID_MAP.get(label);
             return id == null ? null : get(id);
         }
@@ -290,6 +310,78 @@ public final class SpriteRegistry {
      */
     public static void initDynamicTextures() {
         DynamicSpriteExample.createGoldenApple("golden_apple");
+    }
+
+    /**
+     * Mob segment for Atlas-based mob sprite management
+     */
+    public static class MobSegment {
+        private String key;
+        private SmartTexture texture;
+        private Atlas atlas;
+        
+        public MobSegment(String key, SmartTexture texture) {
+            this.key = key;
+            this.texture = texture;
+            this.atlas = new Atlas(texture);
+        }
+        
+        /**
+         * Add a named sprite region to this mob atlas
+         */
+        public MobSegment addSprite(String name, int x, int y, int width, int height) {
+            atlas.add(name, x, y, x + width, y + height);
+            return this;
+        }
+        
+        /**
+         * Add a sprite using RectF coordinates
+         */
+        public MobSegment addSprite(String name, RectF rect) {
+            atlas.add(name, rect);
+            return this;
+        }
+        
+        /**
+         * Setup a regular grid for mob animations
+         */
+        public MobSegment setupGrid(int frameWidth, int frameHeight) {
+            atlas.grid(frameWidth, frameHeight);
+            return this;
+        }
+        
+        /**
+         * Add animation frames with names
+         */
+        public MobSegment addAnimation(String baseName, int startFrame, int frameCount) {
+            for (int i = 0; i < frameCount; i++) {
+                String frameName = baseName + "_" + i;
+                atlas.add(frameName, atlas.get(startFrame + i));
+            }
+            return this;
+        }
+        
+        /**
+         * Get sprite mapping by name
+         */
+        public ImageMapping getSprite(String name) {
+            RectF rect = atlas.get(name);
+            if (rect != null) {
+                return new ImageMapping(texture, rect, atlas.height(rect), 16);
+            }
+            return null;
+        }
+        
+        /**
+         * Get sprite mapping by frame index
+         */
+        public ImageMapping getSprite(int frameIndex) {
+            RectF rect = atlas.get(frameIndex);
+            if (rect != null) {
+                return new ImageMapping(texture, rect, atlas.height(rect), 16);
+            }
+            return null;
+        }
     }
 
     // ---------------------------
@@ -503,6 +595,7 @@ public final class SpriteRegistry {
         }
     }
 
+    private static final HashMap<String, MobSegment> mobSegments = new HashMap<>();
     private static final Map<String, MobDef> mobDefs = new HashMap<>();
 
     /**
@@ -518,6 +611,41 @@ public final class SpriteRegistry {
      * Resolves mob texture handle by key, or returns fallbackTexture if key missing.
      * This only returns the texture object; framing remains the responsibility of caller.
      */
+    /**
+     * Register a mob texture with Atlas support for flexible sprite layouts
+     */
+    public static MobSegment registerMobAtlas(String key, Object texture) {
+        SmartTexture smartTex = TextureCache.get(texture);
+        MobSegment segment = new MobSegment(key, smartTex);
+        mobSegments.put(key, segment);
+        return segment;
+    }
+    
+    /**
+     * Get mob segment for advanced sprite management
+     */
+    public static MobSegment getMobSegment(String key) {
+        return mobSegments.get(key);
+    }
+
+    /**
+     * Get mob sprite mapping with Atlas support
+     */
+    public static ImageMapping getMobSprite(String key, String spriteName, Object fallbackTexture) {
+        MobSegment segment = mobSegments.get(key);
+        if (segment != null) {
+            ImageMapping mapping = segment.getSprite(spriteName);
+            if (mapping != null) {
+                return mapping;
+            }
+        }
+        
+        // Fallback to legacy texture
+        Object texture = mobTextureOr(fallbackTexture, key);
+        SmartTexture smartTex = TextureCache.get(texture);
+        return new ImageMapping(smartTex, new RectF(0, 0, 1, 1), smartTex.height, 16);
+    }
+
     public static Object mobTextureOr(Object fallbackTexture, String key){
         if (key != null){
             MobDef def = mobDefs.get(key);
@@ -529,18 +657,20 @@ public final class SpriteRegistry {
     }
 
     /**
+     * @deprecated Use getMobSprite() with Atlas-based system instead
      * Returns a TextureFilm for a mob using a dynamic key if present; otherwise builds from fallback texture+size.
      */
-    public static TextureFilm mobFilm(String key, Object fallbackTexture, int fallbackFrameW, int fallbackFrameH){
+    @Deprecated
+    public static com.watabou.noosa.TextureFilm mobFilm(String key, Object fallbackTexture, int fallbackFrameW, int fallbackFrameH){
         if (key != null){
             MobDef def = mobDefs.get(key);
             if (def != null && def.texture != null){
                 SmartTexture tx = TextureCache.get(def.texture);
-                return new TextureFilm(tx, def.frameWidth, def.frameHeight);
+                return new com.watabou.noosa.TextureFilm(tx, def.frameWidth, def.frameHeight);
             }
         }
         SmartTexture tx = TextureCache.get(fallbackTexture);
-        return new TextureFilm(tx, fallbackFrameW, fallbackFrameH);
+        return new com.watabou.noosa.TextureFilm(tx, fallbackFrameW, fallbackFrameH);
     }
 
     /**
@@ -696,7 +826,7 @@ public final class SpriteRegistry {
      * This is primarily intended for content packs and debugging, so that a tileset
      * can override the default Pixel Dungeon tile layout without touching core logic.
      */
-    public static void applyTilesetToFilm(TextureFilm film, String tilesetKey, int tileSize) {
+    public static void applyTilesetToFilm(com.watabou.noosa.TextureFilm film, String tilesetKey, int tileSize) {
         if (tilesetKey == null || film == null) return;
 
         Tileset tilesetDef = tilesets.get(tilesetKey);

@@ -1,6 +1,4 @@
-package com.zootdungeon.world;
-
-import com.zootdungeon.levels.Level;
+package com.zootdungeon.levels;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

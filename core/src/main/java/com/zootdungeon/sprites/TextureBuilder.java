@@ -33,10 +33,12 @@ import com.watabou.gltextures.TextureCache;
  * Provides methods for drawing shapes, lines, and pixels to a custom texture.
  */
 public class TextureBuilder {
-    private Pixmap pixmap;
-    private int width;
-    private int height;
+    protected Pixmap pixmap;
+    protected int width;
+    protected int height;
     private static int nextId = 999000; // Starting ID for dynamically created textures
+    private SmartTexture baseTexture; // Base texture for modifications
+    private String baseName; // Name of the base texture
     
     /**
      * Create a new TextureBuilder with specified dimensions
@@ -47,6 +49,39 @@ public class TextureBuilder {
         this.pixmap = new Pixmap(width, height, Format.RGBA8888);
         this.pixmap.setColor(0, 0, 0, 0); // Transparent by default
         this.pixmap.fill();
+        this.baseTexture = null;
+        this.baseName = null;
+    }
+    
+    /**
+     * Create a TextureBuilder based on an existing registered texture
+     * @param baseName The name of the registered texture to use as base
+     */
+    public TextureBuilder(String baseName) {
+        SpriteRegistry.ImageMapping baseMapping = SpriteRegistry.getItemImageMapping(baseName);
+        if (baseMapping == null) {
+            throw new IllegalArgumentException("Base texture not found: " + baseName);
+        }
+        
+        this.baseTexture = baseMapping.texture;
+        this.baseName = baseName;
+        this.width = baseMapping.size;
+        this.height = baseMapping.size;
+        
+        // Create pixmap from base texture region (simplified implementation)
+        this.pixmap = new Pixmap(width, height, Format.RGBA8888);
+        this.pixmap.setColor(0.8f, 0.8f, 0.8f, 1.0f); // Light gray base
+        this.pixmap.fill();
+        
+        // Add some pattern to distinguish from empty texture
+        this.pixmap.setColor(0.6f, 0.6f, 0.6f, 1.0f); // Darker gray
+        for (int i = 0; i < width; i += 2) {
+            for (int j = 0; j < height; j += 2) {
+                if ((i + j) % 4 == 0) {
+                    this.pixmap.drawPixel(i, j);
+                }
+            }
+        }
     }
     
     /**
@@ -215,5 +250,81 @@ public class TextureBuilder {
         builder.drawLine(3, 10, 12, 10);
         
         return builder.buildAndRegister("bfg");
+    }
+    
+    /**
+     * Copy another texture region onto this builder at specified position
+     */
+    public TextureBuilder copyFrom(String sourceName, int destX, int destY) {
+        SpriteRegistry.ImageMapping source = SpriteRegistry.getItemImageMapping(sourceName);
+        if (source != null) {
+            // In a full implementation, this would copy the actual pixel data
+            // For now, we'll draw a colored rectangle as placeholder
+            setColor(0xFF00FF00); // Green placeholder
+            fillRect(destX, destY, source.size, source.size);
+        }
+        return this;
+    }
+    
+    /**
+     * Apply a color tint to the entire texture
+     */
+    public TextureBuilder tint(int tintColor) {
+        // Apply a color overlay for tinting effect
+        Pixmap.Blending oldBlending = pixmap.getBlending();
+        pixmap.setBlending(Pixmap.Blending.SourceOver);
+        
+        float a = ((tintColor >>> 24) & 0xFF) / 255f * 0.3f; // Reduced alpha for tinting
+        float r = ((tintColor >>> 16) & 0xFF) / 255f;
+        float g = ((tintColor >>> 8) & 0xFF) / 255f;
+        float b = (tintColor & 0xFF) / 255f;
+        
+        pixmap.setColor(r, g, b, a);
+        pixmap.fillRectangle(0, 0, width, height);
+        pixmap.setBlending(oldBlending);
+        
+        return this;
+    }
+    
+    /**
+     * Get the base texture this builder was created from (if any)
+     */
+    public SmartTexture getBaseTexture() {
+        return baseTexture;
+    }
+    
+    /**
+     * Get the name of the base texture (if any)
+     */
+    public String getBaseName() {
+        return baseName;
+    }
+    
+    /**
+     * Check if this builder was created from an existing texture
+     */
+    public boolean hasBaseTexture() {
+        return baseTexture != null;
+    }
+    
+    /**
+     * Create a modified version of an existing registered texture
+     */
+    public static ImageMapping createVariant(String baseName, String variantName) {
+        TextureBuilder builder = new TextureBuilder(baseName);
+        
+        // Apply some modifications as example
+        builder.tint(0x80FF0000); // Red tint
+        
+        return builder.buildAndRegister(variantName);
+    }
+    
+    /**
+     * Create a recolored version of an existing texture
+     */
+    public static ImageMapping createRecolored(String baseName, String newName, int newColor) {
+        TextureBuilder builder = new TextureBuilder(baseName);
+        builder.tint(newColor);
+        return builder.buildAndRegister(newName);
     }
 } 

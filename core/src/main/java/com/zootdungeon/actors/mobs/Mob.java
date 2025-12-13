@@ -59,7 +59,7 @@ import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.enchantments.Lucky;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;
-import com.zootdungeon.loot.LootRegistry;
+import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Notes;
 import com.zootdungeon.levels.Level;

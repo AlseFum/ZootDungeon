@@ -27,7 +27,7 @@ import com.zootdungeon.actors.hero.abilities.Ratmogrify;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfStrength;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
-import com.zootdungeon.loot.LootRegistry;
+import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.sprites.RatSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
