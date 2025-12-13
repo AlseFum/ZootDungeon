@@ -22,20 +22,18 @@ import java.util.Objects;
 /**
  * Unified sprite registry:
  * - Static (compile-time) items by ID via ItemSpriteSheet
- * - Dynamic (runtime) items by key via ItemSpriteManager
  * - Dynamic mobs by key with explicit fallback
  *
  * Rules:
  * - Any dynamic fetch MUST provide a fallback static id (items) or texture (mobs)
  * - If key not found, fallback is used
  */
-// 注意，似乎应当直接使用watabou的atlas
 public final class SpriteRegistry {
 
     private SpriteRegistry() {}
 
     // ---------------------------
-    // Item dynamic atlas (moved from ItemSpriteManager)
+    // Item dynamic atlas
     // ---------------------------
 
     // dynamic item segments and ids
@@ -531,9 +529,6 @@ public final class SpriteRegistry {
                 "cola/tiles_chel.png",
                 "cola/tiles_chel.json"
         );
-
-        // Keep legacy event name for compatibility with existing listeners
-        EventBus.fire("ItemSpriteManager:init");
     }
 
     // ---------------------------

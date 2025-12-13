@@ -21,7 +21,6 @@
 
 package com.zootdungeon.sprites;
 
-import com.zootdungeon.sprites.ItemSpriteManager.ImageMapping;
 import com.watabou.utils.Random;
 import com.watabou.noosa.Image;
 
@@ -35,7 +34,7 @@ public class DynamicSpriteExample {
      * 
      * @return An ImageMapping that can be used for item sprites
      */
-    public static ImageMapping createPotionSprite(String name) {
+    public static SpriteRegistry.ImageMapping createPotionSprite(String name) {
         int size = 16; // Standard item size
         TextureBuilder builder = new TextureBuilder(size, size);
         
@@ -68,7 +67,7 @@ public class DynamicSpriteExample {
      * 
      * @return An ImageMapping that can be used for item sprites
      */
-    public static ImageMapping createGemSprite(String name) {
+    public static SpriteRegistry.ImageMapping createGemSprite(String name) {
         int size = 16;
         TextureBuilder builder = new TextureBuilder(size, size);
         
@@ -97,7 +96,7 @@ public class DynamicSpriteExample {
      * 
      * @return An ImageMapping for the golden apple
      */
-    public static ImageMapping createGoldenApple(String name) {
+    public static SpriteRegistry.ImageMapping createGoldenApple(String name) {
         int size = 16;
         TextureBuilder builder = new TextureBuilder(size, size);
         
@@ -141,7 +140,7 @@ public class DynamicSpriteExample {
      * 
      * @return An ImageMapping that can be used for item sprites
      */
-    public static ImageMapping createWeaponSprite(String name) {
+    public static SpriteRegistry.ImageMapping createWeaponSprite(String name) {
         int size = 16;
         TextureBuilder builder = new TextureBuilder(size, size);
         
@@ -171,7 +170,7 @@ public class DynamicSpriteExample {
      * This can be used directly in the UI for display
      */
     public static Image createImageFromMapping(String mappingName) {
-        ImageMapping mapping = ItemSpriteManager.getImageMapping(mappingName);
+        SpriteRegistry.ImageMapping mapping = SpriteRegistry.getItemImageMapping(mappingName);
         
         if (mapping != null) {
             Image img = new Image(mapping.texture);

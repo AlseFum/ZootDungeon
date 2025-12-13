@@ -1,10 +1,10 @@
 package com.zootdungeon.items.weapon.ammo;
 
-import com.zootdungeon.sprites.ItemSpriteManager;
+import com.zootdungeon.sprites.SpriteRegistry;
 
 public class ExplosiveAmmo extends Ammo {
     {
-        image = ItemSpriteManager.ByName("explosive_ammo");
+        image = SpriteRegistry.itemByName("explosive_ammo");
     }
     public ExplosiveAmmo() {
         super();

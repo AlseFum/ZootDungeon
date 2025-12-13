@@ -17,7 +17,7 @@ import com.zootdungeon.items.weapon.ammo.CartridgeEffect;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.ItemSpriteManager;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
@@ -36,7 +36,7 @@ public class Gun extends Weapon {
     protected float reloadTime = 1f;
     public int tier=1;
     {
-        image = ItemSpriteManager.ByName("gun");
+        image = SpriteRegistry.itemByName("gun");
         cartridge = new Cartridge(maxAmmo, car_effect);
         usesTargeting = true;
         defaultAction = AC_FIRE;

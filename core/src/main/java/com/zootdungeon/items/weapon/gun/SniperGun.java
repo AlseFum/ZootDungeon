@@ -9,8 +9,8 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.ItemSpriteManager;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.ActionIndicator;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.ui.HeroIcon;
@@ -255,7 +255,10 @@ public class SniperGun extends Gun {
 
         @Override
         public Visual primaryVisual() {
-            ItemSpriteManager.ImageMapping mapping = ItemSpriteManager.getImageMapping("gunfire");
+            SpriteRegistry.ImageMapping mapping = SpriteRegistry.getItemImageMapping("gunfire");
+            if (mapping == null) {
+                return new HeroIcon(this);
+            }
             Image icon = new Image(mapping.texture);
             icon.frame(mapping.rect);
             return icon;

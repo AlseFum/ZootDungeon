@@ -25,7 +25,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.utils.RectF;
-import com.zootdungeon.sprites.ItemSpriteManager.ImageMapping;
 import com.watabou.gltextures.TextureCache;
 
 /**
@@ -165,43 +164,55 @@ public class TextureBuilder {
     /**
      * Build the texture and return an ImageMapping with a unique ID
      */
-    public ImageMapping build() {
+    public SpriteRegistry.ImageMapping build() {
         SmartTexture texture = new SmartTexture(pixmap);
         RectF rect = new RectF(0, 0, 1, 1); // Full texture
-        return new ImageMapping(texture, rect, height);
+        return new SpriteRegistry.ImageMapping(texture, rect, height, Math.max(width, height));
     }
     
     /**
-     * Build and register the texture with ItemSpriteManager
+     * Build and register the texture with SpriteRegistry, returning a mapping by name.
+     *
+     * Note: SpriteRegistry's item system is grid-based and assumes square frames.
+     * If this builder is non-square, the pixmap is padded into a square texture.
      * @param name Name to register the texture with
      * @return The ImageMapping for this texture
      */
-    public ImageMapping buildAndRegister(String name) {
-        // Generate a unique ID for this texture
+    public SpriteRegistry.ImageMapping buildAndRegister(String name) {
+        // Unique cache key for this texture
         int id = nextId++;
-        
-        // Create a unique key for this texture
         String key = "dynamic_texture_" + id;
-        
-        // Store the texture in TextureCache
-        SmartTexture texture = TextureCache.create(key, width, height);
-        
-        // Copy our Pixmap data to the texture
-        texture.bitmap(pixmap);
-        
-        // Create a mapping for the full texture
-        RectF rect = new RectF(0, 0, 1, 1);
-        
-        // Register with ItemSpriteManager
-        ItemSpriteManager.texture_id_map.put(name, id);
-        
-        return new ImageMapping(texture, rect, height);
+
+        // SpriteRegistry item segments assume a square grid; pad if needed.
+        int size = Math.max(width, height);
+        Pixmap toUpload = pixmap;
+        if (width != height) {
+            Pixmap padded = new Pixmap(size, size, Format.RGBA8888);
+            padded.setColor(0, 0, 0, 0);
+            padded.fill();
+            padded.drawPixmap(pixmap, 0, 0);
+            toUpload = padded;
+        }
+
+        // Store in TextureCache (so SpriteRegistry can load it by key)
+        SmartTexture texture = TextureCache.create(key, size, size);
+        texture.bitmap(toUpload);
+
+        // Register as an item texture segment with one square frame, then label it.
+        SpriteRegistry.ItemSegment seg = SpriteRegistry.registerItemTexture(key, size).label(name);
+
+        // Clean up temporary padded pixmap if we allocated it.
+        if (toUpload != pixmap) {
+            toUpload.dispose();
+        }
+
+        return seg.get(name);
     }
     
     /**
      * Create a texture at the specified size with a simple checkerboard pattern for testing
      */
-    public static ImageMapping createCheckerboard(String name, int size, int squareSize, int color1, int color2) {
+    public static SpriteRegistry.ImageMapping createCheckerboard(String name, int size, int squareSize, int color1, int color2) {
         TextureBuilder builder = new TextureBuilder(size, size);
         
         for (int x = 0; x < size; x += squareSize) {
@@ -219,7 +230,7 @@ public class TextureBuilder {
     /**
      * Creates a BFG texture with a futuristic design
      */
-    public static ImageMapping createBFGTexture() {
+    public static SpriteRegistry.ImageMapping createBFGTexture() {
         TextureBuilder builder = new TextureBuilder(16, 16);
         
         // Main body of the gun (dark gray)
@@ -310,7 +321,7 @@ public class TextureBuilder {
     /**
      * Create a modified version of an existing registered texture
      */
-    public static ImageMapping createVariant(String baseName, String variantName) {
+    public static SpriteRegistry.ImageMapping createVariant(String baseName, String variantName) {
         TextureBuilder builder = new TextureBuilder(baseName);
         
         // Apply some modifications as example
@@ -322,7 +333,7 @@ public class TextureBuilder {
     /**
      * Create a recolored version of an existing texture
      */
-    public static ImageMapping createRecolored(String baseName, String newName, int newColor) {
+    public static SpriteRegistry.ImageMapping createRecolored(String baseName, String newName, int newColor) {
         TextureBuilder builder = new TextureBuilder(baseName);
         builder.tint(newColor);
         return builder.buildAndRegister(newName);

@@ -54,8 +54,8 @@ public class Rat extends Mob {
 
 		maxLvl = 5;
 
-		// 使用 LootRegistry 的 Rat 掉落表，小概率掉基础资源
-		lootTableId = "mob:rat:basic_loot";
+		// // 使用 LootRegistry 的 Rat 掉落表，小概率掉基础资源
+		// lootTableId = "mob:rat:basic_loot";
 		lootChance = 1f;
 	}
 

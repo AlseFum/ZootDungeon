@@ -6,12 +6,15 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.gun.Gun;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.ItemSpriteManager;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndBag;
 
 public class Ammo extends Item {
     static {
-        ItemSpriteManager.registerTexture("cola/ammo.png", 32).span(3).label("ammo").label("explosive_ammo");
+        SpriteRegistry.registerItemTexture("cola/ammo.png", 32)
+                .span(3)
+                .label("ammo")
+                .label("explosive_ammo");
     }
 
     public static final String AC_RELOAD = "重装子弹";
@@ -24,7 +27,7 @@ public class Ammo extends Item {
     //if is full_reload, the amount will be set to gun.max_amount
     public Cartridge cartridge;
     {
-        image = ItemSpriteManager.ByName("ammo");
+        image = SpriteRegistry.itemByName("ammo");
         stackable = true;
         defaultAction = AC_RELOAD;
     }
