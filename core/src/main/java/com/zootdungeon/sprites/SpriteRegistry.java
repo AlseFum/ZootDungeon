@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,6 +34,114 @@ public final class SpriteRegistry {
     private SpriteRegistry() {}
 
     // ---------------------------
+    // Overlay stack (material priority)
+    // ---------------------------
+
+    /**
+     * Overlays are keyed packs of material-id -> texture-handle mappings.
+     * When resolving a material, the last overlay in the stack has highest priority.
+     *
+     * Overlay only manages *file/texture priority*, not layout/frames.
+     */
+    private static final ArrayList<String> overlayStack = new ArrayList<>();
+    private static final Map<String, Map<String, Object>> overlays = new HashMap<>();
+
+    /**
+     * Adds an overlay to the stack, or moves it to the top (highest priority).
+     */
+    public static void useOverlay(String overlayKey) {
+        if (overlayKey == null) return;
+        overlayStack.remove(overlayKey);
+        overlayStack.add(overlayKey);
+    }
+
+    /**
+     * Returns the current overlay stack (bottom -> top). Intended for debugging.
+     */
+    public static List<String> overlays() {
+        return java.util.Collections.unmodifiableList(overlayStack);
+    }
+
+    /**
+     * Sets a mapping inside an overlay: materialId -> textureHandle (usually a String path).
+     * This is the core API that a future TexturePackManager/JSON loader should call into.
+     */
+    public static void overlayMap(String overlayKey, String materialId, Object textureHandle) {
+        if (overlayKey == null || materialId == null || textureHandle == null) return;
+        overlays.computeIfAbsent(overlayKey, k -> new HashMap<>()).put(materialId, textureHandle);
+    }
+
+    /**
+     * Resolves a material id to the highest-priority texture handle from overlays, or returns fallback.
+     */
+    public static Object resolveMaterial(String materialId, Object fallbackTextureHandle) {
+        if (materialId != null) {
+            for (int i = overlayStack.size() - 1; i >= 0; i--) {
+                Map<String, Object> map = overlays.get(overlayStack.get(i));
+                if (map == null) continue;
+                Object handle = map.get(materialId);
+                if (handle != null) return handle;
+            }
+        }
+        return fallbackTextureHandle;
+    }
+
+    // ---------------------------
+    // Segment base (Atlas-backed)
+    // ---------------------------
+
+    /**
+     * Segment is a unit of sprite sheet management. Every segment owns an Atlas
+     * and lazily loads its SmartTexture via TextureCache, with overlay-based
+     * material resolution.
+     *
+     * Subclasses define frame/layout behavior (grid, named regions, etc).
+     */
+    public abstract static class Segment<S extends Segment<S>> {
+        protected final Object baseTextureHandle;
+        protected Object resolvedTextureHandle;
+        protected String materialId;
+
+        protected SmartTexture cache;
+        protected Atlas atlas;
+
+        protected Segment(Object baseTextureHandle) {
+            this.baseTextureHandle = baseTextureHandle;
+            // default material id is the base handle string form; callers can override via as()
+            this.materialId = baseTextureHandle == null ? null : String.valueOf(baseTextureHandle);
+        }
+
+        protected abstract S self();
+
+        /**
+         * Assigns a stable material id for overlay resolution.
+         * Example: registerItemTexture("sprites/items_mod.png").as("items.main")
+         */
+        public S as(String materialId) {
+            this.materialId = materialId;
+            return self();
+        }
+
+        /**
+         * Ensures the underlying texture is loaded and up-to-date with the current overlay stack.
+         */
+        protected final void ensureLoaded() {
+            Object handle = SpriteRegistry.resolveMaterial(materialId, baseTextureHandle);
+            if (cache == null || cache.bitmap == null || !Objects.equals(resolvedTextureHandle, handle)) {
+                cache = TextureCache.get(handle);
+                atlas = new Atlas(cache);
+                resolvedTextureHandle = handle;
+                afterLoad();
+            }
+        }
+
+        /**
+         * Hook for subclasses to apply atlas grid/layout after texture load/reload.
+         */
+        protected void afterLoad() {}
+    }
+
+    // ---------------------------
     // Item dynamic atlas
     // ---------------------------
 
@@ -44,9 +153,7 @@ public final class SpriteRegistry {
     public static ItemSegment getItemSegment(int id) {
         for (ItemSegment s : itemSegments) {
             if (s.id_start <= id && id <= s.id_start + s.id_size) {
-                if (s.cache.bitmap == null) {
-                    s.load();
-                }
+                s.ensureLoaded();
                 return s;
             }
         }
@@ -88,34 +195,46 @@ public final class SpriteRegistry {
         return s != null ? s.get(label) : null;
     }
 
-    public static class ItemSegment {
-        SmartTexture cache;
-        String path;
+    public static class ItemSegment extends Segment<ItemSegment> {
         int id_start;
         int id_size;
         int size;
         int cols;
 
-        Atlas atlas;      // Atlas-based implementation
+        // localIndex -> optional label for rebuilding named frames after reload
+        private final ArrayList<String> labels = new ArrayList<>();
 
         public ItemSegment(String texture, int id_start, int size) {
-            this.path = texture;
-            this.cache = TextureCache.get(texture);
-            this.atlas = new Atlas(cache);                  // Atlas implementation
-            this.atlas.grid(size, size);                    // Setup grid
+            super(texture);
             this.id_start = id_start;
             this.id_size = 0;
             this.size = size;
-            this.cols = (int) (cache.width / size);
+            ensureLoaded();
         }
 
-        public void load() {
-            this.cache = TextureCache.get(path);
-            this.atlas = new Atlas(cache);                            // Atlas implementation
-            this.atlas.grid(this.size, this.size);                   // Setup grid
+        @Override
+        protected ItemSegment self() {
+            return this;
+        }
+
+        @Override
+        protected void afterLoad() {
+            // Setup grid
+            this.atlas.grid(this.size, this.size);
+            this.cols = (int) (cache.width / size);
+
+            // Rebuild label mappings (overlay switch may recreate the Atlas)
+            for (int i = 0; i < labels.size(); i++) {
+                String label = labels.get(i);
+                if (label == null) continue;
+                int x = i % cols;
+                int y = i / cols;
+                atlas.add(label, x * size, y * size, (x + 1) * size, (y + 1) * size);
+            }
         }
 
         private ItemSegment settle(int id) {
+            ensureLoaded();
             int x = id % cols;
             int y = id / cols;
             // Add named frame to Atlas
@@ -124,6 +243,7 @@ public final class SpriteRegistry {
         }
 
         public ImageMapping get(int id) {
+            ensureLoaded();
             int where = id >= id_start ? id - id_start : id;
             
             // Get from Atlas
@@ -137,12 +257,18 @@ public final class SpriteRegistry {
         }
 
         public ItemSegment label(String label) {
+            ensureLoaded();
             ITEM_TEXTURE_ID_MAP.put(label, id_start + id_size);
             settle(id_size);
             // Also add the label directly to Atlas for named access
             int x = id_size % cols;
             int y = id_size / cols;
             atlas.add(label, x * size, y * size, (x + 1) * size, (y + 1) * size);
+
+            // persist label mapping so it survives overlay-driven reload
+            while (labels.size() <= id_size) labels.add(null);
+            labels.set(id_size, label);
+
             id_size++;
             return this;
         }
@@ -152,11 +278,14 @@ public final class SpriteRegistry {
          * Use with care; intended for development utilities.
          */
         public ItemSegment span(int size) {
+            // keep label list aligned with reserved indices
+            for (int i = 0; i < size; i++) labels.add(null);
             this.id_size += size;
             return this;
         }
 
         public ImageMapping get(String label) {
+            ensureLoaded();
             // Direct Atlas lookup by name
             RectF rect = atlas.get(label);
             if (rect != null) {
@@ -313,72 +442,224 @@ public final class SpriteRegistry {
     /**
      * Mob segment for Atlas-based mob sprite management
      */
-    public static class MobSegment {
-        private String key;
-        private SmartTexture texture;
-        private Atlas atlas;
-        
-        public MobSegment(String key, SmartTexture texture) {
-            this.key = key;
-            this.texture = texture;
-            this.atlas = new Atlas(texture);
+    public static class MobSegment extends Segment<MobSegment> {
+        private final String key;
+
+        private Integer gridW;
+        private Integer gridH;
+
+        private static final class SpriteDef {
+            final String name;
+            final Integer x, y, w, h; // pixel definition
+            final RectF rect;         // uv definition
+
+            SpriteDef(String name, int x, int y, int w, int h) {
+                this.name = name;
+                this.x = x; this.y = y; this.w = w; this.h = h;
+                this.rect = null;
+            }
+
+            SpriteDef(String name, RectF rect) {
+                this.name = name;
+                this.x = null; this.y = null; this.w = null; this.h = null;
+                this.rect = new RectF(rect);
+            }
         }
-        
+
+        private static final class AnimDef {
+            final String baseName;
+            final int startFrame;
+            final int frameCount;
+
+            AnimDef(String baseName, int startFrame, int frameCount) {
+                this.baseName = baseName;
+                this.startFrame = startFrame;
+                this.frameCount = frameCount;
+            }
+        }
+
+        private final ArrayList<SpriteDef> spriteDefs = new ArrayList<>();
+        private final ArrayList<AnimDef> animDefs = new ArrayList<>();
+
+        public MobSegment(String key, Object baseTextureHandle) {
+            super(baseTextureHandle);
+            this.key = key;
+            ensureLoaded();
+        }
+
+        @Override
+        protected MobSegment self() {
+            return this;
+        }
+
+        @Override
+        protected void afterLoad() {
+            // restore grid (if any) and named regions (overlay switch recreates Atlas)
+            if (gridW != null && gridH != null) {
+                atlas.grid(gridW, gridH);
+            }
+
+            for (SpriteDef d : spriteDefs) {
+                if (d.rect != null) {
+                    atlas.add(d.name, new RectF(d.rect));
+                } else {
+                    atlas.add(d.name, d.x, d.y, d.x + d.w, d.y + d.h);
+                }
+            }
+
+            for (AnimDef a : animDefs) {
+                for (int i = 0; i < a.frameCount; i++) {
+                    String frameName = a.baseName + "_" + i;
+                    atlas.add(frameName, atlas.get(a.startFrame + i));
+                }
+            }
+        }
+
         /**
-         * Add a named sprite region to this mob atlas
+         * Add a named sprite region to this mob atlas.
          */
         public MobSegment addSprite(String name, int x, int y, int width, int height) {
+            ensureLoaded();
             atlas.add(name, x, y, x + width, y + height);
+            spriteDefs.add(new SpriteDef(name, x, y, width, height));
             return this;
         }
-        
+
         /**
-         * Add a sprite using RectF coordinates
+         * Add a sprite using RectF coordinates (UV coords).
          */
         public MobSegment addSprite(String name, RectF rect) {
+            ensureLoaded();
             atlas.add(name, rect);
+            spriteDefs.add(new SpriteDef(name, rect));
             return this;
         }
-        
+
         /**
-         * Setup a regular grid for mob animations
+         * Setup a regular grid for mob animations.
          */
         public MobSegment setupGrid(int frameWidth, int frameHeight) {
+            ensureLoaded();
+            this.gridW = frameWidth;
+            this.gridH = frameHeight;
             atlas.grid(frameWidth, frameHeight);
             return this;
         }
-        
+
         /**
-         * Add animation frames with names
+         * Add animation frames with names.
          */
         public MobSegment addAnimation(String baseName, int startFrame, int frameCount) {
+            ensureLoaded();
+            animDefs.add(new AnimDef(baseName, startFrame, frameCount));
             for (int i = 0; i < frameCount; i++) {
                 String frameName = baseName + "_" + i;
                 atlas.add(frameName, atlas.get(startFrame + i));
             }
             return this;
         }
-        
+
         /**
-         * Get sprite mapping by name
+         * Get sprite mapping by name.
          */
         public ImageMapping getSprite(String name) {
+            ensureLoaded();
             RectF rect = atlas.get(name);
             if (rect != null) {
-                return new ImageMapping(texture, rect, atlas.height(rect), 16);
+                return new ImageMapping(cache, rect, atlas.height(rect), 16);
             }
             return null;
         }
-        
+
         /**
-         * Get sprite mapping by frame index
+         * Get sprite mapping by frame index (grid-based).
          */
         public ImageMapping getSprite(int frameIndex) {
+            ensureLoaded();
             RectF rect = atlas.get(frameIndex);
             if (rect != null) {
-                return new ImageMapping(texture, rect, atlas.height(rect), 16);
+                return new ImageMapping(cache, rect, atlas.height(rect), 16);
             }
             return null;
+        }
+    }
+
+    /**
+     * Icon segment (Atlas-backed, grid-based). Intended for buff icons, small UI icons, etc.
+     */
+    public static class IconSegment extends Segment<IconSegment> {
+        private final int frameW;
+        private final int frameH;
+
+        public IconSegment(Object baseTextureHandle, int frameW, int frameH) {
+            super(baseTextureHandle);
+            this.frameW = frameW;
+            this.frameH = frameH;
+            ensureLoaded();
+        }
+
+        @Override
+        protected IconSegment self() {
+            return this;
+        }
+
+        @Override
+        protected void afterLoad() {
+            atlas.grid(frameW, frameH);
+        }
+
+        public ImageMapping get(int index, int size) {
+            ensureLoaded();
+            RectF rect = atlas.get(index);
+            return new ImageMapping(cache, rect, atlas.height(rect), size);
+        }
+    }
+
+    /**
+     * UI segment (Atlas-backed, grid-based). Intended for chrome/toolbars/menus.
+     */
+    public static class UiSegment extends Segment<UiSegment> {
+        private final int frameW;
+        private final int frameH;
+
+        public UiSegment(Object baseTextureHandle, int frameW, int frameH) {
+            super(baseTextureHandle);
+            this.frameW = frameW;
+            this.frameH = frameH;
+            ensureLoaded();
+        }
+
+        @Override
+        protected UiSegment self() {
+            return this;
+        }
+
+        @Override
+        protected void afterLoad() {
+            atlas.grid(frameW, frameH);
+        }
+    }
+
+    /**
+     * Tile segment (Atlas-backed, grid-based). Intended for tiles/water/terrain sheets.
+     */
+    public static class TileSegment extends Segment<TileSegment> {
+        private final int tileSize;
+
+        public TileSegment(Object baseTextureHandle, int tileSize) {
+            super(baseTextureHandle);
+            this.tileSize = tileSize;
+            ensureLoaded();
+        }
+
+        @Override
+        protected TileSegment self() {
+            return this;
+        }
+
+        @Override
+        protected void afterLoad() {
+            atlas.grid(tileSize, tileSize);
         }
     }
 
@@ -458,6 +739,11 @@ public final class SpriteRegistry {
     private static Object buffLargeTexture = Assets.Interfaces.BUFFS_LARGE;
     private static Object uiIconsTexture   = Assets.Interfaces.ICONS;
 
+    // Material ids for overlay mapping (file priority only)
+    public static final String MAT_BUFFS_SMALL = "ui.buffs.small";
+    public static final String MAT_BUFFS_LARGE = "ui.buffs.large";
+    public static final String MAT_UI_ICONS    = "ui.icons";
+
     // hero class -> overridden spritesheet handle
     private static final Map<HeroClass, Object> heroTextures = new HashMap<>();
 
@@ -471,11 +757,14 @@ public final class SpriteRegistry {
     }
 
     public static Object resolveBuffTexture(boolean large) {
-        return large ? buffLargeTexture : buffSmallTexture;
+        return resolveMaterial(
+                large ? MAT_BUFFS_LARGE : MAT_BUFFS_SMALL,
+                large ? buffLargeTexture : buffSmallTexture
+        );
     }
 
     public static Object resolveUiIconsTexture() {
-        return uiIconsTexture;
+        return resolveMaterial(MAT_UI_ICONS, uiIconsTexture);
     }
 
     public static void registerHeroTexture(HeroClass cls, Object texture) {
@@ -610,8 +899,7 @@ public final class SpriteRegistry {
      * Register a mob texture with Atlas support for flexible sprite layouts
      */
     public static MobSegment registerMobAtlas(String key, Object texture) {
-        SmartTexture smartTex = TextureCache.get(texture);
-        MobSegment segment = new MobSegment(key, smartTex);
+        MobSegment segment = new MobSegment(key, texture);
         mobSegments.put(key, segment);
         return segment;
     }
