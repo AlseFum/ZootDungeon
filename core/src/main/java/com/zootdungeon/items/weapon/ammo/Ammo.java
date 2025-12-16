@@ -14,7 +14,8 @@ public class Ammo extends Item {
         SpriteRegistry.registerItemTexture("cola/ammo.png", 32)
                 .span(3)
                 .label("ammo")
-                .label("explosive_ammo");
+                .label("explosive_ammo")
+                .span(1);  // Reserve 1 extra slot after the labels
     }
 
     public static final String AC_RELOAD = "重装子弹";

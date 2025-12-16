@@ -59,7 +59,7 @@ public final class SpriteRegistry {
      * Returns the current overlay stack (bottom -> top). Intended for debugging.
      */
     public static List<String> overlays() {
-        return java.util.Collections.unmodifiableList(overlayStack);
+        return overlayStack;
     }
 
     /**

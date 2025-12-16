@@ -231,19 +231,33 @@ public class ItemSprite extends MovieClip {
 				if (_height < 8f) {
 					perspectiveRaise = (5 + 8 - _height) / 16f;
 				}
-				if (map.size != 16) {
-					scale.set(16f / Math.max(map.size, 1));
-					origin.set(width / 2f, height / 2f);
-				}
+			// Correct scaling and origin
+			if (map.size != 16) {
+				float scaleFactor = 16f / Math.max(map.size, 1);
+				scale.set(scaleFactor);
+				// Origin stays at top-left (0, 0) like the default 16x16 sprites
+				origin.set(0, 0);
+			} else {
+				scale.set(1);
+				origin.set(0, 0);
+			}
 				return;
 			}
 		}
-		texture =  TextureCache.get( Assets.Sprites.ITEMS	);
+		
+		// Fallback to static ItemSpriteSheet
+		texture = TextureCache.get(Assets.Sprites.ITEMS);
 		RectF original_map = ItemSpriteSheet.film.get(image);
-		frame(original_map);
+		if (original_map != null) {
+			frame(original_map);
+		} else {
+			// If still no valid frame, use SOMETHING as last resort
+			original_map = ItemSpriteSheet.film.get(ItemSpriteSheet.SOMETHING);
+			frame(original_map);
+		}
 		scale.set(1);
-		origin.set(0,0);
-		float _height = ItemSpriteSheet.film.height(image);
+		origin.set(0, 0);
+		float _height = ItemSpriteSheet.film.height(image != 0 ? image : ItemSpriteSheet.SOMETHING);
 		if (_height < 8f) {
 			perspectiveRaise = (5 + 8 - _height) / 16f;
 		}
