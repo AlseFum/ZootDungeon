@@ -49,9 +49,6 @@ public class Food extends Item {
 	public static final String AC_EAT	= "EAT";
 	
 	public float energy = Hunger.HUNGRY;
-	static {
-		OozedFood.a+=1;
-	}
 	{
 		stackable = true;
 		image = ItemSpriteSheet.RATION;

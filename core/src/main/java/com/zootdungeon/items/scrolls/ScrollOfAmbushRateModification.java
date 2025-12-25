@@ -33,7 +33,7 @@ import com.zootdungeon.windows.WndTextInput;
 public class ScrollOfAmbushRateModification extends InventoryScroll {
 
     {
-        icon = ItemSpriteSheet.Icons.SCROLL_UPGRADE; // 使用升级卷轴的图标，或者可以自定义
+        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG; // 使用升级卷轴的图标，或者可以自定义
         preferredBag = Belongings.Backpack.class;
 
         unique = true;

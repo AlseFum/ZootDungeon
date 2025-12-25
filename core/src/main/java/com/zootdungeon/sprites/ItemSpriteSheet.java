@@ -860,6 +860,7 @@ public class ItemSpriteSheet {
 		public static final int SCROLL_RETRIB   = SCROLLS+9;
 		public static final int SCROLL_TERROR   = SCROLLS+10;
 		public static final int SCROLL_TRANSMUTE= SCROLLS+11;
+		public static final int SYMBOL_DEBUG= SCROLLS+12;
 		static {
 			assignIconRect( SCROLL_UPGRADE,     7, 7 );
 			assignIconRect( SCROLL_IDENTIFY,    4, 7 );
@@ -873,6 +874,7 @@ public class ItemSpriteSheet {
 			assignIconRect( SCROLL_RETRIB,      5, 6 );
 			assignIconRect( SCROLL_TERROR,      5, 7 );
 			assignIconRect( SCROLL_TRANSMUTE,   7, 7 );
+			assignIconRect( SYMBOL_DEBUG,       7, 7 );
 		}
 
 		private static final int EXOTIC_SCROLLS =                            xy(1, 4);  //16 slots
