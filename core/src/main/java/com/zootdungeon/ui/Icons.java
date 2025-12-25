@@ -21,13 +21,14 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
+import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
 import com.watabou.utils.RectF;
 
@@ -139,7 +140,7 @@ public enum Icons {
 	}
 	
 	public static Image get( Icons type ) {
-		Image icon = new Image( Assets.Interfaces.ICONS );
+		Image icon = new Image( SpriteRegistry.resolveUiIconsTexture() );
 		switch (type) {
 
 			case ENTER:

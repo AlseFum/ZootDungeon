@@ -21,7 +21,6 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
@@ -114,39 +113,51 @@ public class HeroIcon extends Image {
 	public static final int MONK_ABILITIES  = 110;
 
 	public HeroIcon(HeroSubClass subCls){
-		super(Assets.Interfaces.HERO_ICONS);
+		super();
 		
 		int iconId = subCls.icon();
 		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
-		frame(mapping.rect);
+		if (mapping != null) {
+			texture = mapping.texture;
+			frame(mapping.rect);
+		}
 	}
 
 	public HeroIcon(ArmorAbility abil){
-		super(Assets.Interfaces.HERO_ICONS);
+		super();
 		
 		int iconId = abil.icon();
 		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
-		frame(mapping.rect);
+		if (mapping != null) {
+			texture = mapping.texture;
+			frame(mapping.rect);
+		}
 	}
 
 	public HeroIcon(ActionIndicator.Action action){
-		super(Assets.Interfaces.HERO_ICONS);
+		super();
 		
 		int iconId = action.actionIcon();
 		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
-		frame(mapping.rect);
+		if (mapping != null) {
+			texture = mapping.texture;
+			frame(mapping.rect);
+		}
 	}
 
 	public HeroIcon(ClericSpell spell){
-		super(Assets.Interfaces.HERO_ICONS);
+		super();
 		
 		int iconId = spell.icon();
 		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
-		frame(mapping.rect);
+		if (mapping != null) {
+			texture = mapping.texture;
+			frame(mapping.rect);
+		}
 	}
 
 }

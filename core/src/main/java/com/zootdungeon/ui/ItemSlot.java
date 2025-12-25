@@ -21,7 +21,6 @@
 
 package com.zootdungeon.ui;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
@@ -34,6 +33,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Rect;
@@ -246,7 +246,7 @@ public class ItemSlot extends Button {
 		if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){
 			extra.text( null );
 
-			itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
+			itemIcon = new Image(SpriteRegistry.resolveItemIconsTexture());
 			itemIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
 			add(itemIcon);
 

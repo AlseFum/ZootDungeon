@@ -678,6 +678,46 @@ public final class SpriteRegistry {
             Integer id = HERO_ICON_ID_MAP.get(label);
             return id == null ? null : get(id);
         }
+
+        /**
+         * Add a named icon region by pixel coordinates.
+         * Useful for UI icons with variable sizes.
+         */
+        public IconSegment addNamedIcon(String label, int x, int y, int width, int height) {
+            ensureLoaded();
+            RectF rect = cache.uvRect(x, y, x + width, y + height);
+            atlas.add(label, rect);
+            return this;
+        }
+
+        /**
+         * Add a named icon region by grid index.
+         * Useful for item icons in a regular grid.
+         */
+        public IconSegment addNamedIcon(String label, int gridIndex) {
+            ensureLoaded();
+            RectF rect = atlas.get(gridIndex);
+            if (rect != null) {
+                atlas.add(label, rect);
+            }
+            return this;
+        }
+
+        /**
+         * Get the underlying texture for advanced operations.
+         */
+        public SmartTexture getTexture() {
+            ensureLoaded();
+            return cache;
+        }
+
+        /**
+         * Get the underlying atlas for advanced operations.
+         */
+        public Atlas getAtlas() {
+            ensureLoaded();
+            return atlas;
+        }
     }
 
     /**
@@ -803,11 +843,23 @@ public final class SpriteRegistry {
     private static Object buffSmallTexture = Assets.Interfaces.BUFFS_SMALL;
     private static Object buffLargeTexture = Assets.Interfaces.BUFFS_LARGE;
     private static Object uiIconsTexture   = Assets.Interfaces.ICONS;
+    private static Object itemIconsTexture = Assets.Sprites.ITEM_ICONS;
 
     // Material ids for overlay mapping (file priority only)
     public static final String MAT_BUFFS_SMALL = "ui.buffs.small";
     public static final String MAT_BUFFS_LARGE = "ui.buffs.large";
     public static final String MAT_UI_ICONS    = "ui.icons";
+    public static final String MAT_ITEM_ICONS  = "sprites.item.icons";
+
+    // UI icon segment for dynamic icon management
+    private static IconSegment uiIconSegment = null;
+    public static final HashMap<String, Integer> UI_ICON_ID_MAP = new HashMap<>();
+    private static int latestUiIconId = 0;
+
+    // Item icon segment for dynamic icon management
+    private static IconSegment itemIconSegment = null;
+    public static final HashMap<String, Integer> ITEM_ICON_ID_MAP = new HashMap<>();
+    private static int latestItemIconId = 0;
 
     // hero class -> overridden spritesheet handle
     private static final Map<HeroClass, Object> heroTextures = new HashMap<>();
@@ -819,6 +871,121 @@ public final class SpriteRegistry {
 
     public static void setUiIconsTexture(Object uiIcons) {
         if (uiIcons != null) uiIconsTexture = uiIcons;
+        // Reset segment to force reload
+        uiIconSegment = null;
+    }
+
+    public static void setItemIconsTexture(Object itemIcons) {
+        if (itemIcons != null) itemIconsTexture = itemIcons;
+        // Reset segment to force reload
+        itemIconSegment = null;
+    }
+
+    /**
+     * Get or create the UI icon segment.
+     * UI icons use variable-sized frames, so we use a flexible grid system.
+     */
+    private static IconSegment getUiIconSegment() {
+        if (uiIconSegment == null) {
+            // Use a flexible grid - icons can be different sizes
+            // We'll use a base grid of 16x16 for most icons
+            uiIconSegment = new IconSegment(resolveUiIconsTexture(), 16, 16);
+            uiIconSegment.as(MAT_UI_ICONS);
+        }
+        return uiIconSegment;
+    }
+
+    /**
+     * Get or create the item icon segment.
+     * Item icons use 8x8 frames in a 16-column grid.
+     */
+    private static IconSegment getItemIconSegment() {
+        if (itemIconSegment == null) {
+            itemIconSegment = new IconSegment(resolveItemIconsTexture(), 8, 8);
+            itemIconSegment.as(MAT_ITEM_ICONS);
+        }
+        return itemIconSegment;
+    }
+
+    /**
+     * Register a UI icon by name with pixel coordinates.
+     * This allows dynamic addition of new icons to the UI icons sheet.
+     * 
+     * @param label Unique label for this icon
+     * @param x Pixel X coordinate in the texture
+     * @param y Pixel Y coordinate in the texture
+     * @param width Icon width in pixels
+     * @param height Icon height in pixels
+     * @return The assigned icon ID
+     */
+    public static int registerUiIcon(String label, int x, int y, int width, int height) {
+        IconSegment segment = getUiIconSegment();
+        segment.addNamedIcon(label, x, y, width, height);
+        
+        int iconId = latestUiIconId++;
+        UI_ICON_ID_MAP.put(label, iconId);
+        
+        return iconId;
+    }
+
+    /**
+     * Get UI icon ImageMapping by label.
+     */
+    public static ImageMapping getUiIconMapping(String label) {
+        IconSegment segment = getUiIconSegment();
+        return segment.get(label);
+    }
+
+    /**
+     * Register an item icon by name with grid coordinates.
+     * Item icons are 8x8 and arranged in a 16-column grid.
+     * 
+     * @param label Unique label for this icon
+     * @param gridX Grid X position (1-based, like ItemSpriteSheet.Icons.xy())
+     * @param gridY Grid Y position (1-based)
+     * @param width Width in grid cells (usually 1)
+     * @param height Height in grid cells (usually 1)
+     * @return The assigned icon ID
+     */
+    public static int registerItemIcon(String label, int gridX, int gridY, int width, int height) {
+        IconSegment segment = getItemIconSegment();
+        
+        // Convert grid coordinates to pixel coordinates (8x8 per cell)
+        int x = (gridX - 1) * 8;
+        int y = (gridY - 1) * 8;
+        int pixelWidth = width * 8;
+        int pixelHeight = height * 8;
+        
+        // Add named region
+        segment.addNamedIcon(label, x, y, pixelWidth, pixelHeight);
+        
+        // Also add by grid index for compatibility
+        int gridIndex = (gridY - 1) * 16 + (gridX - 1);
+        RectF rect = segment.getAtlas().get(gridIndex);
+        if (rect != null) {
+            segment.getAtlas().add(gridIndex, rect);
+        }
+        
+        int iconId = latestItemIconId++;
+        ITEM_ICON_ID_MAP.put(label, iconId);
+        
+        return iconId;
+    }
+
+    /**
+     * Get item icon ImageMapping by label.
+     */
+    public static ImageMapping getItemIconMapping(String label) {
+        IconSegment segment = getItemIconSegment();
+        return segment.get(label);
+    }
+
+    /**
+     * Get item icon ImageMapping by grid index (for compatibility with existing code).
+     */
+    public static ImageMapping getItemIconMapping(int gridIndex) {
+        IconSegment segment = getItemIconSegment();
+        return segment.get(gridIndex);
     }
 
     public static Object resolveBuffTexture(boolean large) {
@@ -830,6 +997,10 @@ public final class SpriteRegistry {
 
     public static Object resolveUiIconsTexture() {
         return resolveMaterial(MAT_UI_ICONS, uiIconsTexture);
+    }
+
+    public static Object resolveItemIconsTexture() {
+        return resolveMaterial(MAT_ITEM_ICONS, itemIconsTexture);
     }
 
     public static void registerHeroTexture(HeroClass cls, Object texture) {
