@@ -1,8 +1,10 @@
-package com.zootdungeon.items;
+package com.zootdungeon.items.cheat;
 
 import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Heap;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.windows.WndBag;
@@ -51,18 +53,18 @@ public class ItemRemover extends Item {
                     if (item == null) {
                         return;
                     }
-                    if (item.quantity > 5) {
+                    if (item.quantity() > 5) {
                         GameScene.show(WndOptions.make()
                         .title("删除物品")
                         .message("要删除多少？")
                         .option("1份",(Object o)->{
-                            item.quantity = item.quantity - 1;
+                            item.quantity(item.quantity() - 1);
                         })
-                        .option("5分之一("+(item.quantity-(int)item.quantity*4/5)+")",(Object o)->{
-                            item.quantity = (int)item.quantity*4/5;
+                        .option("5分之一("+(item.quantity() - (int)(item.quantity() * 4 / 5))+")",(Object o)->{
+                            item.quantity((int)(item.quantity() * 4 / 5));
                         })
                         .option("全部",(Object o)->{
-                            item.quantity=1;
+                            item.quantity(1);
                             item.detach(hero.belongings.backpack);
                             InventoryPane.refresh();
                         })

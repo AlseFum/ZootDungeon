@@ -25,13 +25,13 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.RectF;
 
 //icons for hero subclasses and abilities atm, maybe add classes?
 public class HeroIcon extends Image {
 
-	private static TextureFilm film;
 	private static final int SIZE = 16;
 
 	//transparent icon
@@ -116,8 +116,8 @@ public class HeroIcon extends Image {
 	public HeroIcon(HeroSubClass subCls){
 		super(Assets.Interfaces.HERO_ICONS);
 		
-		int iconId = HeroIconManager.getIconForSubclass(subCls);
-		HeroIconManager.ImageMapping mapping = HeroIconManager.getImageMapping(iconId);
+		int iconId = subCls.icon();
+		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
 		frame(mapping.rect);
 	}
@@ -125,8 +125,8 @@ public class HeroIcon extends Image {
 	public HeroIcon(ArmorAbility abil){
 		super(Assets.Interfaces.HERO_ICONS);
 		
-		int iconId = HeroIconManager.getIconForArmorAbility(abil);
-		HeroIconManager.ImageMapping mapping = HeroIconManager.getImageMapping(iconId);
+		int iconId = abil.icon();
+		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
 		frame(mapping.rect);
 	}
@@ -135,7 +135,7 @@ public class HeroIcon extends Image {
 		super(Assets.Interfaces.HERO_ICONS);
 		
 		int iconId = action.actionIcon();
-		HeroIconManager.ImageMapping mapping = HeroIconManager.getImageMapping(iconId);
+		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
 		frame(mapping.rect);
 	}
@@ -143,8 +143,8 @@ public class HeroIcon extends Image {
 	public HeroIcon(ClericSpell spell){
 		super(Assets.Interfaces.HERO_ICONS);
 		
-		int iconId = HeroIconManager.getIconForClericSpell(spell);
-		HeroIconManager.ImageMapping mapping = HeroIconManager.getImageMapping(iconId);
+		int iconId = spell.icon();
+		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
 		
 		frame(mapping.rect);
 	}

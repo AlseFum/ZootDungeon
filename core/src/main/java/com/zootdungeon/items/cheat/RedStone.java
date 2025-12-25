@@ -1,8 +1,9 @@
-package com.zootdungeon.items;
+package com.zootdungeon.items.cheat;
 
 import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;

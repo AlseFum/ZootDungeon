@@ -681,6 +681,113 @@ ImageMapping smallDragon = bossSprites.getSprite("small_idle");
 ImageMapping largeDragon = bossSprites.getSprite("large_roar");
 ```
 
+### 直接使用 Atlas 绘制到画面
+
+#### 基本用法：Atlas + Image
+
+`Atlas` 类用于管理纹理图集中的子区域，配合 `Image` 类可以将纹理绘制到画面上。
+
+```java
+import com.watabou.gltextures.Atlas;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.Scene;
+import com.watabou.utils.RectF;
+
+public class MyScene extends Scene {
+    
+    private Image playerSprite;
+    
+    @Override
+    public void create() {
+        super.create();
+        
+        // 1. 加载纹理
+        SmartTexture texture = TextureCache.get("images/sprites.png");
+        
+        // 2. 创建 Atlas
+        Atlas atlas = new Atlas(texture);
+        
+        // 3. 设置网格布局（假设每个精灵是 16x16 像素）
+        atlas.grid(16, 16);  // 自动计算列数
+        
+        // 或者手动添加命名区域
+        atlas.add("player", 0, 0, 16, 16);      // 左上角 16x16
+        atlas.add("enemy", 16, 0, 32, 16);      // 第二个 16x16
+        atlas.add("item", 0, 16, 16, 32);      // 第二行第一个
+        
+        // 4. 创建 Image 并设置帧
+        playerSprite = new Image(texture);
+        RectF frame = atlas.get("player");  // 或 atlas.get(0) 获取索引
+        playerSprite.frame(frame);
+        
+        // 5. 设置位置
+        playerSprite.x = 100;
+        playerSprite.y = 100;
+        
+        // 6. 添加到场景（Image 继承自 Visual，可以直接添加）
+        add(playerSprite);
+    }
+}
+```
+
+#### 使用网格索引访问
+
+```java
+// 创建规则网格的 Atlas
+Atlas atlas = new Atlas(texture);
+atlas.grid(16, 16);  // 16x16 的网格
+
+// 通过索引访问（从左到右，从上到下）
+Image sprite0 = new Image(texture);
+sprite0.frame(atlas.get(0));  // 第 0 帧（左上角）
+
+Image sprite5 = new Image(texture);
+sprite5.frame(atlas.get(5));  // 第 5 帧
+```
+
+#### 使用命名键访问
+
+```java
+// 创建 Atlas 并添加命名区域
+Atlas atlas = new Atlas(texture);
+atlas.add("player_idle", 0, 0, 16, 16);
+atlas.add("player_walk", 16, 0, 32, 16);
+atlas.add("enemy_goblin", 0, 16, 16, 32);
+
+// 使用命名键获取帧
+Image player = new Image(texture);
+player.frame(atlas.get("player_idle"));
+
+// 切换动画帧
+player.frame(atlas.get("player_walk"));
+```
+
+#### 与 TextureFilm 对比
+
+```java
+// 方式 1: 使用 TextureFilm（更高级的封装）
+TextureFilm film = new TextureFilm("images/sprites.png", 16, 16);
+Image sprite = new Image("images/sprites.png");
+sprite.frame(film.get(0));
+
+// 方式 2: 直接使用 Atlas（更底层，更灵活）
+SmartTexture texture = TextureCache.get("images/sprites.png");
+Atlas atlas = new Atlas(texture);
+atlas.grid(16, 16);
+Image sprite = new Image(texture);
+sprite.frame(atlas.get(0));
+```
+
+#### 关键要点
+
+- **Atlas.get()** 返回 `RectF`（UV 坐标，范围 0-1）
+- **Image.frame(RectF)** 设置要显示的纹理区域
+- **Image** 继承自 `Visual`，可添加到 `Group` 或 `Scene`
+- 渲染由 `Image.draw()` 自动处理，无需手动调用
+- 位置通过 `x`、`y` 设置，支持 `scale`、`angle` 等变换
+
 ### 迁移指南
 
 #### 从 TextureFilm 迁移到 Atlas

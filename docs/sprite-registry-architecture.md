@@ -1,102 +1,102 @@
-# SpriteRegistry Architecture Guide
+# SpriteRegistry 架构指南
 
-## Overview
+## 概述
 
-`SpriteRegistry` is the **unified texture & sprite management system** for Cola Dungeon. It:
+`SpriteRegistry` 是 Cola Dungeon 的**统一纹理与精灵管理系统**。它：
 
-1. Manages all sprite sheets and texture atlases across the project
-2. Provides overlay-based material substitution (texture pack support)
-3. Uses an abstract `Segment` class hierarchy for different texture types
-4. Ensures all textures pass through a single, centralized resolution point
+1. 管理项目中所有精灵表和纹理图集
+2. 提供基于 Overlay 的材质替换（纹理包支持）
+3. 使用抽象的 `Segment` 类层次结构处理不同类型的纹理
+4. 确保所有纹理通过单一、集中的解析点
 
 ---
 
-## Texture Usage Map
+## 纹理使用地图
 
-### 1. **Environment/Tilemap Textures**
-Used for dungeon level rendering, water effects, and terrain features.
+### 1. **环境/地图贴图纹理**
+用于地牢关卡渲染、水体效果和地形特征。
 
-| Type | Files | Used In |
+| 类型 | 文件 | 使用位置 |
 |------|-------|---------|
-| **Base Tiles** | `tiles_sewers.png`, `tiles_prison.png`, `tiles_caves.png`, `tiles_city.png`, `tiles_halls.png` | `DungeonTilemap`, `Level` classes |
-| **Water** | `water0.png` - `water4.png` (5 variants for different regions) | Water rendering in dungeons |
-| **Terrain Features** | `terrain_features.png` | Trees, rocks, obstacles |
-| **Custom Tiles** | `weak_floor.png`, `sewer_boss.png`, `prison_quest.png`, etc. | Boss levels, quest areas |
-| **Grid & Debug** | `visual_grid.png`, `wall_blocking.png` | Debug visualization |
+| **基础瓷砖** | `tiles_sewers.png`、`tiles_prison.png`、`tiles_caves.png`、`tiles_city.png`、`tiles_halls.png` | `DungeonTilemap`、`Level` 类 |
+| **水体** | `water0.png` - `water4.png`（5 个不同区域的变体） | 地牢中的水体渲染 |
+| **地形特征** | `terrain_features.png` | 树木、岩石、障碍物 |
+| **自定义瓷砖** | `weak_floor.png`、`sewer_boss.png`、`prison_quest.png` 等 | Boss 关卡、任务区域 |
+| **网格与调试** | `visual_grid.png`、`wall_blocking.png` | 调试可视化 |
 
-**Material IDs** (for overlay mapping):
+**材质 ID**（用于 Overlay 映射）：
 - `"environment.tiles.sewers"` → `tiles_sewers.png`
 - `"environment.tiles.prison"` → `tiles_prison.png`
 - `"environment.water.sewers"` → `water0.png`
 
 ---
 
-### 2. **Sprite Textures (Characters & Mobs)**
-Used for rendering hero characters, enemies, NPCs, and interactive objects.
+### 2. **精灵纹理（角色与怪物）**
+用于渲染英雄角色、敌人、NPC 和交互对象。
 
-#### Heroes (6 base classes)
+#### 英雄（6 个基础职业）
 ```
-sprites/warrior.png      → Warrior class sprite
-sprites/mage.png         → Mage class sprite
-sprites/rogue.png        → Rogue class sprite
-sprites/huntress.png     → Huntress class sprite
-sprites/duelist.png      → Duelist class sprite
-sprites/cleric.png       → Cleric class sprite
-sprites/avatars.png      → Character portraits/avatars
+sprites/warrior.png      → 战士职业精灵
+sprites/mage.png         → 法师职业精灵
+sprites/rogue.png        → 盗贼职业精灵
+sprites/huntress.png     → 女猎手职业精灵
+sprites/duelist.png      → 决斗者职业精灵
+sprites/cleric.png       → 牧师职业精灵
+sprites/avatars.png      → 角色头像/头像
 ```
 
-**Material IDs**:
+**材质 ID**：
 - `"sprites.hero.warrior"` → `sprites/warrior.png`
 - `"sprites.hero.mage"` → `sprites/mage.png`
-- etc.
+- 等等
 
-#### Enemies & Mobs (30+ types)
+#### 敌人与怪物（30+ 种类型）
 ```
 rat.png, brute.png, spinner.png, dm300.png, wraith.png, skeleton.png, thief.png, 
 tengu.png, bat.png, elemental.png, monk.png, warlock.png, golem.png, succubus.png, 
-crab.png, bee.png, crystal_wisp.png, ghost.png, etc.
+crab.png, bee.png, crystal_wisp.png, ghost.png, 等等
 ```
 
-Used via `SpriteRegistry.registerMobAtlas(key, texturePath)` and `SpriteRegistry.getMobSprite()`.
+通过 `SpriteRegistry.registerMobAtlas(key, texturePath)` 和 `SpriteRegistry.getMobSprite()` 使用。
 
-#### Special Sprites
+#### 特殊精灵
 ```
-pet.png           → Pet/companion sprite
-amulet.png        → Amulet of Yendor
+pet.png           → 宠物/伙伴精灵
+amulet.png        → 约德尔护身符
 ```
 
 ---
 
-### 3. **Item Textures**
-Used for inventory items, equipment, consumables, and pickup loot.
+### 3. **物品纹理**
+用于库存物品、装备、消耗品和拾取战利品。
 
-| Texture | Size | Used In |
+| 纹理 | 尺寸 | 使用位置 |
 |---------|------|---------|
-| `sprites/items.png` | 16×16 grid | Main item sheet (static, ItemSpriteSheet) |
-| `sprites/item_icons.png` | 32×32 | Item icons in UI |
-| Custom item sheets | Dynamic | Modded/DLC items via `SpriteRegistry.registerItemTexture()` |
+| `sprites/items.png` | 16×16 网格 | 主物品表（静态，ItemSpriteSheet） |
+| `sprites/item_icons.png` | 32×32 | UI 中的物品图标 |
+| 自定义物品表 | 动态 | 通过 `SpriteRegistry.registerItemTexture()` 的 Mod/DLC 物品 |
 
-**Overlay support** via `SpriteRegistry.useOverlay()` and `SpriteRegistry.overlayMap()`.
+通过 `SpriteRegistry.useOverlay()` 和 `SpriteRegistry.overlayMap()` 支持 Overlay。
 
 ---
 
-### 4. **UI/Interface Textures**
-Used for all user interface elements, menus, status displays, and HUD elements.
+### 4. **UI/界面纹理**
+用于所有用户界面元素、菜单、状态显示和 HUD 元素。
 
-| Texture | Purpose | Used In |
-|---------|---------|---------|
-| `chrome.png` | Window frames, borders | All `Wnd*` classes, `Chrome` class |
-| `icons.png` | Generic UI icons | Various UI components |
-| `status_pane.png` | Hero status bar | `StatusPane` |
-| `menu_pane.png` | Menu backgrounds | `MenuPane` |
-| `menu_button.png` | Button styling | `StyledButton` |
-| `toolbar.png` | Bottom action bar | `Toolbar` |
-| `shadow.png` | Drop shadows | UI components |
-| `boss_hp.png` | Boss health indicator | Boss battles |
-| `surface.png` | Surface/terrain effects | Visual effects |
-| `radial_menu.png` | Radial action menu | `RadialMenu` |
+| 纹理 | 用途 | 使用位置 |
+|---------|---------|--------|
+| `chrome.png` | 窗口框架、边框 | 所有 `Wnd*` 类、`Chrome` 类 |
+| `icons.png` | 通用 UI 图标 | 各种 UI 组件 |
+| `status_pane.png` | 英雄状态栏 | `StatusPane` |
+| `menu_pane.png` | 菜单背景 | `MenuPane` |
+| `menu_button.png` | 按钮样式 | `StyledButton` |
+| `toolbar.png` | 底部操作栏 | `Toolbar` |
+| `shadow.png` | 投影 | UI 组件 |
+| `boss_hp.png` | Boss 血条指示器 | Boss 战斗 |
+| `surface.png` | 地表/地形效果 | 视觉效果 |
+| `radial_menu.png` | 径向操作菜单 | `RadialMenu` |
 
-**Material IDs**:
+**材质 ID**：
 - `"ui.chrome"` → `chrome.png`
 - `"ui.icons"` → `icons.png`
 - `"ui.buffs.small"` → `buffs.png`
@@ -105,242 +105,242 @@ Used for all user interface elements, menus, status displays, and HUD elements.
 
 ---
 
-### 5. **Buff & Icon Textures**
-Used for status effect icons, ability icons, and UI indicators.
+### 5. **增益与图标纹理**
+用于状态效果图标、能力图标和 UI 指示器。
 
-| Texture | Size | Purpose |
+| 纹理 | 尺寸 | 用途 |
 |---------|------|---------|
-| `buffs.png` | 16×16 | Small buff icons |
-| `large_buffs.png` | 32×32 | Large buff icons (when displayed prominently) |
-| `talent_icons.png` | Variable | Talent/ability icons |
-| `talent_button.png` | Variable | Talent selection buttons |
-| `hero_icons.png` | Variable | Hero class icons |
-| `badges.png` | Variable | Achievement badges |
+| `buffs.png` | 16×16 | 小增益图标 |
+| `large_buffs.png` | 32×32 | 大增益图标（突出显示时） |
+| `talent_icons.png` | 可变 | 天赋/能力图标 |
+| `talent_button.png` | 可变 | 天赋选择按钮 |
+| `hero_icons.png` | 可变 | 英雄职业图标 |
+| `badges.png` | 可变 | 成就徽章 |
 
-**Material IDs**:
+**材质 ID**：
 - `"ui.buffs.small"` → `buffs.png`
 - `"ui.buffs.large"` → `large_buffs.png`
 
-Used via `SpriteRegistry.resolveBuffTexture(large)` and `SpriteRegistry.resolveUiIconsTexture()`.
+通过 `SpriteRegistry.resolveBuffTexture(large)` 和 `SpriteRegistry.resolveUiIconsTexture()` 使用。
 
 ---
 
-### 6. **Effect Textures**
-Used for visual effects, particles, spells, and impact effects.
+### 6. **特效纹理**
+用于视觉效果、粒子、法术和冲击效果。
 
-| Texture | Purpose |
+| 纹理 | 用途 |
 |---------|---------|
-| `effects/effects.png` | General game effects |
-| `effects/fireball.png` | Fire spell effects |
-| `effects/specks.png` | Particle effects, sparkles |
-| `effects/spell_icons.png` | Spell ability icons |
-| `effects/text_icons.png` | Floating text indicators |
+| `effects/effects.png` | 通用游戏特效 |
+| `effects/fireball.png` | 火焰法术效果 |
+| `effects/specks.png` | 粒子效果、闪光 |
+| `effects/spell_icons.png` | 法术能力图标 |
+| `effects/text_icons.png` | 浮动文本指示器 |
 
 ---
 
-### 7. **Font Textures**
-Used for text rendering, especially for retro/pixel fonts.
+### 7. **字体纹理**
+用于文本渲染，特别是复古/像素字体。
 
 ```
-fonts/pixel_font.png  → Pixelated font for game text
+fonts/pixel_font.png  → 游戏文本的像素化字体
 ```
 
 ---
 
-### 8. **Splash Screens**
-Used for character select, level transitions, and cinematic screens.
+### 8. **启动画面**
+用于角色选择、关卡转换和过场画面。
 
-| Type | Files |
+| 类型 | 文件 |
 |------|-------|
-| **Hero Splashes** | `warrior.jpg`, `mage.jpg`, `rogue.jpg`, `huntress.jpg`, `duelist.jpg`, `cleric.jpg` |
-| **Level Splashes** | `sewers.jpg`, `prison.jpg`, `caves.jpg`, `city.jpg`, `halls.jpg` |
+| **英雄启动画面** | `warrior.jpg`、`mage.jpg`、`rogue.jpg`、`huntress.jpg`、`duelist.jpg`、`cleric.jpg` |
+| **关卡启动画面** | `sewers.jpg`、`prison.jpg`、`caves.jpg`、`city.jpg`、`halls.jpg` |
 
-Used in `TitleScene`, `HeroSelectScene`, `AmuletScene`, `InterlevelScene`.
+在 `TitleScene`、`HeroSelectScene`、`AmuletScene`、`InterlevelScene` 中使用。
 
 ---
 
-## Architecture: Segment + Overlay System
+## 架构：Segment + Overlay 系统
 
-### Segment Hierarchy
+### Segment 层次结构
 
-The `Segment` base class provides:
-- Lazy texture loading via `ensureLoaded()`
-- Material ID for overlay resolution (via `.as(materialId)`)
-- Atlas management for frame/sprite layout
-- Automatic reload when overlay stack changes
+`Segment` 基类提供：
+- 通过 `ensureLoaded()` 延迟加载纹理
+- 用于 Overlay 解析的材质 ID（通过 `.as(materialId)`）
+- 用于帧/精灵布局的 Atlas 管理
+- Overlay 栈更改时自动重新加载
 
 ```
-Segment<S extends Segment<S>>  (abstract base)
-  ├── ItemSegment              (item grid with labels)
-  ├── MobSegment               (mob sprites, named regions, animations)
-  ├── IconSegment              (UI icons, grid-based)
-  ├── UiSegment                (UI chrome, grid-based)
-  └── TileSegment              (tile sheets, grid-based)
+Segment<S extends Segment<S>>  (抽象基类)
+  ├── ItemSegment              (带标签的物品网格)
+  ├── MobSegment               (怪物精灵、命名区域、动画)
+  ├── IconSegment              (UI 图标，基于网格)
+  ├── UiSegment                (UI 框架，基于网格)
+  └── TileSegment              (瓷砖表，基于网格)
 ```
 
-### How Segments Work
+### Segment 工作原理
 
-1. **Registration**: Each segment is created with a base texture handle
+1. **注册**：每个 Segment 使用基础纹理句柄创建
    ```java
    ItemSegment seg = SpriteRegistry.registerItemTexture("sprites/items.png", 16);
-   seg.as("items.main");  // Set material ID for overlay resolution
-   seg.label("sword").label("shield");  // Add named frames
+   seg.as("items.main");  // 设置材质 ID 用于 Overlay 解析
+   seg.label("sword").label("shield");  // 添加命名帧
    ```
 
-2. **Material Resolution**: When fetching a sprite, overlays are checked first
+2. **材质解析**：获取精灵时，首先检查 Overlay
    ```java
-   // Inside Segment.ensureLoaded():
+   // 在 Segment.ensureLoaded() 内部：
    Object handle = SpriteRegistry.resolveMaterial(materialId, baseTextureHandle);
-   // If overlay "my_pack" has "items.main" → uses that instead of baseTextureHandle
+   // 如果 Overlay "my_pack" 有 "items.main" → 使用该值而不是 baseTextureHandle
    ```
 
-3. **Overlay Stack** (bottom → top): Higher index = higher priority
+3. **Overlay 栈**（底部 → 顶部）：索引越高，优先级越高
    ```
-   Stack: ["default_pack", "my_pack", "custom_override"]
-                                       ↑ checked first
+   栈：["default_pack", "my_pack", "custom_override"]
+                                       ↑ 首先检查
    ```
 
 ---
 
 ### Overlay API
 
-#### Push/Prioritize an Overlay
+#### 推送/提升 Overlay 优先级
 ```java
 SpriteRegistry.useOverlay("texture_pack_name");
-// Adds overlay to top of stack, or moves it to top if already present
+// 将 Overlay 添加到栈顶，如果已存在则移动到顶部
 ```
 
-#### Map Material → Texture in Overlay
+#### 在 Overlay 中映射材质 → 纹理
 ```java
 SpriteRegistry.overlayMap("my_pack", "items.main", "mods/items_custom.png");
 SpriteRegistry.overlayMap("my_pack", "ui.chrome", "mods/ui_custom.png");
 ```
 
-#### Resolve Material (used internally by Segments)
+#### 解析材质（由 Segment 内部使用）
 ```java
 Object texture = SpriteRegistry.resolveMaterial("items.main", fallbackHandle);
-// Returns first overlay mapping, or fallback if not found
+// 返回第一个 Overlay 映射，如果未找到则返回 fallback
 ```
 
-#### Debug: View Overlay Stack
+#### 调试：查看 Overlay 栈
 ```java
 List<String> stack = SpriteRegistry.overlays();
 for (String key : stack) {
-    System.out.println(key);  // Print overlay keys in priority order
+    System.out.println(key);  // 按优先级顺序打印 Overlay 键
 }
 ```
 
 ---
 
-### ImageMapping: Bridge to noosa.Image
+### ImageMapping：与 noosa.Image 的桥梁
 
-`ImageMapping` is a simple data structure that holds the resolved texture + frame info:
+`ImageMapping` 是一个简单的数据结构，保存解析后的纹理 + 帧信息：
 
 ```java
 public static class ImageMapping {
-    public SmartTexture texture;    // The actual texture loaded
-    public RectF rect;              // UV frame within texture
-    public float height;            // Pixel height (for scaling)
-    public int size;                // Frame size (16, 32, 64, etc.)
+    public SmartTexture texture;    // 实际加载的纹理
+    public RectF rect;              // 纹理内的 UV 帧
+    public float height;            // 像素高度（用于缩放）
+    public int size;                // 帧大小（16、32、64 等）
 }
 ```
 
-**Usage in Rendering**:
+**在渲染中的使用**：
 ```java
 ImageMapping map = SpriteRegistry.mapItemImage(imageId);
 if (map != null) {
-    // ItemSprite example:
+    // ItemSprite 示例：
     texture = map.texture;
     frame(map.rect);
-    scale.set(16f / map.size);  // Scale if size != 16
+    scale.set(16f / map.size);  // 如果 size != 16 则缩放
 }
 ```
 
-This design allows `noosa.Image` (and subclasses) to work seamlessly:
-- `texture` → passed to `image.texture()`
-- `rect` → passed to `image.frame()`
-- `height` / `size` → used for scaling/perspective
+此设计允许 `noosa.Image`（及其子类）无缝工作：
+- `texture` → 传递给 `image.texture()`
+- `rect` → 传递给 `image.frame()`
+- `height` / `size` → 用于缩放/透视
 
 ---
 
-## Complete Usage Example
+## 完整使用示例
 
-### Step 1: Register a Custom Item Sheet
+### 步骤 1：注册自定义物品表
 ```java
-// In static initializer or TexturePackManager:
+// 在静态初始化器或 TexturePackManager 中：
 ItemSegment customItems = SpriteRegistry.registerItemTexture("mods/items_cola.png", 16)
-    .as("items.cola")                    // Set material ID
+    .as("items.cola")                    // 设置材质 ID
     .label("cola_potion")
     .label("cola_bomb");
 ```
 
-### Step 2: Define an Overlay
+### 步骤 2：定义 Overlay
 ```java
-// Create a texture pack overlay:
+// 创建纹理包 Overlay：
 SpriteRegistry.useOverlay("summer_pack");
 
-// Map materials to custom textures:
+// 将材质映射到自定义纹理：
 SpriteRegistry.overlayMap("summer_pack", "items.main", "packs/summer/items.png");
 SpriteRegistry.overlayMap("summer_pack", "ui.chrome", "packs/summer/chrome.png");
 SpriteRegistry.overlayMap("summer_pack", "sprites.hero.warrior", "packs/summer/warrior.png");
 ```
 
-### Step 3: Fetch & Render
+### 步骤 3：获取与渲染
 ```java
-// Item rendering (ItemSprite):
+// 物品渲染（ItemSprite）：
 ImageMapping map = SpriteRegistry.getItemImageMapping("cola_potion");
 if (map != null) {
     sprite.texture = map.texture;
     sprite.frame(map.rect);
 }
 
-// Mob rendering (MobSprite):
+// 怪物渲染（MobSprite）：
 ImageMapping mobMap = SpriteRegistry.getMobSprite("orc_warrior", "attack", Assets.Sprites.BRUTE);
 if (mobMap != null) {
     sprite.texture = mobMap.texture;
     sprite.frame(mobMap.rect);
 }
 
-// UI rendering (Chrome):
+// UI 渲染（Chrome）：
 Object chromeHandle = SpriteRegistry.resolveUiIconsTexture();
 SmartTexture chromeTexture = TextureCache.get(chromeHandle);
 ```
 
 ---
 
-## Material ID Naming Convention
+## 材质 ID 命名约定
 
-Use dot-separated hierarchical names:
+使用点分隔的层次结构名称：
 
 ```
 <category>.<subcategory>.<specific>
 
-Examples:
-  items.main              → Main item sheet
-  items.cola              → Cola Dungeon custom items
-  ui.chrome               → UI window frames
-  ui.buffs.small          → Small buff icons
-  ui.buffs.large          → Large buff icons
-  ui.icons                → Generic UI icons
-  sprites.hero.warrior    → Warrior hero sprite
-  sprites.mob.orc         → Orc mob sprite
-  environment.tiles.sewers → Sewer tiles
-  environment.water.sewers → Sewer water
+示例：
+  items.main              → 主物品表
+  items.cola              → Cola Dungeon 自定义物品
+  ui.chrome               → UI 窗口框架
+  ui.buffs.small          → 小增益图标
+  ui.buffs.large          → 大增益图标
+  ui.icons                → 通用 UI 图标
+  sprites.hero.warrior    → 战士英雄精灵
+  sprites.mob.orc         → 兽人怪物精灵
+  environment.tiles.sewers → 下水道瓷砖
+  environment.water.sewers → 下水道水体
 ```
 
 ---
 
-## Future: TexturePackManager Integration
+## 未来：TexturePackManager 集成
 
-A future `TexturePackManager` should:
+未来的 `TexturePackManager` 应该：
 
-1. Load JSON texture pack definitions
-2. Extract overlay key and material mappings
-3. Call `SpriteRegistry.useOverlay(overlayKey)`
-4. Call `SpriteRegistry.overlayMap()` for each mapping
-5. Optionally reload/reload all Segments to pick up new textures
+1. 加载 JSON 纹理包定义
+2. 提取 Overlay 键和材质映射
+3. 调用 `SpriteRegistry.useOverlay(overlayKey)`
+4. 为每个映射调用 `SpriteRegistry.overlayMap()`
+5. 可选地重新加载所有 Segment 以获取新纹理
 
-Example JSON structure:
+示例 JSON 结构：
 ```json
 {
   "pack_name": "summer_pack",
@@ -356,20 +356,19 @@ Example JSON structure:
 
 ---
 
-## Summary
+## 总结
 
-| Component | Purpose |
+| 组件 | 用途 |
 |-----------|---------|
-| **Segment** | Owns an Atlas, manages texture loading + overlay resolution |
-| **Overlay Stack** | Prioritizes texture pack materials over defaults |
-| **Material ID** | Stable identifier for texture resolution (via `.as()`) |
-| **ImageMapping** | Result struct (texture + frame) passed to noosa.Image |
-| **SpriteRegistry** | Singleton coordinator of all segments + overlays |
+| **Segment** | 拥有 Atlas，管理纹理加载 + Overlay 解析 |
+| **Overlay 栈** | 优先使用纹理包材质而非默认值 |
+| **材质 ID** | 纹理解析的稳定标识符（通过 `.as()`） |
+| **ImageMapping** | 结果结构（纹理 + 帧）传递给 noosa.Image |
+| **SpriteRegistry** | 所有 Segment + Overlay 的单例协调器 |
 
-This design enables:
-- ✅ Centralized texture management
-- ✅ Texture pack support (overlays)
-- ✅ Lazy loading + automatic reload
-- ✅ Full noosa.Image compatibility
-- ✅ Easy to extend with new segment types
-
+此设计实现了：
+- ✅ 集中式纹理管理
+- ✅ 纹理包支持（Overlay）
+- ✅ 延迟加载 + 自动重新加载
+- ✅ 完整的 noosa.Image 兼容性
+- ✅ 易于扩展新的 Segment 类型

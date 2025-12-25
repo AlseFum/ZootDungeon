@@ -246,14 +246,20 @@ public class ItemSprite extends MovieClip {
 		}
 		
 		// Fallback to static ItemSpriteSheet
-		texture = TextureCache.get(Assets.Sprites.ITEMS);
+		// Get the frame first before setting texture to avoid default frame being set
 		RectF original_map = ItemSpriteSheet.film.get(image);
+		if (original_map == null) {
+			// If no valid frame, use SOMETHING as last resort
+			original_map = ItemSpriteSheet.film.get(ItemSpriteSheet.SOMETHING);
+		}
+		
+		// Now set texture and frame together
+		texture = TextureCache.get(Assets.Sprites.ITEMS);
 		if (original_map != null) {
 			frame(original_map);
 		} else {
-			// If still no valid frame, use SOMETHING as last resort
-			original_map = ItemSpriteSheet.film.get(ItemSpriteSheet.SOMETHING);
-			frame(original_map);
+			// Last resort: use default full texture frame
+			frame(new RectF(0, 0, 1, 1));
 		}
 		scale.set(1);
 		origin.set(0, 0);

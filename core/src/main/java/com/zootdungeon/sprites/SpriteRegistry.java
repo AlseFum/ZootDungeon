@@ -5,6 +5,9 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.HeroClass;
+import com.zootdungeon.actors.hero.HeroSubClass;
+import com.zootdungeon.actors.hero.abilities.ArmorAbility;
+import com.zootdungeon.actors.hero.spells.ClericSpell;
 import com.zootdungeon.tiles.DungeonTileSheet;
 import com.zootdungeon.utils.EventBus;
 import com.watabou.gltextures.SmartTexture;
@@ -224,33 +227,24 @@ public final class SpriteRegistry {
             this.cols = (int) (cache.width / size);
 
             // Rebuild label mappings (overlay switch may recreate the Atlas)
+            // Use Atlas's grid-based get() instead of manual pixel calculation
             for (int i = 0; i < labels.size(); i++) {
                 String label = labels.get(i);
                 if (label == null) continue;
-                int x = i % cols;
-                int y = i / cols;
-                atlas.add(label, x * size, y * size, (x + 1) * size, (y + 1) * size);
+                RectF rect = atlas.get(i);
+                atlas.add(label, rect);
             }
-        }
-
-        private ItemSegment settle(int id) {
-            ensureLoaded();
-            int x = id % cols;
-            int y = id / cols;
-            // Add named frame to Atlas
-            atlas.add(id, x * size, y * size, (x + 1) * size, (y + 1) * size);
-            return this;
         }
 
         public ImageMapping get(int id) {
             ensureLoaded();
             int where = id >= id_start ? id - id_start : id;
             
-            // Get from Atlas
+            // Atlas.get(int) uses grid-based calculation, always returns a valid RectF
             RectF rect = atlas.get(where);
-            if (rect == null) {
-                settle(where);
-                rect = atlas.get(where);
+            // Cache in namedFrames for potential future direct key lookup (performance optimization)
+            if (atlas.get((Object)where) == null) {
+                atlas.add(where, rect);
             }
             
             return new ImageMapping(cache, rect, atlas.height(rect), size);
@@ -259,11 +253,11 @@ public final class SpriteRegistry {
         public ItemSegment label(String label) {
             ensureLoaded();
             ITEM_TEXTURE_ID_MAP.put(label, id_start + id_size);
-            settle(id_size);
-            // Also add the label directly to Atlas for named access
-            int x = id_size % cols;
-            int y = id_size / cols;
-            atlas.add(label, x * size, y * size, (x + 1) * size, (y + 1) * size);
+            
+            // Use Atlas's grid-based get() to get the RectF, then add both id and label keys
+            RectF rect = atlas.get(id_size);
+            atlas.add(id_size, rect);  // Add numeric key
+            atlas.add(label, rect);     // Add named key (reuse same RectF)
 
             // persist label mapping so it survives overlay-driven reload
             while (labels.size() <= id_size) labels.add(null);
@@ -590,11 +584,25 @@ public final class SpriteRegistry {
     public static class IconSegment extends Segment<IconSegment> {
         private final int frameW;
         private final int frameH;
+        private final ArrayList<String> labels = new ArrayList<>();
+        private int id_start;
+        private int id_size;
 
         public IconSegment(Object baseTextureHandle, int frameW, int frameH) {
             super(baseTextureHandle);
             this.frameW = frameW;
             this.frameH = frameH;
+            this.id_start = -1; // Not used for regular icons
+            this.id_size = 0;
+            ensureLoaded();
+        }
+
+        public IconSegment(Object baseTextureHandle, int frameW, int frameH, int id_start) {
+            super(baseTextureHandle);
+            this.frameW = frameW;
+            this.frameH = frameH;
+            this.id_start = id_start;
+            this.id_size = 0;
             ensureLoaded();
         }
 
@@ -606,12 +614,69 @@ public final class SpriteRegistry {
         @Override
         protected void afterLoad() {
             atlas.grid(frameW, frameH);
+            // Rebuild label mappings after reload
+            for (int i = 0; i < labels.size(); i++) {
+                String label = labels.get(i);
+                if (label == null) continue;
+                RectF rect = atlas.get(i);
+                atlas.add(label, rect);
+            }
         }
 
         public ImageMapping get(int index, int size) {
             ensureLoaded();
             RectF rect = atlas.get(index);
             return new ImageMapping(cache, rect, atlas.height(rect), size);
+        }
+
+        public ImageMapping get(int id) {
+            ensureLoaded();
+            if (id_start < 0) {
+                // Regular icon segment, use index directly
+                return get(id, frameW);
+            }
+            // For HeroIcon segments, id is the local grid index (0, 1, 2, ...)
+            // Use id directly as grid index
+            RectF rect = atlas.get(id);
+            if (atlas.get((Object)id) == null) {
+                atlas.add(id, rect);
+            }
+            return new ImageMapping(cache, rect, atlas.height(rect), frameW);
+        }
+
+        public IconSegment label(String label) {
+            if (id_start < 0) {
+                throw new IllegalStateException("label() can only be used on IconSegments with id_start");
+            }
+            ensureLoaded();
+            // Store local index (0, 1, 2, ...) not global ID for HeroIcon
+            HERO_ICON_ID_MAP.put(label, id_size);
+            RectF rect = atlas.get(id_size);
+            atlas.add(id_size, rect);
+            atlas.add(label, rect);
+            while (labels.size() <= id_size) labels.add(null);
+            labels.set(id_size, label);
+            id_size++;
+            return this;
+        }
+
+        public IconSegment span(int size) {
+            if (id_start < 0) {
+                throw new IllegalStateException("span() can only be used on IconSegments with id_start");
+            }
+            for (int i = 0; i < size; i++) labels.add(null);
+            this.id_size += size;
+            return this;
+        }
+
+        public ImageMapping get(String label) {
+            ensureLoaded();
+            RectF rect = atlas.get(label);
+            if (rect != null) {
+                return new ImageMapping(cache, rect, atlas.height(rect), frameW);
+            }
+            Integer id = HERO_ICON_ID_MAP.get(label);
+            return id == null ? null : get(id);
         }
     }
 
@@ -783,6 +848,91 @@ public final class SpriteRegistry {
         return fallbackTexture;
     }
 
+    // ---------------------------
+    // Hero Icon side (must be before static block)
+    // ---------------------------
+
+    // Hero icon segments and ids
+    private static final ArrayList<IconSegment> heroIconSegments = new ArrayList<>();
+    public static final HashMap<String, Integer> HERO_ICON_ID_MAP = new HashMap<>();
+    private static int latestHeroIconLocation = 130000;
+
+    // Hero icon constants (matching HeroIcon class)
+    public static final int HERO_ICON_NONE = 127;
+
+    // Subclasses
+    public static final int HERO_ICON_BERSERKER   = 0;
+    public static final int HERO_ICON_GLADIATOR   = 1;
+    public static final int HERO_ICON_BATTLEMAGE  = 2;
+    public static final int HERO_ICON_WARLOCK     = 3;
+    public static final int HERO_ICON_ASSASSIN    = 4;
+    public static final int HERO_ICON_FREERUNNER  = 5;
+    public static final int HERO_ICON_SNIPER      = 6;
+    public static final int HERO_ICON_WARDEN      = 7;
+    public static final int HERO_ICON_CHAMPION    = 8;
+    public static final int HERO_ICON_MONK        = 9;
+    public static final int HERO_ICON_PRIEST      = 10;
+    public static final int HERO_ICON_PALADIN     = 11;
+
+    // Abilities
+    public static final int HERO_ICON_HEROIC_LEAP     = 16;
+    public static final int HERO_ICON_SHOCKWAVE       = 17;
+    public static final int HERO_ICON_ENDURE          = 18;
+    public static final int HERO_ICON_ELEMENTAL_BLAST = 19;
+    public static final int HERO_ICON_WILD_MAGIC      = 20;
+    public static final int HERO_ICON_WARP_BEACON     = 21;
+    public static final int HERO_ICON_SMOKE_BOMB      = 22;
+    public static final int HERO_ICON_DEATH_MARK      = 23;
+    public static final int HERO_ICON_SHADOW_CLONE    = 24;
+    public static final int HERO_ICON_SPECTRAL_BLADES = 25;
+    public static final int HERO_ICON_NATURES_POWER   = 26;
+    public static final int HERO_ICON_SPIRIT_HAWK     = 27;
+    public static final int HERO_ICON_CHALLENGE       = 28;
+    public static final int HERO_ICON_ELEMENTAL_STRIKE= 29;
+    public static final int HERO_ICON_FEINT           = 30;
+    public static final int HERO_ICON_ASCENDED_FORM   = 31;
+    public static final int HERO_ICON_TRINITY         = 32;
+    public static final int HERO_ICON_POWER_OF_MANY   = 33;
+    public static final int HERO_ICON_RATMOGRIFY      = 34;
+
+    // Cleric Spells
+    public static final int HERO_ICON_GUIDING_LIGHT   = 40;
+    public static final int HERO_ICON_HOLY_WEAPON     = 41;
+    public static final int HERO_ICON_HOLY_WARD       = 42;
+    public static final int HERO_ICON_HOLY_INTUITION  = 43;
+    public static final int HERO_ICON_SHIELD_OF_LIGHT = 44;
+    public static final int HERO_ICON_RECALL_GLYPH    = 45;
+    public static final int HERO_ICON_SUNRAY          = 46;
+    public static final int HERO_ICON_DIVINE_SENSE    = 47;
+    public static final int HERO_ICON_BLESS           = 48;
+    public static final int HERO_ICON_CLEANSE         = 49;
+    public static final int HERO_ICON_RADIANCE        = 50;
+    public static final int HERO_ICON_HOLY_LANCE      = 51;
+    public static final int HERO_ICON_HALLOWED_GROUND = 52;
+    public static final int HERO_ICON_MNEMONIC_PRAYER = 53;
+    public static final int HERO_ICON_SMITE           = 54;
+    public static final int HERO_ICON_LAY_ON_HANDS    = 55;
+    public static final int HERO_ICON_AURA_OF_PROTECTION = 56;
+    public static final int HERO_ICON_WALL_OF_LIGHT   = 57;
+    public static final int HERO_ICON_DIVINE_INTERVENTION = 58;
+    public static final int HERO_ICON_JUDGEMENT       = 59;
+    public static final int HERO_ICON_FLASH           = 60;
+    public static final int HERO_ICON_BODY_FORM       = 61;
+    public static final int HERO_ICON_MIND_FORM       = 62;
+    public static final int HERO_ICON_SPIRIT_FORM     = 63;
+    public static final int HERO_ICON_BEAMING_RAY     = 64;
+    public static final int HERO_ICON_LIFE_LINK       = 65;
+    public static final int HERO_ICON_STASIS          = 66;
+
+    // Action Indicators
+    public static final int HERO_ICON_BERSERK         = 104;
+    public static final int HERO_ICON_COMBO           = 105;
+    public static final int HERO_ICON_PREPARATION     = 106;
+    public static final int HERO_ICON_MOMENTUM        = 107;
+    public static final int HERO_ICON_SNIPERS_MARK    = 108;
+    public static final int HERO_ICON_WEAPON_SWAP     = 109;
+    public static final int HERO_ICON_MONK_ABILITIES  = 110;
+
     static {
         registerItemTexture("minecraft/misc.png", 16)
                 .span(144).label("skel");
@@ -818,6 +968,152 @@ public final class SpriteRegistry {
                 "cola/tiles_chel.png",
                 "cola/tiles_chel.json"
         );
+
+        // Register hero icons
+        registerHeroIconTexture(Assets.Interfaces.HERO_ICONS, 16)
+            // Subclasses
+            .label("BERSERKER")
+            .label("GLADIATOR")
+            .label("BATTLEMAGE")
+            .label("WARLOCK")
+            .label("ASSASSIN")
+            .label("FREERUNNER")
+            .label("SNIPER")
+            .label("WARDEN")
+            .label("CHAMPION")
+            .label("MONK")
+            .label("PRIEST")
+            .label("PALADIN")
+            // Abilities
+            .label("HEROIC_LEAP")
+            .label("SHOCKWAVE")
+            .label("ENDURE")
+            .label("ELEMENTAL_BLAST")
+            .label("WILD_MAGIC")
+            .label("WARP_BEACON")
+            .label("SMOKE_BOMB")
+            .label("DEATH_MARK")
+            .label("SHADOW_CLONE")
+            .label("SPECTRAL_BLADES")
+            .label("NATURES_POWER")
+            .label("SPIRIT_HAWK")
+            .label("CHALLENGE")
+            .label("ELEMENTAL_STRIKE")
+            .label("FEINT")
+            .label("ASCENDED_FORM")
+            .label("TRINITY")
+            .label("POWER_OF_MANY")
+            .label("RATMOGRIFY")
+            // Cleric Spells
+            .label("GUIDING_LIGHT")
+            .label("HOLY_WEAPON")
+            .label("HOLY_WARD")
+            .label("HOLY_INTUITION")
+            .label("SHIELD_OF_LIGHT")
+            .label("RECALL_GLYPH")
+            .label("SUNRAY")
+            .label("DIVINE_SENSE")
+            .label("BLESS")
+            .label("CLEANSE")
+            .label("RADIANCE")
+            .label("HOLY_LANCE")
+            .label("HALLOWED_GROUND")
+            .label("MNEMONIC_PRAYER")
+            .label("SMITE")
+            .label("LAY_ON_HANDS")
+            .label("AURA_OF_PROTECTION")
+            .label("WALL_OF_LIGHT")
+            .label("DIVINE_INTERVENTION")
+            .label("JUDGEMENT")
+            .label("FLASH")
+            .label("BODY_FORM")
+            .label("MIND_FORM")
+            .label("SPIRIT_FORM")
+            .label("BEAMING_RAY")
+            .label("LIFE_LINK")
+            .label("STASIS")
+            // Action Indicators
+            .label("BERSERK")
+            .label("COMBO")
+            .label("PREPARATION")
+            .label("MOMENTUM")
+            .label("SNIPERS_MARK")
+            .label("WEAPON_SWAP")
+            .label("MONK_ABILITIES");
+    }
+
+    public static IconSegment getHeroIconSegment(int id) {
+        // HeroIcon IDs are local indices (0, 1, 2, ...), not global IDs
+        // So we just return the first (and only) hero icon segment
+        if (!heroIconSegments.isEmpty()) {
+            IconSegment s = heroIconSegments.get(0);
+            s.ensureLoaded();
+            return s;
+        }
+        return null;
+    }
+
+    public static int heroIconByName(String name) {
+        Integer res = HERO_ICON_ID_MAP.get(name);
+        return res != null ? res : HERO_ICON_NONE;
+    }
+
+    public static IconSegment registerHeroIconTexture(String texture, int size) {
+        IconSegment s = new IconSegment(texture, size, size, latestHeroIconLocation);
+        heroIconSegments.add(s);
+        latestHeroIconLocation += 1000;
+        return s;
+    }
+
+    public static IconSegment registerHeroIconTexture(String texture) {
+        return registerHeroIconTexture(texture, 16);
+    }
+
+    public static ImageMapping getHeroIconImageMapping(int id) {
+        // Special handling for NONE icon
+        if (id == HERO_ICON_NONE) {
+            return new ImageMapping(
+                TextureCache.get(Assets.Interfaces.HERO_ICONS), 
+                new RectF(0, 0, 1, 1), 
+                16
+            );
+        }
+
+        IconSegment segment = getHeroIconSegment(id);
+        if (segment == null) {
+            // Fallback to NONE icon if no segment found
+            return getHeroIconImageMapping(HERO_ICON_NONE);
+        }
+        return segment.get(id);
+    }
+
+    public static ImageMapping getHeroIconImageMapping(String label) {
+        return getHeroIconImageMapping(heroIconByName(label));
+    }
+
+    // Utility methods for HeroIcon
+    public static int getIconForSubclass(HeroSubClass subClass) {
+        try {
+            return heroIconByName(subClass.name());
+        } catch (Exception e) {
+            return HERO_ICON_NONE;
+        }
+    }
+
+    public static int getIconForArmorAbility(ArmorAbility ability) {
+        try {
+            return heroIconByName(ability.name());
+        } catch (Exception e) {
+            return HERO_ICON_NONE;
+        }
+    }
+
+    public static int getIconForClericSpell(ClericSpell spell) {
+        try {
+            return heroIconByName(spell.name());
+        } catch (Exception e) {
+            return HERO_ICON_NONE;
+        }
     }
 
     // ---------------------------

@@ -53,11 +53,11 @@ public class CloakOfShadows extends Artifact {
 		image = ItemSpriteSheet.ARTIFACT_CLOAK;
 
 		exp = 0;
-		levelCap = 10;
+		levelCap = 15;
 
 		charge = Math.min(level()+3, 10);
 		partialCharge = 0;
-		chargeCap = Math.min(level()+3, 10);
+		chargeCap = Math.max(level()+3, 114514);
 
 		defaultAction = AC_STEALTH;
 
@@ -232,11 +232,11 @@ public class CloakOfShadows extends Artifact {
 		public boolean act() {
 			if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null) {
 				if (activeBuff == null && Regeneration.regenOn()) {
-					float missing = (chargeCap - charge);
+					float missing = Math.min(45,chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;
-					float turnsToCharge = (45 - missing);
+					float turnsToCharge = (20 - missing);
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
-					float chargeToGain = (1f / turnsToCharge);
+					float chargeToGain = (2f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
 						chargeToGain *= 0.75f*Dungeon.hero.pointsInTalent(Talent.LIGHT_CLOAK)/3f;
 					}

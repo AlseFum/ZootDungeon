@@ -1,8 +1,9 @@
-package com.zootdungeon.items;
+package com.zootdungeon.items.cheat;
 
 import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.potions.PotionOfExperience;
 import com.zootdungeon.items.potions.PotionOfFrost;

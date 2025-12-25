@@ -1,9 +1,10 @@
-package com.zootdungeon.items;
+package com.zootdungeon.items.cheat;
 
 import java.util.ArrayList;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.InventoryScroll;
 import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.scrolls.ScrollOfIdentify;

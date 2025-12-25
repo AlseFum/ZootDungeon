@@ -1,8 +1,10 @@
-package com.zootdungeon.items;
+package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Generator.Category;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Reflection;

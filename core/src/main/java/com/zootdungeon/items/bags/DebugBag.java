@@ -3,11 +3,11 @@ package com.zootdungeon.items.bags;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.items.DivineAnkh;
-import com.zootdungeon.items.RedStone;
-import com.zootdungeon.items.Codex;
-import com.zootdungeon.items.Panacea;
+import com.zootdungeon.items.cheat.RedStone;
+import com.zootdungeon.items.cheat.Codex;
+import com.zootdungeon.items.cheat.Panacea;
 
-import com.zootdungeon.items.ItemRemover;
+import com.zootdungeon.items.cheat.ItemRemover;
 import com.zootdungeon.items.supply.Supply;
 import com.zootdungeon.items.supply.testitem;
 public class DebugBag extends Bag {

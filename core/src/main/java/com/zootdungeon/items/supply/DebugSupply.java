@@ -1,12 +1,12 @@
 package com.zootdungeon.items.supply;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.items.Codex;
+import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.DivineAnkh;
-import com.zootdungeon.items.ItemRemover;
-import com.zootdungeon.items.Panacea;
-import com.zootdungeon.items.RedStone;
-import com.zootdungeon.items.AllItemsBox;
+import com.zootdungeon.items.cheat.ItemRemover;
+import com.zootdungeon.items.cheat.Panacea;
+import com.zootdungeon.items.cheat.RedStone;
+import com.zootdungeon.items.cheat.AllItemsBox;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfInvisibility;
 import com.zootdungeon.items.potions.PotionOfStrength;
@@ -19,11 +19,9 @@ import com.zootdungeon.items.stones.StoneOfDungeonTravel;
 import com.zootdungeon.items.stones.StoneOfGeneration;
 import com.zootdungeon.items.stones.StoneOfLevelSelect;
 import com.zootdungeon.items.stones.StoneOfSummoning;
-import com.zootdungeon.items.weapon.accurateWeapon.*;
 import com.zootdungeon.items.weapon.blockWeapon.*;
-import com.zootdungeon.items.weapon.longrangeWeapon.Glaive;
-import com.zootdungeon.items.weapon.longrangeWeapon.Spear;
-import com.zootdungeon.items.weapon.longrangeWeapon.Whip;
+import com.zootdungeon.items.TengusMask;
+import com.zootdungeon.items.KingsCrown;
 // import com.coladungeon.items.weapon.SummonerStaff;
 
 public class DebugSupply extends Supply {
@@ -57,6 +55,8 @@ public class DebugSupply extends Supply {
         put_in(RedStone.class, 1);
         put_in(AllItemsBox.class, 1);
         put_in(AssassinSupply.class,1);
+        put_in(TengusMask.class, 1);
+        put_in(KingsCrown.class, 1);
         onOpen = () -> {
             Dungeon.energy+=10086;
             return null;

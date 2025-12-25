@@ -155,6 +155,8 @@ public final class HeroClassSheet {
                 // 自动识别
                 new ScrollOfMagicMapping().identify();
                 new PotionOfInvisibility().identify();
+
+                new com.zootdungeon.items.scrolls.ScrollOfAmbushRateModification().collect();
             })
             .register();
 
