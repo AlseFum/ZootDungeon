@@ -21,6 +21,7 @@ public final class BuiltinCommands {
         CommandRegistry.register(new Where());
         CommandRegistry.register(new Give());
         CommandRegistry.register(new Explode());
+        CommandRegistry.register(new SetCost());
     }
 
     private static class Give implements Command {
@@ -166,6 +167,28 @@ public final class BuiltinCommands {
             } catch (Exception ex) {
                 GLog.w("参数错误：" + args[0]);
             }
+        }
+    }
+
+    private static class SetCost implements Command {
+        @Override public String name() { return "setcost"; }
+        @Override public String usage() { return "setcost <cost>"; }
+        @Override public void execute(String[] args) {
+            if (args.length == 0) {
+                GLog.w("用法：" + usage());
+                return;
+            }
+
+            int newCost;
+            try {
+                newCost = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                GLog.w("价格必须是数字：" + args[0]);
+                return;
+            }
+
+            Dungeon.cost = newCost;
+            GLog.i("已设置 Dungeon.cost = " + newCost);
         }
     }
 }

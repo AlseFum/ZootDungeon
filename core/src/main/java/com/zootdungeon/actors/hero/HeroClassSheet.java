@@ -260,6 +260,41 @@ public final class HeroClassSheet {
                 new ScrollOfRemoveCurse().identify();
             })
             .register();
+    public static final HeroClass ReservedOp=registerStandardClass("reservedOp")
+            .title("预备干员")
+            .shortDesc("预备干员开局持有罗德岛终端，在精英化后可以选择多个分支。罗德岛终端可以消耗COST以执行各种战术操作。")
+            .desc("预备干员开局持有罗德岛终端。终端可以消耗COST来：\n- 合成特殊物品\n- 部署作战投影\n- 安装战术装置\n- 还有更多...")
+            .classTalentsTier1(
+                Talent.IRON_STOMACH,
+        Talent.LIQUID_WILLPOWER,
+        Talent.RUNIC_TRANSFERENCE,
+        Talent.LETHAL_MOMENTUM
+            )
+            .initializer(hero -> {
+                // 基础武器
+                (hero.belongings.weapon = new Dagger()).identify();
+
+                // 隐身斗篷
+                CloakOfShadows cloak = new CloakOfShadows();
+                (hero.belongings.artifact = cloak).identify();
+                hero.belongings.artifact.activate(hero);
+
+                // 投掷飞刀
+                ThrowingKnife knives = new ThrowingKnife();
+                knives.quantity(3).collect();
+
+                // 快捷栏
+                Dungeon.quickslot.setSlot(0, cloak);
+                Dungeon.quickslot.setSlot(1, knives);
+
+                // 自动识别
+                new ScrollOfMagicMapping().identify();
+                new PotionOfInvisibility().identify();
+                new com.zootdungeon.items.artifacts.RhodesIslandTerminal().identify().collect();
+
+                new com.zootdungeon.items.scrolls.ScrollOfAmbushRateModification().collect();
+            })
+            .register();
 
     // 私有构造函数，防止实例化
     private HeroClassSheet() {

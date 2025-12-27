@@ -192,6 +192,7 @@ public class Dungeon {
 
     public static int gold;
     public static int energy;
+    public static int cost;
 
     public static HashSet<Integer> chapters;
 
@@ -265,6 +266,7 @@ public class Dungeon {
 
         gold = 0;
         energy = 0;
+        cost=0;
 
         droppedItems = new SparseArray<>();
 
@@ -585,6 +587,7 @@ public class Dungeon {
     private static final String GENERATED_LEVELS = "generated_levels";
     private static final String GOLD = "gold";
     private static final String ENERGY = "energy";
+    private static final String COST = "cost";
     private static final String DROPPED = "dropped%d";
     private static final String PORTED = "ported%d";
     private static final String LEVEL = "level";
@@ -613,6 +616,7 @@ public class Dungeon {
 
             bundle.put(GOLD, gold);
             bundle.put(ENERGY, energy);
+            bundle.put(COST,cost);
             bundle.put("heroClass", hero.heroClass.name());
             bundle.put("heroLevel", hero.lvl);
             bundle.put("playTime", (long) Statistics.duration);
@@ -806,6 +810,7 @@ public class Dungeon {
 
         gold = bundle.getInt(GOLD);
         energy = bundle.getInt(ENERGY);
+        cost = bundle.getInt(COST);
 
         Statistics.restoreFromBundle(bundle);
         Generator.restoreFromBundle(bundle);
