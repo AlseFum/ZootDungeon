@@ -57,7 +57,7 @@ public class CloakOfShadows extends Artifact {
 
 		charge = Math.min(level()+3, 10);
 		partialCharge = 0;
-		chargeCap = Math.max(level()+3, 114514);
+		chargeCap = level()+3;
 
 		defaultAction = AC_STEALTH;
 
