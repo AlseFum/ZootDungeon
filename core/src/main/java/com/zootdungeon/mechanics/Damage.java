@@ -7,16 +7,8 @@ import java.util.stream.Collectors;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
-import com.zootdungeon.actors.buffs.AscensionChallenge;
-import com.zootdungeon.actors.buffs.Berserk;
-import com.zootdungeon.actors.buffs.Buff;
-import com.zootdungeon.actors.buffs.ChampionEnemy;
-import com.zootdungeon.actors.buffs.FireImbue;
-import com.zootdungeon.actors.buffs.Fury;
-import com.zootdungeon.actors.buffs.MonkEnergy;
-import com.zootdungeon.actors.buffs.Preparation;
-import com.zootdungeon.actors.buffs.Vulnerable;
-import com.zootdungeon.actors.buffs.Weakness;
+import com.zootdungeon.actors.buffs.*;
+import com.zootdungeon.actors.buffs.PowerStrike;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
@@ -154,6 +146,10 @@ public class Damage {
                 dr = 0;
             }
         }
+        
+        // 检查 PowerStrike buff（在方法开始处获取，以便后续使用）
+        PowerStrike nextAttackBoost = attacker.buff(PowerStrike.class);
+        
         float dmg;
         Preparation prep = attacker.buff(Preparation.class);
         if (prep != null) {
@@ -175,6 +171,12 @@ public class Damage {
                         Collectors.toCollection(ArrayList::new)
                 ));
         dmg *= dmgMulti;
+        
+        // 应用 PowerStrike buff
+        if (nextAttackBoost != null && !nextAttackBoost.used) {
+            dmg *= nextAttackBoost.boostMultiplier;
+        }
+        
         // 处理priority 0的乘法修正
         ArrayList<Augment> priority0Augments = priorityGroups.get((short) 0);
         if (priority0Augments != null) {
@@ -316,6 +318,13 @@ public class Damage {
         
         defender.damage(finalEffectiveDamage, attacker);
         EventBus.fire("PhysicalDamage:afterDamage", "attacker", attacker, "defender", defender, "effectiveDamage", finalEffectiveDamage);
+        
+        // 移除 PowerStrike buff（如果已使用）
+        if (nextAttackBoost != null && !nextAttackBoost.used) {
+            nextAttackBoost.used = true;
+            nextAttackBoost.detach();
+        }
+        
         if (attacker.buff(FireImbue.class) != null) {
             attacker.buff(FireImbue.class).proc(defender);
         }
