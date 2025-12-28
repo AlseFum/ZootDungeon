@@ -51,6 +51,7 @@ import com.zootdungeon.actors.buffs.Stamina;
 import com.zootdungeon.actors.buffs.Terror;
 import com.zootdungeon.actors.buffs.Vertigo;
 import com.zootdungeon.actors.buffs.Vulnerable;
+import com.zootdungeon.arknights.ascalon.Ascalon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.actors.hero.HeroSubClass;
@@ -460,6 +461,8 @@ public abstract class Char extends Actor {
 					speed *= 2f;
 				} else if (buffClass == Slow.class || buffClass == Hex.class || buffClass == Vulnerable.class){
 					speed *= 0.667f;
+				} else if (buffClass == Ascalon.Wound.class){
+					speed *= 0.82f;
 				}
 			}
 		}

@@ -447,7 +447,10 @@ public enum Icons {
 			return 0;
 		}
 	}
-	
+    static {
+        SpriteRegistry.registerItemTexture("cola/command_terminal.png", 32)
+                .label("rhodes_island_terminal");
+    }
 	public static Image get( HeroClass cl ) {
 		if (cl == HeroClass.MAGE) {
 				//mage's staff normally has 2 pixels extra at the top for particle effects, we chop that off here
@@ -464,7 +467,9 @@ public enum Icons {
 				return new ItemSprite(ItemSpriteSheet.RAPIER);
 		} else if (cl == HeroClass.CLERIC) {
 				return new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME);
-		} else {
+		} else if (cl == HeroClass.ReservedOp) {
+            return new ItemSprite(SpriteRegistry.itemByName("rhodes_island_terminal"));
+        } else {
 				return new ItemSprite(ItemSpriteSheet.SEAL); // Default icon for unknown classes
 		}
 	}

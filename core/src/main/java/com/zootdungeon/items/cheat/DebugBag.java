@@ -1,15 +1,19 @@
-package com.zootdungeon.items.bags;
+package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.items.Item;
+import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.items.DivineAnkh;
 import com.zootdungeon.items.cheat.RedStone;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.cheat.Panacea;
-
 import com.zootdungeon.items.cheat.ItemRemover;
 import com.zootdungeon.items.supply.Supply;
-import com.zootdungeon.items.supply.testitem;
+import com.zootdungeon.items.cheat.ThrowingWeaponBox;
+import com.zootdungeon.items.cheat.WandBox;
+import com.zootdungeon.items.cheat.BombBox;
+import com.zootdungeon.items.cheat.ItemEditor;
+
 public class DebugBag extends Bag {
 
     {
@@ -25,7 +29,10 @@ public class DebugBag extends Bag {
             || item instanceof Panacea
             || item instanceof Supply
             || item instanceof ItemRemover
-            || item instanceof testitem
+            || item instanceof ThrowingWeaponBox
+            || item instanceof WandBox
+            || item instanceof BombBox
+            || item instanceof ItemEditor
             ; 
     }
 

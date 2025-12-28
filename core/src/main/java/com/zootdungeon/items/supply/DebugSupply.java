@@ -1,12 +1,18 @@
 package com.zootdungeon.items.supply;
 
+import com.zootdungeon.arknights.ascalon.Ascalon;
+import com.zootdungeon.arknights.SummoningAmbushWeapon;
+
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
+import com.zootdungeon.items.cheat.ItemEditor;
 import com.zootdungeon.items.cheat.Panacea;
 import com.zootdungeon.items.cheat.RedStone;
-import com.zootdungeon.items.cheat.AllItemsBox;
+import com.zootdungeon.items.cheat.ThrowingWeaponBox;
+import com.zootdungeon.items.cheat.WandBox;
+import com.zootdungeon.items.cheat.BombBox;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfInvisibility;
 import com.zootdungeon.items.potions.PotionOfStrength;
@@ -47,13 +53,14 @@ public class DebugSupply extends Supply {
         
         put_in(PotionOfShroudingFog.class, 200);
         put_in(DivineAnkh.class, 1);
-        
-        
         put_in(ItemRemover.class);
+        put_in(ItemEditor.class, 1);
         put_in(Panacea.class, 1);
         put_in(Codex.class, 1);
         put_in(RedStone.class, 1);
-        put_in(AllItemsBox.class, 1);
+        put_in(ThrowingWeaponBox.class, 1);
+        put_in(WandBox.class, 1);
+        put_in(BombBox.class, 1);
         put_in(AssassinSupply.class,1);
         put_in(TengusMask.class, 1);
         put_in(KingsCrown.class, 1);
@@ -61,10 +68,7 @@ public class DebugSupply extends Supply {
             Dungeon.energy+=10086;
             return null;
         };
-        put_in(Katana.class);
-        put_in(Rapier.class);
-        put_in(RoundShield.class);
-        put_in(Greatshield.class)
-;
-    put_in(Quarterstaff.class);}
+        put_in(Ascalon.class, 1);
+        put_in(SummoningAmbushWeapon.class, 1);
+    }
 }

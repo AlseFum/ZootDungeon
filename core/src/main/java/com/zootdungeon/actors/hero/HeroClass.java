@@ -18,6 +18,7 @@ public class HeroClass implements Comparable<HeroClass>, Bundlable {
 	public static final HeroClass HUNTRESS = HeroClassSheet.HUNTRESS;
 	public static final HeroClass DUELIST = HeroClassSheet.valueOf("duelist");
 	public static final HeroClass CLERIC = HeroClassSheet.CLERIC;
+    public static final HeroClass ReservedOp = HeroClassSheet.ReservedOp;
 	// public static final HeroClass HEAVY_SQUAD = HeroClassSheet.HEAVY_SQUAD;
 
 	// 职业属性

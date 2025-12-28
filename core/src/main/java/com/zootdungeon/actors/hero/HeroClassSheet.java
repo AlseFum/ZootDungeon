@@ -29,7 +29,7 @@ import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.armor.ClothArmor;
 import com.zootdungeon.items.artifacts.CloakOfShadows;
 import com.zootdungeon.items.artifacts.HolyTome;
-import com.zootdungeon.items.bags.DebugBag;
+import com.zootdungeon.items.cheat.DebugBag;
 import com.zootdungeon.items.bags.PotionBandolier;
 import com.zootdungeon.items.bags.VelvetPouch;
 import com.zootdungeon.items.food.Food;
@@ -357,7 +357,6 @@ public final class HeroClassSheet {
         new GunSupply().identify().collect();
         new DebugSupply().identify().collect();
         // new AssassinSupply().identify().collect();
-        // new com.zootdungeon.supply.items.coladungeon.testitem().identify().collect();
         new DebugBag().identify().collect();
 
         // new TengusMask().identify().collect();
