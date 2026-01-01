@@ -9,7 +9,7 @@ import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
 import com.zootdungeon.tiles.DungeonTileSheet;
-import com.zootdungeon.utils.EventBus;
+// import com.zootdungeon.utils.EventBus; // EventBus removed - TODO: restore when needed
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.gltextures.Atlas;
@@ -1556,7 +1556,6 @@ public final class SpriteRegistry {
             }
 
             tilesets.put(key, tileset);
-            System.out.println("Registered tileset: " + key + " (texture=" + texturePath + ")");
             return tileset;
         } catch (Exception e) {
             System.out.println("Failed to load tileset JSON for key " + key + " from " + jsonPath);

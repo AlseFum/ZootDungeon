@@ -1,6 +1,7 @@
-package com.zootdungeon.items.stones;
+package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.actors.mobs.Rat;
+import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 public class StoneOfDummy extends Runestone {

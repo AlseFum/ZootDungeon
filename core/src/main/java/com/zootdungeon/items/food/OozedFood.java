@@ -6,7 +6,6 @@ import com.zootdungeon.actors.buffs.Ooze;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.utils.EventBus;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 
@@ -15,37 +14,7 @@ public class OozedFood extends Food {
         image = ItemSpriteSheet.RATION; // Placeholder, replace with appropriate sprite
         stackable = false;
     }
-    public static int a=1;
-    static{
-        System.out.println("OozedFood static block");
-        EventBus.register("ooze", (data) -> {
-            if (data instanceof EventBus.EventData eventData) {
-                Object posObj = eventData.get("pos");
-                
-                if (posObj instanceof Integer pos) {
-                    // Check the heap at the position
-                    if (Dungeon.level.heaps.get(pos) != null) {
-                        // Create a copy of the items list to avoid concurrent modification
-                        java.util.List<Item> itemsCopy = new java.util.ArrayList<>(Dungeon.level.heaps.get(pos).items);
-                        for (Item item : itemsCopy) {
-                            // Check if the item is a food item
-                            if (item instanceof Food && !(item instanceof OozedFood)) {
-                                // Remove the original food
-                                Dungeon.level.heaps.get(pos).items.remove(item);
-
-                                // Create an OozedFood version
-                                OozedFood oozedFood = new OozedFood(item);
-
-                                // Add the OozedFood back to the heap
-                                Dungeon.level.heaps.get(pos).items.add(oozedFood);
-                            }
-                        }
-                    }
-                }
-            }
-            return null; // EventBus.register expects a return value
-        });
-    }
+    // EventBus removed
     // New blessing buff class
     public static class OozedBlessing extends Buff {
         {

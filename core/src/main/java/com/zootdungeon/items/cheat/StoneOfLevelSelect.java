@@ -1,4 +1,4 @@
-package com.zootdungeon.items.stones;
+package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -6,6 +6,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
+import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.InterlevelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;

@@ -163,7 +163,6 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.zootdungeon.utils.EventBus;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
@@ -1558,26 +1557,12 @@ public class Hero extends Char {
 
         damage = Talent.onAttackProc(this, enemy, damage);
 
-        // 1.5 Talent后事件
-            damage = Augment.process(EventBus.fire(
-                "Hero:attackProc:afterTalent",
-                "hero", this,
-                "enemy", enemy,
-                "damage", damage,
-                "wep", wep != null ? wep.getClass().getSimpleName() : "Unarmed"
-            ),damage);
+        // 1.5 Talent后事件 (EventBus removed)
 
         if (wep != null) {
             damage = wep.proc(this, enemy, damage);
 
-            // 2. 武器修正后事件
-            damage = Augment.process(EventBus.fire(
-                    "Hero:attackProc:afterWeapon",
-                    "hero", this,
-                    "enemy", enemy,
-                    "damage", damage,
-                    "wep", wep.getClass().getSimpleName()
-                ), damage);
+            // 2. 武器修正后事件 (EventBus removed)
 
         } else {
             boolean wasEnemy = enemy.alignment == Alignment.ENEMY;
@@ -1634,12 +1619,7 @@ public class Hero extends Char {
 
     @Override
     public int defenseProc(Char enemy, int damage) {
-        damage = Augment.process(EventBus.fire(
-                "Hero:defenseProc:beforeTalent",
-                "hero", this,
-                "enemy", enemy,
-                "damage", damage
-            ),damage);
+        // EventBus removed
 
         if (damage > 0 && subClass == HeroSubClass.BERSERKER) {
             Berserk berserk = Buff.affect(this, Berserk.class);
@@ -1663,12 +1643,7 @@ public class Hero extends Char {
         if (rockArmor != null) {
             damage = rockArmor.absorb(damage);
         }
-        damage = Augment.process(EventBus.fire(
-                "Hero:defenseProc:afterTalent",
-                "hero", this,
-                "enemy", enemy,
-                "damage", damage
-            ),damage);
+        // EventBus removed
         return super.defenseProc(enemy, damage);
     }
 
@@ -1756,15 +1731,7 @@ public class Hero extends Char {
         }
         int effectiveDamage = preHP - postHP;
 
-        // 使用更简洁的方式发布伤害事件
-        if (effectiveDamage > 0) {
-            EventBus.fire(EVENT_HERO_DAMAGE,
-                    "hero", this,
-                    "damage", effectiveDamage,
-                    "source", src,
-                    "previousHealth", preHP,
-                    "currentHealth", postHP);
-        }
+        // EventBus removed
 
         if (effectiveDamage <= 0) {
             return;
@@ -2203,10 +2170,7 @@ public class Hero extends Char {
         }
 
         if (levelUp) {
-            // 使用更简洁的方式发布升级事件
-            EventBus.fire(EVENT_HERO_LEVEL_UP,
-                    "hero", this,
-                    "level", lvl);
+            // EventBus removed
 
             if (sprite != null) {
                 GLog.newLine();
@@ -2289,17 +2253,7 @@ public class Hero extends Char {
                 ankh = i;
             }
         }
-        ArrayList<Object> results = EventBus.fire("Hero:beforeDie", "hero", this, "cause", cause);
-        if (!results.isEmpty()) {
-            if (results.get(0) instanceof BiConsumer bc) {
-                bc.accept(this, cause);
-            } else if (results.get(0) instanceof java.util.function.Function fn) {
-                fn.apply(this);
-            } else {
-                GLog.i("Hero:beforeDie: " + results.get(0));
-            }
-            return;
-        }
+        // EventBus removed
         if (ankh != null) {
             interrupt();
 
@@ -2457,12 +2411,7 @@ public class Hero extends Char {
 
         super.move(step, travelling);
 
-        // 使用更简洁的方式发布移动事件
-        EventBus.fire(EVENT_HERO_MOVE,
-                "hero", this,
-                "fromPosition", oldPos,
-                "toPosition", step,
-                "travelling", travelling);
+        // EventBus removed
 
         if (!flying && travelling) {
             if (Dungeon.level.water[pos]) {
@@ -2498,12 +2447,7 @@ public class Hero extends Char {
 
         boolean hit = attack(enemy);
 
-        // 使用更简洁的方式发布攻击事件
-        EventBus.fire(EVENT_HERO_ATTACKED,
-                "hero", this,
-                "target", enemy,
-                "hit", hit,
-                "wasEnemy", wasEnemy);
+        // EventBus removed
 
         Invisibility.dispel();
         spend(attackDelay());

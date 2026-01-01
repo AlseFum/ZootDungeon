@@ -20,8 +20,6 @@ import com.zootdungeon.items.stones.StoneOfFlock;
 import com.zootdungeon.items.stones.StoneOfIntuition;
 import com.zootdungeon.items.stones.StoneOfDetectMagic;
 import com.zootdungeon.items.stones.StoneOfShock;
-import com.zootdungeon.items.stones.StoneOfGeneration;
-import com.zootdungeon.items.stones.StoneOfDungeonTravel;
 import com.zootdungeon.items.stones.StoneOfDeepSleep;
 import com.zootdungeon.items.stones.StoneOfClairvoyance;
 import com.zootdungeon.items.stones.StoneOfBlink;

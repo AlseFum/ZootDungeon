@@ -1,6 +1,7 @@
 package com.zootdungeon.mechanics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,6 @@ import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.utils.Augment;
-import com.zootdungeon.utils.EventBus;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
@@ -162,14 +162,8 @@ public class Damage {
         }
         //#endregion
         //#region dmgAmplification
-        Map<Short, ArrayList<Augment>> priorityGroups = EventBus.fire("PhysicalDamage", "attacker", attacker, "defender", defender)
-                .stream()
-                .filter(r -> r instanceof Augment)
-                .map(r -> (Augment) r)
-                .collect(Collectors.groupingBy(
-                        augment -> augment.priority,
-                        Collectors.toCollection(ArrayList::new)
-                ));
+        // EventBus removed - empty priority groups
+        Map<Short, ArrayList<Augment>> priorityGroups = new HashMap<>();
         dmg *= dmgMulti;
         
         // 应用 PowerStrike buff
@@ -283,10 +277,7 @@ public class Damage {
         //#endregion
         //#region effectiveDamageAfterDefenseProc
         int effectiveDamage = defender.defenseProc(attacker, Math.round(dmg));
-        int finalEffectiveDamage = Augment.process(
-            EventBus.fire("PhysicalDamage:afterDefense", "attacker", attacker, "defender", defender, "effectiveDamage", effectiveDamage),
-            effectiveDamage
-        );
+        int finalEffectiveDamage = effectiveDamage; // EventBus removed
         //#endregion
         if (finalEffectiveDamage >= 0) {
             finalEffectiveDamage = Math.max(finalEffectiveDamage - dr, 0);
@@ -302,7 +293,7 @@ public class Damage {
 
             finalEffectiveDamage = attacker.attackProc(defender, finalEffectiveDamage);
         } else {
-            EventBus.fire("PhysicalDamage:afterDefense:vanished", "attacker", attacker, "defender", defender, "effectiveDamage", effectiveDamage);
+            // EventBus removed
         }
 
         if (visibleFight) {
@@ -312,12 +303,12 @@ public class Damage {
         }
 
         if (!defender.isAlive()) {
-            EventBus.fire("PhysicalDamage:afterDefense:earlyKilled", "attacker", attacker, "defender", defender, "finalEffectiveDamage", finalEffectiveDamage);
+            // EventBus removed
             return new PhysicalResult(true, finalEffectiveDamage, Interrupt.Else, visibleFight);
         }
         
         defender.damage(finalEffectiveDamage, attacker);
-        EventBus.fire("PhysicalDamage:afterDamage", "attacker", attacker, "defender", defender, "effectiveDamage", finalEffectiveDamage);
+        // EventBus removed
         
         // 移除 PowerStrike buff（如果已使用）
         if (nextAttackBoost != null && !nextAttackBoost.used) {

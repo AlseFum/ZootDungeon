@@ -58,7 +58,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
     
     @Override
     public String name() {
-        return "召唤突袭武器";
+        return "魅影";
     }
     
     @Override
@@ -68,6 +68,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
             desc += "\n\n当前充能: " + charge + "/" + chargeCap;
         }
         desc += "\n\n突袭时如果有充能，会在敌人附近召唤召唤物并同时攻击敌人。充能越强，召唤物越强。";
+        desc += "\n\n武器的等级(tier)也会增强召唤物的基础强度。";
         return desc;
     }
     
@@ -111,11 +112,14 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
             return;
         }
         
-        // 根据充能强度决定召唤物的强度
-        int powerLevel = Math.min(charge, chargeCap);
+        // 根据充能强度和武器tier决定召唤物的强度
+        // tier提供基础加成，charge提供额外加成
+        int basePower = tier * 2; // tier每级提供2点基础力量
+        int chargePower = Math.min(charge, chargeCap);
+        int powerLevel = basePower + chargePower;
         
         // 创建召唤物
-        SummonedMinion minion = new SummonedMinion(powerLevel);
+        SummonedMinion minion = new SummonedMinion(powerLevel, tier);
         minion.pos = summonPos;
         minion.state = minion.HUNTING;
         minion.setTarget(enemy.pos);
@@ -190,6 +194,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
     public static class SummonedMinion extends Mob {
         
         private int powerLevel;
+        private int weaponTier;
         private int idleTurns = 0; // 没有目标时的空闲回合数
         private static final int MAX_IDLE_TURNS = 5; // 最大空闲回合数，超过后消失
         
@@ -207,43 +212,44 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
             state = HUNTING;
         }
         
-        public SummonedMinion(int powerLevel) {
+        public SummonedMinion(int powerLevel, int weaponTier) {
             this.powerLevel = powerLevel;
+            this.weaponTier = weaponTier;
             
-            // 根据充能强度设置属性
-            // powerLevel 范围: 1-20
-            // 基础HP: 10 + powerLevel * 2
-            HP = HT = 10 + powerLevel * 2;
+            // 根据充能强度和武器tier设置属性
+            // powerLevel = tier * 2 + charge，范围更大
+            // 基础HP: 10 + powerLevel * 2 + tier * 3 (tier额外加成)
+            HP = HT = 10 + powerLevel * 2 + weaponTier * 3;
             
-            // 基础防御: 2 + powerLevel
-            defenseSkill = 2 + powerLevel;
+            // 基础防御: 2 + powerLevel + tier (tier额外加成)
+            defenseSkill = 2 + powerLevel + weaponTier;
             
-            // 最大等级: powerLevel / 2 (向上取整)
-            maxLvl = Math.max(1, (powerLevel + 1) / 2);
+            // 最大等级: (powerLevel + tier) / 2 (向上取整)
+            maxLvl = Math.max(1, (powerLevel + weaponTier + 1) / 2);
         }
         
         @Override
         public int damageRoll() {
-            // 伤害: 基础1-3 + powerLevel
+            // 伤害: 基础1-3 + powerLevel + tier (tier额外加成)
             int base = Random.NormalIntRange(1, 3);
-            return base + powerLevel;
+            return base + powerLevel + weaponTier;
         }
         
         @Override
         public int attackSkill(Char target) {
-            // 攻击技能: 基础8 + powerLevel * 2
-            return 8 + powerLevel * 2;
+            // 攻击技能: 基础8 + powerLevel * 2 + tier * 2 (tier额外加成)
+            return 8 + powerLevel * 2 + weaponTier * 2;
         }
         
         @Override
         public int drRoll() {
-            // 伤害减免: 0 到 powerLevel / 2
-            return Random.NormalIntRange(0, powerLevel / 2);
+            // 伤害减免: 0 到 (powerLevel + tier) / 2
+            return Random.NormalIntRange(0, (powerLevel + weaponTier) / 2);
         }
         
         @Override
         public String name() {
-            return "召唤物 (力量 " + powerLevel + ")";
+            return "召唤物 (力量 " + powerLevel + ", 等级 " + weaponTier + ")";
         }
         
         @Override

@@ -6,7 +6,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Ooze;
 import com.zootdungeon.effects.Splash;
-import com.zootdungeon.utils.EventBus;
+// import com.zootdungeon.utils.EventBus; // EventBus removed - TODO: restore when needed
 import com.watabou.utils.PathFinder;
 
 public class OozeTrap extends Trap {
@@ -27,7 +27,7 @@ public class OozeTrap extends Trap {
 				if (ch != null && !ch.flying){
 					Buff.affect(ch, Ooze.class).set( Ooze.DURATION );
 				}
-				EventBus.fire("ooze","level",Dungeon.level,"pos",pos);
+				// EventBus removed
 			}
 		}
 	}

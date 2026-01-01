@@ -32,6 +32,7 @@ import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.cheat.DebugBag;
 import com.zootdungeon.items.bags.PotionBandolier;
 import com.zootdungeon.items.bags.VelvetPouch;
+import com.zootdungeon.items.cheat.ScrollOfAmbushRateModification;
 import com.zootdungeon.items.food.Food;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfInvisibility;
@@ -59,7 +60,7 @@ import com.zootdungeon.items.weapon.missiles.ThrowingKnife;
 import com.zootdungeon.items.weapon.missiles.ThrowingSpike;
 import com.zootdungeon.items.weapon.missiles.ThrowingStone;
 import com.zootdungeon.journal.Catalog;
-import com.zootdungeon.utils.EventBus;
+// import com.zootdungeon.utils.EventBus; // EventBus removed - TODO: restore when needed
 
 public final class HeroClassSheet {
 
@@ -156,7 +157,7 @@ public final class HeroClassSheet {
                 new ScrollOfMagicMapping().identify();
                 new PotionOfInvisibility().identify();
 
-                new com.zootdungeon.items.scrolls.ScrollOfAmbushRateModification().collect();
+                new ScrollOfAmbushRateModification().collect();
             })
             .register();
 
@@ -292,7 +293,7 @@ public final class HeroClassSheet {
                 new PotionOfInvisibility().identify();
                 new com.zootdungeon.items.artifacts.RhodesIslandTerminal().identify().collect();
 
-                new com.zootdungeon.items.scrolls.ScrollOfAmbushRateModification().collect();
+                new ScrollOfAmbushRateModification().collect();
             })
             .register();
 
@@ -362,6 +363,6 @@ public final class HeroClassSheet {
         // new TengusMask().identify().collect();
         // new KingsCrown().identify().collect();
         // 事件通知
-        EventBus.fire("Hero:created", "hero", hero);
+        // EventBus.fire("Hero:created", "hero", hero); // EventBus removed - TODO: restore when needed
     }
 };

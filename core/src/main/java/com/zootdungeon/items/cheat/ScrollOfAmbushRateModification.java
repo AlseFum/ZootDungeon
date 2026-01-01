@@ -18,11 +18,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-package com.zootdungeon.items.scrolls;
+package com.zootdungeon.items.cheat;
 
-import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Belongings;
 import com.zootdungeon.items.Item;
+import com.zootdungeon.items.scrolls.InventoryScroll;
 import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -33,11 +33,11 @@ import com.zootdungeon.windows.WndTextInput;
 public class ScrollOfAmbushRateModification extends InventoryScroll {
 
     {
-        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG; // 使用升级卷轴的图标，或者可以自定义
+        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
         preferredBag = Belongings.Backpack.class;
 
         unique = true;
-        anonymous = true; // 始终已识别，不需要鉴定
+        anonymous = true;
     }
     
     @Override

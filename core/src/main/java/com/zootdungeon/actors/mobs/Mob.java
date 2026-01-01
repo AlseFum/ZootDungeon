@@ -68,7 +68,6 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.plants.Swiftthistle;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
-import com.zootdungeon.utils.EventBus;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -692,12 +691,7 @@ public abstract class Mob extends Char {
 			Statistics.thrownAttacks++;
 			Badges.validateHuntressUnlock();
 		}
-		damage = Augment.process(EventBus.fire(
-                "Mob:defenseProc:beforeTalent",
-                "mob", this,
-                "enemy", enemy,
-                "damage", damage
-            ),damage);
+		// EventBus removed
 		if (surprisedBy(enemy)) {
 			Statistics.sneakAttacks++;
 			Badges.validateRogueUnlock();
@@ -726,12 +720,7 @@ public abstract class Mob extends Char {
 				recentlyAttackedBy.add(enemy);
 			}
 		}
-		damage = Augment.process(EventBus.fire(
-                "Mob:defenseProc:afterTalent",
-                "mob", this,
-                "enemy", enemy,
-                "damage", damage
-            ),damage);
+		// EventBus removed
 		if (buff(SoulMark.class) != null) {
 			int restoration = Math.min(damage, HP+shielding());
 			

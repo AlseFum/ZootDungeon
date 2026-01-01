@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.stones;
+package com.zootdungeon.items.cheat;
 
 import java.util.ArrayList;
 
@@ -31,6 +31,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Gold;
 import com.zootdungeon.items.Item;
+import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;

@@ -1,4 +1,4 @@
-package com.zootdungeon.items.stones;
+package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Bat;
@@ -13,6 +13,7 @@ import com.zootdungeon.actors.mobs.Skeleton;
 import com.zootdungeon.actors.mobs.Slime;
 import com.zootdungeon.actors.mobs.Succubus;
 import com.zootdungeon.actors.mobs.Warlock;
+import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;

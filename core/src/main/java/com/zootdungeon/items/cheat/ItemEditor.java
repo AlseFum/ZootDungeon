@@ -13,6 +13,7 @@ public class ItemEditor extends Item {
 
     {
         image = ItemSpriteSheet.SCROLL_HOLDER;
+        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
         stackable = false;
         unique = true;
         defaultAction = AC_EDIT;

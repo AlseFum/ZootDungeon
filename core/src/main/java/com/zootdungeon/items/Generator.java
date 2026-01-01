@@ -183,7 +183,7 @@ import com.zootdungeon.plants.Starflower;
 import com.zootdungeon.plants.Stormvine;
 import com.zootdungeon.plants.Sungrass;
 import com.zootdungeon.plants.Swiftthistle;
-import com.zootdungeon.utils.EventBus;
+// import com.zootdungeon.utils.EventBus; // EventBus removed - TODO: restore when needed
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
@@ -576,7 +576,7 @@ public class Generator {
 
 		registerItem(Category.AMMO, Ammo.class, 2f);
 
-		EventBus.fire("Generator:InitializeItems");
+		// EventBus.fire("Generator:InitializeItems"); // EventBus removed - TODO: restore when needed
 		// 更新有两套概率的类别的总概率
 		updateCategoryTotalProbs();
 	}

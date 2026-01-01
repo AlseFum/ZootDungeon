@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.stones;
+package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -29,6 +29,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
+import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.InterlevelScene;

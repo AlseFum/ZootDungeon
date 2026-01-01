@@ -2,6 +2,8 @@ package com.zootdungeon.items.supply;
 
 import com.zootdungeon.arknights.ascalon.Ascalon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
+import com.zootdungeon.arknights.WandOfPrisonCage;
+import com.zootdungeon.arknights.RhodesStandardWand;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.cheat.Codex;
@@ -20,12 +22,11 @@ import com.zootdungeon.items.potions.exotic.PotionOfShroudingFog;
 import com.zootdungeon.items.scrolls.ScrollOfIdentify;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.items.stones.StoneOfDeath;
-import com.zootdungeon.items.stones.StoneOfDummy;
-import com.zootdungeon.items.stones.StoneOfDungeonTravel;
-import com.zootdungeon.items.stones.StoneOfGeneration;
-import com.zootdungeon.items.stones.StoneOfLevelSelect;
-import com.zootdungeon.items.stones.StoneOfSummoning;
-import com.zootdungeon.items.weapon.blockWeapon.*;
+import com.zootdungeon.items.cheat.StoneOfDummy;
+import com.zootdungeon.items.cheat.StoneOfDungeonTravel;
+import com.zootdungeon.items.cheat.StoneOfGeneration;
+import com.zootdungeon.items.cheat.StoneOfLevelSelect;
+import com.zootdungeon.items.cheat.StoneOfSummoning;
 import com.zootdungeon.items.TengusMask;
 import com.zootdungeon.items.KingsCrown;
 // import com.coladungeon.items.weapon.SummonerStaff;
@@ -70,5 +71,7 @@ public class DebugSupply extends Supply {
         };
         put_in(Ascalon.class, 1);
         put_in(SummoningAmbushWeapon.class, 1);
+        put_in(WandOfPrisonCage.class, 1);
+        put_in(RhodesStandardWand.class, 1);
     }
 }
