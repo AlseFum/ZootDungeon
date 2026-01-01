@@ -4,6 +4,7 @@ import com.zootdungeon.arknights.ascalon.Ascalon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
 import com.zootdungeon.arknights.RhodesStandardWand;
+import com.zootdungeon.arknights.SummoningThrowingWeapon;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.cheat.Codex;
@@ -73,5 +74,6 @@ public class DebugSupply extends Supply {
         put_in(SummoningAmbushWeapon.class, 1);
         put_in(WandOfPrisonCage.class, 1);
         put_in(RhodesStandardWand.class, 1);
+        put_in(SummoningThrowingWeapon.class, 50);
     }
 }
