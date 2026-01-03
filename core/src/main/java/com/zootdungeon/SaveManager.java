@@ -49,13 +49,10 @@ public class SaveManager {
     private static final String SAVE_FILE_PATTERN = "save-%03d.json";
 
     private static final String LEVELS_KEY = "levels";
-    
-    // 存档信息缓存
+
     private static final HashMap<Integer, SaveInfo> saveInfoCache = new HashMap<>();
     
-    /**
-     * 存档信息（用于快速显示存档列表）
-     */
+
     public static class SaveInfo {
         public int slot;
         public String heroClass;
@@ -135,10 +132,8 @@ public class SaveManager {
             SaveInfo info = new SaveInfo(slot);
             info.extractFromBundle(bundle);
             saveInfoCache.put(slot, info);
-            
-            log("SAVE", filename, true);
+
         } catch (IOException e) {
-            log("SAVE", filename, false);
             throw e;
         }
     }
@@ -181,7 +176,6 @@ public class SaveManager {
             info.extractFromBundle(bundle);
             saveInfoCache.put(slot, info);
             
-            log("LOAD", filename, true);
             return bundle;
         } catch (IOException e) {
             log("LOAD", filename, false);
@@ -224,9 +218,10 @@ public class SaveManager {
         
         if (success) {
             saveInfoCache.remove(slot);
+        } else {
+            log("DELETE", filename, false);
         }
         
-        log("DELETE", filename, success);
         return success;
     }
     
@@ -257,10 +252,8 @@ public class SaveManager {
         try {
             Bundle data = loadGame(fromSlot);
             saveGame(toSlot, data);
-            log("COPY", fromSlot + " -> " + toSlot, true);
             return true;
         } catch (IOException e) {
-            log("COPY", fromSlot + " -> " + toSlot, false);
             return false;
         }
     }
@@ -281,9 +274,7 @@ public class SaveManager {
             bundle.put("version", Game.versionCode);
             
             FileUtils.bundleToFile(GLOBAL_FILE, bundle);
-            log("SAVE_GLOBAL", GLOBAL_FILE, true);
         } catch (IOException e) {
-            log("SAVE_GLOBAL", GLOBAL_FILE, false);
             throw e;
         }
     }
@@ -296,10 +287,9 @@ public class SaveManager {
     public static Bundle loadGlobal() {
         try {
             Bundle bundle = FileUtils.bundleFromFile(GLOBAL_FILE);
-            log("LOAD_GLOBAL", GLOBAL_FILE, true);
             return bundle;
         } catch (IOException e) {
-            log("LOAD_GLOBAL", GLOBAL_FILE + " (not found, creating new)", true);
+            // 文件不存在时创建新的Bundle是正常情况，不记录日志
             return new Bundle();
         }
     }
@@ -321,7 +311,6 @@ public class SaveManager {
             String json = global.toString();
             
             Gdx.app.getClipboard().setContents(json);
-            log("EXPORT_GLOBAL", "to clipboard", true);
             return true;
         } catch (Exception e) {
             log("EXPORT_GLOBAL", "to clipboard", false);
@@ -344,7 +333,6 @@ public class SaveManager {
             Bundle imported = Bundle.read(new java.io.ByteArrayInputStream(json.getBytes("UTF-8")));
             
             saveGlobal(imported);
-            log("IMPORT_GLOBAL", "from clipboard", true);
             return true;
         } catch (Exception e) {
             log("IMPORT_GLOBAL", "from clipboard", false);
@@ -467,7 +455,6 @@ public class SaveManager {
             String json = bundle.toString();
             
             Gdx.app.getClipboard().setContents(json);
-            log("EXPORT", "slot " + slot + " to clipboard", true);
             return true;
         } catch (Exception e) {
             log("EXPORT", "slot " + slot + " to clipboard", false);
@@ -499,7 +486,6 @@ public class SaveManager {
             }
             
             saveGame(slot, bundle);
-            log("IMPORT", "from clipboard to slot " + slot, true);
             return slot;
         } catch (Exception e) {
             log("IMPORT", "from clipboard", false);
@@ -596,74 +582,6 @@ public class SaveManager {
     private static String formatTimestamp(long time) {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm");
         return sdf.format(new java.util.Date(time));
-    }
-    
-    // ========================================
-    // 迁移工具（兼容旧版存档）
-    // ========================================
-    
-    /**
-     * 从旧版本存档迁移
-     * 旧版本：game1/game.dat, game1/depth1.dat, ...
-     * 新版本：save-001.json（包含所有数据）
-     * 
-     * @param oldSlot 旧存档槽（game1, game2, ...）
-     * @param newSlot 新存档槽（1, 2, ...）
-     * @return 是否成功迁移
-     */
-    public static boolean migrateFromLegacy(int oldSlot, int newSlot) {
-        try {
-            // 读取旧版主文件
-            String oldGameFile = String.format("game%d/game.dat", oldSlot);
-            Bundle mainBundle = FileUtils.bundleFromFile(oldGameFile);
-            
-            // 合并所有深度文件
-            Bundle levelsBundle = new Bundle();
-            for (int depth = 1; depth <= 30; depth++) {
-                String depthFile = String.format("game%d/depth%d.dat", oldSlot, depth);
-                if (FileUtils.fileExists(depthFile)) {
-                    try {
-                        Bundle levelData = FileUtils.bundleFromFile(depthFile);
-                        levelsBundle.put("depth_" + depth + "_0", levelData);
-                    } catch (IOException e) {
-                        // 深度文件可能不存在，跳过
-                    }
-                }
-            }
-            
-            // 合并数据
-            mainBundle.put("levels", levelsBundle);
-            
-            // 保存为新格式
-            saveGame(newSlot, mainBundle);
-            
-            log("MIGRATE", String.format("game%d -> save-%03d", oldSlot, newSlot), true);
-            return true;
-        } catch (Exception e) {
-            log("MIGRATE", String.format("game%d -> save-%03d", oldSlot, newSlot), false);
-            return false;
-        }
-    }
-    
-    /**
-     * 批量迁移所有旧存档
-     * 
-     * @return 成功迁移的数量
-     */
-    public static int migrateAllLegacySaves() {
-        int count = 0;
-        
-        for (int slot = 1; slot <= MAX_SLOTS; slot++) {
-            String oldGameFile = String.format("game%d/game.dat", slot);
-            if (FileUtils.fileExists(oldGameFile) && !saveExists(slot)) {
-                if (migrateFromLegacy(slot, slot)) {
-                    count++;
-                }
-            }
-        }
-        
-        log("MIGRATE_ALL", count + " saves migrated", true);
-        return count;
     }
 
     private static String levelKey(int depth, int branch) {

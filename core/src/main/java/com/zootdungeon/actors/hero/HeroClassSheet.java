@@ -32,7 +32,6 @@ import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.cheat.DebugBag;
 import com.zootdungeon.items.bags.PotionBandolier;
 import com.zootdungeon.items.bags.VelvetPouch;
-import com.zootdungeon.items.cheat.ScrollOfAmbushRateModification;
 import com.zootdungeon.items.food.Food;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfInvisibility;
@@ -157,7 +156,6 @@ public final class HeroClassSheet {
                 new ScrollOfMagicMapping().identify();
                 new PotionOfInvisibility().identify();
 
-                new ScrollOfAmbushRateModification().collect();
             })
             .register();
 
@@ -293,7 +291,6 @@ public final class HeroClassSheet {
                 new PotionOfInvisibility().identify();
                 new com.zootdungeon.items.artifacts.RhodesIslandTerminal().identify().collect();
 
-                new ScrollOfAmbushRateModification().collect();
             })
             .register();
 
