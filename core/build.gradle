@@ -10,4 +10,7 @@ java{
 dependencies {
     api project(':SPD-classes')
     implementation project(':services')
+    
+    // Lua scripting support
+    implementation 'org.luaj:luaj-jse:3.0.1'
 }

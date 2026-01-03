@@ -74,6 +74,16 @@ public class WndGame extends Window {
 			curBtn.icon(Icons.get(Icons.INFO));
 		}
 
+		// Lua脚本执行器
+		addButton( curBtn = new RedButton( "Lua脚本" ) {
+			@Override
+			protected void onClick() {
+				hide();
+				GameScene.show(new WndLuaScript());
+			}
+		});
+		curBtn.icon(Icons.get(Icons.INFO));
+
 		// Challenges window
 		if (Dungeon.challenges > 0) {
 			addButton( curBtn = new RedButton( Messages.get(this, "challenges") ) {

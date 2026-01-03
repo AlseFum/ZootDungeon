@@ -1181,10 +1181,12 @@ public class WndSettings extends WndTabbed {
 			else if (currLang.status() == Languages.Status.O_COMPLETE) info += Messages.get(this, "completed");
 			else if (currLang.status() == Languages.Status.__UNREVIEW) info += Messages.get(this, "unreviewed");
 			else if (currLang.status() == Languages.Status.X_UNFINISH) info += Messages.get(this, "unfinished");
+			else if (currLang.status() == Languages.Status.N_NOT_MAINTAINED) info += Messages.get(this, "notmaintained");
 			txtLangInfo.text(info);
 
 			if (currLang.status() == Languages.Status.__UNREVIEW) txtLangInfo.setHightlighting(true, CharSprite.WARNING);
 			else if (currLang.status() == Languages.Status.X_UNFINISH) txtLangInfo.setHightlighting(true, CharSprite.NEGATIVE);
+			else if (currLang.status() == Languages.Status.N_NOT_MAINTAINED) txtLangInfo.setHightlighting(true, CharSprite.WARNING);
 			add(txtLangInfo);
 
 			sep2 = new ColorBlock(1, 1, 0xFF000000);
@@ -1222,6 +1224,9 @@ public class WndSettings extends WndTabbed {
 							break;
 						case __UNREVIEW:
 							btn.textColor(0xBBBBBB);
+							break;
+						case N_NOT_MAINTAINED:
+							btn.textColor(0x999999);
 							break;
 					}
 				}

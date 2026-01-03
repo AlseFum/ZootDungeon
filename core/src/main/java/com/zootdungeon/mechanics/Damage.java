@@ -35,33 +35,6 @@ import com.zootdungeon.utils.Augment;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
-/**
- * 伤害类型系统 这个类用于处理游戏中所有可能的伤害类型
- *
- * 1. 物理伤害类型： - 普通攻击伤害 (Normal Attack) - 武器伤害 (Weapon Damage) - 徒手攻击伤害 (Unarmed
- * Attack) - 远程武器伤害 (Ranged Weapon)
- *
- * 2. 元素伤害类型： - 火焰伤害 (Fire) - 冰冻伤害 (Frost) - 闪电伤害 (Lightning) - 酸液伤害 (Acid) -
- * 毒素伤害 (Poison) - 神圣伤害 (Holy) - 暗影伤害 (Shadow) - 奥术伤害 (Arcane)
- *
- * 3. 状态效果伤害： - 流血伤害 (Bleeding) - 燃烧伤害 (Burning) - 中毒伤害 (Poisoned) - 腐蚀伤害
- * (Corrosion) - 麻痹伤害 (Paralysis) - 虚弱伤害 (Weakness) - 混乱伤害 (Confusion)
- *
- * 4. 环境伤害： - 陷阱伤害 (Trap) - 地形伤害 (Terrain) - 坠落伤害 (Fall) - 饥饿伤害 (Hunger) - 窒息伤害
- * (Suffocation)
- *
- * 5. 特殊技能伤害： - 狂暴伤害 (Berserk) - 死亡标记伤害 (Death Mark) - 神圣武器伤害 (Holy Weapon) -
- * 重击伤害 (Smite) - 范围伤害 (Area of Effect) - 溅射伤害 (Splash) - 穿透伤害 (Piercing)
- *
- * 6. 特殊机制伤害： - 生命链接伤害 (Life Link) - 反伤伤害 (Thorns) - 吸血伤害 (Life Steal) - 真实伤害
- * (True Damage) - 百分比伤害 (Percentage Damage) - 最大生命值伤害 (Max HP Damage)
- *
- * 7. 特殊状态伤害： - 诅咒伤害 (Curse) - 混乱伤害 (Chaos) - 恐惧伤害 (Fear) - 魅惑伤害 (Charm) - 眩晕伤害
- * (Stun)
- *
- * 8. 特殊效果伤害： - 爆炸伤害 (Explosion) - 冲击波伤害 (Shockwave) - 能量伤害 (Energy) - 精神伤害
- * (Mental) - 灵魂伤害 (Soul)
- */
 public class Damage {
 
     public static enum Interrupt {
