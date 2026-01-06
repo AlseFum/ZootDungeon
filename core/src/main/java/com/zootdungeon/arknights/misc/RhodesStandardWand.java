@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.arknights.misc;
 
 import com.watabou.noosa.audio.Sample;
 import com.zootdungeon.Assets;
@@ -29,6 +29,7 @@ import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -45,14 +46,22 @@ public class RhodesStandardWand extends Wand {
         collisionProperties = Ballistica.MAGIC_BOLT;
     }
     
-    @Override
-    public String name() {
-        return "罗德岛标准法杖";
+    public int min() {
+        return min(buffedLvl());
     }
     
-    @Override
-    public String info() {
-        return "一把标准的魔法法杖，发射普通的魔法弹攻击敌人。";
+    public int min(int lvl) {
+        // 基础伤害：2 + 等级
+        return 2 + lvl;
+    }
+    
+    public int max() {
+        return max(buffedLvl());
+    }
+    
+    public int max(int lvl) {
+        // 基础伤害：8 + 2*等级
+        return 8 + 2 * lvl;
     }
     
     @Override
@@ -71,9 +80,15 @@ public class RhodesStandardWand extends Wand {
     
     private int damageRoll() {
         // 基础伤害：2 + 等级 到 8 + 2*等级
-        int min = 2 + buffedLvl();
-        int max = 8 + 2 * buffedLvl();
-        return Random.NormalIntRange(min, max);
+        return Random.NormalIntRange(min(), max());
+    }
+    
+    @Override
+    public String statsDesc() {
+        if (levelKnown)
+            return Messages.get(this, "stats_desc", min(), max());
+        else
+            return Messages.get(this, "stats_desc", min(0), max(0));
     }
     
     @Override

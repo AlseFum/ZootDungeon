@@ -19,17 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.arknights.misc;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.SpriteRegistry;
 
 public class RhodesStandardShield extends MeleeWeapon {
     
+    static {
+        SpriteRegistry.registerItemTexture("cola/rhodes_shield.png", 32)
+                .label("rhodes_shield");
+    }
+    
     {
-        image = ItemSpriteSheet.ROUND_SHIELD;
+        image = SpriteRegistry.itemByName("rhodes_shield");
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         
@@ -41,15 +47,8 @@ public class RhodesStandardShield extends MeleeWeapon {
     public int drPerLevel = 1;
     
     @Override
-    public String name() {
-        return "罗德岛标准盾牌";
-    }
-    
-    @Override
-    public String info() {
-        String info = "一面标准的盾牌，可以提供一定的格挡能力。";
-        info += "\n\n这把武器可以格挡 0-" + DRMax() + " 点伤害。格挡值随升级提升。";
-        return info;
+    public String statsInfo() {
+        return Messages.get(this, "stats_desc", DRMax());
     }
     
     @Override

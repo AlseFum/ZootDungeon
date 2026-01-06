@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.arknights.misc;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
@@ -33,16 +33,6 @@ public class RhodesStandardSword extends MeleeWeapon {
         hitSoundPitch = 1.0f;
         
         tier = 0;
-    }
-    
-    @Override
-    public String name() {
-        return "罗德岛标准剑";
-    }
-    
-    @Override
-    public String info() {
-        return "一把标准的单手剑，平衡的伤害和速度，没有特殊功能。";
     }
     
     @Override

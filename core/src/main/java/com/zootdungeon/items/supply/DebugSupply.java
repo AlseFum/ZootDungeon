@@ -3,12 +3,8 @@ package com.zootdungeon.items.supply;
 import com.zootdungeon.arknights.ascalon.Ascalon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
-import com.zootdungeon.arknights.RhodesStandardWand;
 import com.zootdungeon.arknights.SummoningThrowingWeapon;
-import com.zootdungeon.arknights.RhodesStandardSword;
-import com.zootdungeon.arknights.RhodesStandardShield;
-import com.zootdungeon.arknights.RhodesStandardBow;
-import com.zootdungeon.arknights.RhodesStandardBow.Arrow;
+import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.cheat.Codex;
@@ -73,12 +69,8 @@ public class DebugSupply extends Supply {
         put_in(Ascalon.class, 1);
         put_in(SummoningAmbushWeapon.class, 1);
         put_in(WandOfPrisonCage.class, 1);
-        put_in(RhodesStandardWand.class, 1);
+        put_in(RhodesStandardWeaponSupply.class, 1);
         put_in(SummoningThrowingWeapon.class, 50);
-        put_in(RhodesStandardSword.class, 1);
-        put_in(RhodesStandardShield.class, 1);
-        put_in(RhodesStandardBow.class, 1);
-        put_in(Arrow.class, 50);
         onOpen = () -> {
             Dungeon.energy+=10086;
             return null;

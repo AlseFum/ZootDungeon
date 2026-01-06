@@ -49,6 +49,11 @@ public class HeroSprite extends CharSprite {
 	private Animation fly;
 	private Animation read;
 
+	static {
+		// Register ReservedOp texture
+		SpriteRegistry.registerHeroTexture(HeroClass.ReservedOp, "cola/guard.png");
+	}
+
 	public HeroSprite() {
 		super();
 		
@@ -69,31 +74,58 @@ public class HeroSprite extends CharSprite {
 	}
 	
 	public void updateArmor() {
+		// Special handling for ReservedOp
+		if (Dungeon.hero.heroClass == HeroClass.ReservedOp) {
+			TextureFilm film = new TextureFilm(texture, 22, 23);
 
-		TextureFilm film = new TextureFilm( tiers(), Dungeon.hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
-		
-		idle = new Animation( 1, true );
-		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
-		
-		run = new Animation( RUN_FRAMERATE, true );
-		run.frames( film, 2, 3, 4, 5, 6, 7 );
-		
-		die = new Animation( 20, false );
-		die.frames( film, 8, 9, 10, 11, 12, 11 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( film, 13, 14, 15, 0 );
-		
-		zap = attack.clone();
-		
-		operate = new Animation( 8, false );
-		operate.frames( film, 16, 17, 16, 17 );
-		
-		fly = new Animation( 1, true );
-		fly.frames( film, 18 );
+			idle = new Animation(5, true);
+			idle.frames(film, 0, 1, 0, 2);
 
-		read = new Animation( 20, false );
-		read.frames( film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19 );
+			run = new Animation(15, true);
+			run.frames(film, 2, 3, 4, 5, 6, 7);
+
+			attack = new Animation(20, false);
+			attack.frames(film, 14, 15, 16, 17, 18, 19);
+
+			die = new Animation(24, false);
+			die.frames(film, 8, 9, 10, 11, 12, 13);
+
+			zap = attack.clone();
+
+			operate = new Animation(8, false);
+			operate.frames(film, 20, 21, 22, 23, 24, 25, 26, 27);
+
+			fly = new Animation(1, true);
+			fly.frames(film, 28);
+
+			read = new Animation(20, false);
+			read.frames(film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19);
+		} else {
+			TextureFilm film = new TextureFilm( tiers(), Dungeon.hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
+			
+			idle = new Animation( 1, true );
+			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
+			
+			run = new Animation( RUN_FRAMERATE, true );
+			run.frames( film, 2, 3, 4, 5, 6, 7 );
+			
+			die = new Animation( 20, false );
+			die.frames( film, 8, 9, 10, 11, 12, 11 );
+			
+			attack = new Animation( 15, false );
+			attack.frames( film, 13, 14, 15, 0 );
+			
+			zap = attack.clone();
+			
+			operate = new Animation( 8, false );
+			operate.frames( film, 16, 17, 16, 17 );
+			
+			fly = new Animation( 1, true );
+			fly.frames( film, 18 );
+
+			read = new Animation( 20, false );
+			read.frames( film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19 );
+		}
 		
 		if (Dungeon.hero.isAlive())
 			idle();

@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.arknights.misc;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -30,14 +30,12 @@ import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
-import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.sprites.MissileSprite;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -54,18 +52,6 @@ public class RhodesStandardBow extends MeleeWeapon {
         
         tier = 0;
         DLY = 1.0f;
-    }
-    
-    @Override
-    public String name() {
-        return "罗德岛标准弓";
-    }
-    
-    @Override
-    public String info() {
-        String info = "一把标准的弓，需要消耗箭才能进行远程攻击。";
-        info += "\n\n如果没有箭，只能进行近战攻击。";
-        return info;
     }
     
     @Override
@@ -90,7 +76,7 @@ public class RhodesStandardBow extends MeleeWeapon {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SHOOT)) {
-            return "射击";
+            return Messages.get(this, "action_shoot");
         }
         return super.actionName(action, hero);
     }
@@ -103,7 +89,7 @@ public class RhodesStandardBow extends MeleeWeapon {
             // 检查是否有箭
             Arrow arrow = findArrow(hero);
             if (arrow == null) {
-                GLog.w("没有箭！只能进行近战攻击。");
+                GLog.w(Messages.get(this, "no_arrows_melee"));
                 return;
             }
             
@@ -162,7 +148,7 @@ public class RhodesStandardBow extends MeleeWeapon {
                     // 远程目标，需要箭
                     Arrow arrow = findArrow(curUser);
                     if (arrow == null) {
-                        GLog.w("没有箭！无法进行远程攻击。");
+                        GLog.w(Messages.get(RhodesStandardBow.this, "no_arrows_ranged"));
                         return;
                     }
                     
@@ -178,7 +164,7 @@ public class RhodesStandardBow extends MeleeWeapon {
         
         @Override
         public String prompt() {
-            return "选择目标";
+            return Messages.get(RhodesStandardBow.this, "prompt");
         }
     };
     
@@ -216,15 +202,6 @@ public class RhodesStandardBow extends MeleeWeapon {
             return bow;
         }
         
-        @Override
-        public String name() {
-            return "箭";
-        }
-        
-        @Override
-        public String info() {
-            return "标准的箭矢，用于弓的远程攻击。箭会粘附在敌人身上。";
-        }
         
         @Override
         public ArrayList<String> actions(Hero hero) {
