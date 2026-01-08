@@ -6,13 +6,18 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndBag;
 import com.zootdungeon.windows.WndItemEditor;
 
 public class ItemEditor extends Item {
-
+    static {
+        SpriteRegistry.registerItemTexture("cola/handle.png", 16)
+                .label("handle_holder");
+    }
+    
     {
-        image = ItemSpriteSheet.SCROLL_HOLDER;
+        image = SpriteRegistry.itemByName("handle_holder");
         icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
         stackable = false;
         unique = true;

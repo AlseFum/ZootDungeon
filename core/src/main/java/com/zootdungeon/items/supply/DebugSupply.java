@@ -1,6 +1,7 @@
 package com.zootdungeon.items.supply;
 
 import com.zootdungeon.arknights.ascalon.Ascalon;
+import com.zootdungeon.arknights.RangeReducedWeapon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
 import com.zootdungeon.arknights.SummoningThrowingWeapon;
@@ -69,6 +70,7 @@ public class DebugSupply extends Supply {
         put_in(Ascalon.class, 1);
         put_in(SummoningAmbushWeapon.class, 1);
         put_in(WandOfPrisonCage.class, 1);
+        put_in(RangeReducedWeapon.class, 1);
         put_in(RhodesStandardWeaponSupply.class, 1);
         put_in(SummoningThrowingWeapon.class, 50);
         onOpen = () -> {
