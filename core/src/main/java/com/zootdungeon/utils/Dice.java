@@ -16,7 +16,7 @@ public class Dice {
             this.amount = amount;
             this.sides = sides;
         }
-        public Die of(int amount, int sides) {
+        public static Die of(int amount, int sides) {
             Die die=new Die(amount,sides);
             return die;
         }

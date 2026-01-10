@@ -27,63 +27,35 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.FloatingText;
-import com.zootdungeon.journal.Catalog;
-import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-
-public class Gold extends Item {
+public class Gold extends Item.MassiveResource {
 
 	{
 		image = ItemSpriteSheet.GOLD;
-		stackable = true;
 	}
-	
-	public Gold() {
-		this( 1 );
-	}
-	
+
 	public Gold( int value ) {
-		this.quantity = value;
+		super(value);
 	}
 	
 	@Override
-	public ArrayList<String> actions( Hero hero ) {
-		return new ArrayList<>();
-	}
-	
-	@Override
-	public boolean doPickUp(Hero hero, int pos) {
-
-		Catalog.setSeen(getClass());
-		Statistics.itemTypesDiscovered.add(getClass());
-
+	protected boolean onPickUp(Hero hero, int pos) {
 		Dungeon.gold += quantity;
 		Statistics.goldCollected += quantity;
 		Badges.validateGoldCollected();
 
-		GameScene.pickUp( this, pos );
 		hero.sprite.showStatusWithIcon( CharSprite.NEUTRAL, Integer.toString(quantity), FloatingText.GOLD );
-		hero.spendAndNext( TIME_TO_PICK_UP );
 		
+		return true;
+	}
+
+	@Override
+	protected void playPickUpSound() {
 		Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );
-		updateQuickslot();
-		
-		return true;
-	}
-	
-	@Override
-	public boolean isUpgradable() {
-		return false;
-	}
-	
-	@Override
-	public boolean isIdentified() {
-		return true;
 	}
 	
 	@Override

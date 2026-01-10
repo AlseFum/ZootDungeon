@@ -1,6 +1,9 @@
 package com.zootdungeon.items.supply;
 
 import com.zootdungeon.arknights.ascalon.Ascalon;
+import com.zootdungeon.arknights.MomentumWeapon;
+import com.zootdungeon.arknights.PropertyHuntingWeapon;
+import com.zootdungeon.arknights.RandomBuffCard;
 import com.zootdungeon.arknights.RangeReducedWeapon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
@@ -31,6 +34,7 @@ import com.zootdungeon.items.cheat.StoneOfLevelSelect;
 import com.zootdungeon.items.cheat.StoneOfSummoning;
 import com.zootdungeon.items.TengusMask;
 import com.zootdungeon.items.KingsCrown;
+import com.zootdungeon.plants.Swiftthistle;
 // import com.coladungeon.items.weapon.SummonerStaff;
 
 public class DebugSupply extends Supply {
@@ -38,13 +42,13 @@ public class DebugSupply extends Supply {
         super();
         name = "Debug Supply";
         desc = "A supply for debugging purposes.";
-        // put_in(SummonerStaff.class, 100);
-        //put_in(Torch.class, 100);
         
 
-        put_in(PotionOfHealing.class, 100);
-        put_in(ScrollOfIdentify.class, 100);
-        put_in(PotionOfStrength.class, 100);
+        put_in(PotionOfHealing.class, 20);
+        put_in(ScrollOfIdentify.class, 20);
+        put_in(PotionOfStrength.class, 20);
+        
+
         put_in(StoneOfGeneration.class, 300);
         put_in(StoneOfDungeonTravel.class, 300);
         put_in(StoneOfSummoning.class, 300);
@@ -52,9 +56,7 @@ public class DebugSupply extends Supply {
         put_in(ScrollOfUpgrade.class, 100);
         put_in(StoneOfDummy.class, 300);
         put_in(StoneOfDeath.class, 300);
-        put_in(PotionOfInvisibility.class, 500);
-        
-        put_in(PotionOfShroudingFog.class, 200);
+
         put_in(DivineAnkh.class, 1);
         put_in(ItemRemover.class);
         put_in(ItemEditor.class, 1);
@@ -71,10 +73,14 @@ public class DebugSupply extends Supply {
         put_in(SummoningAmbushWeapon.class, 1);
         put_in(WandOfPrisonCage.class, 1);
         put_in(RangeReducedWeapon.class, 1);
+        put_in(MomentumWeapon.class, 1);
+        put_in(PropertyHuntingWeapon.class, 1);
         put_in(RhodesStandardWeaponSupply.class, 1);
         put_in(SummoningThrowingWeapon.class, 50);
+        put_in(Swiftthistle.Seed.class, 100);
+        put_in(RandomBuffCard.class, 50);
         onOpen = () -> {
-            Dungeon.energy+=10086;
+            Dungeon.energy+=800;
             return null;
         };
     }

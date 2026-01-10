@@ -22,7 +22,6 @@ public class Amulet extends Item {
 	
 	{
 		image = ItemSpriteSheet.AMULET;
-		
 		unique = true;
 	}
 	

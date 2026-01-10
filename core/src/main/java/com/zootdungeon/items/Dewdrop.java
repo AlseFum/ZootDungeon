@@ -23,7 +23,6 @@ package com.zootdungeon.items;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.buffs.Barrier;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Healing;
@@ -40,43 +39,45 @@ import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
-public class Dewdrop extends Item {
+public class Dewdrop extends Item.MassiveResource {
 	
 	{
 		image = ItemSpriteSheet.DEWDROP;
-		
-		stackable = true;
 		dropsDownHeap = true;
 	}
 	
 	@Override
+	protected boolean onPickUp(Hero hero, int pos) {
+		// 此方法不会被调用，因为重写了 doPickUp
+		return false;
+	}
+	
+	@Override
 	public boolean doPickUp(Hero hero, int pos) {
+		// 完全重写以处理水袋收集和音效的特殊情况
+		Catalog.setSeen(getClass());
 		
 		Waterskin flask = hero.belongings.getItem( Waterskin.class );
-		Catalog.setSeen(getClass());
-		Statistics.itemTypesDiscovered.add(getClass());
 		
 		if (flask != null && !flask.isFull()){
-
 			flask.collectDew( this );
 			GameScene.pickUp( this, pos );
-
+			Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
+			hero.spendAndNext( TIME_TO_PICK_UP );
+			return true;
 		} else {
-
 			int terr = Dungeon.level.map[pos];
 			if (!consumeDew(1, hero, terr == Terrain.ENTRANCE || terr == Terrain.ENTRANCE_SP
 					|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT)){
 				return false;
 			} else {
 				Catalog.countUse(getClass());
+				GameScene.pickUp( this, pos );
+				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
+				hero.spendAndNext( TIME_TO_PICK_UP );
+				return true;
 			}
-			
 		}
-		
-		Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
-		hero.spendAndNext( TIME_TO_PICK_UP );
-		
-		return true;
 	}
 
 	public static boolean consumeDew(int quantity, Hero hero, boolean force){
@@ -125,16 +126,6 @@ public class Dewdrop extends Item {
 			return false;
 		}
 
-		return true;
-	}
-
-	@Override
-	public boolean isUpgradable() {
-		return false;
-	}
-
-	@Override
-	public boolean isIdentified() {
 		return true;
 	}
 

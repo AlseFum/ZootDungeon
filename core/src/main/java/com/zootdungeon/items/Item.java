@@ -26,6 +26,7 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.MissileSprite;
 import com.zootdungeon.ui.QuickSlotButton;
+import com.zootdungeon.utils.Pred;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
@@ -42,7 +43,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public class Item implements Bundlable {
+public class Item implements Bundlable, Pred {
 
     protected static final String TXT_TO_STRING_LVL = "%s %+d";
     protected static final String TXT_TO_STRING_X = "%s x%d";
@@ -775,5 +776,57 @@ public class Item implements Bundlable {
         boolean isHidden() default false;
 
         boolean isDefault() default false;
+    }
+
+    /**
+     * 基础资源类，用于处理拾取后立即消耗的资源物品（如金币、能量水晶、露珠等）
+     */
+    public static abstract class MassiveResource extends Item {
+
+        {
+            stackable = true;
+        }
+        public MassiveResource() {
+            this.quantity = 1;
+        }
+
+        protected MassiveResource(int quantity) {
+            this.quantity = quantity;
+        }
+
+        @Override
+        public ArrayList<String> actions(Hero hero) {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public boolean isUpgradable() {
+            return false;
+        }
+
+        @Override
+        public boolean isIdentified() {
+            return true;
+        }
+
+        @Override
+        public boolean doPickUp(Hero hero, int pos) {
+            Catalog.setSeen(getClass());
+            Statistics.itemTypesDiscovered.add(getClass());
+
+            if (onPickUp(hero, pos)) {
+                GameScene.pickUp(this, pos);
+                hero.spendAndNext(TIME_TO_PICK_UP);
+                playPickUpSound();
+                updateQuickslot();
+                return true;
+            }
+
+            return false;
+        }
+        protected void playPickUpSound() {
+            Sample.INSTANCE.play(Assets.Sounds.ITEM);
+        }
+        protected abstract boolean onPickUp(Hero hero, int pos);
     }
 }
