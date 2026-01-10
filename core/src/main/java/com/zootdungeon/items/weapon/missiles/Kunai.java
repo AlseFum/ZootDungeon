@@ -53,11 +53,17 @@ public class Kunai extends MissileWeapon {
 			Hero hero = (Hero)owner;
 			if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
 				//deals 60% toward max to max on surprise, instead of min to max.
-				int diff = max() - min();
-				int damage = augment.damageFactor(Hero.heroDamageIntRange(
-						min() + Math.round(diff*0.6f),
-						max()));
-				damage += rollExStrBonus(hero);
+				int lvl = buffedLvl();
+				int mn = min(lvl);
+				int mx = max(lvl);
+				int diff = mx - mn;
+				int biasedMin = mn + Math.round(diff * 0.6f);
+				if (biasedMin > mx) biasedMin = mx;
+
+				// Calculate base damage with biased range, then apply augment and exSTR
+				int baseDmg = com.watabou.utils.Random.NormalIntRange(biasedMin, mx);
+				int damage = augment.damageFactor(baseDmg);
+				damage = hero.heroDamageIntRange(damage, STRReq());
 				return damage;
 			}
 		}

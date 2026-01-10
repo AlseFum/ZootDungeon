@@ -79,21 +79,13 @@ public class Ascalon extends AmbushWeapon {
                 int mx = max(lvl);
                 int diff = mx - mn;
 
-                // 基础部分：将 [mn, mx] 区间压缩到 [mn+currentAmbushRate*diff, mx]
+                // 基础部分：将 [mn, mx] 区间压缩到 [mn+currentAmbushRate*diff, mx+currentAmbushRate*diff]
                 int biasedMin = mn + Math.round(diff * currentAmbushRate);
                 int biasedMax = mx + Math.round(diff * currentAmbushRate);
                 if (biasedMin > biasedMax) biasedMin = biasedMax;
 
-                // 用 Dice 表达该区间并掷出一次
-                int span = biasedMax - biasedMin;
-                com.zootdungeon.utils.Dice base = span > 0
-                        ? com.zootdungeon.utils.Dice.of(new com.zootdungeon.utils.Dice.Die(1, span + 1), biasedMin - 1)
-                        : com.zootdungeon.utils.Dice.of(biasedMin);
-
-                int damage = augment.damageFactor(base.rollTotalGame());
-
-                // 追加 exSTR 骰
-                damage += exSTRDice(hero).rollTotalGame();
+                int damage = augment.damageFactor(com.watabou.utils.Random.NormalIntRange(biasedMin, biasedMax));
+                damage = hero.heroDamageIntRange(damage, STRReq());
                 return damage;
             }
         }

@@ -26,7 +26,6 @@ import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.weapon.Weapon;
-import com.zootdungeon.utils.Dice;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
@@ -245,19 +244,15 @@ abstract public class KindOfWeapon extends EquipableItem {
 	abstract public int min(int lvl);
 	abstract public int max(int lvl);
 
-	/**
-	 * 构建武器在指定等级下的“基础伤害骰组”（不包含 exSTR 和其它加成）。
-	 * 这里使用一个简单的 1dX + K 近似 min-max 区间，供描述与调试使用。
-	 */
-	public Dice baseDamageDice(int lvl){
-		int mn = min(lvl);
-		int mx = max(lvl);
-		if (mn >= mx){
-			return Dice.of(mn);
+	public int damageRoll( Char owner ) {
+		int dmg = Random.NormalIntRange( min(buffedLvl()), max(buffedLvl()) );
+		if (owner instanceof Hero) {
+			Hero hero = (Hero)owner;
+			if (this instanceof Weapon) {
+				dmg = hero.heroDamageIntRange( dmg, ((Weapon)this).STRReq() );
+			}
 		}
-		int span = mx - mn;
-		// 使用 1d(span+1) + (mn-1) 覆盖 [mn, mx] 区间
-		return Dice.of(new Dice.Die(1, span + 1), mn - 1);
+		return dmg;
 	}
 
 	/**
@@ -271,38 +266,6 @@ abstract public class KindOfWeapon extends EquipableItem {
 			return Hero.heroDamageIntRange(0, exStr);
 		}
 		return 0;
-	}
-
-	/**
-	 * 将 exSTR 对伤害的影响体现在骰组中，用于描述：
-	 * 0..exStr 近似为 1d(exStr+1) - 1。
-	 */
-	public Dice exSTRDice(Hero hero){
-		int req = (this instanceof Weapon) ? ((Weapon) this).STRReq() : 0;
-		int exStr = hero.STR() - req;
-		if (exStr <= 0){
-			// 无额外力量加成时返回空骰组，合并时不会改变结果
-			return new Dice();
-		}
-		// 对应 0..exStr 的波动：1d(exStr+1) - 1
-		return Dice.of(new Dice.Die(1, exStr + 1), -1);
-	}
-
-	/**
-	 * 统一构建“武器完整伤害骰组”（基础 + exSTR），用于 UI 描述或调试。
-	 * 真正的数值结算仍走 damageRoll 及 heroDamageIntRange，保证旧存档与平衡不被突变破坏。
-	 */
-	public Dice damageDice(Char owner){
-		Dice dice = baseDamageDice(buffedLvl());
-		if (owner instanceof Hero){
-			dice.addAll(exSTRDice((Hero) owner));
-		}
-		return dice;
-	}
-
-	public int damageRoll( Char owner ) {
-		Dice dice = damageDice(owner);
-		return dice.rollTotalGame();
 	}
 	
 	public float accuracyFactor( Char owner, Char target ) {

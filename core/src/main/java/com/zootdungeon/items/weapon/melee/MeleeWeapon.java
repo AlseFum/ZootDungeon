@@ -319,11 +319,6 @@ public class MeleeWeapon extends Weapon {
 		String statsInfo = statsInfo();
 		if (!statsInfo.equals("")) info += "\n\n" + statsInfo;
 
-		// 追加伤害骰描述，展示基础伤害与 exSTR 等加成在骰组中的表现
-		if (Dungeon.hero != null){
-			info += "\n" + "伤害骰: " + damageDice(Dungeon.hero).describe();
-		}
-
 		switch (augment) {
 			case SPEED:
 				info += " " + Messages.get(Weapon.class, "faster");

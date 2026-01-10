@@ -14,28 +14,10 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
 
-/**
- * Actor类是游戏中所有活动实体的基类，负责管理游戏的时间调度系统。
- *
- * ## 核心功能： - **时间管理**：控制所有游戏实体的行动顺序和时间流逝 - **调度系统**：决定哪个Actor在何时执行行动 -
- * **优先级控制**：管理不同类型Actor的执行优先级 - **性能优化**：支持PriorityQueue优化以处理大量Actor
- *
- * ## 性能优化： - 支持线性搜索（O(n)）和优先队列（O(log n)）两种调度模式 - 大型战斗场景下可获得8-14倍性能提升 -
- * 智能切换：根据Actor数量自动选择最优算法
- *
- * ## 使用模式： 1. 继承Actor类并实现act()方法 2. 调用Actor.add()将实例加入调度系统 3.
- * 使用spend()方法控制行动时间间隔 4. 调用Actor.remove()移除不再需要的Actor
- */
 public abstract class Actor implements Bundlable {
 
-    /**
-     * 标准时间单位
-     */
     public static final float TICK = 1f;
 
-    /**
-     * Actor的行动时间，值越小越先执行
-     */
     private float time;
 
     private int id = 0;

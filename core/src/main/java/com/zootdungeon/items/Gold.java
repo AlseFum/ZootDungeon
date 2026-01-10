@@ -38,6 +38,10 @@ public class Gold extends Item.MassiveResource {
 		image = ItemSpriteSheet.GOLD;
 	}
 
+	public Gold() {
+		super(1);
+	}
+
 	public Gold( int value ) {
 		super(value);
 	}

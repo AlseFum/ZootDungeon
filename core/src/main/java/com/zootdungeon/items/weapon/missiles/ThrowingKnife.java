@@ -26,7 +26,6 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.utils.Dice;
 
 public class ThrowingKnife extends MissileWeapon {
 	
@@ -63,13 +62,8 @@ public class ThrowingKnife extends MissileWeapon {
 				int biasedMin = mn + Math.round(diff * 0.75f);
 				if (biasedMin > mx) biasedMin = mx;
 
-				int span = mx - biasedMin;
-				Dice base = span > 0
-						? Dice.of(new Dice.Die(1, span + 1), biasedMin - 1)
-						: Dice.of(biasedMin);
-
-				int damage = augment.damageFactor(base.rollTotalGame());
-				damage += exSTRDice(hero).rollTotalGame();
+				int damage = augment.damageFactor(com.watabou.utils.Random.NormalIntRange(biasedMin, mx));
+				damage = hero.heroDamageIntRange(damage, STRReq());
 				return damage;
 			}
 		}

@@ -226,7 +226,7 @@ public class Generator {
 		SCROLL	( 8, 8, Scroll.class, null),
 		STONE   ( 1, 1, Runestone.class, null),
 		
-		GOLD	( 10, 10, Gold.class, ()->new Gold()),
+		GOLD	( 10, 10, Gold.class, ()->new Gold().random()),
 		
 		// Add missing categories
 		TRINKET ( 1, 1, Trinket.class, null),
@@ -709,7 +709,7 @@ public class Generator {
 						return random(cls);
 					}
 				}
-				return new Gold(); // Fallback
+				return new Gold().random(); // Fallback
 			default:
 				if (cat.defaultProbs != null && cat.seed != null){
 					Random.pushGenerator(cat.seed);
@@ -751,7 +751,7 @@ public class Generator {
 						return cat.make.get();
 					} else {
 						// 如果都失败，返回一个安全的默认物品
-						return new Gold();
+						return new Gold().random();
 					}
 				}
 		}
@@ -775,7 +775,7 @@ public class Generator {
 				if (cat.make != null) {
 					return cat.make.get();
 				} else {
-					return new Gold();
+					return new Gold().random();
 				}
 			}
 		} else {
@@ -798,7 +798,7 @@ public class Generator {
 				if (cat.make != null) {
 					return cat.make.get();
 				} else {
-					return new Gold();
+					return new Gold().random();
 				}
 			}
 		}
@@ -1085,7 +1085,7 @@ public class Generator {
 				return (Item)Reflection.newInstance(itemClass).random();
 			} catch (Exception e) {
 				// 如果实例化失败，返回一个安全的默认物品
-				return new Gold();
+				return new Gold().random();
 			}
 		};
 		
@@ -1196,7 +1196,7 @@ public class Generator {
 	 */
 	private static Item randomCustomItem() {
 		// This will be implemented in future updates
-		return new Gold();
+		return new Gold().random();
 	}
 
 	/**

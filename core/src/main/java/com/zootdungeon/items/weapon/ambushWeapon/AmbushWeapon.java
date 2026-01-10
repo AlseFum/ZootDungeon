@@ -38,7 +38,6 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.utils.Dice;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
@@ -67,27 +66,18 @@ public class AmbushWeapon extends MeleeWeapon{
             Hero hero = (Hero)owner;
             Char enemy = hero.enemy();
             if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
-                // surprise hit: 偏向高端（75%~100%）的基础伤害，再加上 exSTR 骰
+                // surprise hit: 偏向高端的伤害
                 int lvl = buffedLvl();
                 int mn = min(lvl);
                 int mx = max(lvl);
                 int diff = mx - mn;
 
-                // 基础部分：将 [mn, mx] 区间压缩到 [mn+0.75*diff, mx]
+                // 基础部分：将 [mn, mx] 区间压缩到 [mn+ambushRate*diff, mx]
                 int biasedMin = mn + Math.round(diff * ambushRate);
-                int biasedMax = mx + Math.round(diff * ambushRate);
-                if (biasedMin > biasedMax) biasedMin = biasedMax;
+                if (biasedMin > mx) biasedMin = mx;
 
-                // 用 Dice 表达该区间并掷出一次
-                int span = biasedMax - biasedMin;
-                Dice base = span > 0
-                        ? Dice.of(new Dice.Die(1, span + 1), biasedMin - 1)
-                        : Dice.of(biasedMin);
-
-                int damage = augment.damageFactor(base.rollTotalGame());
-
-                // 追加 exSTR 骰
-                damage += exSTRDice(hero).rollTotalGame();
+                int damage = augment.damageFactor(com.watabou.utils.Random.NormalIntRange(biasedMin, mx));
+                damage = hero.heroDamageIntRange(damage, STRReq());
                 return damage;
             }
         }

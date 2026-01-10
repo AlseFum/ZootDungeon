@@ -37,6 +37,10 @@ public class EnergyCrystal extends Item.MassiveResource {
 	// 无参构造函数使用基类的默认构造函数，quantity = 1
 	// 如果有参构造函数存在，Java 不会自动生成无参构造函数，所以需要显式定义
 
+	public EnergyCrystal() {
+		super(1);
+	}
+
 	public EnergyCrystal( int value ) {
 		super(value);
 	}

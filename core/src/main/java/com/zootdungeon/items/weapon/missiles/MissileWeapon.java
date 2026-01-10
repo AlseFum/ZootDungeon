@@ -470,11 +470,6 @@ abstract public class MissileWeapon extends Weapon {
 			info += " " + Messages.get(this, "unlimited_uses");
 		}
 
-		// 追加伤害骰描述
-		if (Dungeon.hero != null){
-			info += "\n" + "伤害骰: " + damageDice(Dungeon.hero).describe();
-		}
-
 		return info;
 	}
 	
