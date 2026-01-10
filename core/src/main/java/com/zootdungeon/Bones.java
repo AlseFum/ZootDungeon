@@ -7,7 +7,7 @@ import java.util.Iterator;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.remains.RemainsItem;

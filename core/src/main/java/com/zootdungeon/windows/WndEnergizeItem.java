@@ -24,7 +24,7 @@ package com.zootdungeon.windows;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.EnergyCrystal;
+import com.zootdungeon.items.material.EnergyCrystal;
 import com.zootdungeon.items.EquipableItem;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;

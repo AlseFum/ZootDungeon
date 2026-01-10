@@ -23,7 +23,7 @@ package com.zootdungeon.levels.rooms.secret;
 
 import com.zootdungeon.actors.blobs.Alchemy;
 import com.zootdungeon.actors.blobs.Blob;
-import com.zootdungeon.items.EnergyCrystal;
+import com.zootdungeon.items.material.EnergyCrystal;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.potions.PotionOfExperience;
 import com.zootdungeon.items.potions.PotionOfFrost;

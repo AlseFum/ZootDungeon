@@ -31,7 +31,7 @@ import com.zootdungeon.actors.mobs.DwarfKing;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.LiquidMetal;
+import com.zootdungeon.items.material.LiquidMetal;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;

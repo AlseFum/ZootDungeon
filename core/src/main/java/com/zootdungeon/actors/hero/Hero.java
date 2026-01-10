@@ -66,7 +66,7 @@ import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.Ankh;
 import com.zootdungeon.items.DivineAnkh;
-import com.zootdungeon.items.Dewdrop;
+import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.EquipableItem;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Heap.Type;
@@ -151,7 +151,6 @@ import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndHero;
 import com.zootdungeon.windows.WndResurrect;
 import com.zootdungeon.windows.WndTradeItem;
-import com.zootdungeon.utils.Augment;
 
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
@@ -165,7 +164,6 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 

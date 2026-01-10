@@ -30,7 +30,7 @@ import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.buffs.Light;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.PurpleParticle;
-import com.zootdungeon.items.Dewdrop;
+import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.stones.StoneOfAggression;

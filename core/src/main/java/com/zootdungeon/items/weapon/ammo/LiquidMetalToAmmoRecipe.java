@@ -1,6 +1,6 @@
 package com.zootdungeon.items.weapon.ammo;
 
-import com.zootdungeon.items.LiquidMetal;
+import com.zootdungeon.items.material.LiquidMetal;
 import com.zootdungeon.items.Recipe;
 import com.zootdungeon.items.Item;
 import java.util.ArrayList;

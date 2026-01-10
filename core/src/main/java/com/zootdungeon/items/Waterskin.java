@@ -25,6 +25,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.buffs.Barrier;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
+import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.trinkets.VialOfBlood;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.messages.Messages;

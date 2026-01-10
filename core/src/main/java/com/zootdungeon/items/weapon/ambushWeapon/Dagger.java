@@ -34,6 +34,6 @@ public class Dagger extends AmbushWeapon {
 		tier = 1;
 		
 		bones = false;
-		ambushRate=3.6f;
+		ambushRate=0.67f;
 	}
 }

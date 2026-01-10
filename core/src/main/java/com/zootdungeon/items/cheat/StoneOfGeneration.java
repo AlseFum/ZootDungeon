@@ -29,7 +29,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.sprites.ItemSpriteSheet;

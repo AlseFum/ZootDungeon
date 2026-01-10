@@ -24,7 +24,7 @@ package com.zootdungeon.ui;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.EquipableItem;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.items.wands.Wand;

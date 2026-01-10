@@ -32,7 +32,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.mobs.npcs.Blacksmith;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.LeafParticle;
-import com.zootdungeon.items.Dewdrop;
+import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.armor.glyphs.Camouflage;
 import com.zootdungeon.items.artifacts.SandalsOfNature;

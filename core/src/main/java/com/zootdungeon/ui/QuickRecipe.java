@@ -23,10 +23,10 @@ package com.zootdungeon.ui;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.ColaDungeon;
-import com.zootdungeon.items.ArcaneResin;
+import com.zootdungeon.items.material.ArcaneResin;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.LiquidMetal;
+import com.zootdungeon.items.material.LiquidMetal;
 import com.zootdungeon.items.Recipe;
 import com.zootdungeon.items.Torch;
 import com.zootdungeon.items.bombs.Bomb;

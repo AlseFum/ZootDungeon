@@ -28,7 +28,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.CounterBuff;
 import com.zootdungeon.effects.Flare;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Honeypot;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;

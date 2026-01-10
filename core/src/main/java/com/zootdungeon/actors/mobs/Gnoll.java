@@ -22,7 +22,7 @@
 package com.zootdungeon.actors.mobs;
 
 import com.zootdungeon.actors.Char;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.sprites.GnollSprite;
 import com.watabou.utils.Random;
 

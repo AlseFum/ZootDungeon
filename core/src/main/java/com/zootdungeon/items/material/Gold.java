@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items;
+package com.zootdungeon.items.material;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -27,39 +27,64 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.FloatingText;
+import com.zootdungeon.items.Item;
+import com.zootdungeon.journal.Catalog;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
-public class Gold extends Item.MassiveResource {
+import java.util.ArrayList;
+
+public class Gold extends Item {
 
 	{
 		image = ItemSpriteSheet.GOLD;
+		stackable = true;
 	}
-
+	
 	public Gold() {
-		super(1);
+		this( 1 );
 	}
-
+	
 	public Gold( int value ) {
-		super(value);
+		this.quantity = value;
 	}
 	
 	@Override
-	protected boolean onPickUp(Hero hero, int pos) {
+	public ArrayList<String> actions( Hero hero ) {
+		return new ArrayList<>();
+	}
+	
+	@Override
+	public boolean doPickUp(Hero hero, int pos) {
+
+		Catalog.setSeen(getClass());
+		Statistics.itemTypesDiscovered.add(getClass());
+
 		Dungeon.gold += quantity;
 		Statistics.goldCollected += quantity;
 		Badges.validateGoldCollected();
 
+		GameScene.pickUp( this, pos );
 		hero.sprite.showStatusWithIcon( CharSprite.NEUTRAL, Integer.toString(quantity), FloatingText.GOLD );
+		hero.spendAndNext( TIME_TO_PICK_UP );
+		
+		Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );
+		updateQuickslot();
 		
 		return true;
 	}
-
+	
 	@Override
-	protected void playPickUpSound() {
-		Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );
+	public boolean isUpgradable() {
+		return false;
+	}
+	
+	@Override
+	public boolean isIdentified() {
+		return true;
 	}
 	
 	@Override

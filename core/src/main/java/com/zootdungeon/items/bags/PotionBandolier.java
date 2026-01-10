@@ -22,7 +22,7 @@
 package com.zootdungeon.items.bags;
 
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.LiquidMetal;
+import com.zootdungeon.items.material.LiquidMetal;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.sprites.ItemSpriteSheet;

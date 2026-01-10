@@ -24,7 +24,7 @@ package com.zootdungeon.levels.rooms.quest;
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.mobs.Skeleton;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.potions.PotionOfLiquidFlame;
@@ -81,8 +81,8 @@ public class MassGraveRoom extends SpecialRoom {
 		items.add(new CorpseDust());
 		items.add(new Gold(1));
 		items.add(new Gold(1));
-		if (Random.Float() <= 0.3f) items.add(new Gold().random());
-		if (Random.Float() <= 0.3f) items.add(new Gold().random());
+		if (Random.Float() <= 0.3f) items.add(new Gold());
+		if (Random.Float() <= 0.3f) items.add(new Gold());
 		if (Random.Float() <= 0.6f) items.add(Generator.random());
 		if (Random.Float() <= 0.3f) items.add(Generator.randomArmor());
 

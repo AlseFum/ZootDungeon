@@ -22,7 +22,7 @@
 package com.zootdungeon.levels.rooms.standard;
 
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;

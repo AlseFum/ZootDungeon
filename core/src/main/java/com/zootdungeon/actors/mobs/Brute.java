@@ -28,7 +28,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.ShieldBuff;
 import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.SpellSprite;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.levels.features.Chasm;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.BruteSprite;

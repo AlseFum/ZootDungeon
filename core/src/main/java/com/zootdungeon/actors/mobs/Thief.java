@@ -27,7 +27,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Honeypot;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;
@@ -137,7 +137,7 @@ public class Thief extends Mob {
 	@Override
 	public int defenseProc(Char enemy, int damage) {
 		if (state == FLEEING) {
-			Dungeon.level.drop( new Gold().random(), pos ).sprite.drop();
+			Dungeon.level.drop( new Gold(), pos ).sprite.drop();
 		}
 
 		return super.defenseProc(enemy, damage);

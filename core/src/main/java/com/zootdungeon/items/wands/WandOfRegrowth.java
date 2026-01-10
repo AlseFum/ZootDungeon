@@ -34,7 +34,7 @@ import com.zootdungeon.actors.hero.abilities.mage.WildMagic;
 import com.zootdungeon.actors.mobs.DwarfKing;
 import com.zootdungeon.actors.mobs.npcs.NPC;
 import com.zootdungeon.effects.MagicMissile;
-import com.zootdungeon.items.Dewdrop;
+import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.levels.Level;

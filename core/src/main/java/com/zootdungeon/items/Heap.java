@@ -38,6 +38,7 @@ import com.zootdungeon.items.food.FrozenCarpaccio;
 import com.zootdungeon.items.food.MysteryMeat;
 import com.zootdungeon.items.journal.DocumentPage;
 import com.zootdungeon.items.journal.Guidebook;
+import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.rings.RingOfWealth;
 import com.zootdungeon.items.scrolls.Scroll;

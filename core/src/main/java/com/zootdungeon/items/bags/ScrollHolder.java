@@ -21,7 +21,7 @@
 
 package com.zootdungeon.items.bags;
 
-import com.zootdungeon.items.ArcaneResin;
+import com.zootdungeon.items.material.ArcaneResin;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.Stylus;
 import com.zootdungeon.items.scrolls.Scroll;

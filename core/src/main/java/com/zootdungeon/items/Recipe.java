@@ -28,6 +28,8 @@ import com.zootdungeon.items.bombs.Bomb;
 import com.zootdungeon.items.food.Blandfruit;
 import com.zootdungeon.items.food.MeatPie;
 import com.zootdungeon.items.food.StewedMeat;
+import com.zootdungeon.items.material.ArcaneResin;
+import com.zootdungeon.items.material.LiquidMetal;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.potions.brews.AquaBrew;
 import com.zootdungeon.items.potions.brews.BlizzardBrew;

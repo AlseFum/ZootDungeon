@@ -19,39 +19,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items;
+package com.zootdungeon.items.material;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.FloatingText;
+import com.zootdungeon.items.Item;
+import com.zootdungeon.journal.Catalog;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
-public class EnergyCrystal extends Item.MassiveResource {
+import java.util.ArrayList;
+
+public class EnergyCrystal extends Item {
 
 	{
 		image = ItemSpriteSheet.ENERGY;
+		stackable = true;
 	}
 
-	// 无参构造函数使用基类的默认构造函数，quantity = 1
-	// 如果有参构造函数存在，Java 不会自动生成无参构造函数，所以需要显式定义
-
 	public EnergyCrystal() {
-		super(1);
+		this( 1 );
 	}
 
 	public EnergyCrystal( int value ) {
-		super(value);
+		this.quantity = value;
 	}
 
 	@Override
-	protected boolean onPickUp(Hero hero, int pos) {
+	public ArrayList<String> actions(Hero hero ) {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public boolean doPickUp(Hero hero, int pos) {
+
+		Catalog.setSeen(getClass());
+		Statistics.itemTypesDiscovered.add(getClass());
+
 		Dungeon.energy += quantity;
 		//TODO track energy collected maybe? We do already track recipes crafted though..
 
+		GameScene.pickUp( this, pos );
 		hero.sprite.showStatusWithIcon( 0x44CCFF, Integer.toString(quantity), FloatingText.ENERGY );
+		hero.spendAndNext( TIME_TO_PICK_UP );
 
+		Sample.INSTANCE.play( Assets.Sounds.ITEM );
+
+		updateQuickslot();
+
+		return true;
+	}
+
+	@Override
+	public boolean isUpgradable() {
+		return false;
+	}
+
+	@Override
+	public boolean isIdentified() {
 		return true;
 	}
 

@@ -26,7 +26,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.blobs.Blob;
 import com.zootdungeon.actors.blobs.SacrificialFire;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.levels.Level;

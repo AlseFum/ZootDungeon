@@ -22,7 +22,7 @@
 package com.zootdungeon.levels.rooms.secret;
 
 import com.zootdungeon.actors.mobs.npcs.RatKing;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.levels.Level;

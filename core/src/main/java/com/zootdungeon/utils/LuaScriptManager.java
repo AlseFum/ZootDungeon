@@ -21,6 +21,7 @@
 
 package com.zootdungeon.utils;
 
+import com.zootdungeon.items.material.Gold;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -674,7 +675,7 @@ public class LuaScriptManager {
                             
                             switch (type) {
                                 case "gold":
-                                    item = new com.zootdungeon.items.Gold(100);
+                                    item = new Gold(100);
                                     break;
                                 case "healing":
                                 case "heal":
@@ -870,7 +871,7 @@ public class LuaScriptManager {
                         com.zootdungeon.items.Item itemObj = null;
                         switch (itemType) {
                             case "gold":
-                                itemObj = new com.zootdungeon.items.Gold(100);
+                                itemObj = new Gold(100);
                                 break;
                             case "healing":
                                 itemObj = new com.zootdungeon.items.potions.PotionOfHealing();

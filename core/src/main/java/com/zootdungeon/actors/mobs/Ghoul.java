@@ -29,7 +29,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.abilities.duelist.Challenge;
 import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.Pushing;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.levels.features.Chasm;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;

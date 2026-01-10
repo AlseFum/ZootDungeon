@@ -24,7 +24,7 @@ package com.zootdungeon.levels.rooms.special;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.blobs.Alchemy;
 import com.zootdungeon.actors.blobs.Blob;
-import com.zootdungeon.items.EnergyCrystal;
+import com.zootdungeon.items.material.EnergyCrystal;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.journal.AlchemyPage;

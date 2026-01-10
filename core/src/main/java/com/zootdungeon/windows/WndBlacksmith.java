@@ -30,7 +30,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.npcs.Blacksmith;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.EquipableItem;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.bags.Bag;

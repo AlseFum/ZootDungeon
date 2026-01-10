@@ -29,6 +29,7 @@ import com.zootdungeon.items.artifacts.UnstableSpellbook;
 import com.zootdungeon.items.food.Food;
 import com.zootdungeon.items.food.MysteryMeat;
 import com.zootdungeon.items.food.Pasty;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.potions.PotionOfExperience;
 import com.zootdungeon.items.potions.PotionOfFrost;

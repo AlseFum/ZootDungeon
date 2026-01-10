@@ -28,7 +28,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.npcs.Shopkeeper;
 import com.zootdungeon.items.EquipableItem;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.artifacts.MasterThievesArmband;

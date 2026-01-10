@@ -23,7 +23,7 @@ package com.zootdungeon.levels.rooms.special;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.mobs.Mimic;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.keys.IronKey;

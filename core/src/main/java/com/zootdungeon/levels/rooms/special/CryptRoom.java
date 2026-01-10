@@ -24,7 +24,7 @@ package com.zootdungeon.levels.rooms.special;
 import com.zootdungeon.Challenges;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.Generator;
-import com.zootdungeon.items.Gold;
+import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;

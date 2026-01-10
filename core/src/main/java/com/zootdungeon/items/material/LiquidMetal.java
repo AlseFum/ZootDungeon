@@ -19,13 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items;
+package com.zootdungeon.items.material;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.Splash;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.items.bags.MagicalHolster;
 import com.zootdungeon.items.potions.Potion;
