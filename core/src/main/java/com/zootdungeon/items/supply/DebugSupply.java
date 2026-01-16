@@ -1,11 +1,13 @@
 package com.zootdungeon.items.supply;
 
 import com.zootdungeon.arknights.ascalon.Ascalon;
+import com.zootdungeon.arknights.InstantMechWeapon;
 import com.zootdungeon.arknights.MomentumWeapon;
 import com.zootdungeon.arknights.PropertyHuntingWeapon;
 import com.zootdungeon.arknights.RandomBuffCard;
 import com.zootdungeon.arknights.RangeReducedWeapon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
+import com.zootdungeon.arknights.TransferMechWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
 import com.zootdungeon.arknights.SummoningThrowingWeapon;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
@@ -77,6 +79,8 @@ public class DebugSupply extends Supply {
         put_in(PropertyHuntingWeapon.class, 1);
         put_in(RhodesStandardWeaponSupply.class, 1);
         put_in(SummoningThrowingWeapon.class, 50);
+        put_in(InstantMechWeapon.class, 1);
+        put_in(TransferMechWeapon.class, 1);
         put_in(Swiftthistle.Seed.class, 100);
         put_in(RandomBuffCard.class, 50);
         onOpen = () -> {
