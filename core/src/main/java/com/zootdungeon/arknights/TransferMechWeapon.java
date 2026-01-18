@@ -170,16 +170,6 @@ public class TransferMechWeapon extends MeleeWeapon {
     }
     
     @Override
-    public String name() {
-        return Messages.get(this, "name");
-    }
-    
-    @Override
-    public String info() {
-        return Messages.get(this, "desc", 2 + tier + buffedLvl());
-    }
-    
-    @Override
     public int min(int lvl) {
         return tier + lvl;
     }

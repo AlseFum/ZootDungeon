@@ -808,6 +808,15 @@ public abstract class Char extends Actor {
 		super.spend( time / timeScale );
 	}
 	
+	@Override
+	public void clearTime() {
+		super.clearTime();  // 清空自己的时间
+		// 同时清空所有buff的时间
+		for (Buff b : buffs()) {
+			b.spendConstant(-Actor.now());
+		}
+	}
+	
 	public synchronized LinkedHashSet<Buff> buffs() {
 		return new LinkedHashSet<>(buffs);
 	}

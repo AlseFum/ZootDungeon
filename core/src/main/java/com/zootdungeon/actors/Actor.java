@@ -14,6 +14,66 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
 
+/**
+ * Actor时间调度系统
+ * 
+ * <h2>核心概念</h2>
+ * Actor是所有需要参与时间调度的游戏实体的基类，包括角色(Char)、状态效果(Buff)、环境效果(Blob)等。
+ * 每个Actor维护一个时间值(time)，表示距离下次行动的时间。当time <= now时，Actor可以行动。
+ * 
+ * <h2>调度机制</h2>
+ * 系统通过process()方法持续运行，每轮选择时间最早且已到达行动时间的Actor执行其act()方法。
+ * 调度算法支持两种模式：
+ * <ul>
+ *   <li><b>线性搜索模式</b>：O(n)遍历所有Actor，适用于少量Actor场景（默认）</li>
+ *   <li><b>优先队列模式</b>：O(log n)从优先队列获取，当Actor数量>20时自动启用</li>
+ * </ul>
+ * 
+ * <h2>优先级系统</h2>
+ * 当多个Actor的时间相同时，通过actPriority决定执行顺序（数值越大优先级越高）：
+ * <ul>
+ *   <li>VFX_PRIO (100)：视觉效果，最高优先级</li>
+ *   <li>HERO_PRIO (0)：英雄基准</li>
+ *   <li>BLOB_PRIO (-10)：环境效果</li>
+ *   <li>MOB_PRIO (-20)：怪物行动</li>
+ *   <li>BUFF_PRIO (-30)：状态效果，最低优先级</li>
+ * </ul>
+ * 
+ * <h2>时间消耗</h2>
+ * Actor提供两种时间消耗方法：
+ * <ul>
+ *   <li><b>spendConstant(time)</b>：精确消耗时间，不受任何时间影响因子影响，用于需要精确控制的场景</li>
+ *   <li><b>spend(time)</b>：可被子类重写，Char类会应用时间缩放（slow/haste等效果）</li>
+ * </ul>
+ * 系统通过normalize()方法处理浮点精度误差，将接近整数的浮点数舍入为整数。
+ * 
+ * <h2>时间管理</h2>
+ * <ul>
+ *   <li><b>fixTime()</b>：定期调用，将所有Actor的时间值归一化，防止时间值过大</li>
+ *   <li><b>clearTime()</b>：清空Actor时间使其立即行动，Char类会同时清空所有buff的时间</li>
+ *   <li><b>timeToNow()</b>：将Actor时间设置为当前时间，使其在下个调度周期行动</li>
+ *   <li><b>postpone(time)</b>：延后Actor的行动时间到指定时间点</li>
+ * </ul>
+ * 
+ * <h2>线程安全</h2>
+ * 系统通过synchronized保护关键操作，支持中断处理避免阻塞UI线程。
+ * 在Char的sprite动画期间会等待动画完成，确保视觉连贯性。
+ * 
+ * <h2>生命周期</h2>
+ * <ul>
+ *   <li><b>add()</b>：将Actor添加到调度系统，自动注册ID并设置初始时间</li>
+ *   <li><b>remove()</b>：从调度系统中移除Actor，清理所有相关引用</li>
+ *   <li><b>onAdd()</b>：Actor添加时的回调，子类可重写执行初始化</li>
+ *   <li><b>onRemove()</b>：Actor移除时的回调，子类可重写执行清理</li>
+ * </ul>
+ * 
+ * <h2>特殊处理</h2>
+ * <ul>
+ *   <li>Char类型的Actor会自动递归添加其所有buff到调度系统</li>
+ *   <li>系统会等待Char的sprite动画完成后再执行行动</li>
+ *   <li>当Hero死亡时，系统会自动停止处理</li>
+ * </ul>
+ */
 public abstract class Actor implements Bundlable {
 
     public static final float TICK = 1f;
@@ -38,52 +98,32 @@ public abstract class Actor implements Bundlable {
     protected static final int BUFF_PRIO = -30;   // Buff效果
     private static final int DEFAULT = -100;      // 默认优先级
 
-    /**
-     * 行动优先级，时间相同时数值大的先执行
-     */
+    /** 行动优先级，时间相同时数值大的先执行 */
     public int actPriority = DEFAULT;
 
     /**
-     * Actor的核心行动方法，需要由子类实现。
-     *
-     * @return true表示继续处理下一个Actor，false表示暂停Actor系统 (通常在玩家需要输入时返回false)
+     * Actor的核心行动方法，需要由子类实现
+     * @return true继续处理下一个Actor，false暂停Actor系统（通常玩家需要输入时返回false）
      */
     protected abstract boolean act();
 
-    //#region SpendXXX
-    /**
-     * 精确消耗指定时间，不受任何时间影响因子影响。 直接增加Actor的行动时间，用于需要精确时间控制的场景。
-     *
-     * @param time 要消耗的时间量
-     */
+    /** 精确消耗时间，不受时间影响因子影响 */
     protected void spendConstant(float time) {
         this.time += time;
         this.time = normalize(this.time);
     }
 
-    /**
-     * 消耗时间（可被时间影响因子修改）。 这是最常用的时间消耗方法，会受到缓慢、加速等效果影响。 子类（如Char）会重写此方法来实现时间修正。
-     *
-     * @param time 基础消耗时间
-     */
+    /** 消耗时间，可被子类重写以应用时间修正（如slow/haste） */
     protected void spend(float time) {
         spendConstant(time);
     }
 
-    /**
-     * 将行动时间提升到下一个整数。 用于确保某些重要行动发生在整数时间点。
-     */
+    /** 将行动时间提升到下一个整数 */
     public void spendToWhole() {
         time = (float) Math.ceil(time);
     }
 
-    //endregion
-    /**
-     * 时间标准化辅助方法。 将非常接近整数的浮点时间舍入为整数，避免浮点精度误差。
-     *
-     * @param time 原始时间值
-     * @return 标准化后的时间值
-     */
+    /** 时间标准化，避免浮点精度误差 */
     private static float normalize(float time) {
         float ex = Math.abs(time % 1f);
         if (ex < .001f) {
@@ -92,61 +132,38 @@ public abstract class Actor implements Bundlable {
         return time;
     }
 
-    /**
-     * 延后Actor的行动时间到指定时间点。 如果当前时间已经大于等于目标时间，则不做任何改变。
-     *
-     * @param time 延后到的目标时间
-     */
+    /** 延后Actor的行动时间到指定时间点 */
     protected void postpone(float time) {
         if (this.time < now + time) {
             this.time = normalize(now + time);
         }
     }
 
-    /**
-     * 获取此Actor距离下次行动的剩余时间。
-     *
-     * @return 剩余冷却时间，负值表示已经可以行动
-     */
+    /** 获取距离下次行动的剩余时间，负值表示已可行动 */
     public float cooldown() {
         return time - now;
     }
 
-    /**
-     * 清空Actor的时间，使其立即可以行动。 对于角色类型的Actor，同时清空其所有buff的时间。
-     */
+    /** 清空Actor的时间使其立即行动，子类可重写添加额外逻辑 */
     public void clearTime() {
         spendConstant(-Actor.now());
-        if (this instanceof Char ch) {
-            for (Buff b : ch.buffs()) {
-                b.spendConstant(-Actor.now());
-            }
-        }
     }
 
-    /**
-     * 将Actor的行动时间设置为当前游戏时间。 使Actor在下个调度周期就能行动。
-     */
+    /** 将Actor时间设置为当前时间，使其在下个调度周期行动 */
     public void timeToNow() {
         time = now;
     }
 
-    /**
-     * 停用此Actor，使其不再参与行动调度。 通过设置时间为最大值来实现，Actor系统会忽略这些Actor。
-     */
+    /** 停用Actor，不再参与调度 */
     protected void deactivate() {
         time = Float.MAX_VALUE;
     }
 
-    /**
-     * 当Actor被添加到系统时调用的回调方法。 子类可以重写此方法来执行初始化逻辑。
-     */
+    /** Actor添加时的回调，子类可重写 */
     protected void onAdd() {
     }
 
-    /**
-     * 当Actor从系统中移除时调用的回调方法。 子类可以重写此方法来执行清理逻辑。
-     */
+    /** Actor移除时的回调，子类可重写 */
     protected void onRemove() {
     }
 
@@ -186,9 +203,7 @@ public abstract class Actor implements Bundlable {
         return now;
     }
 
-    /**
-     * 启用优先队列优化，适用于Actor数量较多的场景
-     */
+    /** 启用优先队列优化 */
     public static void enablePriorityQueue() {
         if (!usePriorityQueue) {
             usePriorityQueue = true;
@@ -199,9 +214,7 @@ public abstract class Actor implements Bundlable {
         }
     }
 
-    /**
-     * 禁用优先队列优化，回退到线性搜索
-     */
+    /** 禁用优先队列优化，回退到线性搜索 */
     public static void disablePriorityQueue() {
         usePriorityQueue = false;
         if (actorQueue != null) {
@@ -214,18 +227,14 @@ public abstract class Actor implements Bundlable {
         return usePriorityQueue;
     }
 
-    /**
-     * Actor比较器，用于优先队列排序
-     */
+    /** Actor比较器，用于优先队列排序：先按时间，时间相同时按优先级 */
     private static class ActorComparator implements Comparator<Actor> {
-
         @Override
         public int compare(Actor a1, Actor a2) {
             int timeCompare = Float.compare(a1.time, a2.time);
             if (timeCompare != 0) {
                 return timeCompare;
             }
-            // Higher priority acts first when time is equal
             return Integer.compare(a2.actPriority, a1.actPriority);
         }
     }
@@ -275,20 +284,15 @@ public abstract class Actor implements Bundlable {
         now -= min;
     }
 
-    /**
-     * 初始化Actor系统，添加当前关卡的所有Actor。 按照以下顺序初始化： 1. 英雄 2. 怪物 3. 环境效果(Blob)
-     *
-     * 注意：怪物需要在所有Actor添加完毕后再恢复目标，确保引用正确。
-     */
+    /** 初始化Actor系统，按顺序添加英雄、怪物、环境效果 */
     public static void init() {
-
         add(Dungeon.hero);
 
         for (Mob mob : Dungeon.level.mobs) {
             add(mob);
         }
 
-        // 怪物需要在所有Actor添加完毕后才能正确恢复敌人目标
+        // 怪物需要在所有Actor添加完毕后再恢复目标
         for (Mob mob : Dungeon.level.mobs) {
             mob.restoreEnemy();
         }
@@ -299,7 +303,6 @@ public abstract class Actor implements Bundlable {
 
         current = null;
 
-        // 自动启用优先队列优化（当Actor数量较多时）
         if (!usePriorityQueue && all.size() > 20) {
             enablePriorityQueue();
         }
@@ -334,24 +337,10 @@ public abstract class Actor implements Bundlable {
         return current != null ? current.actPriority : HERO_PRIO;
     }
 
-    /**
-     * 控制Actor处理线程是否保持活跃的标志
-     */
+    /** 控制Actor处理线程是否保持活跃 */
     public static boolean keepActorThreadAlive = true;
 
-    /**
-     * Actor系统的核心处理方法 - 游戏的心脏！
-     *
-     * 这个方法负责： 1. 选择下一个要执行的Actor（按时间和优先级） 2. 执行Actor的act()方法 3. 处理线程同步和中断 4.
-     * 在玩家输入时暂停处理
-     *
-     * ## 调度算法： - **线性模式** (默认): O(n)遍历查找最早的Actor - **优先队列模式** (优化): O(log
-     * n)从队列顶部获取
-     *
-     * ## 线程安全： - 支持中断处理，避免阻塞UI线程 - 在精灵动画期间等待，确保视觉连贯性 - 通过synchronized实现线程同步
-     *
-     * ## 性能特点： - 每帧调用，需要极高效率 - 支持自适应算法切换 - 大量Actor场景下性能提升8-14倍
-     */
+    /** Actor系统的核心处理方法，持续选择并执行Actor */
     public static void process() {
 
         boolean doNext;
@@ -445,29 +434,17 @@ public abstract class Actor implements Bundlable {
         } while (keepActorThreadAlive);
     }
 
-    /**
-     * 立即将Actor添加到调度系统
-     */
+    /** 立即将Actor添加到调度系统 */
     public static void add(Actor actor) {
         add(actor, now);
     }
 
-    /**
-     * 延迟将Actor添加到调度系统
-     */
+    /** 延迟将Actor添加到调度系统 */
     public static void addDelayed(Actor actor, float delay) {
         add(actor, now + Math.max(delay, 0));
     }
 
-    /**
-     * Actor添加的核心实现方法。
-     *
-     * 执行以下操作： 1. 检查重复添加 2. 分配并注册ID 3. 设置初始时间 4. 添加到各种集合中 5. 调用onAdd回调 6.
-     * 处理角色类型的特殊逻辑（包括其buff）
-     *
-     * @param actor 要添加的Actor
-     * @param time 初始时间偏移
-     */
+    /** Actor添加的核心实现 */
     private static synchronized void add(Actor actor, float time) {
 
         if (all.contains(actor)) {
@@ -495,15 +472,7 @@ public abstract class Actor implements Bundlable {
         }
     }
 
-    /**
-     * 从调度系统中移除指定的Actor。
-     *
-     * 执行以下清理操作： 1. 从所有集合中移除 2. 从优先队列中移除（如果启用） 3. 调用onRemove回调 4. 清理ID映射
-     *
-     * 注意：此方法不会自动移除角色的buff， 需要在角色死亡时单独处理。
-     *
-     * @param actor 要移除的Actor
-     */
+    /** 从调度系统中移除Actor，注意不会自动移除角色的buff */
     public static synchronized void remove(Actor actor) {
 
         if (actor != null) {
@@ -525,14 +494,7 @@ public abstract class Actor implements Bundlable {
         }
     }
 
-    /**
-     * 冻结角色在时间中指定的时长。 ⚠️ 谨慎使用！时间操作对某些游戏效果有用但很复杂。
-     *
-     * 这会延迟角色及其所有buff的行动时间， 常用于时间暂停、眩晕等效果。
-     *
-     * @param ch 要冻结的角色
-     * @param time 冻结时长
-     */
+    /** 冻结角色及其所有buff的时间，常用于时间暂停、眩晕等效果 */
     public static void delayChar(Char ch, float time) {
         ch.spendConstant(time);
         for (Buff b : ch.buffs()) {
@@ -540,9 +502,7 @@ public abstract class Actor implements Bundlable {
         }
     }
 
-    /**
-     * 在指定位置查找角色
-     */
+    /** 在指定位置查找角色 */
     public static synchronized Char findChar(int pos) {
         for (Char ch : chars) {
             if (ch.pos == pos) {
@@ -552,30 +512,22 @@ public abstract class Actor implements Bundlable {
         return null;
     }
 
-    /**
-     * 通过ID查找Actor
-     */
+    /** 通过ID查找Actor */
     public static synchronized Actor findById(int id) {
         return ids.get(id);
     }
 
-    /**
-     * 获取所有活跃Actor的副本集合
-     */
+    /** 获取所有活跃Actor的副本集合 */
     public static synchronized HashSet<Actor> all() {
         return new HashSet<>(all);
     }
 
-    /**
-     * 获取所有角色Actor的副本集合
-     */
+    /** 获取所有角色Actor的副本集合 */
     public static synchronized HashSet<Char> chars() {
         return new HashSet<>(chars);
     }
 
-    /**
-     * 确保Actor已正确添加并调用了onAdd()方法
-     */
+    /** 确保Actor已正确添加并调用了onAdd()方法 */
     public static boolean ensureActorAdded(Actor actor) {
         if (actor != null && all.contains(actor)) {
             if (actor instanceof Mob && ((Mob) actor).firstAdded) {

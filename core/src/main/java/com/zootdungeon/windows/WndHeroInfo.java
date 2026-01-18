@@ -33,6 +33,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.IconButton;
 import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RenderedTextBlock;
@@ -196,12 +197,13 @@ public class WndHeroInfo extends WndTabbed {
 							Icons.TALENT.get(),
 							new ItemSprite(ItemSpriteSheet.CUDGEL),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else {
-				// Default case
-				icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SEAL),
-						new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD),
-						new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			}
+			} else if (cls.equals(HeroClass.ReservedOp)) {
+					icons = new Image[]{ new ItemSprite(SpriteRegistry.itemByName("rhodes_island_terminal"))
+							// new ItemSprite(SpriteRegistry.itemByName("cloak_of_shadows")),
+							// new ItemSprite(SpriteRegistry.itemByName("dagger")),
+							// new ItemSprite(SpriteRegistry.itemByName("scroll_isaz"))
+							};
+			} 
 			for (Image im : icons) {
 				add(im);
 			}

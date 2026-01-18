@@ -19,6 +19,7 @@ import com.zootdungeon.items.cheat.ItemRemover;
 import com.zootdungeon.items.cheat.ItemEditor;
 import com.zootdungeon.items.cheat.Panacea;
 import com.zootdungeon.items.cheat.RedStone;
+import com.zootdungeon.items.cheat.WaterPlacer;
 import com.zootdungeon.items.cheat.ThrowingWeaponBox;
 import com.zootdungeon.items.cheat.WandBox;
 import com.zootdungeon.items.cheat.BombBox;
@@ -68,6 +69,7 @@ public class DebugSupply extends Supply {
         put_in(ThrowingWeaponBox.class, 1);
         put_in(WandBox.class, 1);
         put_in(BombBox.class, 1);
+        put_in(WaterPlacer.class, 1);
         put_in(AssassinSupply.class,1);
         put_in(TengusMask.class, 1);
         put_in(KingsCrown.class, 1);

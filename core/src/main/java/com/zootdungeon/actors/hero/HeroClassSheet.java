@@ -263,6 +263,8 @@ public final class HeroClassSheet {
             .title("预备干员")
             .shortDesc("预备干员开局持有罗德岛终端，在精英化后可以选择多个分支。罗德岛终端可以消耗COST以执行各种战术操作。")
             .desc("预备干员开局持有罗德岛终端。终端可以消耗COST来：\n- 合成特殊物品\n- 部署作战投影\n- 安装战术装置\n- 还有更多...")
+            .spritesheet("cola/guard.png")
+            .splashArt(Assets.Splashes.WARRIOR)
             .classTalentsTier1(
                 Talent.IRON_STOMACH,
         Talent.LIQUID_WILLPOWER,

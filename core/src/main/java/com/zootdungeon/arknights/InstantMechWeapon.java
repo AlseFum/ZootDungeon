@@ -51,7 +51,7 @@ public class InstantMechWeapon extends MeleeWeapon {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_RELEASE_MECH)) {
-            return "释放机甲";
+            return "释放无人机";
         }
         return super.actionName(action, hero);
     }
@@ -59,7 +59,6 @@ public class InstantMechWeapon extends MeleeWeapon {
     @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
-        
         if (action.equals(AC_RELEASE_MECH)) {
             GameScene.selectCell(new MechTargeter(hero));
         }
@@ -123,16 +122,6 @@ public class InstantMechWeapon extends MeleeWeapon {
     }
     
     @Override
-    public String name() {
-        return Messages.get(this, "name");
-    }
-    
-    @Override
-    public String info() {
-        return Messages.get(this, "desc", 2 + tier + buffedLvl());
-    }
-    
-    @Override
     public int min(int lvl) {
         return tier + lvl;
     }
@@ -161,6 +150,7 @@ public class InstantMechWeapon extends MeleeWeapon {
         public InstantMechWeapon weapon;
         public int power = 1;
         private static final float EXPLODE_CHANCE = 0.15f; // 爆炸概率
+        private static final float AUTO_TARGET_CHANCE = 0.2f; // 自动索敌概率（每回合）
         private static final int TRANSFER_RANGE = 5; // 转移范围
         private static final int EXPLODE_RANGE = 2; // 爆炸范围
         
@@ -186,10 +176,21 @@ public class InstantMechWeapon extends MeleeWeapon {
         
         @Override
         public boolean act() {
+            // 如果目标死亡，尝试转移到其他敌人
             if (target == null || !target.isAlive()) {
-                detach();
-                return true;
+                if (transferToOtherEnemy()) {
+                    // 转移成功，继续执行
+                    spend(TICK);
+                    return true;
+                } else {
+                    // 没有可转移的目标，移除
+                    detach();
+                    return true;
+                }
             }
+            
+            // 先消耗时间，确保每回合正确计时
+            spend(TICK);
             
             // 每回合造成伤害
             int damage = Random.NormalIntRange(power, power * 2);
@@ -201,13 +202,12 @@ public class InstantMechWeapon extends MeleeWeapon {
                 // 爆炸后转移到其他敌人
                 transferToOtherEnemy();
             } else {
-                // 正常情况也可能转移（较低概率）
-                if (Random.Float() < 0.3f) {
+                // 正常情况也可能自动索敌并转移（较低概率）
+                if (Random.Float() < AUTO_TARGET_CHANCE) {
                     transferToOtherEnemy();
                 }
             }
             
-            spend(TICK);
             return true;
         }
         
@@ -235,12 +235,16 @@ public class InstantMechWeapon extends MeleeWeapon {
             Sample.INSTANCE.play(Assets.Sounds.BLAST);
         }
         
-        private void transferToOtherEnemy() {
-            if (target == null || !target.isAlive()) {
-                return;
+        private boolean transferToOtherEnemy() {
+            // 获取当前位置（如果目标已死亡，使用死亡位置）
+            int currentPos;
+            if (target != null) {
+                currentPos = target.pos;
+            } else {
+                // 如果target为null，无法转移
+                return false;
             }
             
-            int currentPos = target.pos;
             ArrayList<Char> candidates = new ArrayList<>();
             
             // 在范围内寻找其他敌人
@@ -257,16 +261,31 @@ public class InstantMechWeapon extends MeleeWeapon {
                 // 随机选择一个敌人转移
                 Char newTarget = Random.element(candidates);
                 
-                // 从当前目标移除
-                detach();
+                // 保存当前时间状态（在detach之前）
+                float currentTime = cooldown();
+                
+                // 从当前目标移除（如果目标还存在）
+                if (target != null) {
+                    detach();
+                }
                 
                 // 附加到新目标
                 if (attachTo(newTarget)) {
+                    // 恢复时间状态，确保转移后时间正确
+                    if (currentTime > 0) {
+                        postpone(currentTime);
+                    } else {
+                        timeToNow();
+                    }
+                    
                     if (weapon != null) {
                         weapon.activeMechs.add(this);
                     }
+                    return true;
                 }
             }
+            
+            return false;
         }
         
         @Override
