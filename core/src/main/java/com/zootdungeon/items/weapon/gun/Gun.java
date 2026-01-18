@@ -13,6 +13,7 @@ import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.ammo.Ammo;
 import com.zootdungeon.items.weapon.ammo.Cartridge;
 import com.zootdungeon.items.weapon.ammo.CartridgeAltFire;
+import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.weapon.ammo.CartridgeEffect;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.scenes.CellSelector;
@@ -20,7 +21,9 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndOptions;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Callback;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -82,6 +85,28 @@ public class Gun extends Weapon {
     }
     public void fire(int targetPos,boolean shouldSpend) {
         HitResult[] hitResults = fire_hits(curUser, targetPos, Ballistica.PROJECTILE);
+        
+        // 创建子弹轨迹粒子效果 - 使用更快的速度
+        final int finalTargetPos = hitResults.length > 0 ? hitResults[0].where() : targetPos;
+        MagicMissile missile = MagicMissile.boltFromChar(
+            curUser.sprite.parent, 
+            MagicMissile.LIGHT_MISSILE, 
+            curUser.sprite, 
+            finalTargetPos,
+            new Callback() {
+                @Override
+                public void call() {
+                    // 子弹命中后处理伤害和效果
+                    processFireResults(hitResults, shouldSpend);
+                }
+            }
+        );
+        
+        missile.setSpeed(800f);
+        curUser.sprite.parent.add(missile);
+    }
+    
+    protected void processFireResults(HitResult[] hitResults, boolean shouldSpend) {
         for (HitResult hitResult : hitResults) {
             Object target = hitResult.who();
             if (target instanceof Char targetChar) {
