@@ -61,8 +61,6 @@ public enum Rankings {
 	
 	public static final int TABLE_SIZE	= 11;
 	
-	public static final String RANKINGS_FILE = "rankings.dat";
-	
 	public ArrayList<Record> records;
 	public int lastRecord;
 	public int totalNumber;
@@ -363,14 +361,7 @@ public enum Rankings {
 		Bundle global = SaveManager.loadGlobal();
 		Bundle bundle = global.getBundle("rankings");
 		if (bundle == null || bundle.isNull()) {
-			bundle = legacyLoad();
-			if (bundle == null) {
-				return;
-			}
-			global.put("rankings", bundle);
-			try {
-				SaveManager.saveGlobal(global);
-			} catch (IOException ignored) {}
+			return;
 		}
 
 		for (Bundlable record : bundle.getCollection( RECORDS )) {
@@ -548,12 +539,4 @@ public enum Rankings {
 			}
 		}
 	};
-
-	private Bundle legacyLoad() {
-		try {
-			return com.watabou.utils.FileUtils.bundleFromFile( RANKINGS_FILE );
-		} catch (IOException e) {
-			return null;
-		}
-	}
 }

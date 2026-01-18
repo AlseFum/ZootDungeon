@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Journal {
 	
-	public static final String JOURNAL_FILE = "journal.dat";
-	
 	private static boolean loaded = false;
 	
 	public static void loadGlobal(){
@@ -41,11 +39,7 @@ public class Journal {
 		Bundle global = SaveManager.loadGlobal();
 		Bundle journalBundle = global.getBundle("journal");
 		if (journalBundle == null || journalBundle.isNull()) {
-			// 兼容旧版数据
-			journalBundle = legacyLoad();
-			if (journalBundle == null) {
-				journalBundle = new Bundle();
-			}
+			journalBundle = new Bundle();
 			global.put("journal", journalBundle);
 			try {
 				SaveManager.saveGlobal(global);
@@ -87,14 +81,6 @@ public class Journal {
 			ColaDungeon.reportException(e);
 		}
 		
-	}
-
-	private static Bundle legacyLoad() {
-		try {
-			return com.watabou.utils.FileUtils.bundleFromFile( JOURNAL_FILE );
-		} catch (IOException e) {
-			return null;
-		}
 	}
 
 }

@@ -246,7 +246,6 @@ public class Badges {
 		loadGlobal();
 	}
 	
-	public static final String BADGES_FILE	= "badges.dat";
 	private static final String BADGES		= "badges";
 	
 	private static final HashSet<String> removedBadges = new HashSet<>();
@@ -309,15 +308,11 @@ public class Badges {
 			Bundle globalBundle = SaveManager.loadGlobal();
 			Bundle bundle = globalBundle.getBundle("badges");
 			if (bundle == null || bundle.isNull()) {
-				bundle = legacyLoad();
-				if (bundle == null) {
-					bundle = new Bundle();
-				} else {
-					globalBundle.put("badges", bundle);
-					try {
-						SaveManager.saveGlobal(globalBundle);
-					} catch (IOException ignored) {}
-				}
+				bundle = new Bundle();
+				globalBundle.put("badges", bundle);
+				try {
+					SaveManager.saveGlobal(globalBundle);
+				} catch (IOException ignored) {}
 			}
 			global = restore( bundle );
 		}
@@ -341,14 +336,6 @@ public class Badges {
 			} catch (IOException e) {
 				ColaDungeon.reportException(e);
 			}
-		}
-	}
-
-	private static Bundle legacyLoad() {
-		try {
-			return com.watabou.utils.FileUtils.bundleFromFile(BADGES_FILE);
-		} catch (IOException e) {
-			return null;
 		}
 	}
 
