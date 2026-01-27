@@ -636,6 +636,8 @@ public class Hero extends Char {
             evasion *= 3;
         }
 
+        evasion *= com.zootdungeon.arknights.ascalon.AscalonAOE.evasionMultiplier(this);
+
         if (paralysed > 0) {
             evasion /= 2;
         }

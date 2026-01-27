@@ -1,6 +1,8 @@
 package com.zootdungeon.items.supply;
 
-import com.zootdungeon.arknights.ascalon.Ascalon;
+import com.zootdungeon.arknights.ascalon.AscalonAmbush;
+import com.zootdungeon.arknights.ascalon.AscalonAOE;
+import com.zootdungeon.arknights.ascalon.StateSwitchWeapon;
 import com.zootdungeon.arknights.InstantMechWeapon;
 import com.zootdungeon.arknights.MomentumWeapon;
 import com.zootdungeon.arknights.PropertyHuntingWeapon;
@@ -73,7 +75,9 @@ public class DebugSupply extends Supply {
         put_in(AssassinSupply.class,1);
         put_in(TengusMask.class, 1);
         put_in(KingsCrown.class, 1);
-        put_in(Ascalon.class, 1);
+        put_in(AscalonAmbush.class, 1);
+        put_in(AscalonAOE.class, 1);
+        put_in(StateSwitchWeapon.class, 1);
         put_in(SummoningAmbushWeapon.class, 1);
         put_in(WandOfPrisonCage.class, 1);
         put_in(RangeReducedWeapon.class, 1);
