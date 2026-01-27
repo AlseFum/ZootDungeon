@@ -67,9 +67,6 @@ public final class HeroClassSheet {
     // 标准职业
     public static final HeroClass WARRIOR = registerStandardClass("warrior")
             .subClasses(HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR)
-            .title("战士")
-            .desc("战士是一个强大的近战职业，擅长使用各种武器和防具。\n\n战士的特点：\n- 高生命值和防御力\n- 可以使用所有武器和防具\n- 起始装备：短剑和破损印记\n- 可以自动识别治疗药水和升级卷轴")
-            .shortDesc("战士是一个强大的近战职业，擅长使用各种武器和防具。")
             .spritesheet(Assets.Sprites.WARRIOR)
             .splashArt(Assets.Splashes.WARRIOR)
             .abilities(new HeroicLeap(), new Shockwave(), new Endure())
@@ -99,9 +96,6 @@ public final class HeroClassSheet {
 
     public static final HeroClass MAGE = registerStandardClass("mage")
             .subClasses(HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK)
-            .title("法师")
-            .desc("法师是一个强大的远程职业，擅长使用魔法和法杖。\n\n法师的特点：\n- 高魔法伤害\n- 起始装备：魔法法杖\n- 可以自动识别升级卷轴和力量药水")
-            .shortDesc("法师是一个强大的远程职业，擅长使用魔法和法杖。")
             .spritesheet(Assets.Sprites.MAGE)
             .splashArt(Assets.Splashes.MAGE)
             .abilities(new ElementalBlast(), new WildMagic(), new WarpBeacon())
@@ -125,9 +119,6 @@ public final class HeroClassSheet {
 
     public static final HeroClass ROGUE = registerStandardClass("rogue")
             .subClasses(HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER)
-            .title("盗贼")
-            .desc("盗贼是一个灵活的近战职业，擅长隐身和暗杀。\n\n盗贼的特点：\n- 高敏捷和暴击率\n- 起始装备：短剑和隐身斗篷\n- 可以探测陷阱和隐藏的门")
-            .shortDesc("盗贼是一个灵活的近战职业，擅长隐身和暗杀。")
             .spritesheet(Assets.Sprites.ROGUE)
             .splashArt(Assets.Splashes.ROGUE)
             .abilities(new SmokeBomb(), new DeathMark(), new ShadowClone())
@@ -160,9 +151,6 @@ public final class HeroClassSheet {
 
     public static final HeroClass HUNTRESS = registerStandardClass("huntress")
             .subClasses(HeroSubClass.SNIPER, HeroSubClass.WARDEN)
-            .title("猎人")
-            .desc("猎人是一个灵活的远程职业，擅长使用弓箭和陷阱。\n\n猎人的特点：\n- 高命中率和闪避率\n- 起始装备：弓箭\n- 可以在草丛中获得额外效果")
-            .shortDesc("猎人是一个灵活的远程职业，擅长使用弓箭和陷阱。")
             .spritesheet(Assets.Sprites.HUNTRESS)
             .splashArt(Assets.Splashes.HUNTRESS)
             .abilities(new SpectralBlades(), new NaturesPower(), new SpiritHawk())
@@ -188,9 +176,6 @@ public final class HeroClassSheet {
 
     public static final HeroClass DUELIST = registerStandardClass("duelist")
             .subClasses(HeroSubClass.CHAMPION, HeroSubClass.MONK)
-            .title("决斗者")
-            .desc("决斗者是一个专精的近战职业，擅长单挑和格斗。\n\n决斗者的特点：\n- 高单体伤害\n- 起始装备：细剑\n- 可以挑战敌人进行决斗")
-            .shortDesc("决斗者是一个专精的近战职业，擅长单挑和格斗。")
             .spritesheet(Assets.Sprites.DUELIST)
             .splashArt(Assets.Splashes.DUELIST)
             .abilities(new Challenge(), new ElementalStrike(), new Feint())
@@ -231,9 +216,6 @@ public final class HeroClassSheet {
 
     public static final HeroClass CLERIC = registerStandardClass("cleric")
             .subClasses(HeroSubClass.PRIEST, HeroSubClass.PALADIN)
-            .title("牧师")
-            .desc("牧师是一个支援型职业，擅长治疗和祝福。\n\n牧师的特点：\n- 高治疗能力\n- 起始装备：短剑和圣典\n- 可以使用神圣魔法")
-            .shortDesc("牧师是一个支援型职业，擅长治疗和祝福。")
             .spritesheet(Assets.Sprites.CLERIC)
             .splashArt(Assets.Splashes.CLERIC)
             .abilities(new AscendedForm(), new Trinity(), new PowerOfMany())
@@ -259,9 +241,6 @@ public final class HeroClassSheet {
             })
             .register();
     public static final HeroClass ReservedOp=registerStandardClass("reservedOp")
-            .title("预备干员")
-            .shortDesc("预备干员开局持有罗德岛终端，在精英化后可以选择多个分支。罗德岛终端可以消耗COST以执行各种战术操作。")
-            .desc("预备干员开局持有罗德岛终端。终端可以消耗COST来：\n- 合成特殊物品\n- 部署作战投影\n- 安装战术装置\n- 还有更多...")
             .spritesheet("cola/guard.png")
             .splashArt(Assets.Splashes.WARRIOR)
             .classTalentsTier1(

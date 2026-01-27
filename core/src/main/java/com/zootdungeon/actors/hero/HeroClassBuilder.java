@@ -36,7 +36,7 @@ public class HeroClassBuilder {
     public HeroClassBuilder(String id) {
         this.id = id;
         // 默认使用消息系统
-        this.title = () -> Messages.get(HeroClass.class, id + "_title");
+        this.title = () -> Messages.get(HeroClass.class, id);
         this.desc = () -> Messages.get(HeroClass.class, id + "_desc");
         this.shortDesc = () -> Messages.get(HeroClass.class, id + "_desc_short");
         this.unlockMsg = () -> Messages.get(HeroClass.class, id + "_unlock");
