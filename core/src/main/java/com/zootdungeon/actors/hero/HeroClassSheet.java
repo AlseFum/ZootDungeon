@@ -46,7 +46,6 @@ import com.zootdungeon.items.scrolls.ScrollOfRage;
 import com.zootdungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.items.supply.DebugSupply;
-import com.zootdungeon.items.supply.GunSupply;
 import com.zootdungeon.items.wands.WandOfMagicMissile;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.accurateWeapon.Cudgel;
@@ -343,25 +342,16 @@ public final class HeroClassSheet {
 
     // 通用初始化
     public static void initCommon(Hero hero) {
-        // 基础装备
         (hero.belongings.armor = new ClothArmor()).identify();
         new Food().identify().collect();
         new Waterskin().collect();
-        //添加绒布包和药剂包
         VelvetPouch velvetPouch = new VelvetPouch();
         velvetPouch.identify().collect();
 
         PotionBandolier potionBandolier = new PotionBandolier();
         potionBandolier.identify().collect();
 
-        new GunSupply().identify().collect();
         new DebugSupply().identify().collect();
-        // new AssassinSupply().identify().collect();
         new DebugBag().identify().collect();
-
-        // new TengusMask().identify().collect();
-        // new KingsCrown().identify().collect();
-        // 事件通知
-        // EventBus.fire("Hero:created", "hero", hero); // EventBus removed - TODO: restore when needed
     }
 };

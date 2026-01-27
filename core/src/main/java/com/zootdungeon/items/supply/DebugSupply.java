@@ -72,7 +72,6 @@ public class DebugSupply extends Supply {
         put_in(WandBox.class, 1);
         put_in(BombBox.class, 1);
         put_in(WaterPlacer.class, 1);
-        put_in(AssassinSupply.class,1);
         put_in(TengusMask.class, 1);
         put_in(KingsCrown.class, 1);
         put_in(AscalonAmbush.class, 1);
