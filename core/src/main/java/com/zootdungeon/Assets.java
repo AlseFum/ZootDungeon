@@ -1,28 +1,12 @@
-/*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
- *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
-
 package com.zootdungeon;
 
-public class Assets {
+import com.watabou.utils.Bundle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+public class Assets {
 	public static class Effects {
 		public static final String EFFECTS      = "effects/effects.png";
 		public static final String FIREBALL     = "effects/fireball.png";
@@ -329,5 +313,647 @@ public class Assets {
 		public static final String FUNGAL_SPINNER   = "sprites/fungal_spinner.png";
 		public static final String FUNGAL_SENTRY    = "sprites/fungal_sentry.png";
 		public static final String FUNGAL_CORE      = "sprites/fungal_core.png";
+	}
+	public enum ResourceType {
+		LANG,       // 语言
+		TEXTURE,    // 纹理
+		SOUND,      // 音效
+		SCRIPT      // 脚本
+	}
+
+	public static class ResourceIndex {
+		// 四种资源类型分开存储
+		public final Map<String, String> langResources;      // 语言资源
+		public final Map<String, String> textureResources;   // 纹理资源
+		public final Map<String, String> soundResources;    // 音效资源
+		public final Map<String, String> scriptResources;  // 脚本资源
+
+		public ResourceIndex() {
+			this.langResources = new HashMap<>();
+			this.textureResources = new HashMap<>();
+			this.soundResources = new HashMap<>();
+			this.scriptResources = new HashMap<>();
+		}
+
+		/**
+		 * 根据类型获取对应的资源映射
+		 */
+		public Map<String, String> getResourcesByType(ResourceType type) {
+			switch (type) {
+				case LANG:
+					return langResources;
+				case TEXTURE:
+					return textureResources;
+				case SOUND:
+					return soundResources;
+				case SCRIPT:
+					return scriptResources;
+				default:
+					throw new IllegalArgumentException("Unknown resource type: " + type);
+			}
+		}
+
+		/**
+		 * 添加资源映射
+		 */
+		public void put(ResourceType type, String resourceID, String resourceContent) {
+			getResourcesByType(type).put(resourceID, resourceContent);
+		}
+
+		/**
+		 * 获取资源内容
+		 */
+		public String get(ResourceType type, String resourceID) {
+			return getResourcesByType(type).get(resourceID);
+		}
+
+		/**
+		 * 检查是否包含指定资源ID
+		 */
+		public boolean contains(ResourceType type, String resourceID) {
+			return getResourcesByType(type).containsKey(resourceID);
+		}
+
+		/**
+		 * 获取指定类型的所有资源ID
+		 */
+		public java.util.Set<String> keySet(ResourceType type) {
+			return getResourcesByType(type).keySet();
+		}
+
+		/**
+		 * 检查指定类型是否为空
+		 */
+		public boolean isEmpty(ResourceType type) {
+			return getResourcesByType(type).isEmpty();
+		}
+
+		/**
+		 * 检查是否所有类型都为空
+		 */
+		public boolean isEmpty() {
+			return langResources.isEmpty() 
+				&& textureResources.isEmpty() 
+				&& soundResources.isEmpty() 
+				&& scriptResources.isEmpty();
+		}
+
+		/**
+		 * 保存到Bundle
+		 */
+		public void storeInBundle(Bundle bundle) {
+			if (!langResources.isEmpty()) {
+				Bundle langBundle = new Bundle();
+				for (Map.Entry<String, String> entry : langResources.entrySet()) {
+					langBundle.put(entry.getKey(), entry.getValue());
+				}
+				bundle.put("LANG", langBundle);
+			}
+			if (!textureResources.isEmpty()) {
+				Bundle textureBundle = new Bundle();
+				for (Map.Entry<String, String> entry : textureResources.entrySet()) {
+					textureBundle.put(entry.getKey(), entry.getValue());
+				}
+				bundle.put("TEXTURE", textureBundle);
+			}
+			if (!soundResources.isEmpty()) {
+				Bundle soundBundle = new Bundle();
+				for (Map.Entry<String, String> entry : soundResources.entrySet()) {
+					soundBundle.put(entry.getKey(), entry.getValue());
+				}
+				bundle.put("SOUND", soundBundle);
+			}
+			if (!scriptResources.isEmpty()) {
+				Bundle scriptBundle = new Bundle();
+				for (Map.Entry<String, String> entry : scriptResources.entrySet()) {
+					scriptBundle.put(entry.getKey(), entry.getValue());
+				}
+				bundle.put("SCRIPT", scriptBundle);
+			}
+		}
+
+		/**
+		 * 从Bundle恢复
+		 */
+		public void restoreFromBundle(Bundle bundle) {
+			langResources.clear();
+			textureResources.clear();
+			soundResources.clear();
+			scriptResources.clear();
+			
+			if (bundle.contains("LANG")) {
+				Bundle langBundle = bundle.getBundle("LANG");
+				for (String key : langBundle.getKeys()) {
+					langResources.put(key, langBundle.getString(key));
+				}
+			}
+			if (bundle.contains("TEXTURE")) {
+				Bundle textureBundle = bundle.getBundle("TEXTURE");
+				for (String key : textureBundle.getKeys()) {
+					textureResources.put(key, textureBundle.getString(key));
+				}
+			}
+			if (bundle.contains("SOUND")) {
+				Bundle soundBundle = bundle.getBundle("SOUND");
+				for (String key : soundBundle.getKeys()) {
+					soundResources.put(key, soundBundle.getString(key));
+				}
+			}
+			if (bundle.contains("SCRIPT")) {
+				Bundle scriptBundle = bundle.getBundle("SCRIPT");
+				for (String key : scriptBundle.getKeys()) {
+					scriptResources.put(key, scriptBundle.getString(key));
+				}
+			}
+		}
+	}
+
+	// 默认索引（包含 Assets 中定义的所有资源）
+	public static final ResourceIndex defaultIndex = new ResourceIndex();
+
+	// 统一的索引栈（从栈底到栈顶，栈顶优先级最高）
+	public static final List<ResourceIndex> indexStack = new ArrayList<>();
+
+	// 手动覆盖索引（永远在栈顶）
+	public static final ResourceIndex manualOverrideIndex = new ResourceIndex();
+
+	// 静态初始化块：将 Assets 中定义的资源添加到 DefaultIndex
+	static {
+		// TEXTURE 资源（所有图片资源）
+		// Effects
+		defaultIndex.put(ResourceType.TEXTURE, "effects/effects.png", Effects.EFFECTS);
+		defaultIndex.put(ResourceType.TEXTURE, "effects/fireball.png", Effects.FIREBALL);
+		defaultIndex.put(ResourceType.TEXTURE, "effects/specks.png", Effects.SPECKS);
+		defaultIndex.put(ResourceType.TEXTURE, "effects/spell_icons.png", Effects.SPELL_ICONS);
+		defaultIndex.put(ResourceType.TEXTURE, "effects/text_icons.png", Effects.TEXT_ICONS);
+
+		// Environment
+		defaultIndex.put(ResourceType.TEXTURE, "environment/terrain_features.png", Environment.TERRAIN_FEATURES);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/visual_grid.png", Environment.VISUAL_GRID);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/wall_blocking.png", Environment.WALL_BLOCKING);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_sewers.png", Environment.TILES_SEWERS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_prison.png", Environment.TILES_PRISON);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_caves.png", Environment.TILES_CAVES);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_city.png", Environment.TILES_CITY);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_halls.png", Environment.TILES_HALLS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_caves_crystal.png", Environment.TILES_CAVES_CRYSTAL);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/tiles_caves_gnoll.png", Environment.TILES_CAVES_GNOLL);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/water0.png", Environment.WATER_SEWERS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/water1.png", Environment.WATER_PRISON);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/water2.png", Environment.WATER_CAVES);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/water3.png", Environment.WATER_CITY);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/water4.png", Environment.WATER_HALLS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/weak_floor.png", Environment.WEAK_FLOOR);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/sewer_boss.png", Environment.SEWER_BOSS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/prison_quest.png", Environment.PRISON_QUEST);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/prison_exit.png", Environment.PRISON_EXIT);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/caves_quest.png", Environment.CAVES_QUEST);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/caves_boss.png", Environment.CAVES_BOSS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/city_boss.png", Environment.CITY_BOSS);
+		defaultIndex.put(ResourceType.TEXTURE, "environment/custom_tiles/halls_special.png", Environment.HALLS_SP);
+
+		// Fonts
+		defaultIndex.put(ResourceType.TEXTURE, "fonts/pixel_font.png", Fonts.PIXELFONT);
+
+		// Interfaces
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/arcs1.png", Interfaces.ARCS_BG);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/arcs2.png", Interfaces.ARCS_FG);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/banners.png", Interfaces.BANNERS);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/badges.png", Interfaces.BADGES);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/locked_badge.png", Interfaces.LOCKED);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/chrome.png", Interfaces.CHROME);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/icons.png", Interfaces.ICONS);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/status_pane.png", Interfaces.STATUS);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/menu_pane.png", Interfaces.MENU);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/menu_button.png", Interfaces.MENU_BTN);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/toolbar.png", Interfaces.TOOLBAR);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/shadow.png", Interfaces.SHADOW);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/boss_hp.png", Interfaces.BOSSHP);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/surface.png", Interfaces.SURFACE);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/buffs.png", Interfaces.BUFFS_SMALL);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/large_buffs.png", Interfaces.BUFFS_LARGE);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/talent_icons.png", Interfaces.TALENT_ICONS);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/talent_button.png", Interfaces.TALENT_BUTTON);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/hero_icons.png", Interfaces.HERO_ICONS);
+		defaultIndex.put(ResourceType.TEXTURE, "interfaces/radial_menu.png", Interfaces.RADIAL_MENU);
+
+		// Splashes
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/warrior.jpg", Splashes.WARRIOR);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/mage.jpg", Splashes.MAGE);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/rogue.jpg", Splashes.ROGUE);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/huntress.jpg", Splashes.HUNTRESS);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/duelist.jpg", Splashes.DUELIST);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/cleric.jpg", Splashes.CLERIC);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/sewers.jpg", Splashes.SEWERS);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/prison.jpg", Splashes.PRISON);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/caves.jpg", Splashes.CAVES);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/city.jpg", Splashes.CITY);
+		defaultIndex.put(ResourceType.TEXTURE, "splashes/halls.jpg", Splashes.HALLS);
+
+		// Sprites
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/items.png", Sprites.ITEMS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/item_icons.png", Sprites.ITEM_ICONS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/warrior.png", Sprites.WARRIOR);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/mage.png", Sprites.MAGE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/rogue.png", Sprites.ROGUE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/huntress.png", Sprites.HUNTRESS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/duelist.png", Sprites.DUELIST);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/cleric.png", Sprites.CLERIC);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/avatars.png", Sprites.AVATARS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/pet.png", Sprites.PET);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/amulet.png", Sprites.AMULET);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/rat.png", Sprites.RAT);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/brute.png", Sprites.BRUTE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/spinner.png", Sprites.SPINNER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/dm300.png", Sprites.DM300);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/wraith.png", Sprites.WRAITH);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/undead.png", Sprites.UNDEAD);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/king.png", Sprites.KING);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/piranha.png", Sprites.PIRANHA);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/eye.png", Sprites.EYE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/gnoll.png", Sprites.GNOLL);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/crab.png", Sprites.CRAB);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/goo.png", Sprites.GOO);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/swarm.png", Sprites.SWARM);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/skeleton.png", Sprites.SKELETON);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/shaman.png", Sprites.SHAMAN);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/thief.png", Sprites.THIEF);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/tengu.png", Sprites.TENGU);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/sheep.png", Sprites.SHEEP);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/shopkeeper.png", Sprites.KEEPER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/bat.png", Sprites.BAT);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/elemental.png", Sprites.ELEMENTAL);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/monk.png", Sprites.MONK);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/warlock.png", Sprites.WARLOCK);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/golem.png", Sprites.GOLEM);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/statue.png", Sprites.STATUE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/succubus.png", Sprites.SUCCUBUS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/scorpio.png", Sprites.SCORPIO);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/yog_fists.png", Sprites.FISTS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/yog.png", Sprites.YOG);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/larva.png", Sprites.LARVA);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/ghost.png", Sprites.GHOST);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/wandmaker.png", Sprites.MAKER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/blacksmith.png", Sprites.TROLL);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/demon.png", Sprites.IMP);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/ratking.png", Sprites.RATKING);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/bee.png", Sprites.BEE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/mimic.png", Sprites.MIMIC);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/rot_lasher.png", Sprites.ROT_LASH);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/rot_heart.png", Sprites.ROT_HEART);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/guard.png", Sprites.GUARD);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/wards.png", Sprites.WARDS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/guardian.png", Sprites.GUARDIAN);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/slime.png", Sprites.SLIME);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/snake.png", Sprites.SNAKE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/necromancer.png", Sprites.NECRO);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/ghoul.png", Sprites.GHOUL);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/ripper.png", Sprites.RIPPER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/spawner.png", Sprites.SPAWNER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/dm100.png", Sprites.DM100);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/pylon.png", Sprites.PYLON);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/dm200.png", Sprites.DM200);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/lotus.png", Sprites.LOTUS);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/ninja_log.png", Sprites.NINJA_LOG);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/spirit_hawk.png", Sprites.SPIRIT_HAWK);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/red_sentry.png", Sprites.RED_SENTRY);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/crystal_wisp.png", Sprites.CRYSTAL_WISP);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/crystal_guardian.png", Sprites.CRYSTAL_GUARDIAN);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/crystal_spire.png", Sprites.CRYSTAL_SPIRE);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/gnoll_guard.png", Sprites.GNOLL_GUARD);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/gnoll_sapper.png", Sprites.GNOLL_SAPPER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/gnoll_geomancer.png", Sprites.GNOLL_GEOMANCER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/fungal_spinner.png", Sprites.FUNGAL_SPINNER);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/fungal_sentry.png", Sprites.FUNGAL_SENTRY);
+		defaultIndex.put(ResourceType.TEXTURE, "sprites/fungal_core.png", Sprites.FUNGAL_CORE);
+
+		// SOUND 资源（音效）
+		for (String sound : Sounds.all) {
+			defaultIndex.put(ResourceType.SOUND, sound, sound);
+		}
+
+		// LANG 资源（语言资源包）
+		defaultIndex.put(ResourceType.LANG, "messages/actors/actors", Messages.ACTORS);
+		defaultIndex.put(ResourceType.LANG, "messages/items/items", Messages.ITEMS);
+		defaultIndex.put(ResourceType.LANG, "messages/journal/journal", Messages.JOURNAL);
+		defaultIndex.put(ResourceType.LANG, "messages/levels/levels", Messages.LEVELS);
+		defaultIndex.put(ResourceType.LANG, "messages/misc/misc", Messages.MISC);
+		defaultIndex.put(ResourceType.LANG, "messages/plants/plants", Messages.PLANTS);
+		defaultIndex.put(ResourceType.LANG, "messages/scenes/scenes", Messages.SCENES);
+		defaultIndex.put(ResourceType.LANG, "messages/ui/ui", Messages.UI);
+		defaultIndex.put(ResourceType.LANG, "messages/windows/windows", Messages.WINDOWS);
+	}
+
+	// Bundle键名
+	public static final String BUNDLE_KEY_MANUAL_OVERRIDES = "material_manual_overrides";
+
+	// 资源键类（用于Map的key）
+	private static class ResourceKey {
+		public final ResourceType type;
+		public final String resourceID;
+
+		public ResourceKey(ResourceType type, String resourceID) {
+			this.type = type;
+			this.resourceID = resourceID;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			ResourceKey that = (ResourceKey) o;
+			return type == that.type && resourceID.equals(that.resourceID);
+		}
+
+		@Override
+		public int hashCode() {
+			return type.hashCode() * 31 + resourceID.hashCode();
+		}
+	}
+
+	// 当前所有被查询过的资源的最终内容表
+	// ResourceKey -> ResourceContent
+	public static final Map<ResourceKey, String> resourceCache = new HashMap<>();
+
+	/**
+	 * 初始化资源索引系统
+	 * 应该在游戏启动时调用
+	 */
+	public static void init() {
+		// 清空栈
+		indexStack.clear();
+		
+		// 添加默认索引到栈底
+		indexStack.add(defaultIndex);
+		
+		// 确保手动覆盖索引在栈顶
+		indexStack.add(manualOverrideIndex);
+
+		// 从SaveManager加载手动覆盖
+		loadManualOverrides();
+	}
+
+	/**
+	 * 添加索引到栈
+	 * 新添加的索引会放在手动覆盖索引之前
+	 */
+	public static void addIndex(ResourceIndex index) {
+		if (index == null) {
+			return;
+		}
+
+		// 确保手动覆盖索引在栈顶
+		if (!indexStack.isEmpty() && indexStack.get(indexStack.size() - 1) == manualOverrideIndex) {
+			indexStack.remove(indexStack.size() - 1);
+		}
+
+		indexStack.add(index);
+
+		// 重新添加手动覆盖索引到栈顶
+		indexStack.add(manualOverrideIndex);
+
+		// 只更新该索引中包含的资源缓存
+		updateResourceCacheForIndex(index);
+	}
+
+	/**
+	 * 从栈中移除索引
+	 */
+	public static boolean removeIndex(ResourceIndex index) {
+		if (index == null || index == manualOverrideIndex) {
+			return false; // 不能移除手动覆盖索引
+		}
+		boolean removed = indexStack.remove(index);
+		if (removed) {
+			// 只更新该索引中包含的资源缓存
+			updateResourceCacheForIndex(index);
+		}
+		return removed;
+	}
+
+	/**
+	 * 清空所有索引（保留手动覆盖索引）
+	 */
+	public static void clearIndices() {
+		indexStack.clear();
+		indexStack.add(manualOverrideIndex);
+		// 清空所有索引后，所有已缓存的资源都可能受影响，需要全部更新
+		java.util.Set<ResourceKey> keysToUpdate = new java.util.HashSet<>(resourceCache.keySet());
+		for (ResourceKey key : keysToUpdate) {
+			updateResourceCacheForResource(key.type, key.resourceID);
+		}
+	}
+
+	/**
+	 * 设置手动覆盖
+	 * 手动覆盖优先级最高，永远在栈顶
+	 */
+	public static void setManualOverride(ResourceType type, String resourceID, String resourceContent) {
+		manualOverrideIndex.put(type, resourceID, resourceContent);
+		saveManualOverrides();
+		// 更新资源缓存
+		updateResourceCacheForResource(type, resourceID);
+	}
+
+	/**
+	 * 清除手动覆盖
+	 */
+	public static void clearManualOverride(ResourceType type, String resourceID) {
+		Map<String, String> resources = manualOverrideIndex.getResourcesByType(type);
+		if (resources.containsKey(resourceID)) {
+			resources.remove(resourceID);
+			saveManualOverrides();
+			// 更新资源缓存
+			updateResourceCacheForResource(type, resourceID);
+		}
+	}
+
+	/**
+	 * 清除指定类型的所有手动覆盖
+	 */
+	public static void clearManualOverrides(ResourceType type) {
+		Map<String, String> resources = manualOverrideIndex.getResourcesByType(type);
+		java.util.Set<String> affectedIDs = new java.util.HashSet<>(resources.keySet());
+		resources.clear();
+		saveManualOverrides();
+		// 只更新受影响的资源缓存
+		for (String resourceID : affectedIDs) {
+			updateResourceCacheForResource(type, resourceID);
+		}
+	}
+
+	/**
+	 * 清除所有手动覆盖
+	 */
+	public static void clearAllManualOverrides() {
+		java.util.Set<ResourceKey> affectedKeys = new java.util.HashSet<>();
+		for (ResourceType type : ResourceType.values()) {
+			Map<String, String> resources = manualOverrideIndex.getResourcesByType(type);
+			for (String resourceID : resources.keySet()) {
+				affectedKeys.add(new ResourceKey(type, resourceID));
+			}
+		}
+		manualOverrideIndex.langResources.clear();
+		manualOverrideIndex.textureResources.clear();
+		manualOverrideIndex.soundResources.clear();
+		manualOverrideIndex.scriptResources.clear();
+		saveManualOverrides();
+		// 只更新受影响的资源缓存
+		for (ResourceKey key : affectedKeys) {
+			updateResourceCacheForResource(key.type, key.resourceID);
+		}
+	}
+
+	/**
+	 * 获取资源内容
+	 * 从栈顶向下遍历，找到第一个包含该ResourceID的索引
+	 * 查询结果会被缓存到resourceCache中
+	 * 
+	 * @param type 资源类型
+	 * @param resourceID 资源ID
+	 * @return 资源内容，如果未找到返回null
+	 */
+	public static String getResource(ResourceType type, String resourceID) {
+		ResourceKey key = new ResourceKey(type, resourceID);
+		
+		// 从栈顶向下遍历（从后往前）
+		for (int i = indexStack.size() - 1; i >= 0; i--) {
+			ResourceIndex index = indexStack.get(i);
+			if (index.contains(type, resourceID)) {
+				String content = index.get(type, resourceID);
+				// 缓存查询结果
+				resourceCache.put(key, content);
+				return content;
+			}
+		}
+
+		// 未找到时也缓存null
+		resourceCache.put(key, null);
+		return null;
+	}
+
+	/**
+	 * 获取资源内容，如果未找到返回默认值
+	 */
+	public static String getResource(ResourceType type, String resourceID, String defaultValue) {
+		String result = getResource(type, resourceID);
+		return result != null ? result : defaultValue;
+	}
+
+	/**
+	 * 保存手动覆盖到SaveManager的global bundle
+	 */
+	public static void saveManualOverrides() {
+		try {
+			Bundle global = SaveManager.loadGlobal();
+			Bundle materialBundle = new Bundle();
+			manualOverrideIndex.storeInBundle(materialBundle);
+			global.put(BUNDLE_KEY_MANUAL_OVERRIDES, materialBundle);
+			SaveManager.saveGlobal(global);
+		} catch (Exception e) {
+			// 保存失败时静默处理，避免影响游戏运行
+			com.watabou.noosa.Game.reportException(e);
+		}
+	}
+
+	/**
+	 * 从SaveManager的global bundle加载手动覆盖
+	 */
+	public static void loadManualOverrides() {
+		try {
+			Bundle global = SaveManager.loadGlobal();
+			if (global.contains(BUNDLE_KEY_MANUAL_OVERRIDES)) {
+				// 记录加载前的资源ID，以便只更新受影响的资源
+				java.util.Set<ResourceKey> beforeKeys = new java.util.HashSet<>();
+				for (ResourceType type : ResourceType.values()) {
+					Map<String, String> resources = manualOverrideIndex.getResourcesByType(type);
+					for (String resourceID : resources.keySet()) {
+						beforeKeys.add(new ResourceKey(type, resourceID));
+					}
+				}
+				
+				Bundle materialBundle = global.getBundle(BUNDLE_KEY_MANUAL_OVERRIDES);
+				manualOverrideIndex.restoreFromBundle(materialBundle);
+				
+				// 记录加载后的资源ID
+				java.util.Set<ResourceKey> afterKeys = new java.util.HashSet<>();
+				for (ResourceType type : ResourceType.values()) {
+					Map<String, String> resources = manualOverrideIndex.getResourcesByType(type);
+					for (String resourceID : resources.keySet()) {
+						afterKeys.add(new ResourceKey(type, resourceID));
+					}
+				}
+				
+				// 只更新受影响的资源（新增的、删除的、修改的）
+				java.util.Set<ResourceKey> affectedKeys = new java.util.HashSet<>(beforeKeys);
+				affectedKeys.addAll(afterKeys);
+				for (ResourceKey key : affectedKeys) {
+					updateResourceCacheForResource(key.type, key.resourceID);
+				}
+			}
+		} catch (Exception e) {
+			// 加载失败时静默处理，使用默认值
+			com.watabou.noosa.Game.reportException(e);
+		}
+	}
+
+	/**
+	 * 获取索引栈的大小（不包括手动覆盖索引）
+	 */
+	public static int getIndexStackSize() {
+		return Math.max(0, indexStack.size() - 1); // 减去手动覆盖索引
+	}
+
+	/**
+	 * 检查是否有手动覆盖
+	 */
+	public static boolean hasManualOverrides() {
+		return !manualOverrideIndex.isEmpty();
+	}
+
+	/**
+	 * 检查指定资源是否有手动覆盖
+	 */
+	public static boolean hasManualOverride(ResourceType type, String resourceID) {
+		return manualOverrideIndex.contains(type, resourceID);
+	}
+
+	/**
+	 * 更新指定资源的缓存
+	 * 重新从栈中查询该资源并更新缓存
+	 */
+	private static void updateResourceCacheForResource(ResourceType type, String resourceID) {
+		ResourceKey key = new ResourceKey(type, resourceID);
+		// 如果该资源在缓存中，重新查询并更新
+		if (resourceCache.containsKey(key)) {
+			// 从栈顶向下遍历（从后往前）
+			for (int i = indexStack.size() - 1; i >= 0; i--) {
+				ResourceIndex index = indexStack.get(i);
+				if (index.contains(type, resourceID)) {
+					String content = index.get(type, resourceID);
+					resourceCache.put(key, content);
+					return;
+				}
+			}
+			// 未找到时设置为null
+			resourceCache.put(key, null);
+		}
+	}
+
+	/**
+	 * 更新索引中包含的所有资源的缓存
+	 * 只更新该索引中包含的、且已在缓存中的资源
+	 */
+	private static void updateResourceCacheForIndex(ResourceIndex index) {
+		for (ResourceType type : ResourceType.values()) {
+			Map<String, String> resources = index.getResourcesByType(type);
+			for (String resourceID : resources.keySet()) {
+				ResourceKey key = new ResourceKey(type, resourceID);
+				// 只更新已在缓存中的资源
+				if (resourceCache.containsKey(key)) {
+					updateResourceCacheForResource(type, resourceID);
+				}
+			}
+		}
 	}
 }

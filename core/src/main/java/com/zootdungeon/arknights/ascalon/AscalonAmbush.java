@@ -1,24 +1,3 @@
-/*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
- *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2025 Evan Debenham
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
-
 package com.zootdungeon.arknights.ascalon;
 
 import com.zootdungeon.Dungeon;
@@ -105,16 +84,16 @@ public class AscalonAmbush extends AmbushWeapon {
                 boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0 
                         || Blob.volumeAt(defender.pos, SmokeScreen.class) > 0;
                 
-                Ascalon.Wound existingWound = defender.buff(Ascalon.Wound.class);
-                Ascalon.Wound wound;
+                AscalonWound existingWound = defender.buff(AscalonWound.class);
+                AscalonWound wound;
                 if (existingWound != null) {
                     wound = existingWound;
                 } else {
-                    wound = new Ascalon.Wound();
+                    wound = new AscalonWound();
                     wound.attachTo(defender);
                 }
                 // 如果buff刚被创建或剩余时间小于DURATION，则延长到DURATION
-                float duration = Ascalon.Wound.DURATION * defender.resist(Ascalon.Wound.class);
+                float duration = AscalonWound.DURATION * defender.resist(AscalonWound.class);
                 wound.extend(duration);
                 // 设置hero引用、攻击时的攻击力和迷雾状态
                 float attackDamage = hero.damageRoll();

@@ -124,15 +124,15 @@ public class AscalonAOE extends MeleeWeapon {
                     boolean inFog = com.zootdungeon.actors.blobs.Blob.volumeAt(hero.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0 
                             || com.zootdungeon.actors.blobs.Blob.volumeAt(ch.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0;
                     
-                    Ascalon.Wound existingWound = ch.buff(Ascalon.Wound.class);
-                    Ascalon.Wound wound;
+                    AscalonWound existingWound = ch.buff(AscalonWound.class);
+                    AscalonWound wound;
                     if (existingWound != null) {
                         wound = existingWound;
                     } else {
-                        wound = new Ascalon.Wound();
+                        wound = new AscalonWound();
                         wound.attachTo(ch);
                     }
-                    float duration = Ascalon.Wound.DURATION * ch.resist(Ascalon.Wound.class);
+                    float duration = AscalonWound.DURATION * ch.resist(AscalonWound.class);
                     wound.extend(duration);
                     float attackDamage = hero.damageRoll();
                     wound.set(hero, attackDamage, inFog);
