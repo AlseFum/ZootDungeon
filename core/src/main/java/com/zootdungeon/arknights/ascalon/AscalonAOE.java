@@ -46,6 +46,7 @@ public class AscalonAOE extends MeleeWeapon {
         image = SpriteRegistry.itemByName("ascalon_aoe");
         tier = 0;
         bones = false;
+        RCH=3;
     }
     
     private static final int AOE_RADIUS = 3; // 范围半径
@@ -90,60 +91,49 @@ public class AscalonAOE extends MeleeWeapon {
         // 每次攻击时触发范围伤害
         if (attacker instanceof Hero && defender.isAlive()) {
             Hero hero = (Hero) attacker;
-            // 对范围内所有敌人造成低伤害并附加 Wound buff
-            aoeAttack(hero, defender.pos);
-        }
-        
-        return damage;
-    }
-    
-    private void aoeAttack(Hero hero, int centerPos) {
-        // 获取范围内的所有位置
-        boolean[] affected = new boolean[Dungeon.level.length()];
-        PathFinder.buildDistanceMap(centerPos, Dungeon.level.passable, AOE_RADIUS);
-        
-        for (int i = 0; i < Dungeon.level.length(); i++) {
-            if (PathFinder.distance[i] <= AOE_RADIUS && PathFinder.distance[i] > 0) {
-                affected[i] = true;
+            // 获取范围内的所有位置
+            boolean[] affected = new boolean[Dungeon.level.length()];
+            PathFinder.buildDistanceMap(defender.pos, Dungeon.level.passable, AOE_RADIUS);
+            
+            for (int i = 0; i < Dungeon.level.length(); i++) {
+                if (PathFinder.distance[i] <= AOE_RADIUS && PathFinder.distance[i] > 0) {
+                    affected[i] = true;
+                }
             }
-        }
-        
-        // 对范围内的所有敌人造成伤害
-        for (int pos = 0; pos < affected.length; pos++) {
-            if (affected[pos]) {
-                Char ch = Actor.findChar(pos);
-                if (ch != null && ch != hero && ch.alignment != Char.Alignment.ALLY && ch.isAlive()) {
-                    // 计算低伤害（30%的基础伤害）
-                    int baseDamage = hero.damageRoll();
-                    int aoeDamage = Math.max(1, Math.round(baseDamage * AOE_DAMAGE_MULT));
-                    
-                    // 造成伤害
-                    ch.damage(aoeDamage, this);
-                    
-                    // 附加 Wound buff
-                    boolean inFog = com.zootdungeon.actors.blobs.Blob.volumeAt(hero.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0 
-                            || com.zootdungeon.actors.blobs.Blob.volumeAt(ch.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0;
-                    
-                    AscalonWound existingWound = ch.buff(AscalonWound.class);
-                    AscalonWound wound;
-                    if (existingWound != null) {
-                        wound = existingWound;
-                    } else {
-                        wound = new AscalonWound();
-                        wound.attachTo(ch);
-                    }
-                    float duration = AscalonWound.DURATION * ch.resist(AscalonWound.class);
-                    wound.extend(duration);
-                    float attackDamage = hero.damageRoll();
-                    wound.set(hero, attackDamage, inFog);
-                    
-                    // 显示效果
-                    if (ch.sprite != null) {
-                        ch.sprite.flash();
+            
+            // 对范围内的所有敌人轮流 proc
+            for (int pos = 0; pos < affected.length; pos++) {
+                if (affected[pos]) {
+                    Char ch = Actor.findChar(pos);
+                    if (ch != null && ch != hero && ch != defender && ch.alignment != Char.Alignment.ALLY && ch.isAlive()) {
+                        // 计算 AOE 伤害（30%的原始伤害）
+                        int aoeDamage = Math.max(1, Math.round(damage * AOE_DAMAGE_MULT));
+                        
+                        // 对每个敌人调用 proc，让武器和附魔效果正常处理
+                        proc(hero, ch, aoeDamage);
+                        
+                        // 附加 Wound buff
+                        boolean inFog = com.zootdungeon.actors.blobs.Blob.volumeAt(hero.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0 
+                                || com.zootdungeon.actors.blobs.Blob.volumeAt(ch.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0;
+                        
+                        AscalonWound existingWound = ch.buff(AscalonWound.class);
+                        AscalonWound wound;
+                        if (existingWound != null) {
+                            wound = existingWound;
+                        } else {
+                            wound = new AscalonWound();
+                            wound.attachTo(ch);
+                        }
+                        float duration = AscalonWound.DURATION * ch.resist(AscalonWound.class);
+                        wound.extend(duration);
+                        float attackDamage = hero.damageRoll();
+                        wound.set(hero, attackDamage, inFog);
                     }
                 }
             }
         }
+        
+        return damage;
     }
     
     // 闪避加成 buff
