@@ -644,6 +644,11 @@ public class Assets {
 		defaultIndex.put(ResourceType.LANG, "messages/windows/windows", Messages.WINDOWS);
 	}
 
+	// 初始化索引栈（defaultIndex 填充完成后执行）
+	static {
+		init();
+	}
+
 	// Bundle键名
 	public static final String BUNDLE_KEY_MANUAL_OVERRIDES = "material_manual_overrides";
 
@@ -685,8 +690,6 @@ public class Assets {
 		
 		// 添加默认索引到栈底
 		indexStack.add(defaultIndex);
-		
-		// 确保手动覆盖索引在栈顶
 		indexStack.add(manualOverrideIndex);
 
 		// 从SaveManager加载手动覆盖
@@ -838,6 +841,47 @@ public class Assets {
 	public static String getResource(ResourceType type, String resourceID, String defaultValue) {
 		String result = getResource(type, resourceID);
 		return result != null ? result : defaultValue;
+	}
+
+	/**
+	 * 获取纹理路径（经 Asset 索引栈分发）。
+	 * 所有 Sprite/纹理应通过此方法解析路径，以支持手动覆盖与 Mod 资源索引。
+	 *
+	 * @param resourceID 纹理资源 ID（通常与默认路径一致，如 Assets.Sprites.RAT）
+	 * @return 解析后的纹理路径，未找到时返回 resourceID
+	 */
+	public static String getTexture(String resourceID) {
+		return getResource(ResourceType.TEXTURE, resourceID, resourceID);
+	}
+
+	/**
+	 * 获取纹理路径，若未找到则返回默认值。
+	 */
+	public static String getTexture(String resourceID, String defaultValue) {
+		return getResource(ResourceType.TEXTURE, resourceID, defaultValue);
+	}
+
+	/**
+	 * 获取音效路径（经 Asset 索引栈分发）。
+	 * 所有 Sample/音效应通过此方法解析路径，以支持手动覆盖与 Mod 资源索引。
+	 */
+	public static String getSound(String resourceID) {
+		return getResource(ResourceType.SOUND, resourceID, resourceID);
+	}
+
+	public static String getSound(String resourceID, String defaultValue) {
+		return getResource(ResourceType.SOUND, resourceID, defaultValue);
+	}
+
+	/**
+	 * 返回 Sounds.all 经索引解析后的路径数组，用于 Sample.INSTANCE.load(...)。
+	 */
+	public static String[] getSoundsAllResolved() {
+		String[] out = new String[Sounds.all.length];
+		for (int i = 0; i < Sounds.all.length; i++) {
+			out[i] = getSound(Sounds.all[i]);
+		}
+		return out;
 	}
 
 	/**

@@ -56,7 +56,7 @@ public class ColaDungeon extends Game {
         Sample.INSTANCE.enable(CDSettings.soundFx());
         Sample.INSTANCE.volume(CDSettings.SFXVol() * CDSettings.SFXVol() / 100f);
 
-        Sample.INSTANCE.load(Assets.Sounds.all);
+        Sample.INSTANCE.load(Assets.getSoundsAllResolved());
 
     }
 

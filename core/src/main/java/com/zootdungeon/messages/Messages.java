@@ -13,6 +13,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.zootdungeon.Assets;
+import com.zootdungeon.Assets.ResourceType;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.ColaDungeon;
 import com.watabou.utils.FileUtils;
@@ -96,7 +97,12 @@ public class Messages {
 		//strictly match the language code when fetching bundles however
 		bundles = new ArrayList<>();
 		for (String file : prop_files) {
-			bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocal));
+			String path = Assets.getResource(ResourceType.LANG, file, file);
+			bundles.add(I18NBundle.createBundle(Gdx.files.internal(path), bundleLocal));
+			// override 时追加默认 bundle 作为 fallback，避免 override 文件缺 key 时无文案
+			if (!path.equals(file)) {
+				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocal));
+			}
 		}
 
 		// Attempt to load external overlay language file (from /lang folder)

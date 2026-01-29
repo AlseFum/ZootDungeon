@@ -66,62 +66,62 @@ public class Codex extends Item {
             
             // 添加标准卷轴到第一个标签页（索引0）
             builder.addItemToTab(0, 
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_IDENTIFY)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_IDENTIFY)),
                     "鉴定卷轴：鉴定物品",
                     () -> selectedScroll = ScrollOfIdentify.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_UPGRADE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_UPGRADE)),
                     "升级卷轴：升级物品",
                     () -> selectedScroll = ScrollOfUpgrade.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TELEPORT)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TELEPORT)),
                     "传送卷轴：传送到随机位置",
                     () -> selectedScroll = ScrollOfTeleportation.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RAGE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RAGE)),
                     "狂暴卷轴：激怒周围敌人",
                     () -> selectedScroll = ScrollOfRage.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RECHARGE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RECHARGE)),
                     "充能卷轴：为法杖充能",
                     () -> selectedScroll = ScrollOfRecharging.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TRANSMUTE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TRANSMUTE)),
                     "嬗变卷轴：改变物品",
                     () -> selectedScroll = ScrollOfTransmutation.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MIRRORIMG)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MIRRORIMG)),
                     "镜像卷轴：创造分身",
                     () -> selectedScroll = ScrollOfMirrorImage.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MAGICMAP)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MAGICMAP)),
                     "魔法地图卷轴：显示地图",
                     () -> selectedScroll = ScrollOfMagicMapping.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_LULLABY)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_LULLABY)),
                     "催眠卷轴：催眠敌人",
                     () -> selectedScroll = ScrollOfLullaby.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_REMCURSE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_REMCURSE)),
                     "移除诅咒卷轴：移除诅咒",
                     () -> selectedScroll = ScrollOfRemoveCurse.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RETRIB)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RETRIB)),
                     "惩戒卷轴：对敌人造成伤害",
                     () -> selectedScroll = ScrollOfRetribution.class
             );
             builder.addItemToTab(0,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TERROR)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TERROR)),
                     "恐惧卷轴：使敌人逃跑",
                     () -> selectedScroll = ScrollOfTerror.class
             );
@@ -131,62 +131,62 @@ public class Codex extends Item {
             
             // 添加异域卷轴到第二个标签页（索引1）
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_DIVINATE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_DIVINATE)),
                     "占卜卷轴：探知物品信息",
                     () -> selectedScroll = ScrollOfDivination.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_ENCHANT)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_ENCHANT)),
                     "附魔卷轴：为装备附魔",
                     () -> selectedScroll = ScrollOfEnchantment.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PASSAGE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PASSAGE)),
                     "通道卷轴：创造传送门",
                     () -> selectedScroll = ScrollOfPassage.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_CHALLENGE)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_CHALLENGE)),
                     "挑战卷轴：激怒并强化敌人",
                     () -> selectedScroll = ScrollOfChallenge.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MYSTENRG)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MYSTENRG)),
                     "神秘能量卷轴：强力充能",
                     () -> selectedScroll = ScrollOfMysticalEnergy.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_METAMORPH)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_METAMORPH)),
                     "变形卷轴：改变职业特性",
                     () -> selectedScroll = ScrollOfMetamorphosis.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PRISIMG)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PRISIMG)),
                     "棱镜镜像卷轴：创造彩色分身",
                     () -> selectedScroll = ScrollOfPrismaticImage.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_FORESIGHT)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_FORESIGHT)),
                     "预知卷轴：显示详细地图",
                     () -> selectedScroll = ScrollOfForesight.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_SIREN)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_SIREN)),
                     "海妖之歌卷轴：魅惑敌人",
                     () -> selectedScroll = ScrollOfSirensSong.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_ANTIMAGIC)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_ANTIMAGIC)),
                     "反魔法卷轴：移除魔法效果",
                     () -> selectedScroll = ScrollOfAntiMagic.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PSIBLAST)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PSIBLAST)),
                     "心灵爆炸卷轴：精神伤害",
                     () -> selectedScroll = ScrollOfPsionicBlast.class
             );
             builder.addItemToTab(1,
-                    new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_DREAD)),
+                    new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_DREAD)),
                     "恐怖卷轴：造成持续恐惧",
                     () -> selectedScroll = ScrollOfDread.class
             );

@@ -210,7 +210,7 @@ public class InterlevelScene extends PixelScene {
 			fadeTime = 0f;
 		}
 
-		background = new Image(loadingAsset);
+		background = new Image(Assets.getTexture(loadingAsset));
 		background.scale.set(Camera.main.height/background.height);
 
 		if (Camera.main.width >= background.width()){

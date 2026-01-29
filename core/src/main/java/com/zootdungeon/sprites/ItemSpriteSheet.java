@@ -29,7 +29,7 @@ public class ItemSpriteSheet {
 	private static final int WIDTH = 16;
 	public static final int SIZE = 16;
 
-	public static TextureFilm film = new TextureFilm( Assets.Sprites.ITEMS, SIZE, SIZE );
+	public static TextureFilm film = new TextureFilm( Assets.getTexture(Assets.Sprites.ITEMS), SIZE, SIZE );
 
 	private static int xy(int x, int y){
 		x -= 1; y -= 1;

@@ -801,7 +801,7 @@ public class WndJournal extends WndTabbed {
 					}
 
 					if (item.icon != -1) {
-						secondIcon = new Image(Assets.Sprites.ITEM_ICONS);
+						secondIcon = new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS));
 						secondIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
 					}
 				}

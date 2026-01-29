@@ -127,9 +127,13 @@ public final class SpriteRegistry {
 
         /**
          * Ensures the underlying texture is loaded and up-to-date with the current overlay stack.
+         * Texture path is resolved through Assets.getTexture() so sprites go through Asset distribution.
          */
         protected final void ensureLoaded() {
             Object handle = SpriteRegistry.resolveMaterial(materialId, baseTextureHandle);
+            if (handle instanceof String) {
+                handle = Assets.getTexture((String) handle);
+            }
             if (cache == null || cache.bitmap == null || !Objects.equals(resolvedTextureHandle, handle)) {
                 cache = TextureCache.get(handle);
                 atlas = new Atlas(cache);
@@ -989,18 +993,18 @@ public final class SpriteRegistry {
     }
 
     public static Object resolveBuffTexture(boolean large) {
-        return resolveMaterial(
+        return resolveTextureViaAssets(resolveMaterial(
                 large ? MAT_BUFFS_LARGE : MAT_BUFFS_SMALL,
                 large ? buffLargeTexture : buffSmallTexture
-        );
+        ));
     }
 
     public static Object resolveUiIconsTexture() {
-        return resolveMaterial(MAT_UI_ICONS, uiIconsTexture);
+        return resolveTextureViaAssets(resolveMaterial(MAT_UI_ICONS, uiIconsTexture));
     }
 
     public static Object resolveItemIconsTexture() {
-        return resolveMaterial(MAT_ITEM_ICONS, itemIconsTexture);
+        return resolveTextureViaAssets(resolveMaterial(MAT_ITEM_ICONS, itemIconsTexture));
     }
 
     public static void registerHeroTexture(HeroClass cls, Object texture) {
@@ -1244,7 +1248,7 @@ public final class SpriteRegistry {
         // Special handling for NONE icon
         if (id == HERO_ICON_NONE) {
             return new ImageMapping(
-                TextureCache.get(Assets.Interfaces.HERO_ICONS), 
+                TextureCache.get(Assets.getTexture(Assets.Interfaces.HERO_ICONS)), 
                 new RectF(0, 0, 1, 1), 
                 16
             );
@@ -1312,7 +1316,7 @@ public final class SpriteRegistry {
             // If invalid id, fallback to SOMETHING
             rect = ItemSpriteSheet.film.get(ItemSpriteSheet.SOMETHING);
         }
-        SmartTexture tx = TextureCache.get(Assets.Sprites.ITEMS);
+        SmartTexture tx = TextureCache.get(Assets.getTexture(Assets.Sprites.ITEMS));
         float h = ItemSpriteSheet.film.height(id != 0 ? id : ItemSpriteSheet.SOMETHING);
         return new ImageMapping(tx, rect, h, ItemSpriteSheet.SIZE);
     }
@@ -1390,20 +1394,27 @@ public final class SpriteRegistry {
             }
         }
         
-        // Fallback to legacy texture
+        // Fallback to legacy texture (mobTextureOr already returns Asset-resolved path)
         Object texture = mobTextureOr(fallbackTexture, key);
         SmartTexture smartTex = TextureCache.get(texture);
         return new ImageMapping(smartTex, new RectF(0, 0, 1, 1), smartTex.height, 16);
     }
 
+    /** Resolve texture through Asset distribution for use with TextureCache. */
+    private static Object resolveTextureViaAssets(Object handle) {
+        return (handle != null && handle instanceof String) ? Assets.getTexture((String) handle) : handle;
+    }
+
     public static Object mobTextureOr(Object fallbackTexture, String key){
+        Object raw = fallbackTexture;
         if (key != null){
             MobDef def = mobDefs.get(key);
             if (def != null && def.texture != null){
-                return def.texture;
+                raw = def.texture;
             }
         }
-        return fallbackTexture;
+        // Resolve through Asset distribution so sprites use index stack / manual overrides
+        return (raw != null && raw instanceof String) ? Assets.getTexture((String) raw) : raw;
     }
 
     /**
@@ -1415,11 +1426,11 @@ public final class SpriteRegistry {
         if (key != null){
             MobDef def = mobDefs.get(key);
             if (def != null && def.texture != null){
-                SmartTexture tx = TextureCache.get(def.texture);
+                SmartTexture tx = TextureCache.get(resolveTextureViaAssets(def.texture));
                 return new com.watabou.noosa.TextureFilm(tx, def.frameWidth, def.frameHeight);
             }
         }
-        SmartTexture tx = TextureCache.get(fallbackTexture);
+        SmartTexture tx = TextureCache.get(resolveTextureViaAssets(fallbackTexture));
         return new com.watabou.noosa.TextureFilm(tx, fallbackFrameW, fallbackFrameH);
     }
 

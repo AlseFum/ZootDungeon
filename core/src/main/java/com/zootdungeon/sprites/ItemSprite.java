@@ -62,12 +62,12 @@ public class ItemSprite extends MovieClip {
 	}
 
 	public ItemSprite(Heap heap) {
-		super(Assets.Sprites.ITEMS);
+		super(Assets.getTexture(Assets.Sprites.ITEMS));
 		view(heap);
 	}
 
 	public ItemSprite(Item item) {
-		super(Assets.Sprites.ITEMS);
+		super(Assets.getTexture(Assets.Sprites.ITEMS));
 		view(item);
 	}
 
@@ -76,7 +76,7 @@ public class ItemSprite extends MovieClip {
 	}
 
 	public ItemSprite(int image, Glowing glowing) {
-		super(Assets.Sprites.ITEMS);
+		super(Assets.getTexture(Assets.Sprites.ITEMS));
 
 		view(image, glowing);
 	}
@@ -254,7 +254,7 @@ public class ItemSprite extends MovieClip {
 		}
 		
 		// Now set texture and frame together
-		texture = TextureCache.get(Assets.Sprites.ITEMS);
+		texture = TextureCache.get(Assets.getTexture(Assets.Sprites.ITEMS));
 		if (original_map != null) {
 			frame(original_map);
 		} else {
@@ -399,7 +399,7 @@ public class ItemSprite extends MovieClip {
 	}
 
 	public static int pick(int index, int x, int y) {
-		SmartTexture tx = TextureCache.get(Assets.Sprites.ITEMS);
+		SmartTexture tx = TextureCache.get(Assets.getTexture(Assets.Sprites.ITEMS));
 		int rows = tx.width / SIZE;
 		int row = index / rows;
 		int col = index % rows;

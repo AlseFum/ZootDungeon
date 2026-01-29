@@ -71,7 +71,7 @@ public class AmuletScene extends PixelScene {
 			text.maxWidth( PixelScene.landscape() ? 2*WIDTH-4 : WIDTH);
 		}
 		
-		amulet = new Image( Assets.Sprites.AMULET );
+		amulet = new Image( Assets.getTexture(Assets.Sprites.AMULET) );
 		add( amulet );
 
 		btnExit = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "exit") ) {

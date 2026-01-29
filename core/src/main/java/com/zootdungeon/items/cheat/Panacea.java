@@ -361,7 +361,7 @@ public class Panacea extends Item {
         try {
             Potion potion = Reflection.newInstance(potionClass);
             if (potion.icon != -1) {
-                return new Image(Assets.Sprites.ITEM_ICONS, ItemSpriteSheet.Icons.film.get(potion.icon));
+                return new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(potion.icon));
             } else {
                 // 如果没有icon，使用sprite作为fallback
                 return new ItemSprite(potion.image);

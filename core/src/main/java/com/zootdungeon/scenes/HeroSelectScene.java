@@ -21,6 +21,7 @@
 
 package com.zootdungeon.scenes;
 
+import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
@@ -387,7 +388,7 @@ public class HeroSelectScene extends PixelScene {
 
 		try {
 			//loading these big jpgs fails sometimes, so we have a catch for it
-			background.texture(cl.splashArt());
+			background.texture(Assets.getTexture(cl.splashArt()));
 		} catch (Exception e){
 			Game.reportException(e);
 			background.texture(TextureCache.createSolid(0xFF2d2f31));
