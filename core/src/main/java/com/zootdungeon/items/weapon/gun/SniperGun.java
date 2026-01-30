@@ -8,6 +8,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
@@ -34,19 +35,16 @@ public class SniperGun extends Gun {
         usesTargeting = true;
     }
 
-    private static final String AC_AIM = "瞄准";
+    protected static final String AC_AIM = "aim";
 
     @Override
     public String name() {
-        return "狙击步枪";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        StringBuilder desc = new StringBuilder();
-        desc.append("一把精密的狙击步枪，可以进行蓄力瞄准以提高伤害。\n\n");
-
-        return desc.toString();
+        return Messages.get(this, "desc");
     }
 
     @Override
@@ -57,7 +55,7 @@ public class SniperGun extends Gun {
     @Override
     public String subActionName(String action, Hero hero) {
         if (action.equals(AC_AIM)) {
-            return "瞄准";
+            return Messages.get(this, "ac_aim");
         }
         return null;
     }
@@ -66,22 +64,21 @@ public class SniperGun extends Gun {
     protected void executeSubAction(Hero hero, String action) {
         if (action.equals(AC_AIM)) {
             if (ammo <= 0) {
-                GLog.w("弹药不足！");
+                GLog.w(Messages.get(Gun.class, "no_ammo"));
                 return;
             }
             GameScene.selectCell(
-                    "选择目标",
+                    Messages.get(this, "prompt_aim"),
                     (Integer target) -> {
                         if (target == null) {
                             return;
                         }
                         Char enemy = Actor.findChar(target);
                         if (enemy == null) {
-                            GLog.w("必须选择一个敌人作为目标！");
+                            GLog.w(Messages.get(this, "target_lost"));
                             return;
                         }
                         startAiming(enemy);
-
                     });
         }
     }
@@ -150,12 +147,12 @@ public class SniperGun extends Gun {
 
         @Override
         public String name() {
-            return "瞄准中";
+            return Messages.get(SniperGun.class, "ac_aim");
         }
 
         @Override
         public String desc() {
-            return "你瞄准了"+target.name()+"，蓄力"+charge+"层";
+            return target != null ? Messages.get(SniperGun.class, "charge_increase", charge) : "";
         }
 
         @Override
@@ -163,15 +160,15 @@ public class SniperGun extends Gun {
             spend(1f);
             
             // 检查目标是否还存在
-            if (target == null || !target.isAlive() ) {
-                GLog.w("目标已丢失！");
+            if (target == null || !target.isAlive()) {
+                GLog.w(Messages.get(SniperGun.class, "target_lost"));
                 detach();
                 return true;
             }
             
             if (charge < MAX_CHARGE) {
                 charge++;
-                GLog.i("狙击蓄力层数增加到 " + charge);
+                GLog.i(Messages.get(SniperGun.class, "charge_increase"), charge);
             }
             
             return true;
@@ -180,9 +177,7 @@ public class SniperGun extends Gun {
         @Override
         public void detach() {
             ActionIndicator.clearAction(null);
-            System.out.println("Should detach action");
             super.detach();
-            
         }
 
         @Override
@@ -197,17 +192,17 @@ public class SniperGun extends Gun {
 
         @Override
         public void doAction() {
-            GLog.i("点击了瞄准BuffIndicator");
+            // Fire on ActionIndicator click
         }
 
         @Override
         public int indicatorColor() {
-            return 0x00AA00; // 绿色，表示瞄准
+            return 0x00AA00;
         }
 
         @Override
         public String actionName() {
-            return "瞄准";
+            return Messages.get(SniperGun.class, "ac_aim");
         }
 
         @Override
@@ -234,18 +229,17 @@ public class SniperGun extends Gun {
                 gun.consumeAmmo(1);
                 gun.fire(target.pos);
                 aim.detach();
-                GLog.w("should fire and clear");
             }
         }
 
         @Override
         public int indicatorColor() {
-            return 0xAA0000; // 红色，表示射击
+            return 0xAA0000;
         }
 
         @Override
         public String actionName() {
-            return "开火";
+            return Messages.get(Gun.class, "ac_fire");
         }
 
         @Override

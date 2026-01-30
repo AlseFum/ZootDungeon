@@ -2,7 +2,7 @@ package com.zootdungeon.items.supply;
 
 import com.zootdungeon.arknights.ascalon.AscalonAmbush;
 import com.zootdungeon.arknights.ascalon.AscalonAOE;
-import com.zootdungeon.arknights.ascalon.StateSwitchWeapon;
+import com.zootdungeon.arknights.StateSwitchWeapon;
 import com.zootdungeon.arknights.InstantMechWeapon;
 import com.zootdungeon.arknights.MomentumWeapon;
 import com.zootdungeon.arknights.PropertyHuntingWeapon;

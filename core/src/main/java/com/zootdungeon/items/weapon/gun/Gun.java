@@ -16,6 +16,7 @@ import com.zootdungeon.items.weapon.ammo.CartridgeAltFire;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.weapon.ammo.CartridgeEffect;
 import com.zootdungeon.mechanics.Ballistica;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
@@ -29,8 +30,9 @@ import com.watabou.utils.Random;
 
 public class Gun extends Weapon {
 
-    protected static final String AC_RELOAD = "装弹";
-    protected static final String AC_FIRE = "开火";
+    /** Action keys for fire/reload; display text via Messages (ac_fire, ac_reload). */
+    protected static final String AC_RELOAD = "reload";
+    protected static final String AC_FIRE = "fire";
 
     protected int ammo = 8;
     protected int maxAmmo = 8;
@@ -49,7 +51,7 @@ public class Gun extends Weapon {
 
     @Override
     public String name() {
-        return "枪(debug用)";
+        return Messages.get(this, "name");
     }
 
     @Override
@@ -59,23 +61,15 @@ public class Gun extends Weapon {
 
     @Override
     public String desc() {
-        StringBuilder desc = new StringBuilder();
-        desc.append("枪械武器基类，可远程射击和装填弹药。\n");
-        desc.append("近战伤害区间：").append(min(0)).append("-").append(max(0)).append("。\n");
-        desc.append("当前弹药类型：").append(cartridge != null ? cartridge.cartridgeType : "无").append("。\n");
-        desc.append("弹药量：").append(ammo).append("/一般最大弹药量：").append(maxAmmo).append("。\n");
-        desc.append("增益：");
-        if (cartridge != null && cartridge.onHit != null && cartridge.onHit != CartridgeEffect.Normal) {
-            desc.append(cartridge.onHit.name);
-        } else {
-            desc.append("无");
-        }
-        return desc.toString();
+        String cartridgeTypeStr = cartridge != null ? cartridge.cartridgeType.name() : Messages.get(Gun.class, "no_cartridge");
+        String effectStr = (cartridge != null && cartridge.onHit != null && cartridge.onHit != CartridgeEffect.Normal)
+                ? cartridge.onHit.name() : Messages.get(Gun.class, "no_effect");
+        return Messages.get(this, "desc", min(0), max(0), cartridgeTypeStr, ammo, maxAmmo, effectStr);
     }
 
     protected void execute_ac_fire(Hero hero, String action) {
         if (ammo <= 0) {
-            GLog.w("弹药不足！");
+            GLog.w(Messages.get(Gun.class, "no_ammo"));
             return;
         }
         GameScene.selectCell(shooter);
@@ -134,8 +128,8 @@ public class Gun extends Weapon {
         // Subtract the target's defense from the damage
         int defense = target != null && target instanceof Char targetChar ? targetChar.drRoll() : 0;
         int actualDamage = Math.max(damage - defense, 0);
-        if(actualDamage<=0){
-            GLog.w("刮痧了Pong友");
+        if (actualDamage <= 0) {
+            GLog.w(Messages.get(Gun.class, "scrape"));
         }
         return actualDamage;
     }
@@ -162,20 +156,17 @@ public class Gun extends Weapon {
 
     protected void execute_ac_reload(Hero hero, String action) {
         if (ammo >= maxAmmo) {
-            GLog.w("弹药已满！");
+            GLog.w(Messages.get(Gun.class, "ammo_full"));
             return;
         }
-        // 检查是否有可用的弹药
         List<Ammo> availableAmmo = findAmmo();
         if (availableAmmo.isEmpty()) {
-            GLog.w("没有可用的弹药！");
+            GLog.w(Messages.get(Gun.class, "no_ammo_available"));
             return;
         }
-        // 如果只有一种弹药，直接使用
         if (availableAmmo.size() == 1) {
             reload(availableAmmo.get(0));
         } else {
-            // 否则显示选择窗口
             showAmmoSelectionWindow(availableAmmo);
         }
         updateQuickslot();
@@ -186,8 +177,8 @@ public class Gun extends Weapon {
         for (Ammo _ammo : availableAmmo) {
             ammoNames.add(_ammo.name() + " (" + _ammo.quantity() + ")");
         }
-        GameScene.show(new WndOptions("选择弹药",
-                "选择要装填的弹药类型：",
+        GameScene.show(new WndOptions(Messages.get(Gun.class, "select_ammo_title"),
+                Messages.get(Gun.class, "select_ammo_prompt"),
                 ammoNames.toArray(new String[0])) {
             @Override
             protected void onSelect(int index) {
@@ -231,7 +222,7 @@ public class Gun extends Weapon {
     }
 
     public String aiming_prompt() {
-        return "选择射击目标";
+        return Messages.get(Gun.class, "prompt_aim");
     }
 
     @Override
@@ -246,7 +237,7 @@ public class Gun extends Weapon {
     protected void consumeAmmo(int amount) {
         ammo = Math.max(0, ammo - amount);
         if (ammo <= 0) {
-            GLog.w("弹药耗尽！");
+            GLog.w(Messages.get(Gun.class, "ammo_depleted"));
         }
     }
 
@@ -302,8 +293,9 @@ public class Gun extends Weapon {
             this.hitChance = hitChance;
         }
     }
+    /** @deprecated Use {@link #fire(int)} / {@link #fire_hits} and {@link #processFireResults} instead. */
+    @Deprecated
     public static ShotResult shoot(Gun gun, Char shooter, int targetPos, Cartridge cartridge, int projectileType) {
-        System.out.println("[Gun]shoot Deprecated!");
         Ballistica shot = new Ballistica(shooter.pos, targetPos, projectileType);
 
         // 检查是否被阻挡
@@ -367,10 +359,10 @@ public class Gun extends Weapon {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_FIRE)) {
-            return "射击";
+            return Messages.get(Gun.class, "ac_fire");
         }
         if (action.equals(AC_RELOAD)) {
-            return "装弹";
+            return Messages.get(Gun.class, "ac_reload");
         }
         if (subActionName(action, hero) != null) {
             return subActionName(action, hero);

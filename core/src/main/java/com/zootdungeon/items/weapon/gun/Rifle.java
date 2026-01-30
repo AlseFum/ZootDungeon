@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -18,8 +19,8 @@ public class Rifle extends Gun {
     private static final int SHOTS_PER_SPRAY = 10; // 扫射消耗的弹药量
     private static final float SPRAY_CHANCE = 0.4f; // 扫射命中周围格子的基础概率
 
-    private static final String AC_BLAST = "点射";
-    private static final String AC_SPRAY = "扫射";
+    private static final String AC_BLAST = "blast";
+    private static final String AC_SPRAY = "spray";
 
     {
         image = ItemSpriteSheet.CROSSBOW; // 暂时使用十字弩的图标
@@ -34,35 +35,12 @@ public class Rifle extends Gun {
 
     @Override
     public String name() {
-        return "步枪";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        StringBuilder desc = new StringBuilder();
-        desc.append("一把自动步枪，可以连续发射多发子弹。\n\n");
-
-        desc.append("_被动效果:_\n");
-        desc.append("- 基础命中率提升10%\n");
-        desc.append("- 射程8格\n\n");
-
-        desc.append("_主动技能 - 点射:_\n");
-        desc.append("- 一次发射3发子弹\n");
-        desc.append("- 每发子弹独立计算伤害\n");
-        desc.append("- 消耗3发弹药\n\n");
-
-        desc.append("_主动技能 - 扫射:_\n");
-        desc.append("- 对目标及其周围8格进行扫射\n");
-        desc.append("- 中心目标必定命中\n");
-        desc.append("- 周围目标40%概率命中\n");
-        desc.append("- 消耗10发弹药\n\n");
-
-        desc.append("_弹药系统:_\n");
-        desc.append("- 最大弹药：").append(maxAmmo).append("发\n");
-        desc.append("- 当前弹药：").append(ammo).append("发\n");
-        desc.append("- 装弹时间：").append(reloadTime).append("秒");
-
-        return desc.toString();
+        return Messages.get(this, "desc");
     }
 
     @Override
@@ -74,10 +52,10 @@ public class Rifle extends Gun {
     @Override
     public String subActionName(String action, Hero hero) {
         if (action.equals(AC_BLAST)) {
-            return "点射";
+            return Messages.get(this, "ac_blast");
         }
         if (action.equals(AC_SPRAY)) {
-            return "扫射";
+            return Messages.get(this, "ac_spray");
         }
         return null;
     }
@@ -86,14 +64,14 @@ public class Rifle extends Gun {
     protected void executeSubAction(Hero hero, String action) {
         if (action.equals(AC_BLAST)) {
             if (ammo < SHOTS_PER_BURST) {
-                GLog.w("弹药不足！需要%d发子弹。", SHOTS_PER_BURST);
+                GLog.w(Messages.get(this, "ammo_need"), SHOTS_PER_BURST);
                 return;
             }
             GameScene.selectCell(blask_callback);
 
         } else if (action.equals(AC_SPRAY)) {
             if (ammo < SHOTS_PER_SPRAY) {
-                GLog.w("弹药不足！需要%d发子弹。", SHOTS_PER_SPRAY);
+                GLog.w(Messages.get(this, "ammo_need"), SHOTS_PER_SPRAY);
                 return;
             }
             GameScene.selectCell(spray_callback);
@@ -110,7 +88,7 @@ public class Rifle extends Gun {
 
         @Override
         public String prompt() {
-            return "选择点射目标";
+            return Messages.get(Rifle.this, "prompt_blast");
         }
     };
 
@@ -124,13 +102,13 @@ public class Rifle extends Gun {
 
         @Override
         public String prompt() {
-            return "选择扫射中心点";
+            return Messages.get(Rifle.this, "prompt_spray");
         }
     };
 
     private void blast(int targetPos) {
         if (ammo < SHOTS_PER_BURST) {
-            GLog.w("弹药不足！需要%d发子弹。", SHOTS_PER_BURST);
+            GLog.w(Messages.get(this, "ammo_need"), SHOTS_PER_BURST);
             return;
         }
         curUser.sprite.zap(targetPos);
@@ -146,7 +124,7 @@ public class Rifle extends Gun {
 
     private void spray(int targetPos) {
         if (ammo < SHOTS_PER_SPRAY) {
-            GLog.w("弹药不足！需要%d发子弹。", SHOTS_PER_SPRAY);
+            GLog.w(Messages.get(this, "ammo_need"), SHOTS_PER_SPRAY);
             return;
         }
 

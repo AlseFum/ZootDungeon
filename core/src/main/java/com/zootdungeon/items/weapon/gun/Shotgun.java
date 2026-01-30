@@ -5,16 +5,18 @@
 package com.zootdungeon.items.weapon.gun;
 
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.mechanics.Ballistica;
+import com.zootdungeon.messages.Messages;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.zootdungeon.actors.Actor;
 public class Shotgun extends Gun {
     //FIXME pellet should depend con cartridge
     private static final float CONE_ANGLE = 60f; // 60度的锥形范围
@@ -44,21 +46,12 @@ public class Shotgun extends Gun {
 
     @Override
     public String name() {
-        return "霰弹枪";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        StringBuilder desc = new StringBuilder();
-        desc.append("一把威力巨大的霰弹枪，能对近距离的敌人造成毁灭性的伤害。\n\n");
-        
-        desc.append("_被动效果:_\n");
-        desc.append("- 基础命中率提升100%\n");
-        desc.append("- 射程4格\n");
-        desc.append("- 每次射击发射8颗霰弹，呈60度扇形分布\n");
-        desc.append("- 距离越近，命中率和伤害越高\n\n");
-        
-        return desc.toString();
+        return Messages.get(this, "desc");
     }
 
     @Override

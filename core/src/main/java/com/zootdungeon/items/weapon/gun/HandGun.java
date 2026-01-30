@@ -6,13 +6,14 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.ammo.Ammo;
 import com.zootdungeon.items.weapon.ammo.Cartridge;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 
 public class HandGun extends Gun {
 
-    private static final String AC_QUICKDRAW = "快速射击";
+    private static final String AC_QUICKDRAW = "quickdraw";
 
     {
         image = ItemSpriteSheet.CROSSBOW; // 临时图标，需要替换为手枪图标
@@ -24,32 +25,15 @@ public class HandGun extends Gun {
         tier=1;
     }
     @Override
-    public ArrayList<String> actions(Hero hero) {
-        ArrayList<String> actions = super.actions(hero);
+    protected void addSubActions(Hero hero, ArrayList<String> actions) {
         actions.add(AC_QUICKDRAW);
-        return actions;
     }
 
     @Override
-    public boolean canLoad(Ammo ammo) {
-        return true||ammo.cartridge.cartridgeType==Cartridge.CartridgeType.SMALL;
-    }
-
-    @Override
-    public String actionName(String action, Hero hero) {
-        if (action.equals(AC_QUICKDRAW)) {
-            return "快速射击";
-        }
-        return super.actionName(action, hero);
-    }
-
-    @Override
-    public void executeSubAction(Hero hero, String action) {
+    protected void executeSubAction(Hero hero, String action) {
         if (action.equals(AC_QUICKDRAW)) {
             Weapon originalWeapon = (Weapon) hero.belongings.weapon;
-
             hero.belongings.weapon = this;
-
             GameScene.selectCell(new CellSelector.Listener() {
                 @Override
                 public void onSelect(Integer target) {
@@ -60,13 +44,25 @@ public class HandGun extends Gun {
                         hero.belongings.backpack.items.add(originalWeapon);
                     }
                 }
-
                 @Override
                 public String prompt() {
-                    return "选择快速射击目标";
+                    return Messages.get(HandGun.this, "prompt_quickdraw");
                 }
             });
         }
+    }
+
+    @Override
+    public boolean canLoad(Ammo ammo) {
+        return ammo != null && ammo.cartridge != null && ammo.cartridge.cartridgeType == Cartridge.CartridgeType.SMALL;
+    }
+
+    @Override
+    public String actionName(String action, Hero hero) {
+        if (action.equals(AC_QUICKDRAW)) {
+            return Messages.get(this, "ac_quickdraw");
+        }
+        return super.actionName(action, hero);
     }
 
     @Override
@@ -92,16 +88,12 @@ public class HandGun extends Gun {
 
     @Override
     public String name() {
-        return "手枪";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        StringBuilder desc = new StringBuilder();
-        desc.append("一把轻巧的手枪，具有快速射击能力。\n\n");
-        desc.append("初期伤害相对较高，但后期乏力");
-        desc.append("当前弹药类型：").append(cartridge != null ? cartridge.cartridgeType : "无").append("。\n");
-
-        return desc.toString();
+        String cartridgeStr = cartridge != null ? cartridge.cartridgeType.name() : Messages.get(Gun.class, "no_cartridge");
+        return Messages.get(this, "desc", cartridgeStr);
     }
 }

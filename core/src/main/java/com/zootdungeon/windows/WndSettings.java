@@ -22,6 +22,7 @@
 package com.zootdungeon.windows;
 
 import com.zootdungeon.Assets;
+import com.zootdungeon.Assets.ResourceType;
 import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.SaveManager;
@@ -39,6 +40,7 @@ import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.OptionSlider;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
+import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Toolbar;
 import com.zootdungeon.ui.Window;
 import com.watabou.input.ControllerHandler;
@@ -53,6 +55,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 
 public class WndSettings extends WndTabbed {
 
@@ -69,6 +72,7 @@ public class WndSettings extends WndTabbed {
 	private DataTab     data;
 	private AudioTab    audio;
 	private LangsTab    langs;
+	private ResourceOverridesTab overridesTab;
 
 	public static int last_index = 0;
 
@@ -187,12 +191,26 @@ public class WndSettings extends WndTabbed {
 		};
 		add( langsTab );
 
+		overridesTab = new ResourceOverridesTab();
+		overridesTab.setSize(width, 0);
+		height = Math.max(height, overridesTab.height());
+		add( overridesTab );
+
+		add( new IconTab(Icons.get(Icons.PREFS)){
+			@Override
+			protected void select(boolean value) {
+				super.select(value);
+				overridesTab.visible = overridesTab.active = value;
+				if (value) last_index = tabs.size() - 1;
+			}
+		});
+
 		resize(width, (int)Math.ceil(height));
 
 		layoutTabs();
 
-		if (tabs.size() == 5 && last_index >= 3){
-			//input tab isn't visible
+		if ((tabs.size() == 5 || tabs.size() == 6) && last_index >= 3){
+			//input tab isn't visible when 5 tabs; 6 tabs = no input + overrides
 			select(last_index-1);
 		} else {
 			select(last_index);
@@ -1457,6 +1475,133 @@ public class WndSettings extends WndTabbed {
 				height = txtTranifex.bottom();
 			}
 
+		}
+	}
+
+	private static final int OVERRIDES_LIST_HEIGHT = 80;
+
+	private static class ResourceOverridesTab extends Component {
+
+		RenderedTextBlock title;
+		ColorBlock sep1;
+		RenderedTextBlock txtInfo;
+		Component listContainer;
+		ScrollPane scrollPane;
+		RedButton btnAddOverride;
+		RedButton btnClearOverrides;
+
+		@Override
+		protected void createChildren() {
+			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
+			title.hardlight(Window.TITLE_COLOR);
+			add(title);
+
+			sep1 = new ColorBlock(1, 1, 0xFF000000);
+			add(sep1);
+
+			txtInfo = PixelScene.renderTextBlock(7);
+			add(txtInfo);
+
+			listContainer = new Component();
+			scrollPane = new ScrollPane(listContainer);
+			add(scrollPane);
+
+			btnAddOverride = new RedButton(Messages.get(this, "add_override")) {
+				@Override
+				protected void onClick() {
+					final float w = width;
+					ColaDungeon.scene().addToFront(new WndOverrideEntry(() -> {
+						refreshList(w);
+						updateInfoText();
+					}));
+					Sample.INSTANCE.play(Assets.getSound(Assets.Sounds.CLICK), 0.7f, 0.7f, 1.2f);
+				}
+			};
+			add(btnAddOverride);
+
+			btnClearOverrides = new RedButton(Messages.get(this, "clear_overrides")) {
+				@Override
+				protected void onClick() {
+					boolean hadLang = !Assets.manualOverrideIndex.isEmpty(ResourceType.LANG);
+					for (ResourceType type : ResourceType.values()) {
+						Assets.manualOverrideIndex.getResourcesByType(type).clear();
+					}
+					Assets.saveManualOverrides();
+					if (hadLang) {
+						Messages.setup(CDSettings.language());
+					}
+					refreshList(ResourceOverridesTab.this.width);
+					updateInfoText();
+					Sample.INSTANCE.play(Assets.getSound(Assets.Sounds.CLICK), 0.7f, 0.7f, 1.2f);
+				}
+			};
+			add(btnClearOverrides);
+		}
+
+		private void refreshList(float listWidth) {
+			listContainer.clear();
+			float rowY = 0;
+			int rowHeight = 14;
+			for (ResourceType type : ResourceType.values()) {
+				Map<String, String> map = Assets.manualOverrideIndex.getResourcesByType(type);
+				for (Map.Entry<String, String> e : map.entrySet()) {
+					final ResourceType t = type;
+					final String id = e.getKey();
+					String path = e.getValue();
+					String typeName = type.name().substring(0, Math.min(4, type.name().length()));
+					String display = typeName + ": " + (id.length() > 18 ? id.substring(0, 15) + "..." : id) + " -> " + (path.length() > 12 ? path.substring(0, 9) + "..." : path);
+					RenderedTextBlock lbl = PixelScene.renderTextBlock(display, 6);
+					lbl.maxWidth((int) (listWidth - BTN_HEIGHT - 2));
+					lbl.setPos(0, rowY);
+					listContainer.add(lbl);
+					RedButton btnRemove = new RedButton(Messages.get(ResourceOverridesTab.class, "remove"), 6) {
+						@Override
+						protected void onClick() {
+							Assets.manualOverrideIndex.getResourcesByType(t).remove(id);
+							Assets.saveManualOverrides();
+							if (t == ResourceType.LANG) {
+								Messages.setup(CDSettings.language());
+							}
+							refreshList(listWidth);
+							updateInfoText();
+							Sample.INSTANCE.play(Assets.getSound(Assets.Sounds.CLICK), 0.7f, 0.7f, 1.2f);
+						}
+					};
+					btnRemove.setRect(listWidth - BTN_HEIGHT - 1, rowY, BTN_HEIGHT, BTN_HEIGHT - 2);
+					listContainer.add(btnRemove);
+					rowY += rowHeight;
+				}
+			}
+			listContainer.setSize(listWidth, Math.max(rowY, 1));
+		}
+
+		private void updateInfoText() {
+			int lang = Assets.manualOverrideIndex.langResources.size();
+			int tex = Assets.manualOverrideIndex.textureResources.size();
+			int snd = Assets.manualOverrideIndex.soundResources.size();
+			int scr = Assets.manualOverrideIndex.scriptResources.size();
+			txtInfo.text(Messages.get(this, "info", lang, tex, snd, scr));
+			btnClearOverrides.enable(Assets.hasManualOverrides());
+		}
+
+		@Override
+		protected void layout() {
+			title.setPos((width - title.width()) / 2, y + GAP);
+			sep1.size(width, 1);
+			sep1.y = title.bottom() + 3 * GAP;
+
+			updateInfoText();
+			txtInfo.setPos(0, sep1.y + 1 + GAP);
+			txtInfo.maxWidth((int) width);
+
+			refreshList(width);
+			scrollPane.setRect(0, txtInfo.bottom() + GAP, width, OVERRIDES_LIST_HEIGHT);
+
+			btnAddOverride.setRect(0, scrollPane.bottom() + GAP, width, BTN_HEIGHT);
+			btnClearOverrides.setRect(0, btnAddOverride.bottom() + GAP, width, BTN_HEIGHT);
+			btnClearOverrides.enable(Assets.hasManualOverrides());
+
+			height = btnClearOverrides.bottom();
 		}
 	}
 }

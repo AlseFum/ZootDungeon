@@ -16,10 +16,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.zootdungeon.arknights.ascalon;
+package com.zootdungeon.arknights;
 
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
