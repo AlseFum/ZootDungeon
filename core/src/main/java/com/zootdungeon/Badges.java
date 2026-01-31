@@ -260,8 +260,9 @@ public class Badges {
 
 	public static HashSet<Badge> restore( Bundle bundle ) {
 		HashSet<Badge> badges = new HashSet<>();
-		if (bundle == null) return badges;
-		
+		if (bundle == null || bundle.isNull()) return badges;
+		if (!bundle.contains( BADGES )) return badges;
+
 		String[] names = bundle.getStringArray( BADGES );
 		if (names == null) return badges;
 
@@ -306,13 +307,18 @@ public class Badges {
 	public static void loadGlobal() {
 		if (global == null) {
 			Bundle globalBundle = SaveManager.loadGlobal();
-			Bundle bundle = globalBundle.getBundle("badges");
+			Bundle bundle = null;
+			if (globalBundle != null && globalBundle.contains("badges")) {
+				bundle = globalBundle.getBundle("badges");
+			}
 			if (bundle == null || bundle.isNull()) {
 				bundle = new Bundle();
-				globalBundle.put("badges", bundle);
-				try {
-					SaveManager.saveGlobal(globalBundle);
-				} catch (IOException ignored) {}
+				if (globalBundle != null) {
+					globalBundle.put("badges", bundle);
+					try {
+						SaveManager.saveGlobal(globalBundle);
+					} catch (IOException ignored) {}
+				}
 			}
 			global = restore( bundle );
 		}

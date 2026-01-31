@@ -84,6 +84,7 @@ import com.zootdungeon.items.artifacts.EtherealChains;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.artifacts.HornOfPlenty;
 import com.zootdungeon.items.artifacts.MasterThievesArmband;
+import com.zootdungeon.items.artifacts.RhodesIslandTerminal;
 import com.zootdungeon.items.artifacts.TalismanOfForesight;
 import com.zootdungeon.items.artifacts.TimekeepersHourglass;
 import com.zootdungeon.items.bags.MagicalHolster;
@@ -2106,6 +2107,11 @@ public class Hero extends Char {
         MasterThievesArmband.Thievery armband = buff(MasterThievesArmband.Thievery.class);
         if (armband != null) {
             armband.gainCharge(percent);
+        }
+
+        RhodesIslandTerminal.TerminalBuff termBuff = buff(RhodesIslandTerminal.TerminalBuff.class);
+        if (termBuff != null) {
+            termBuff.gainCharge(percent);
         }
 
         Berserk berserk = buff(Berserk.class);

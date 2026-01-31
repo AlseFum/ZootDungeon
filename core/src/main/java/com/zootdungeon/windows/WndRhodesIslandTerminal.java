@@ -22,74 +22,231 @@
 package com.zootdungeon.windows;
 
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.hero.Belongings;
+import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.arknights.skills.Skill;
 import com.zootdungeon.arknights.skills.SkillSheet;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.artifacts.RhodesIslandTerminal;
+import com.zootdungeon.items.artifacts.TerminalPlugin;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.scenes.GameScene;
+import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.ui.RedButton;
-import com.zootdungeon.ui.Window;
+import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.utils.GLog;
+import com.watabou.noosa.ui.Component;
 
-public class WndRhodesIslandTerminal extends Window {
+public class WndRhodesIslandTerminal extends WndTabbed {
 
-	private static final int WIDTH		= 120;
-	private static final int BTN_HEIGHT	= 20;
-	private static final int GAP		= 2;
-	
-	private int pos;
-	
+	private static final int WIDTH        = 120;
+	private static final int BTN_HEIGHT   = 20;
+	private static final int GAP          = 2;
+	private static final int TAB_HEIGHT   = 25;
+	private static final int PLUGIN_ICON  = 16;
+	private static final int INFO_FONT    = 6;
+	private static final int INFO_MAX_H   = 32;
+
+	/** 当前打开的终端窗口，用于安装插件后刷新插件面板 */
+	private static WndRhodesIslandTerminal openInstance;
+
+	private final RhodesIslandTerminal terminal;
+	private Component skillPanel;
+	private PluginPanel pluginPanel;
+
 	public WndRhodesIslandTerminal(RhodesIslandTerminal terminal) {
-		
 		super();
+		openInstance = this;
+		this.terminal = terminal;
 
+		// 窗口标题：终端图标 + 名称
 		IconTitle title = new IconTitle(new ItemSprite(terminal), Messages.titleCase(terminal.name()));
 		title.setRect(0, 0, WIDTH, 0);
 		add(title);
-		pos = (int)title.bottom() + GAP;
+		float contentTop = title.bottom() + GAP;
 
-		// 显示所有注册的技能
+		int skillContentHeight = 0;
+
+		// 技能面板（第二个标签页）
+		skillPanel = new Component();
+		float y = 0;
+		RenderedTextBlock costLabel = PixelScene.renderTextBlock(
+				Messages.get(RhodesIslandTerminal.class, "cost_display", Dungeon.cost, RhodesIslandTerminal.COST_CAP), 8);
+		costLabel.maxWidth(WIDTH);
+		costLabel.setRect(0, y, WIDTH, 12);
+		skillPanel.add(costLabel);
+		y = costLabel.bottom() + GAP;
+
 		for (Skill skill : SkillSheet.values()) {
 			final Skill finalSkill = skill;
 			String buttonText = skill.id;
 			if (skill.cost > 0) {
-				buttonText += " (消耗 " + skill.cost + " cost)";
+				buttonText += " (" + Messages.get(RhodesIslandTerminal.class, "cost_use", skill.cost) + ")";
 			}
-			
 			RedButton btn = new RedButton(buttonText) {
 				@Override
 				protected void onClick() {
-					// 检查cost是否足够
 					if (Dungeon.cost < finalSkill.cost) {
-						GLog.w("cost不足，需要 " + finalSkill.cost + " cost");
+						GLog.w(Messages.get(RhodesIslandTerminal.class, "cost_not_enough", finalSkill.cost));
 						return;
 					}
-					
-					// 消耗cost
 					Dungeon.cost -= finalSkill.cost;
-					
-					// 执行技能
 					finalSkill.execute(Dungeon.hero);
-					
 					hide();
 				}
 			};
-			
-			// 如果cost不足，禁用按钮
-			if (Dungeon.cost < skill.cost) {
-				btn.enable(false);
+			btn.setRect(0, y, WIDTH, BTN_HEIGHT);
+			if (Dungeon.cost < skill.cost) btn.enable(false);
+			skillPanel.add(btn);
+			y = btn.bottom() + GAP;
+		}
+		skillContentHeight = (int) y;
+		skillPanel.setRect(0, contentTop, WIDTH, skillContentHeight);
+		add(skillPanel);
+		skillPanel.active = skillPanel.visible = false;
+
+		// 插件面板（主界面，默认显示）
+		pluginPanel = new PluginPanel(terminal);
+		pluginPanel.setRect(0, contentTop, WIDTH, 220);
+		add(pluginPanel);
+		pluginPanel.refresh();
+
+		int contentHeight = Math.max(skillContentHeight, 220);
+		resize(WIDTH, (int) (contentTop + contentHeight + TAB_HEIGHT));
+
+		// 标签：先插件、后技能（插件为主界面）
+		add(new IconTab(new ItemSprite(new TerminalPlugin())) {
+			@Override
+			protected void select(boolean value) {
+				super.select(value);
+				pluginPanel.active = pluginPanel.visible = value;
+				if (value) pluginPanel.refresh();
 			}
-			
-			addButton(btn);
+		});
+		add(new IconTab(new ItemSprite(terminal)) {
+			@Override
+			protected void select(boolean value) {
+				super.select(value);
+				skillPanel.active = skillPanel.visible = value;
+			}
+		});
+
+		layoutTabs();
+		select(0); // 默认选中插件页
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		if (openInstance == this) openInstance = null;
+	}
+
+	/** 刷新插件标签页内容（安装/卸载后由 ItemSelector 调用） */
+	public void refreshPlugins() {
+		if (pluginPanel != null && pluginPanel.visible) pluginPanel.refresh();
+	}
+
+	private static class PluginPanel extends Component {
+		private final RhodesIslandTerminal terminal;
+		private float layoutY;
+
+		PluginPanel(RhodesIslandTerminal terminal) {
+			this.terminal = terminal;
 		}
 
-		resize(WIDTH, pos);
-	}
-	
-	private void addButton(RedButton btn) {
-		add(btn);
-		btn.setRect(0, pos > 0 ? pos += GAP : 0, WIDTH, BTN_HEIGHT);
-		pos += BTN_HEIGHT;
+		void refresh() {
+			clear();
+			layoutY = GAP;
+			// 已安装插件标题
+			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "plugins_title"), 8);
+			title.maxWidth(WIDTH);
+			title.setRect(0, layoutY, WIDTH, 14);
+			add(title);
+			layoutY = title.bottom() + GAP;
+
+			Hero hero = Dungeon.hero;
+			java.util.ArrayList<TerminalPlugin> plugins = terminal.getInstalledPlugins();
+			int nameAreaWidth = WIDTH - (PLUGIN_ICON + GAP) - (48 + GAP); // 名称区域宽度，右侧留卸载按钮
+
+			for (int i = 0; i < plugins.size(); i++) {
+				final int index = i;
+				TerminalPlugin plugin = plugins.get(i);
+				float rowTop = layoutY;
+
+				// 第一行：图标 + 名称 + 卸载按钮
+				ItemSprite sprite = new ItemSprite(plugin);
+				sprite.x = 0;
+				sprite.y = rowTop;
+				sprite.width = PLUGIN_ICON;
+				sprite.height = PLUGIN_ICON;
+				add(sprite);
+
+				RenderedTextBlock name = PixelScene.renderTextBlock(plugin.name(), 8);
+				name.maxWidth(nameAreaWidth);
+				name.setRect(PLUGIN_ICON + GAP, rowTop + 2, nameAreaWidth, 12);
+				add(name);
+
+				RedButton uninstall = new RedButton(Messages.get(RhodesIslandTerminal.class, "uninstall")) {
+					@Override
+					protected void onClick() {
+						terminal.uninstallPlugin(index, hero);
+						refresh();
+					}
+				};
+				uninstall.setRect(WIDTH - 48, rowTop, 48, BTN_HEIGHT);
+				add(uninstall);
+
+				// 第二行：插件描述/信息
+				String infoText = plugin.desc();
+				if (infoText != null && !infoText.isEmpty()) {
+					RenderedTextBlock info = PixelScene.renderTextBlock(infoText, INFO_FONT);
+					info.maxWidth(WIDTH - (PLUGIN_ICON + GAP));
+					info.setRect(PLUGIN_ICON + GAP, rowTop + BTN_HEIGHT + GAP, WIDTH - (PLUGIN_ICON + GAP), INFO_MAX_H);
+					add(info);
+					layoutY = info.bottom() + GAP;
+				} else {
+					layoutY = rowTop + BTN_HEIGHT + GAP;
+				}
+			}
+
+			if (terminal.canInstallMorePlugins()) {
+				RedButton installBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "install_plugin")) {
+					@Override
+					protected void onClick() {
+						GameScene.selectItem(pluginSelector);
+					}
+				};
+				installBtn.setRect(0, layoutY, WIDTH, BTN_HEIGHT);
+				add(installBtn);
+				layoutY = installBtn.bottom() + GAP;
+			}
+		}
+
+		private static final WndBag.ItemSelector pluginSelector = new WndBag.ItemSelector() {
+			@Override
+			public String textPrompt() {
+				return Messages.get(RhodesIslandTerminal.class, "install_prompt");
+			}
+			@Override
+			public Class<? extends com.zootdungeon.items.bags.Bag> preferredBag() {
+				return Belongings.Backpack.class;
+			}
+			@Override
+			public boolean itemSelectable(Item item) {
+				return item instanceof TerminalPlugin;
+			}
+			@Override
+			public void onSelect(Item item) {
+				if (item != null && item instanceof TerminalPlugin && Dungeon.hero != null) {
+					RhodesIslandTerminal term = Dungeon.hero.belongings.getItem(RhodesIslandTerminal.class);
+					if (term != null && term.canInstallMorePlugins()) {
+						term.installPlugin((TerminalPlugin) item, Dungeon.hero);
+						GLog.p(Messages.get(RhodesIslandTerminal.class, "plugin_installed"));
+						if (openInstance != null) openInstance.refreshPlugins();
+					}
+				}
+			}
+		};
 	}
 }
-
