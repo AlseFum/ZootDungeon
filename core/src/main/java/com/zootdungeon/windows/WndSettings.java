@@ -1484,6 +1484,7 @@ public class WndSettings extends WndTabbed {
 
 		RenderedTextBlock title;
 		ColorBlock sep1;
+		RenderedTextBlock txtLoadedIndices;
 		RenderedTextBlock txtInfo;
 		Component listContainer;
 		ScrollPane scrollPane;
@@ -1498,6 +1499,9 @@ public class WndSettings extends WndTabbed {
 
 			sep1 = new ColorBlock(1, 1, 0xFF000000);
 			add(sep1);
+
+			txtLoadedIndices = PixelScene.renderTextBlock(7);
+			add(txtLoadedIndices);
 
 			txtInfo = PixelScene.renderTextBlock(7);
 			add(txtInfo);
@@ -1575,6 +1579,27 @@ public class WndSettings extends WndTabbed {
 			listContainer.setSize(listWidth, Math.max(rowY, 1));
 		}
 
+		private void updateLoadedIndicesText() {
+			java.util.List<Assets.ResourceIndex> added = Assets.getAddedIndices();
+			if (added.isEmpty()) {
+				txtLoadedIndices.text(Messages.get(this, "loaded_indices_none"));
+			} else {
+				StringBuilder sb = new StringBuilder();
+				sb.append(Messages.get(this, "loaded_indices_title")).append("\n");
+				for (int i = 0; i < added.size(); i++) {
+					Assets.ResourceIndex idx = added.get(i);
+					String name = idx.displayName != null && !idx.displayName.isEmpty() ? idx.displayName : ("#" + (i + 1));
+					int lang = idx.langResources.size();
+					int tex = idx.textureResources.size();
+					int snd = idx.soundResources.size();
+					int scr = idx.scriptResources.size();
+					sb.append("  ").append(name).append(": ")
+						.append(Messages.get(this, "index_coverage", lang, tex, snd, scr)).append("\n");
+				}
+				txtLoadedIndices.text(sb.toString().trim());
+			}
+		}
+
 		private void updateInfoText() {
 			int lang = Assets.manualOverrideIndex.langResources.size();
 			int tex = Assets.manualOverrideIndex.textureResources.size();
@@ -1590,8 +1615,12 @@ public class WndSettings extends WndTabbed {
 			sep1.size(width, 1);
 			sep1.y = title.bottom() + 3 * GAP;
 
+			updateLoadedIndicesText();
+			txtLoadedIndices.setPos(0, sep1.y + 1 + GAP);
+			txtLoadedIndices.maxWidth((int) width);
+
 			updateInfoText();
-			txtInfo.setPos(0, sep1.y + 1 + GAP);
+			txtInfo.setPos(0, txtLoadedIndices.bottom() + GAP);
 			txtInfo.maxWidth((int) width);
 
 			refreshList(width);

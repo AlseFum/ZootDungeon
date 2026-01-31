@@ -52,10 +52,6 @@ public class Messages {
 		return locale;
 	}
 
-	/**
-	 * Setup Methods
-	 */
-
 	private static String[] prop_files = new String[]{
 			Assets.Messages.ACTORS,
 			Assets.Messages.ITEMS,
@@ -98,7 +94,13 @@ public class Messages {
 		bundles = new ArrayList<>();
 		for (String file : prop_files) {
 			String path = Assets.getResource(ResourceType.LANG, file, file);
-			bundles.add(I18NBundle.createBundle(Gdx.files.internal(path), bundleLocal));
+			// 先试 external（ResourceIndex 路径），不存在则用默认 internal 路径，避免错误路径导致 MissingResourceException
+			var fh = FileUtils.getFileHandle(path);
+			if (fh != null && fh.exists() && !fh.isDirectory() && fh.length() > 0) {
+				bundles.add(I18NBundle.createBundle(fh, bundleLocal));
+			} else {
+				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocal));
+			}
 			// override 时追加默认 bundle 作为 fallback，避免 override 文件缺 key 时无文案
 			if (!path.equals(file)) {
 				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocal));

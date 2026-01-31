@@ -320,13 +320,15 @@ public class Assets {
 		SOUND,      // 音效
 		SCRIPT      // 脚本
 	}
+	private static final String[] RESOURCE_BUNDLE_KEYS = {"LANG", "TEXTURE", "SOUND", "SCRIPT"};
 
 	public static class ResourceIndex {
-		// 四种资源类型分开存储
-		public final Map<String, String> langResources;      // 语言资源
-		public final Map<String, String> textureResources;   // 纹理资源
-		public final Map<String, String> soundResources;    // 音效资源
-		public final Map<String, String> scriptResources;  // 脚本资源
+		/** 可选显示名（如 sypnosis 的 name 或 id），用于 UI */
+		public String displayName;
+		public final Map<String, String> langResources;
+		public final Map<String, String> textureResources;
+		public final Map<String, String> soundResources;
+		public final Map<String, String> scriptResources;
 
 		public ResourceIndex() {
 			this.langResources = new HashMap<>();
@@ -335,21 +337,13 @@ public class Assets {
 			this.scriptResources = new HashMap<>();
 		}
 
-		/**
-		 * 根据类型获取对应的资源映射
-		 */
 		public Map<String, String> getResourcesByType(ResourceType type) {
 			switch (type) {
-				case LANG:
-					return langResources;
-				case TEXTURE:
-					return textureResources;
-				case SOUND:
-					return soundResources;
-				case SCRIPT:
-					return scriptResources;
-				default:
-					throw new IllegalArgumentException("Unknown resource type: " + type);
+				case LANG:    return langResources;
+				case TEXTURE: return textureResources;
+				case SOUND:   return soundResources;
+				case SCRIPT:  return scriptResources;
+				default:      throw new IllegalArgumentException("Unknown resource type: " + type);
 			}
 		}
 
@@ -388,81 +382,42 @@ public class Assets {
 			return getResourcesByType(type).isEmpty();
 		}
 
-		/**
-		 * 检查是否所有类型都为空
-		 */
 		public boolean isEmpty() {
-			return langResources.isEmpty() 
-				&& textureResources.isEmpty() 
-				&& soundResources.isEmpty() 
-				&& scriptResources.isEmpty();
+			for (ResourceType t : ResourceType.values()) {
+				if (!getResourcesByType(t).isEmpty()) return false;
+			}
+			return true;
 		}
 
-		/**
-		 * 保存到Bundle
-		 */
+		public void clearAll() {
+			for (ResourceType t : ResourceType.values()) getResourcesByType(t).clear();
+		}
+
 		public void storeInBundle(Bundle bundle) {
-			if (!langResources.isEmpty()) {
-				Bundle langBundle = new Bundle();
-				for (Map.Entry<String, String> entry : langResources.entrySet()) {
-					langBundle.put(entry.getKey(), entry.getValue());
+			ResourceType[] types = ResourceType.values();
+			for (int i = 0; i < RESOURCE_BUNDLE_KEYS.length; i++) {
+				Map<String, String> map = getResourcesByType(types[i]);
+				if (map.isEmpty()) continue;
+				Bundle sub = new Bundle();
+				for (Map.Entry<String, String> e : map.entrySet()) {
+					sub.put(e.getKey(), e.getValue());
 				}
-				bundle.put("LANG", langBundle);
-			}
-			if (!textureResources.isEmpty()) {
-				Bundle textureBundle = new Bundle();
-				for (Map.Entry<String, String> entry : textureResources.entrySet()) {
-					textureBundle.put(entry.getKey(), entry.getValue());
-				}
-				bundle.put("TEXTURE", textureBundle);
-			}
-			if (!soundResources.isEmpty()) {
-				Bundle soundBundle = new Bundle();
-				for (Map.Entry<String, String> entry : soundResources.entrySet()) {
-					soundBundle.put(entry.getKey(), entry.getValue());
-				}
-				bundle.put("SOUND", soundBundle);
-			}
-			if (!scriptResources.isEmpty()) {
-				Bundle scriptBundle = new Bundle();
-				for (Map.Entry<String, String> entry : scriptResources.entrySet()) {
-					scriptBundle.put(entry.getKey(), entry.getValue());
-				}
-				bundle.put("SCRIPT", scriptBundle);
+				bundle.put(RESOURCE_BUNDLE_KEYS[i], sub);
 			}
 		}
 
-		/**
-		 * 从Bundle恢复
-		 */
 		public void restoreFromBundle(Bundle bundle) {
-			langResources.clear();
-			textureResources.clear();
-			soundResources.clear();
-			scriptResources.clear();
-			
-			if (bundle.contains("LANG")) {
-				Bundle langBundle = bundle.getBundle("LANG");
-				for (String key : langBundle.getKeys()) {
-					langResources.put(key, langBundle.getString(key));
-				}
-			}
-			if (bundle.contains("TEXTURE")) {
-				Bundle textureBundle = bundle.getBundle("TEXTURE");
-				for (String key : textureBundle.getKeys()) {
-					textureResources.put(key, textureBundle.getString(key));
-				}
-			}
-			if (bundle.contains("SOUND")) {
-				Bundle soundBundle = bundle.getBundle("SOUND");
-				for (String key : soundBundle.getKeys()) {
-					soundResources.put(key, soundBundle.getString(key));
-				}
-			}
-			if (bundle.contains("SCRIPT")) {
-				Bundle scriptBundle = bundle.getBundle("SCRIPT");
-				for (String key : scriptBundle.getKeys()) {
-					scriptResources.put(key, scriptBundle.getString(key));
+			clearAll();
+			if (bundle == null || bundle.isNull()) return;
+			ResourceType[] types = ResourceType.values();
+			for (int i = 0; i < RESOURCE_BUNDLE_KEYS.length; i++) {
+				String key = RESOURCE_BUNDLE_KEYS[i];
+				if (!bundle.contains(key)) continue;
+				Bundle sub = bundle.getBundle(key);
+				if (sub == null || sub.isNull()) continue;
+				Map<String, String> map = getResourcesByType(types[i]);
+				for (String subKey : sub.getKeys()) {
+					map.put(subKey, sub.getString(subKey));
 				}
 			}
 		}
@@ -687,7 +642,7 @@ public class Assets {
 	public static void init() {
 		// 清空栈
 		indexStack.clear();
-		
+
 		// 添加默认索引到栈底
 		indexStack.add(defaultIndex);
 		indexStack.add(manualOverrideIndex);
@@ -717,6 +672,17 @@ public class Assets {
 
 		// 只更新该索引中包含的资源缓存
 		updateResourceCacheForIndex(index);
+	}
+
+	/** 返回当前已添加的外部索引（栈中除 defaultIndex、manualOverrideIndex 外的索引） */
+	public static List<ResourceIndex> getAddedIndices() {
+		List<ResourceIndex> out = new ArrayList<>();
+		for (ResourceIndex idx : indexStack) {
+			if (idx != defaultIndex && idx != manualOverrideIndex) {
+				out.add(idx);
+			}
+		}
+		return out;
 	}
 
 	/**
@@ -796,10 +762,7 @@ public class Assets {
 				affectedKeys.add(new ResourceKey(type, resourceID));
 			}
 		}
-		manualOverrideIndex.langResources.clear();
-		manualOverrideIndex.textureResources.clear();
-		manualOverrideIndex.soundResources.clear();
-		manualOverrideIndex.scriptResources.clear();
+		manualOverrideIndex.clearAll();
 		saveManualOverrides();
 		// 只更新受影响的资源缓存
 		for (ResourceKey key : affectedKeys) {
@@ -824,7 +787,6 @@ public class Assets {
 			ResourceIndex index = indexStack.get(i);
 			if (index.contains(type, resourceID)) {
 				String content = index.get(type, resourceID);
-				// 缓存查询结果
 				resourceCache.put(key, content);
 				return content;
 			}

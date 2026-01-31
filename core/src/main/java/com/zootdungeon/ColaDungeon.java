@@ -27,6 +27,7 @@ import com.zootdungeon.scenes.WelcomeScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
+import com.zootdungeon.utils.FileHandle;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PlatformSupport;
 
@@ -47,6 +48,10 @@ public class ColaDungeon extends Game {
     @Override
     public void create() {
         super.create();
+
+        for (Assets.ResourceIndex index : FileHandle.scanResourceIndex()) {
+            Assets.addIndex(index);
+        }
 
         updateSystemUI();
         CDKeyBinding.loadBindings();

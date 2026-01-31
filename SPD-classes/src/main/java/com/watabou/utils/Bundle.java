@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -518,8 +519,8 @@ public class Bundle {
 				stream = new GZIPInputStream( stream, GZIP_BUFFER );
 			}
 
-			//JSONTokenizer only has a string-based constructor on Android/iOS
-			BufferedReader reader = new BufferedReader( new InputStreamReader( stream ));
+			//JSONTokenizer only has a string-based constructor on Android/iOS. Use UTF-8 for JSON (e.g. sypnosis.json with non-ASCII paths).
+			BufferedReader reader = new BufferedReader( new InputStreamReader( stream, StandardCharsets.UTF_8 ));
 			StringBuilder jsonBuilder = new StringBuilder();
 
 			String line;
