@@ -1,7 +1,8 @@
-package com.zootdungeon.items.artifacts;
+package com.zootdungeon.arknights;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndRhodesIslandTerminal;
@@ -112,9 +113,6 @@ public class RhodesIslandTerminal extends Artifact {
 
 	public class TerminalBuff extends ArtifactBuff {
 
-		/**
-		 * 随英雄获得经验逐渐补充部署费用（装备终端时由 Hero 在获得经验时调用）。
-		 */
 		public void gainCharge(float levelPortion) {
 			if (cursed || target == null || !(target instanceof Hero)) return;
 			int cap = RhodesIslandTerminal.COST_CAP;

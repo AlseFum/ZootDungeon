@@ -27,8 +27,8 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.arknights.skills.Skill;
 import com.zootdungeon.arknights.skills.SkillSheet;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.artifacts.RhodesIslandTerminal;
-import com.zootdungeon.items.artifacts.TerminalPlugin;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
+import com.zootdungeon.arknights.TerminalPlugin;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
@@ -44,9 +44,11 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 	private static final int BTN_HEIGHT   = 20;
 	private static final int GAP          = 2;
 	private static final int TAB_HEIGHT   = 25;
-	private static final int PLUGIN_ICON  = 16;
-	private static final int INFO_FONT    = 6;
-	private static final int INFO_MAX_H   = 32;
+	private static final int PLUGIN_ICON       = 16;
+	private static final int INFO_FONT         = 6;
+	private static final int INFO_MAX_H        = 32;
+	/** 自定义显示组件的最大高度（插件子类 createDisplayComponent 返回的组件） */
+	private static final int CUSTOM_COMPONENT_H = 56;
 
 	/** 当前打开的终端窗口，用于安装插件后刷新插件面板 */
 	private static WndRhodesIslandTerminal openInstance;
@@ -54,6 +56,8 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 	private final RhodesIslandTerminal terminal;
 	private Component skillPanel;
 	private PluginPanel pluginPanel;
+	private float contentTop;
+	private int skillContentHeight;
 
 	public WndRhodesIslandTerminal(RhodesIslandTerminal terminal) {
 		super();
@@ -64,7 +68,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 		IconTitle title = new IconTitle(new ItemSprite(terminal), Messages.titleCase(terminal.name()));
 		title.setRect(0, 0, WIDTH, 0);
 		add(title);
-		float contentTop = title.bottom() + GAP;
+		contentTop = title.bottom() + GAP;
 
 		int skillContentHeight = 0;
 
@@ -101,19 +105,21 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 			skillPanel.add(btn);
 			y = btn.bottom() + GAP;
 		}
-		skillContentHeight = (int) y;
+		this.skillContentHeight = (int) y;
 		skillPanel.setRect(0, contentTop, WIDTH, skillContentHeight);
 		add(skillPanel);
 		skillPanel.active = skillPanel.visible = false;
 
-		// 插件面板（主界面，默认显示）
+		// 插件面板（主界面，默认显示；高度按内容动态收缩）
 		pluginPanel = new PluginPanel(terminal);
-		pluginPanel.setRect(0, contentTop, WIDTH, 220);
 		add(pluginPanel);
 		pluginPanel.refresh();
+		float pluginContentHeight = pluginPanel.getContentHeight();
+		pluginPanel.setRect(0, contentTop, WIDTH, pluginContentHeight);
 
-		int contentHeight = Math.max(skillContentHeight, 220);
-		resize(WIDTH, (int) (contentTop + contentHeight + TAB_HEIGHT));
+		// 内容区高度 = 标题下沿 + 面板内容；标签条由 WndTabbed 放在 height 处并再占 tabHeight()
+		int contentHeight = (int) Math.max(skillContentHeight, pluginContentHeight);
+		resize(WIDTH, (int) (contentTop + contentHeight));
 
 		// 标签：先插件、后技能（插件为主界面）
 		add(new IconTab(new ItemSprite(new TerminalPlugin())) {
@@ -142,17 +148,27 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 		if (openInstance == this) openInstance = null;
 	}
 
-	/** 刷新插件标签页内容（安装/卸载后由 ItemSelector 调用） */
+	/** 刷新插件标签页内容（安装/卸载后由 ItemSelector 调用），并动态收缩面板与窗口高度 */
 	public void refreshPlugins() {
-		if (pluginPanel != null && pluginPanel.visible) pluginPanel.refresh();
+		if (pluginPanel == null) return;
+		pluginPanel.refresh();
+		float ph = pluginPanel.getContentHeight();
+		pluginPanel.setRect(0, contentTop, WIDTH, ph);
+		resize(WIDTH, (int) (contentTop + Math.max(skillContentHeight, ph)));
 	}
 
 	private static class PluginPanel extends Component {
 		private final RhodesIslandTerminal terminal;
 		private float layoutY;
+		/** refresh 后内容总高度，供父窗口动态设置面板与窗口高度 */
+		private float contentHeight;
 
 		PluginPanel(RhodesIslandTerminal terminal) {
 			this.terminal = terminal;
+		}
+
+		float getContentHeight() {
+			return contentHeight;
 		}
 
 		void refresh() {
@@ -197,16 +213,25 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 				uninstall.setRect(WIDTH - 48, rowTop, 48, BTN_HEIGHT);
 				add(uninstall);
 
-				// 第二行：插件描述/信息
-				String infoText = plugin.desc();
-				if (infoText != null && !infoText.isEmpty()) {
-					RenderedTextBlock info = PixelScene.renderTextBlock(infoText, INFO_FONT);
-					info.maxWidth(WIDTH - (PLUGIN_ICON + GAP));
-					info.setRect(PLUGIN_ICON + GAP, rowTop + BTN_HEIGHT + GAP, WIDTH - (PLUGIN_ICON + GAP), INFO_MAX_H);
-					add(info);
-					layoutY = info.bottom() + GAP;
+				// 第二行：自定义显示组件 或 默认描述
+				float contentTop = rowTop + BTN_HEIGHT + GAP;
+				int contentWidth = WIDTH - (PLUGIN_ICON + GAP);
+				Component custom = plugin.createDisplayComponent(terminal);
+				if (custom != null) {
+					custom.setRect(PLUGIN_ICON + GAP, contentTop, contentWidth, CUSTOM_COMPONENT_H);
+					add(custom);
+					layoutY = custom.bottom() + GAP;
 				} else {
-					layoutY = rowTop + BTN_HEIGHT + GAP;
+					String infoText = plugin.desc();
+					if (infoText != null && !infoText.isEmpty()) {
+						RenderedTextBlock info = PixelScene.renderTextBlock(infoText, INFO_FONT);
+						info.maxWidth(contentWidth);
+						info.setRect(PLUGIN_ICON + GAP, contentTop, contentWidth, INFO_MAX_H);
+						add(info);
+						layoutY = info.bottom() + GAP;
+					} else {
+						layoutY = contentTop + GAP;
+					}
 				}
 			}
 
@@ -221,6 +246,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 				add(installBtn);
 				layoutY = installBtn.bottom() + GAP;
 			}
+			contentHeight = layoutY;
 		}
 
 		private static final WndBag.ItemSelector pluginSelector = new WndBag.ItemSelector() {

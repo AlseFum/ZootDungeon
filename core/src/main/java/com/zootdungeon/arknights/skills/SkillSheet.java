@@ -4,7 +4,7 @@ import com.zootdungeon.actors.buffs.Adrenaline;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.PowerStrike;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.artifacts.RhodesIslandTerminal;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.utils.GLog;
 
 import java.util.HashMap;

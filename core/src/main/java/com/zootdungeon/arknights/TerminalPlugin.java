@@ -19,17 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.items.artifacts;
+package com.zootdungeon.arknights;
 
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.SpriteRegistry;
+import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 
 /**
  * 可安装到罗德岛终端上的插件物品。
  * 插件是单独的物品，可在终端的插件窗口中安装/卸载。
+ * <p>
+ * 子类可重写 {@link #createDisplayComponent(RhodesIslandTerminal)} 以在终端插件面板中
+ * 显示自定义 UI 组件；返回 null 时使用默认显示（仅描述文字）。
  */
 public class TerminalPlugin extends Item {
 
@@ -54,6 +58,18 @@ public class TerminalPlugin extends Item {
 	 */
 	public float costRegenMultiplier() {
 		return 1f + level() * 0.1f;
+	}
+
+	/**
+	 * 若插件需要在终端窗口中使用自定义组件显示，可重写此方法并返回该组件。
+	 * 终端会在插件名称行下方、卸载按钮右侧预留区域，并调用 {@link Component#setRect(float, float, float, float)}
+	 * 设置位置与尺寸，子类只需创建并返回组件即可。
+	 *
+	 * @param terminal 当前终端，可用于与终端交互或读取状态
+	 * @return 自定义显示组件，或 null 时使用默认显示（仅描述文字）
+	 */
+	public Component createDisplayComponent(RhodesIslandTerminal terminal) {
+		return null;
 	}
 
 	@Override

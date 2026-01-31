@@ -24,6 +24,8 @@ import com.zootdungeon.actors.hero.abilities.rogue.SmokeBomb;
 import com.zootdungeon.actors.hero.abilities.warrior.Endure;
 import com.zootdungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.zootdungeon.actors.hero.abilities.warrior.Shockwave;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
+import com.zootdungeon.arknights.TerminalPlugin;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.armor.ClothArmor;
@@ -269,10 +271,10 @@ public final class HeroClassSheet {
                 // 自动识别
                 new ScrollOfMagicMapping().identify();
                 new PotionOfInvisibility().identify();
-                new com.zootdungeon.items.artifacts.RhodesIslandTerminal().identify().collect();
+                new RhodesIslandTerminal().identify().collect();
                 // 预备干员开局携带若干终端插件，可在终端窗口中安装
-                new com.zootdungeon.items.artifacts.TerminalPlugin().identify().collect();
-                new com.zootdungeon.items.artifacts.TerminalPlugin().identify().collect();
+                new TerminalPlugin().identify().collect();
+                new TerminalPlugin().identify().collect();
 
             })
             .register();
