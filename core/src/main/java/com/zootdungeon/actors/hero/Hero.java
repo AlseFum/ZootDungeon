@@ -84,7 +84,7 @@ import com.zootdungeon.items.artifacts.EtherealChains;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.artifacts.HornOfPlenty;
 import com.zootdungeon.items.artifacts.MasterThievesArmband;
-import com.zootdungeon.items.artifacts.RhodesIslandTerminal;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.items.artifacts.TalismanOfForesight;
 import com.zootdungeon.items.artifacts.TimekeepersHourglass;
 import com.zootdungeon.items.bags.MagicalHolster;
