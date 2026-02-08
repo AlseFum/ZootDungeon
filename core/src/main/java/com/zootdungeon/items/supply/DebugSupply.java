@@ -12,6 +12,7 @@ import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.TransferMechWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
 import com.zootdungeon.arknights.SummoningThrowingWeapon;
+import com.zootdungeon.arknights.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 
 import com.zootdungeon.Dungeon;
@@ -84,6 +85,7 @@ public class DebugSupply extends Supply {
         put_in(PropertyHuntingWeapon.class, 1);
         put_in(RhodesStandardWeaponSupply.class, 1);
         put_in(SummoningThrowingWeapon.class, 50);
+        put_in(TwinBlade.class, 5);
         put_in(InstantMechWeapon.class, 1);
         put_in(TransferMechWeapon.class, 1);
         put_in(Swiftthistle.Seed.class, 100);
