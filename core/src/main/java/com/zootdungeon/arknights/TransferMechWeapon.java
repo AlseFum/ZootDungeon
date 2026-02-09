@@ -266,6 +266,11 @@ public class TransferMechWeapon extends MeleeWeapon {
         @Override
         public void detach() {
             if (weapon != null) {
+                // 只有当目标还活着时才转换为char（说明是被净化等效果移除的）
+                // 如果目标死亡，在act()中已经处理过转换了
+                if (target != null && target.isAlive()) {
+                    weapon.convertBuffToChar(this, target.pos);
+                }
                 weapon.removeMechBuff(this);
             }
             super.detach();
