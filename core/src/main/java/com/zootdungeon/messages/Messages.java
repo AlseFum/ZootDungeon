@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IllegalFormatException;
@@ -37,7 +38,10 @@ public class Messages {
 	private static ArrayList<I18NBundle> originBundles;
 	private static Languages lang;
 	private static Locale locale;
+	/** Final overlay map (external file overlay + inline overlay merged). */
 	private static HashMap<String, String> externalStrings;
+	/** Raw external overlay loaded from file (without inline). */
+	private static HashMap<String, String> externalFileStrings;
 	private static Languages externalOriginLanguage;
 	private static String externalAuthor;
 	private static String externalVersion;
@@ -109,6 +113,8 @@ public class Messages {
 
 		// Attempt to load external overlay language file (from /lang folder)
 		loadExternalOverlay(lang);
+		// Merge in inline overlays to form final overlay map (externalStrings)
+		rebuildOverlay(lang);
 	}
 
 
@@ -150,7 +156,7 @@ public class Messages {
 	}
 	private static String getFromBundle(String key){
 		String result;
-		// 1) External overlay takes highest priority
+		// 1) Overlay takes highest priority (external file overlay + inline overlay merged)
 		if (externalStrings != null){
 			result = externalStrings.get(key);
 			if (result != null){
@@ -238,6 +244,117 @@ public class Messages {
 
 	public static String lowerCase( String str ){
 		return str.toLowerCase(locale);
+	}
+
+	/**
+	 * Inline language overlay (runtime).
+	 * <p>
+	 * This is intended for quick prototyping: register i18n text from static blocks without touching .properties files.
+	 * Keys are normalized to lowercase to match {@link #get(Class, String, Object...)} behavior.
+	 * <p>
+	 * Lookup priority: external overlay > inline override > bundles > origin bundles.
+	 */
+	private static final EnumMap<Languages, HashMap<String, String>> inlineStrings = new EnumMap<>(Languages.class);
+
+	/**
+	 * Lightweight registration API for inline i18n strings.
+	 * <p>
+	 * Intended usage from a static block:
+	 *
+	 * <pre>
+	 * static {
+	 *     Messages.inline(r -> r
+	 *         .put(Languages.ENGLISH, MyClass.class, "name", "Hello")
+	 *         .put(Languages.CHINESE, MyClass.class, "name", "你好")
+	 *     );
+	 * }
+	 * </pre>
+	 */
+	@FunctionalInterface
+	public interface InlineI18n {
+		void register(InlineRegistrar r);
+	}
+
+	public interface InlineRegistrar {
+		InlineRegistrar put(Languages lang, String fullKey, String value);
+		default InlineRegistrar put(Languages lang, Class<?> c, String localKey, String value){
+			String key = c.getName().replace("com.zootdungeon.", "") + "." + localKey;
+			return put(lang, key, value);
+		}
+	}
+
+	/** Register inline i18n strings (see {@link InlineI18n}). */
+	public static void inline(InlineI18n provider){
+		if (provider == null) return;
+		provider.register(new InlineRegistrar() {
+			@Override
+			public InlineRegistrar put(Languages lang, String fullKey, String value) {
+				if (lang == null || fullKey == null || value == null) return this;
+				String k = fullKey.toLowerCase(Locale.ENGLISH);
+				HashMap<String, String> map = inlineStrings.computeIfAbsent(lang, l -> new HashMap<>());
+				map.put(k, value);
+				// keep the final overlay map in sync for the currently selected language
+				if (Messages.lang != null && (lang == Messages.lang || lang == Languages.ENGLISH)) {
+					rebuildOverlay(Messages.lang);
+				}
+				return this;
+			}
+		});
+	}
+
+	/** Direct helper: register one inline string by full key. */
+	public static void putInline(Languages lang, String fullKey, String value){
+		inline(r -> r.put(lang, fullKey, value));
+	}
+
+	/** Direct helper: register one inline string by class + local key. */
+	public static void putInline(Languages lang, Class<?> c, String localKey, String value){
+		inline(r -> r.put(lang, c, localKey, value));
+	}
+
+	/** Clears all inline strings for a language (useful during dev). */
+	public static void clearInline(Languages lang){
+		if (lang == null) return;
+		inlineStrings.remove(lang);
+		if (Messages.lang == lang || (lang == Languages.ENGLISH && Messages.lang != null)) {
+			rebuildOverlay(Messages.lang);
+		}
+	}
+
+	/** Clears all inline strings for all languages. */
+	public static void clearAllInline(){
+		inlineStrings.clear();
+		if (Messages.lang != null){
+			rebuildOverlay(Messages.lang);
+		}
+	}
+
+	/** Rebuilds {@link #externalStrings} from external file overlay + inline overlay. */
+	private static void rebuildOverlay(Languages selectedLanguage){
+		// Build merged overlay map into externalStrings.
+		HashMap<String, String> merged = null;
+		if (externalFileStrings != null && !externalFileStrings.isEmpty()){
+			merged = new HashMap<>(externalFileStrings);
+		}
+		// apply inline for selected language
+		if (selectedLanguage != null){
+			HashMap<String, String> inline = inlineStrings.get(selectedLanguage);
+			if (inline != null && !inline.isEmpty()){
+				if (merged == null) merged = new HashMap<>();
+				merged.putAll(inline); // inline should override file overlay
+			}
+		}
+		// english fallback inline (only if key missing)
+		if (selectedLanguage != Languages.ENGLISH){
+			HashMap<String, String> enInline = inlineStrings.get(Languages.ENGLISH);
+			if (enInline != null && !enInline.isEmpty()){
+				if (merged == null) merged = new HashMap<>();
+				for (Map.Entry<String, String> e : enInline.entrySet()){
+					merged.putIfAbsent(e.getKey(), e.getValue());
+				}
+			}
+		}
+		externalStrings = merged;
 	}
 
 	/**
@@ -332,13 +449,13 @@ public class Messages {
 			externalOriginLanguage = Languages.matchCode(originCode);
 
 			// Build external strings map (skip meta keys)
-			externalStrings = new HashMap<>();
+			externalFileStrings = new HashMap<>();
 			for (Map.Entry<Object, Object> e : chosenProps.entrySet()){
 				String k = String.valueOf(e.getKey());
 				if (isMetaKey(k)) continue;
 				String v = String.valueOf(e.getValue());
 				// normalize keys to lowercase to match Messages.get() behavior
-				externalStrings.put(k.toLowerCase(Locale.ENGLISH), v);
+				externalFileStrings.put(k.toLowerCase(Locale.ENGLISH), v);
 			}
 
 			// Prepare origin bundles for fallback if defined
@@ -357,7 +474,7 @@ public class Messages {
 		} catch (Exception ex){
 			ColaDungeon.reportException(new Exception("Failed to load external language overlay", ex));
 			// ensure no partial state
-			externalStrings = null;
+			externalFileStrings = null;
 			originBundles = null;
 			externalOriginLanguage = null;
 		}
