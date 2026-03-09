@@ -68,6 +68,9 @@ public class Messages {
 			Assets.Messages.WINDOWS
 	};
 
+	/** Inline language overlay (runtime); must be initialized before static block that calls setup(). */
+	private static final EnumMap<Languages, HashMap<String, String>> inlineStrings = new EnumMap<>(Languages.class);
+
 	static{
 		formatters = new HashMap<>();
 		setup(CDSettings.language());
@@ -245,16 +248,6 @@ public class Messages {
 	public static String lowerCase( String str ){
 		return str.toLowerCase(locale);
 	}
-
-	/**
-	 * Inline language overlay (runtime).
-	 * <p>
-	 * This is intended for quick prototyping: register i18n text from static blocks without touching .properties files.
-	 * Keys are normalized to lowercase to match {@link #get(Class, String, Object...)} behavior.
-	 * <p>
-	 * Lookup priority: external overlay > inline override > bundles > origin bundles.
-	 */
-	private static final EnumMap<Languages, HashMap<String, String>> inlineStrings = new EnumMap<>(Languages.class);
 
 	/**
 	 * Lightweight registration API for inline i18n strings.

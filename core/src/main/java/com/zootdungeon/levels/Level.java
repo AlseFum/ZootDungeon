@@ -21,13 +21,16 @@
 
 package com.zootdungeon.levels;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Queue;
 
 import com.zootdungeon.Assets;
+import com.zootdungeon.CDSettings;
 import com.zootdungeon.Challenges;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Dungeon;
@@ -1216,9 +1219,35 @@ public abstract class Level implements Bundlable {
 			break;
 			
 		case Terrain.HIGH_GRASS:
-		case Terrain.FURROWED_GRASS:
-			HighGrass.trample( this, cell);
+		case Terrain.FURROWED_GRASS: {
+			Char ch = Actor.findChar(cell);
+			if (ch instanceof Hero && CDSettings.trampleChainGrass()) {
+				// Collect all connected grass (no plant on tile)
+				HashSet<Integer> connected = new HashSet<>();
+				Queue<Integer> queue = new ArrayDeque<>();
+				queue.add(cell);
+				connected.add(cell);
+				while (!queue.isEmpty()) {
+					int c = queue.poll();
+					for (int i : PathFinder.NEIGHBOURS8) {
+						int n = c + i;
+						if (n >= 0 && n < length()
+								&& (map[n] == Terrain.HIGH_GRASS || map[n] == Terrain.FURROWED_GRASS)
+								&& plants.get(n) == null
+								&& connected.add(n)) {
+							queue.add(n);
+						}
+					}
+				}
+				HighGrass.trample(this, cell);
+				for (Integer c : connected) {
+					if (c != cell) HighGrass.trampleNoLoot(this, c);
+				}
+			} else {
+				HighGrass.trample(this, cell);
+			}
 			break;
+		}
 			
 		case Terrain.WELL:
 			WellWater.affectCell( cell );

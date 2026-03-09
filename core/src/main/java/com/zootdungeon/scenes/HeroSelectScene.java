@@ -779,6 +779,18 @@ public class HeroSelectScene extends PixelScene {
 			add(challengeButton);
 			buttons.add(challengeButton);
 
+			StyledButton variantsButton = new StyledButton(Chrome.Type.BLANK, Messages.get(HeroSelectScene.class, "variants"), 6){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					ColaDungeon.switchNoFade(GameVariantsScene.class);
+				}
+			};
+			variantsButton.leftJustify = true;
+			variantsButton.icon(Icons.get(Icons.PREFS));
+			add(variantsButton);
+			buttons.add(variantsButton);
+
 			for (int i = 1; i < buttons.size(); i++){
 				ColorBlock spc = new ColorBlock(1, 1, 0xFF000000);
 				add(spc);

@@ -162,4 +162,19 @@ public class HighGrass {
 			if (Dungeon.level.heroFOV[pos]) Dungeon.observe();
 		}
 	}
+
+	/**
+	 * Flattens grass at the given cell only (terrain + visual). No loot, no Huntress furrow.
+	 * Used by the "trample connected grass" rule for chained cells.
+	 */
+	public static void trampleNoLoot( Level level, int pos ) {
+		if (freezeTrample) return;
+		if (level.map[pos] != Terrain.HIGH_GRASS && level.map[pos] != Terrain.FURROWED_GRASS) return;
+		Level.set(pos, Terrain.GRASS);
+		if (ColaDungeon.scene() instanceof GameScene) {
+			GameScene.updateMap(pos);
+			CellEmitter.get(pos).burst(LeafParticle.LEVEL_SPECIFIC, 4);
+			if (Dungeon.level != null && Dungeon.level.heroFOV[pos]) Dungeon.observe();
+		}
+	}
 }
