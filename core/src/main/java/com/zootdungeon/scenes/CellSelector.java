@@ -27,6 +27,7 @@ import com.zootdungeon.CDSettings;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.effects.AffectedCellOverlay;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.tiles.DungeonTilemap;
 import com.watabou.input.ControllerHandler;
@@ -43,6 +44,8 @@ import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
+import java.util.Collection;
+
 public class CellSelector extends ScrollArea {
 
 	public Listener listener = null;
@@ -50,13 +53,24 @@ public class CellSelector extends ScrollArea {
 	public boolean enabled;
 	
 	private float dragThreshold;
+
+	/** 选格时用于显示「受影响范围」的覆盖层，可为 null */
+	private AffectedCellOverlay rangeOverlay;
+	private int lastHoverCell = -1;
+	/** 选格时由 selectCellWithView 传入，提供悬停格对应的受影响格子；null 表示无范围预览 */
+	private Select rangeSelect;
+	/** 选格时传给 Select.getAffectedCells 的第二个参数，可为 null */
+	private Object rangeSelectVariable;
 	
 	public CellSelector( DungeonTilemap map ) {
+		this( map, null );
+	}
+
+	public CellSelector( DungeonTilemap map, AffectedCellOverlay rangeOverlay ) {
 		super( map );
 		camera = map.camera();
-		
+		this.rangeOverlay = rangeOverlay;
 		dragThreshold = PixelScene.defaultZoom * DungeonTilemap.SIZE / 2;
-		
 		mouseZoom = camera.zoom;
 		KeyEvent.addKeyListener( keyListener );
 	}
@@ -355,7 +369,18 @@ public class CellSelector extends ScrollArea {
 	@Override
 	public void update() {
 		super.update();
-
+		// 选格时根据悬停显示伤害/效果范围（由 selectCellWithView 传入的 Select 提供）
+		if (rangeOverlay != null && rangeSelect != null && enabled) {
+			PointF hover = PointerEvent.currentHoverPos();
+			int cell = ((DungeonTilemap)target).screenToTile( (int)hover.x, (int)hover.y, false );
+			if (cell != lastHoverCell) {
+				lastHoverCell = cell;
+				Collection<Integer> cells = cell >= 0 && cell < Dungeon.level.length()
+					? rangeSelect.getAffectedCells( cell, rangeSelectVariable )
+					: null;
+				rangeOverlay.setCells( cells );
+			}
+		}
 		GameAction newLeftStick = actionFromStick(ControllerHandler.leftStickPosition.x,
 				ControllerHandler.leftStickPosition.y);
 
@@ -484,11 +509,15 @@ public class CellSelector extends ScrollArea {
 	}
 	
 	public void cancel() {
-		
+		rangeSelect = null;
+		rangeSelectVariable = null;
+		if (rangeOverlay != null) {
+			rangeOverlay.clear();
+			lastHoverCell = -1;
+		}
 		if (listener != null) {
 			listener.onSelect( null );
 		}
-		
 		GameScene.ready();
 	}
 
@@ -508,6 +537,26 @@ public class CellSelector extends ScrollArea {
 			enabled = value;
 		}
 	}
+
+	/** 切换选格 Listener 时调用，清空范围预览并重置悬停状态 */
+	public void resetRangePreview() {
+		rangeSelect = null;
+		rangeSelectVariable = null;
+		lastHoverCell = -1;
+		if (rangeOverlay != null) rangeOverlay.clear();
+	}
+
+	/** 设置选格时的范围预览（无变量），由 {@link GameScene#selectCellWithView(Listener, Select)} 调用 */
+	public void setRangeSelect( Select select ) {
+		this.rangeSelect = select;
+		this.rangeSelectVariable = null;
+	}
+
+	/** 设置选格时的范围预览及变量，由 {@link GameScene#selectCellWithView(Listener, Select, Object)} 调用 */
+	public void setRangeSelect( Select select, Object variable ) {
+		this.rangeSelect = select;
+		this.rangeSelectVariable = variable;
+	}
 	
 	@Override
 	public void destroy() {
@@ -521,5 +570,17 @@ public class CellSelector extends ScrollArea {
 		public void onRightClick( Integer cell ){} //do nothing by default
 
 		public abstract String prompt();
+	}
+
+	/**
+	 * 选格时范围预览：根据悬停格和可选变量返回受影响的格子集合，传给 {@link GameScene#selectCellWithView}。
+	 */
+	@FunctionalInterface
+	public interface Select {
+		/**
+		 * 根据当前悬停的格子和传入的变量（如半径、来源、当前物品），返回受影响的格子集合；null 或空集合则不显示范围。
+		 * 无变量时调用方传 null。
+		 */
+		Collection<Integer> getAffectedCells( int hoverCell, Object variable );
 	}
 }

@@ -48,6 +48,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -83,6 +84,30 @@ public class Bomb extends Item {
 
 	protected int explosionRange(){
 		return 1;
+	}
+
+	/** 供投掷时范围预览使用，返回爆炸影响半径（格数）。 */
+	public int getExplosionRange() {
+		return explosionRange();
+	}
+
+	@Override
+	public void doThrow(Hero hero) {
+		GameScene.selectCellWithView(thrower, (hoverCell, item) -> ((Bomb) item).getExplosionCellsForPreview(hoverCell), this);
+	}
+
+	/** 供 {@link GameScene#selectCellWithView} 的 Select 使用：返回以 hoverCell 为落点的爆炸范围格子。 */
+	public java.util.Collection<Integer> getExplosionCellsForPreview( int hoverCell ) {
+		com.watabou.utils.PathFinder.buildDistanceMap(
+			hoverCell,
+			com.watabou.utils.BArray.not(Dungeon.level.solid, null),
+			getExplosionRange()
+		);
+		ArrayList<Integer> list = new ArrayList<>();
+		for (int i = 0; i < com.watabou.utils.PathFinder.distance.length; i++) {
+			if (com.watabou.utils.PathFinder.distance[i] != Integer.MAX_VALUE) list.add(i);
+		}
+		return list;
 	}
 
 	@Override

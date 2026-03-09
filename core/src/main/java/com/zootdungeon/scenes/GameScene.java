@@ -44,6 +44,7 @@ import com.zootdungeon.actors.mobs.Ghoul;
 import com.zootdungeon.actors.mobs.Mimic;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.Snake;
+import com.zootdungeon.effects.AffectedCellOverlay;
 import com.zootdungeon.effects.BannerSprites;
 import com.zootdungeon.effects.BlobEmitter;
 import com.zootdungeon.effects.EmoIcon;
@@ -176,7 +177,8 @@ public class GameScene extends PixelScene {
 	private GameLog log;
 	
 	private static CellSelector cellSelector;
-	
+	private static AffectedCellOverlay affectedCellOverlay;
+
 	private Group terrain;
 	private Group customTiles;
 	private Group levelVisuals;
@@ -361,8 +363,11 @@ public class GameScene extends PixelScene {
 		add( new TargetHealthIndicator() );
 		
 		add( emoicons );
-		
-		add( cellSelector = new CellSelector( tiles ) );
+
+		affectedCellOverlay = new AffectedCellOverlay();
+		affectedCellOverlay.camera = tiles.camera();
+		add( affectedCellOverlay );
+		add( cellSelector = new CellSelector( tiles, affectedCellOverlay ) );
 
 		int uiSize = CDSettings.interfaceSize();
 
@@ -1478,10 +1483,22 @@ public class GameScene extends PixelScene {
 	}
 	
 	public static void selectCell( CellSelector.Listener listener ) {
+		selectCellWithView( listener, null );
+	}
+
+	/** 选格并附带范围预览（无变量）：{@code rangeSelect} 非 null 时，悬停会高亮该 Select 返回的受影响格子，变量传 null。 */
+	public static void selectCellWithView( CellSelector.Listener listener, CellSelector.Select rangeSelect ) {
+		selectCellWithView( listener, rangeSelect, null );
+	}
+
+	/** 选格并附带范围预览与变量：{@code rangeSelect} 每次根据 hoverCell 和 {@code variable} 返回受影响格子。 */
+	public static void selectCellWithView( CellSelector.Listener listener, CellSelector.Select rangeSelect, Object variable ) {
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener){
 			cellSelector.listener.onSelect(null);
 		}
+		cellSelector.resetRangePreview();
 		cellSelector.listener = listener;
+		cellSelector.setRangeSelect( rangeSelect, variable );
 		cellSelector.enabled = Dungeon.hero.ready;
 		if (scene != null) {
 			scene.prompt(listener.prompt());
