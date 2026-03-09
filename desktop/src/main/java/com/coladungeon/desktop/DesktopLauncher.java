@@ -25,7 +25,6 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3FileHandle;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Preferences;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.ColaDungeon;
@@ -35,6 +34,7 @@ import com.zootdungeon.services.updates.UpdateImpl;
 import com.zootdungeon.services.updates.Updates;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
+import com.watabou.utils.JsonPreferences;
 import com.watabou.utils.Point;
 
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -165,7 +165,7 @@ public class DesktopLauncher {
 		}
 
 		config.setPreferencesConfig( basePath, baseFileType );
-		CDSettings.set( new Lwjgl3Preferences( new Lwjgl3FileHandle(basePath + CDSettings.DEFAULT_PREFS_FILE, baseFileType) ));
+		CDSettings.set( new JsonPreferences( new Lwjgl3FileHandle(basePath + CDSettings.DEFAULT_PREFS_FILE, baseFileType) ));
 		FileUtils.setDefaultFileProperties( baseFileType, basePath );
 		
 		config.setWindowSizeLimits( 720, 400, -1, -1 );

@@ -13,13 +13,12 @@ import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.remains.RemainsItem;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.FileUtils;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 public class Bones {
 
-	private static final String BONES_FILE	= "bones.dat";
+	private static final String BONES_KEY = "bones";
 	
 	private static final String LEVEL	= "level";
 	private static final String BRANCH	= "branch";
@@ -32,6 +31,24 @@ public class Bones {
 
 	private static Item item;
 	private static HeroClass heroClass;
+
+	private static void saveBonesBundle(Bundle bones) {
+		try {
+			Bundle global = SaveManager.loadGlobal();
+			global.put(BONES_KEY, bones);
+			SaveManager.saveGlobal(global);
+		} catch (IOException e) {
+			ColaDungeon.reportException(e);
+		}
+	}
+
+	private static Bundle loadBonesBundle() {
+		Bundle global = SaveManager.loadGlobal();
+		if (global.contains(BONES_KEY)) {
+			return global.getBundle(BONES_KEY);
+		}
+		return null;
+	}
 
 	public static void leave() {
 
@@ -74,11 +91,7 @@ public class Bones {
 			bundle.put(LEVEL, depth);
 			bundle.put(BRANCH, branch);
 
-		try {
-				FileUtils.bundleToFile(BONES_FILE, bundle);
-		} catch (IOException e) {
-			ColaDungeon.reportException(e);
-			}
+		saveBonesBundle(bundle);
 		}
 	}
 
@@ -158,40 +171,34 @@ public class Bones {
 
 		if (depth == -1) {
 
-			try {
-				Bundle bundle = FileUtils.bundleFromFile(BONES_FILE);
-
-				depth = bundle.getInt(LEVEL);
-				branch = bundle.getInt(BRANCH);
-				if (depth > 0) {
-					if (bundle.contains(ITEM)) {
-						item = (Item) bundle.get(ITEM);
-					} else {
-						item = null;
-					}
-					if (bundle.contains(HERO_CLASS)){
-						heroClass = HeroClass.valueOf(bundle.getString(HERO_CLASS));
-					} else {
-						heroClass = null;
-					}
-				}
-
-				return get();
-
-			} catch (IOException e) {
+			Bundle bundle = loadBonesBundle();
+			if (bundle == null) {
 				return null;
 			}
+
+			depth = bundle.getInt(LEVEL);
+			branch = bundle.getInt(BRANCH);
+			if (depth > 0) {
+				if (bundle.contains(ITEM)) {
+					item = (Item) bundle.get(ITEM);
+				} else {
+					item = null;
+				}
+				if (bundle.contains(HERO_CLASS)){
+					heroClass = HeroClass.valueOf(bundle.getString(HERO_CLASS));
+				} else {
+					heroClass = null;
+				}
+			}
+
+			return get();
 
 		} else {
 			if (lootAtCurLevel()) {
 
 				Bundle emptyBones = new Bundle();
 				emptyBones.put(LEVEL, 0);
-				try {
-					FileUtils.bundleToFile(BONES_FILE, emptyBones);
-				} catch (IOException e) {
-					ColaDungeon.reportException(e);
-				}
+				saveBonesBundle(emptyBones);
 				depth = 0;
 
 				//challenged or seeded runs don't get items from prior runs

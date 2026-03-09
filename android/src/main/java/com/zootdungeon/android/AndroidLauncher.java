@@ -46,6 +46,7 @@ import com.zootdungeon.services.updates.Updates;
 import com.zootdungeon.ui.Button;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
+import com.watabou.utils.JsonPreferences;
 
 public class AndroidLauncher extends AndroidApplication {
 	
@@ -94,11 +95,9 @@ public class AndroidLauncher extends AndroidApplication {
 
 			FileUtils.setDefaultFileProperties(Files.FileType.Local, "");
 
-			// grab preferences directly using our instance first
-			// so that we don't need to rely on Gdx.app, which isn't initialized yet.
-			// Note that we use a different prefs name on android for legacy purposes,
-			// this is the default prefs filename given to an android app (.xml is automatically added to it)
-			CDSettings.set(instance.getPreferences("ShatteredPixelDungeon"));
+			// Use JSON-backed settings file directly in app-local storage.
+			// We initialize this before Gdx.app is ready, so we use java.io.File here.
+			CDSettings.set(new JsonPreferences(new java.io.File(getFilesDir(), CDSettings.DEFAULT_PREFS_FILE)));
 
 		} else {
 			instance = this;

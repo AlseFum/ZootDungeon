@@ -27,7 +27,7 @@ import com.watabou.noosa.Game;
 
 public class GameSettings {
 	
-	public static final String DEFAULT_PREFS_FILE = "settings.xml";
+	public static final String DEFAULT_PREFS_FILE = "settings.json";
 	
 	private static Preferences prefs;
 	

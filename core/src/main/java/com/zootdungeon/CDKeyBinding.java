@@ -21,7 +21,6 @@
 
 package com.zootdungeon;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import com.badlogic.gdx.Input;
@@ -30,7 +29,6 @@ import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.FileUtils;
 // this file handles key binding
 public class CDKeyBinding extends GameAction {
 
@@ -201,7 +199,21 @@ public class CDKeyBinding extends GameAction {
 	}
 
 	//we only save/loads keys which differ from the default configuration.
-	private static final String BINDINGS_FILE = "keybinds.dat";
+	private static final String BINDINGS_SETTINGS_KEY = "keybinds.bundle";
+
+	private static Bundle loadBindingsBundle() throws Exception {
+		if (CDSettings.contains(BINDINGS_SETTINGS_KEY)) {
+			String raw = CDSettings.getString(BINDINGS_SETTINGS_KEY, "");
+			if (raw != null && !raw.isEmpty()) {
+				return Bundle.read(new java.io.ByteArrayInputStream(raw.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+			}
+		}
+		return new Bundle();
+	}
+
+	private static void saveBindingsBundle(Bundle b) {
+		CDSettings.put(BINDINGS_SETTINGS_KEY, b.toString());
+	}
 
 	public static void loadBindings(){
 
@@ -210,7 +222,7 @@ public class CDKeyBinding extends GameAction {
 		}
 
 		try {
-			Bundle b = FileUtils.bundleFromFile(BINDINGS_FILE);
+			Bundle b = loadBindingsBundle();
 
 			Bundle firstKeys = b.getBundle("first_keys");
 			Bundle secondKeys = b.getBundle("second_keys");
@@ -491,11 +503,7 @@ public class CDKeyBinding extends GameAction {
 		b.put("second_keys_controller", secondButtons);
 		b.put("third_keys_controller", thirdButtons);
 
-		try {
-			FileUtils.bundleToFile(BINDINGS_FILE, b);
-		} catch (IOException e) {
-			ColaDungeon.reportException(e);
-		}
+		saveBindingsBundle(b);
 
 	}
 
