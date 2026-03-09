@@ -2451,7 +2451,10 @@ public class Hero extends Char {
         boolean wasEnemy = enemy.alignment == Alignment.ENEMY
                 || (enemy instanceof Mimic && enemy.alignment == Alignment.NEUTRAL);
 
-        boolean hit = attack(enemy);
+        int hitCount = 1;
+        KindOfWeapon wep = belongings.attackingWeapon();
+        if (wep != null) hitCount = Math.max(1, wep.hitCount());
+        boolean hit = attack(enemy, 1f, 0f, 1f, hitCount);
 
         // EventBus removed
 

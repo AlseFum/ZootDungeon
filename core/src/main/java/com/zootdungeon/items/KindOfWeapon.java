@@ -47,6 +47,14 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	protected String hitSound = Assets.Sounds.HIT;
 	protected float hitSoundPitch = 1f;
+
+	/**
+	 * 一次攻击判定的连击次数（命中一次，结算多段伤害）。
+	 * 默认 1；子类可重写为 2、3 等实现连击武器。
+	 */
+	public int hitCount() {
+		return 1;
+	}
 	
 	@Override
 	public void execute(Hero hero, String action) {

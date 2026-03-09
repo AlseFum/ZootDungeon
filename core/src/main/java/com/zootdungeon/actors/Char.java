@@ -322,8 +322,14 @@ public abstract class Char extends Actor {
 	}
 	
 	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti ) {
+		return attack(enemy, dmgMulti, dmgBonus, accMulti, 1);
+	}
 
-		return Damage.physical(this, enemy, dmgMulti, dmgBonus, accMulti).result;
+	/**
+	 * 攻击目标，支持连击次数。一次命中判定，然后按 hitCount 段结算伤害（每段独立 DR、proc）。
+	 */
+	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti, int hitCount ) {
+		return Damage.physical(this, enemy, dmgMulti, dmgBonus, accMulti, hitCount).result;
 	}
 
 	public static int INFINITE_ACCURACY = 1_000_000;
