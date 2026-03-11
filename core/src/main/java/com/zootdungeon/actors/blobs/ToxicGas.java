@@ -28,6 +28,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.BlobEmitter;
 import com.zootdungeon.effects.Speck;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.utils.GLog;
 
@@ -47,8 +48,7 @@ public class ToxicGas extends Blob implements Hero.Doom {
 				cell = i + j*Dungeon.level.width();
 				if (cur[cell] > 0 && (ch = Actor.findChar( cell )) != null) {
 					if (!ch.isImmune(this.getClass())) {
-
-						ch.damage(damage, this);
+						Damage.environment(ch, Damage.POISON, damage, this);
 					}
 				}
 			}

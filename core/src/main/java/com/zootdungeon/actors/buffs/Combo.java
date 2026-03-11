@@ -33,6 +33,7 @@ import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.mechanics.Ballistica;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
@@ -404,9 +405,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							if (ch.buff(Vulnerable.class) != null) aoeHit *= 1.33f;
 							if (ch instanceof DwarfKing){
 								//change damage type for DK so that crush AOE doesn't count for DK's challenge badge
-								ch.damage(aoeHit, this);
+								Damage.additional(target, ch, Damage.PHYSICAL, aoeHit, this);
 							} else {
-								ch.damage(aoeHit, target);
+								Damage.additional(target, ch, Damage.PHYSICAL, aoeHit, target);
 							}
 							ch.sprite.bloodBurstA(target.sprite.center(), aoeHit);
 							ch.sprite.flash();

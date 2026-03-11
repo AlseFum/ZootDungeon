@@ -27,6 +27,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.PoisonParticle;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
@@ -97,7 +98,7 @@ public class Poison extends Buff implements Hero.Doom {
 	public boolean act() {
 		if (target.isAlive()) {
 			
-			target.damage( (int)(left / 3) + 1, this );
+			Damage.dot(target, Damage.POISON, (int)(left / 3) + 1, this);
 			spend( TICK );
 			
 			if ((left -= TICK) <= 0) {

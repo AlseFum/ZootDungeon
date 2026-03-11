@@ -28,6 +28,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.zootdungeon.items.trinkets.SaltCube;
 import com.zootdungeon.journal.Document;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.ui.BuffIndicator;
@@ -79,7 +80,7 @@ public class Hunger extends Buff implements Hero.Doom {
 				partialDamage += target.HT/1000f;
 
 				if (partialDamage > 1){
-					target.damage( (int)partialDamage, this);
+					Damage.dot(target, Damage.HUNGER, (int) partialDamage, this);
 					partialDamage -= (int)partialDamage;
 				}
 				
@@ -95,7 +96,7 @@ public class Hunger extends Buff implements Hero.Doom {
 				if (newLevel >= STARVING) {
 
 					GLog.n( Messages.get(this, "onstarving") );
-					hero.damage( 1, this );
+					Damage.dot(hero, Damage.HUNGER, 1, this);
 
 					hero.interrupt();
 					newLevel = STARVING;
@@ -150,7 +151,7 @@ public class Hunger extends Buff implements Hero.Doom {
 			level = STARVING;
 			partialDamage += excess * (target.HT/1000f);
 			if (partialDamage > 1f){
-				target.damage( (int)partialDamage, this );
+				Damage.dot(target, Damage.HUNGER, (int) partialDamage, this);
 				partialDamage -= (int)partialDamage;
 			}
 		}
@@ -159,7 +160,7 @@ public class Hunger extends Buff implements Hero.Doom {
 			GLog.w( Messages.get(this, "onhungry") );
 		} else if (oldLevel < STARVING && level >= STARVING){
 			GLog.n( Messages.get(this, "onstarving") );
-			target.damage( 1, this );
+			Damage.dot(target, Damage.HUNGER, 1, this);
 		}
 
 		BuffIndicator.refreshHero();

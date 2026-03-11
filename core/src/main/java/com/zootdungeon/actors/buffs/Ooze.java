@@ -22,6 +22,7 @@
 package com.zootdungeon.actors.buffs;
 
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
@@ -95,11 +96,14 @@ public class Ooze extends Buff {
 
 			acted = true;
 			if (Dungeon.scalingDepth() > 5) {
-				target.damage(1 + Dungeon.scalingDepth() / 5, this);
+				Damage.dot(target, Damage.POISON,
+						1 + Dungeon.scalingDepth() / 5, this);
 			} else if (Dungeon.scalingDepth() == 5){
-				target.damage(1, this); //1 dmg per turn vs Goo
+				Damage.dot(target, Damage.POISON,
+						1, this); //1 dmg per turn vs Goo
 			} else if (Random.Int(2) == 0) {
-				target.damage(1, this); //0.5 dmg per turn in sewers
+				Damage.dot(target, Damage.POISON,
+						1, this); //0.5 dmg per turn in sewers
 			}
 
 			if (!target.isAlive() && target == Dungeon.hero) {

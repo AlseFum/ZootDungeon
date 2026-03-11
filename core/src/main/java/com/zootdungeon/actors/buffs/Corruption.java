@@ -23,6 +23,7 @@ package com.zootdungeon.actors.buffs;
 
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.effects.FloatingText;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.ui.BuffIndicator;
 
@@ -55,7 +56,7 @@ public class Corruption extends AllyBuff {
 		buildToDamage -= damage;
 
 		if (damage > 0)
-			target.damage(damage, this);
+			Damage.dot(target, Damage.MAGIC, damage, this);
 
 		spend(TICK);
 

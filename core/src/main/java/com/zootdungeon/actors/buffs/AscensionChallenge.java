@@ -57,6 +57,7 @@ import com.zootdungeon.actors.mobs.Warlock;
 import com.zootdungeon.actors.mobs.npcs.Shopkeeper;
 import com.zootdungeon.items.Amulet;
 import com.zootdungeon.items.artifacts.DriedRose;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
@@ -306,7 +307,7 @@ public class AscensionChallenge extends Buff {
 		if (stacks >= 8 && !Dungeon.bossLevel()){
 			damageInc += (stacks-4)/4f;
 			if (damageInc >= 1){
-				target.damage((int)damageInc, this);
+				Damage.environment(target, Damage.TRUE, (int) damageInc, this);
 				damageInc -= (int)damageInc;
 
 				if (target == Dungeon.hero && !target.isAlive()){

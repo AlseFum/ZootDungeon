@@ -17,6 +17,7 @@ import com.zootdungeon.items.food.ChargrilledMeat;
 import com.zootdungeon.items.food.FrozenCarpaccio;
 import com.zootdungeon.items.food.MysteryMeat;
 import com.zootdungeon.items.scrolls.Scroll;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
@@ -115,7 +116,7 @@ public class Burning extends Buff implements Hero.Doom {
 				}
 				
 			} else {
-				target.damage( damage, this );
+				Damage.dot(target, Damage.FIRE, damage, this);
 			}
 
 			if (target instanceof Thief && ((Thief) target).item != null) {

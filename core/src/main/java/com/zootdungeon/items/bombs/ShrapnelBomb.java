@@ -26,6 +26,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.mechanics.ShadowCaster;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Point;
@@ -75,7 +76,7 @@ public class ShrapnelBomb extends Bomb {
 			//regular bomb damage over an FOV up to 8-range
 			int damage = Random.NormalIntRange( 4 + Dungeon.scalingDepth(), 12 + 3*Dungeon.scalingDepth() );
 			damage -= ch.drRoll();
-			ch.damage(damage, this);
+			Damage.environment(ch, Damage.PHYSICAL, damage, this);
 			if (ch == Dungeon.hero && !ch.isAlive()) {
 				Dungeon.fail(this);
 			}

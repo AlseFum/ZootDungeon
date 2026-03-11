@@ -1,6 +1,12 @@
 package com.zootdungeon.mechanics;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.UnaryOperator;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -31,7 +37,57 @@ import com.zootdungeon.sprites.CharSprite;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
+
 public class Damage {
+
+    private enum DamageType {
+        PHYSICAL,
+        MAGIC,
+        FIRE,
+        FROST,
+        SHOCK,
+        POISON,
+        CORROSION,
+        HUNGER,
+        TRUE
+    }
+
+    private enum DamageForm {
+        DIRECT,
+        RETALIATION,
+        ENVIRONMENT,
+        ADDITIONAL,
+        DOT
+    }
+
+    private enum DamageFlag {
+        IGNORE_ARMOR,
+        CANNOT_CRIT,
+        NO_INTERRUPT,
+        NO_FEEDBACK
+    }
+
+    // Type shortcuts for external callers: Damage.PHYSICAL style.
+    public static final Object PHYSICAL = DamageType.PHYSICAL;
+    public static final Object MAGIC = DamageType.MAGIC;
+    public static final Object FIRE = DamageType.FIRE;
+    public static final Object FROST = DamageType.FROST;
+    public static final Object SHOCK = DamageType.SHOCK;
+    public static final Object POISON = DamageType.POISON;
+    public static final Object CORROSION = DamageType.CORROSION;
+    public static final Object HUNGER = DamageType.HUNGER;
+    public static final Object TRUE = DamageType.TRUE;
+
+    public static final Object DIRECT = DamageForm.DIRECT;
+    public static final Object RETALIATION = DamageForm.RETALIATION;
+    public static final Object ENVIRONMENT = DamageForm.ENVIRONMENT;
+    public static final Object ADDITIONAL = DamageForm.ADDITIONAL;
+    public static final Object DOT = DamageForm.DOT;
+
+    public static final Object IGNORE_ARMOR = DamageFlag.IGNORE_ARMOR;
+    public static final Object CANNOT_CRIT = DamageFlag.CANNOT_CRIT;
+    public static final Object NO_INTERRUPT = DamageFlag.NO_INTERRUPT;
+    public static final Object NO_FEEDBACK = DamageFlag.NO_FEEDBACK;
 
     public static enum Interrupt {
         Invulnerable,
@@ -54,6 +110,88 @@ public class Damage {
             this.interrupt = interrupt;
             this.visible = visible;
         }
+    }
+
+    public static class DamageResult {
+        public int requestedAmount;
+        public int appliedAmount;
+        public int effectiveDamage;
+        public int shieldAbsorbed;
+        public boolean targetDied;
+        public final List<BiConsumer<DamageContext, DamageResult>> appliedEffects = new ArrayList<>();
+        public final List<Object> feedback = new ArrayList<>();
+    }
+
+    public static class DamageContext {
+        public final Char from;
+        public final Char to;
+        public final Object damageType;
+        public final Object damageForm;
+        public final float amount;
+        public final Object way;
+        public final Set<Object> flags;
+
+        public float baseAmount;
+        public float mitigatedAmount;
+        public int appliedAmount;
+        public int effectiveDamage;
+        public int shieldAbsorbed;
+
+        public DamageContext(Char from, Char to, Object damageType, Object damageForm, float amount, Object way, Set<Object> flags) {
+            this.from = from;
+            this.to = to;
+            this.damageType = damageType;
+            this.damageForm = damageForm;
+            this.amount = amount;
+            this.way = way;
+            this.flags = flags == null ? Collections.emptySet() : Collections.unmodifiableSet(new HashSet<>(flags));
+        }
+
+        public static DamageContext of(Char from, Char to, Object damageType, Object damageForm, float amount, Object way, Set<Object> flags) {
+            return new DamageContext(from, to, damageType, damageForm, amount, way, flags);
+        }
+
+        public static DamageContext of(Char from, Char to, Object damageType, Object damageForm, float amount, Object way) {
+            return new DamageContext(from, to, damageType, damageForm, amount, way, Collections.emptySet());
+        }
+
+        public static DamageContext direct(Char from, Char to, Object damageType, float amount, Object way) {
+            return of(from, to, damageType, DIRECT, amount, way);
+        }
+
+        public static DamageContext directPhysical(Char from, Char to, float amount, Object way) {
+            return direct(from, to, PHYSICAL, amount, way);
+        }
+
+        public boolean hasFlag(Object flag) {
+            return flags.contains(flag);
+        }
+
+        public Object sourceForApply() {
+            if (way != null) return way;
+            if (from != null) return from;
+            return this;
+        }
+    }
+
+    public static DamageResult process(DamageContext context) {
+        return DamagePipeline.process(context);
+    }
+
+    public static DamageResult dot(Char to, Object type, float amount, Object way) {
+        return process(DamageContext.of(null, to, type, DOT, amount, way));
+    }
+
+    public static DamageResult environment(Char to, Object type, float amount, Object way) {
+        return process(DamageContext.of(null, to, type, ENVIRONMENT, amount, way));
+    }
+
+    public static DamageResult retaliation(Char from, Char to, Object type, float amount, Object way) {
+        return process(DamageContext.of(from, to, type, RETALIATION, amount, way));
+    }
+
+    public static DamageResult additional(Char from, Char to, Object type, float amount, Object way) {
+        return process(DamageContext.of(from, to, type, ADDITIONAL, amount, way));
     }
 
     /**
@@ -89,6 +227,8 @@ public class Damage {
 
         int dr = computeDr(attacker, defender);
         BaseDamageResult base = computeBaseDamage(attacker, defender, dmgMulti, dmgBonus);
+        DamageContext physicalCtx = DamageContext.directPhysical(attacker, defender, base.baseDmg, attacker);
+        base.baseDmg = DamagePipeline.applyComputeAmplifiers(physicalCtx, base.baseDmg);
         if (!defender.isAlive()) {
             return new PhysicalResult(true, 0, Interrupt.Else, visibleFight);
         }
@@ -187,9 +327,12 @@ public class Damage {
 
     /** 单次伤害应用：防御 proc、DR、黏性、易伤、攻击 proc、音效、扣血。返回本段造成的伤害值。 */
     private static int applyOneHit(Char attacker, Char defender, float baseDmg, int dr, boolean visibleFight, boolean playHitSound) {
+        DamageContext hitCtx = DamageContext.directPhysical(attacker, defender, baseDmg, attacker);
         int effective = defender.defenseProc(attacker, Math.round(baseDmg));
         if (effective >= 0) {
-            effective = Math.max(effective - dr, 0);
+            if (!hitCtx.hasFlag(IGNORE_ARMOR)) {
+                effective = Math.max(effective - dr, 0);
+            }
             Viscosity.ViscosityTracker viscosity = defender.buff(Viscosity.ViscosityTracker.class);
             if (viscosity != null) {
                 effective = viscosity.deferDamage(effective);
@@ -197,6 +340,7 @@ public class Damage {
             }
             if (defender.buff(Vulnerable.class) != null) effective *= 1.33f;
             effective = attacker.attackProc(defender, effective);
+            effective = Math.max(Math.round(DamagePipeline.applyMitigationAmplifiers(hitCtx, effective)), 0);
         }
         if (playHitSound && visibleFight && (effective > 0 || !defender.blockSound(Random.Float(0.96f, 1.05f)))) {
             attacker.hitSound(Random.Float(0.87f, 1.15f));
@@ -204,7 +348,7 @@ public class Damage {
         if (!defender.isAlive()) {
             return effective;
         }
-        defender.damage(effective, attacker);
+        DamagePipeline.applyDamageAndEffects(hitCtx, effective, true);
         return effective;
     }
 
@@ -249,6 +393,73 @@ public class Damage {
         }
         if (defender.sprite != null) {
             defender.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(messageClass, statusKey));
+        }
+    }
+
+    private static final class DamagePipeline {
+        private DamagePipeline() {}
+
+        private static float applyComputeAmplifiers(DamageContext context, float amount) {
+            context.baseAmount = amount;
+            ArrayList<UnaryOperator<Float>> amps = com.zootdungeon.event.DamageEvents.DamageComputeRequested.of(context).collect();
+            float out = amount;
+            for (UnaryOperator<Float> amp : amps) {
+                if (amp != null) out = amp.apply(out);
+            }
+            context.baseAmount = out;
+            return out;
+        }
+
+        private static float applyMitigationAmplifiers(DamageContext context, float amount) {
+            context.mitigatedAmount = amount;
+            ArrayList<UnaryOperator<Float>> amps = com.zootdungeon.event.DamageEvents.DamageMitigationRequested.of(context).collect();
+            float out = amount;
+            for (UnaryOperator<Float> amp : amps) {
+                if (amp != null) out = amp.apply(out);
+            }
+            context.mitigatedAmount = out;
+            return out;
+        }
+
+        private static DamageResult applyDamageAndEffects(DamageContext context, int amount, boolean collectFeedback) {
+            DamageResult result = new DamageResult();
+            result.requestedAmount = Math.max(0, amount);
+
+            ArrayList<BiConsumer<DamageContext, DamageResult>> effects =
+                    com.zootdungeon.event.DamageEvents.DamageApplyRequested.of(context).collect();
+            int preHP = context.to.HP + context.to.shielding();
+            context.to.damage(result.requestedAmount, context.sourceForApply());
+            int postHP = context.to.HP + context.to.shielding();
+
+            result.appliedAmount = result.requestedAmount;
+            result.effectiveDamage = Math.max(preHP - postHP, 0);
+            result.shieldAbsorbed = Math.max(result.requestedAmount - result.effectiveDamage, 0);
+            result.targetDied = !context.to.isAlive();
+
+            context.appliedAmount = result.appliedAmount;
+            context.effectiveDamage = result.effectiveDamage;
+            context.shieldAbsorbed = result.shieldAbsorbed;
+
+            for (BiConsumer<DamageContext, DamageResult> effect : effects) {
+                if (effect != null) {
+                    effect.accept(context, result);
+                    result.appliedEffects.add(effect);
+                }
+            }
+
+            com.zootdungeon.event.DamageEvents.DamageApplied.of(context, result).dispatch();
+            if (collectFeedback && !context.hasFlag(NO_FEEDBACK)) {
+                ArrayList<Object> feedbacks = com.zootdungeon.event.DamageEvents.DamageFeedbackRequested.of(context, result).collect();
+                result.feedback.addAll(feedbacks);
+            }
+            return result;
+        }
+
+        private static DamageResult process(DamageContext context) {
+            float base = applyComputeAmplifiers(context, context.amount);
+            float mitigated = applyMitigationAmplifiers(context, base);
+            int applied = Math.max(Math.round(mitigated), 0);
+            return applyDamageAndEffects(context, applied, true);
         }
     }
 }

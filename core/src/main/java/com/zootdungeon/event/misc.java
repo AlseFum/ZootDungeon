@@ -11,6 +11,7 @@ import com.zootdungeon.effects.particles.BlastParticle;
 import com.zootdungeon.effects.particles.SmokeParticle;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -80,7 +81,7 @@ public class misc{
 				dmg -= ch.drRoll();
 
 				if (dmg > 0) {
-					ch.damage(dmg, source);
+					Damage.environment(ch, Damage.PHYSICAL, dmg, source);
 				}
 				
 				if (ch == Dungeon.hero && !ch.isAlive()) {

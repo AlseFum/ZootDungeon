@@ -25,6 +25,7 @@ import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.wands.WandOfCorrosion;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
@@ -101,7 +102,7 @@ public class Corrosion extends Buff implements Hero.Doom {
 	@Override
 	public boolean act() {
 		if (target.isAlive()) {
-			target.damage((int)damage, this);
+			Damage.dot(target, Damage.CORROSION, (int) damage, this);
 			if (damage < (Dungeon.scalingDepth()/2)+2) {
 				damage++;
 			} else {

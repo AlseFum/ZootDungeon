@@ -25,6 +25,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.journal.Catalog;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.BuffIndicator;
@@ -105,7 +106,7 @@ public class CapeOfThorns extends Artifact {
 				damage -= deflected;
 
 				if (attacker != null && Dungeon.level.adjacent(attacker.pos, defender.pos)) {
-					attacker.damage(deflected, this);
+					Damage.retaliation(defender, attacker, Damage.PHYSICAL, deflected, this);
 				}
 
 				exp+= deflected;

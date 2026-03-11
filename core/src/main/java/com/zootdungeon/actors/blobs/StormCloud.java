@@ -26,6 +26,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.effects.BlobEmitter;
 import com.zootdungeon.effects.Speck;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 
 public class StormCloud extends Blob {
@@ -51,7 +52,8 @@ public class StormCloud extends Blob {
 					if (ch != null
 							&& !ch.isImmune(getClass())
 							&& Char.hasProp(ch, Char.Property.FIERY)){
-						ch.damage(1 + Dungeon.scalingDepth()/5, this);
+						Damage.environment(ch, Damage.SHOCK,
+								1 + Dungeon.scalingDepth()/5, this);
 					}
 				}
 			}

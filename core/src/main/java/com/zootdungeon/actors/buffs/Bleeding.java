@@ -28,6 +28,7 @@ import com.zootdungeon.items.weapon.curses.Sacrificial;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.items.weapon.crowdWeapon.Sickle;
 import com.zootdungeon.levels.features.Chasm;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
@@ -102,7 +103,7 @@ public class Bleeding extends Buff {
 			
 			if (dmg > 0) {
 				
-				target.damage( dmg, this );
+				Damage.dot(target, Damage.PHYSICAL, dmg, this);
 				if (target.sprite.visible) {
 					Splash.at( target.sprite.center(), -PointF.PI / 2, PointF.PI / 6,
 							target.sprite.blood(), Math.min( 10 * dmg / target.HT, 10 ) );

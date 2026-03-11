@@ -32,6 +32,7 @@ import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.PathFinder;
@@ -74,7 +75,8 @@ public class Electricity extends Blob {
 							Buff.prolong( ch, Paralysis.class, cur[cell]);
 						}
 						if (cur[cell] % 2 == 1) {
-							ch.damage(Math.round(Random.Float(2 + Dungeon.scalingDepth() / 5f)), this);
+							Damage.environment(ch, Damage.SHOCK,
+									Math.round(Random.Float(2 + Dungeon.scalingDepth() / 5f)), this);
 							if (!ch.isAlive() && ch == Dungeon.hero){
 								Dungeon.fail( this );
 								GLog.n( Messages.get(this, "ondeath") );
