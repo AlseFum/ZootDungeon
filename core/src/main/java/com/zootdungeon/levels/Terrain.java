@@ -64,7 +64,17 @@ public class Terrain {
 	//33 and 34 are reserved for future statue-like decorations
 	public static final int MINE_CRYSTAL    = 35;
 	public static final int MINE_BOULDER    = 36;
-
+	
+	//reserved themed terrains (8 ids)
+	public static final int THEME_TILE_1	= 38;
+	public static final int THEME_TILE_2	= 39;
+	public static final int THEME_TILE_3	= 40;
+	public static final int THEME_TILE_4	= 41;
+	public static final int THEME_TILE_5	= 42;
+	public static final int THEME_TILE_6	= 43;
+	public static final int THEME_TILE_7	= 44;
+	public static final int THEME_TILE_8	= 45;
+	
 	public static final int WATER		    = 29;
 	
 	public static final int PASSABLE		= 0x01;
@@ -75,6 +85,10 @@ public class Terrain {
 	public static final int AVOID			= 0x20;
 	public static final int LIQUID			= 0x40;
 	public static final int PIT				= 0x80;
+	// custom themed semantic flags (orthogonal to movement flags)
+	public static final int THEME_FLAG_A	= 0x100;
+	public static final int THEME_FLAG_B	= 0x200;
+	public static final int THEME_FLAG_C	= 0x400;
 	
 	public static final int[] flags = new int[256];
 	static {
@@ -118,7 +132,26 @@ public class Terrain {
 
 		flags[MINE_CRYSTAL] = SOLID;
 		flags[MINE_BOULDER] = SOLID;
+		
+		// all themed terrains are ground-based.
+		flags[THEME_TILE_1] = flags[EMPTY];
+		flags[THEME_TILE_2] = flags[EMPTY];
+		flags[THEME_TILE_3] = flags[EMPTY];
+		flags[THEME_TILE_4] = flags[EMPTY];
+		flags[THEME_TILE_5] = flags[EMPTY];
+		flags[THEME_TILE_6] = flags[EMPTY];
+		flags[THEME_TILE_7] = flags[EMPTY];
+		flags[THEME_TILE_8] = flags[EMPTY];
 
+		// 8 themed terrains = 2*2*2 combinations of A/B/C flags on ground base.
+		flags[THEME_TILE_1] |= 0;                                   // 000
+		flags[THEME_TILE_2] |= THEME_FLAG_A;                        // 001
+		flags[THEME_TILE_3] |= THEME_FLAG_B;                        // 010
+		flags[THEME_TILE_4] |= THEME_FLAG_C;                        // 100
+		flags[THEME_TILE_5] |= THEME_FLAG_A | THEME_FLAG_B;         // 011
+		flags[THEME_TILE_6] |= THEME_FLAG_A | THEME_FLAG_C;         // 101
+		flags[THEME_TILE_7] |= THEME_FLAG_B | THEME_FLAG_C;         // 110
+		flags[THEME_TILE_8] |= THEME_FLAG_A | THEME_FLAG_B | THEME_FLAG_C; // 111
 	}
 
 	public static int discover( int terr ) {

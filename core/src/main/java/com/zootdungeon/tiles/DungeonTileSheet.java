@@ -68,6 +68,16 @@ public class DungeonTileSheet {
 	public static final int EMPTY_WELL      = GROUND +19;
 	public static final int PEDESTAL        = GROUND +20;
 
+		// dedicated visuals for custom theme terrains (explicit slots, no fallback)
+	public static final int THEME_FLOOR_1   = xy(1,17);
+	public static final int THEME_FLOOR_2   = xy(2,17);
+	public static final int THEME_FLOOR_3   = xy(3,17);
+	public static final int THEME_FLOOR_4   = xy(4,17);
+	public static final int THEME_FLOOR_5   = xy(5,17);
+	public static final int THEME_FLOOR_6   = xy(6,17);
+	public static final int THEME_FLOOR_7   = xy(7,17);
+	public static final int THEME_FLOOR_8   = xy(8,17);
+
 	public static final int ENTRANCE_SP     = GROUND +22;
 
 	public static final int CHASM           =                               xy(9, 2);   //8 slots
@@ -101,6 +111,15 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.CUSTOM_DECO_EMPTY,CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.MINE_BOULDER, CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.MINE_CRYSTAL, CHASM_FLOOR );
+		//TODO
+		chasmStitcheable.put( Terrain.THEME_TILE_1, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_2, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_3, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_4, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_5, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_6, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_7, CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.THEME_TILE_8, CHASM_FLOOR );
 
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
@@ -139,6 +158,9 @@ public class DungeonTileSheet {
 			Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE, Terrain.ALCHEMY,
 			Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR
+			//TODO
+			,Terrain.THEME_TILE_1, Terrain.THEME_TILE_2, Terrain.THEME_TILE_3, Terrain.THEME_TILE_4,
+			Terrain.THEME_TILE_5, Terrain.THEME_TILE_6, Terrain.THEME_TILE_7, Terrain.THEME_TILE_8
 	));
 
 	//+1 for ground above, +2 for ground right, +4 for ground below, +8 for ground left.
@@ -194,6 +216,16 @@ public class DungeonTileSheet {
 	public static final int FLAT_MINE_BOULDER         = FLAT_OTHER+12;
 	public static final int FLAT_MINE_BOULDER_ALT     = FLAT_OTHER+13;
 	public static final int FLAT_MINE_BOULDER_ALT_2   = FLAT_OTHER+14;
+	//TODO
+	// dedicated flat visuals for custom theme terrains.
+	public static final int THEME_FLAT_1              = THEME_FLOOR_8+0;
+	public static final int THEME_FLAT_2              = THEME_FLOOR_8+0;
+	public static final int THEME_FLAT_3              = THEME_FLOOR_8+2;
+	public static final int THEME_FLAT_4              = THEME_FLOOR_8+3;
+	public static final int THEME_FLAT_5              = THEME_FLOOR_8+4;
+	public static final int THEME_FLAT_6              = THEME_FLOOR_8+5;
+	public static final int THEME_FLAT_7              = THEME_FLOOR_8+6;
+	public static final int THEME_FLAT_8              = THEME_FLOOR_8+7;
 
 	/**********************************************************************
 	 * Raised Tiles, Lower Layer
@@ -403,6 +435,15 @@ public class DungeonTileSheet {
 		directVisuals.put(Terrain.INACTIVE_TRAP,    directVisuals.get(Terrain.EMPTY));
 		directVisuals.put(Terrain.CUSTOM_DECO,      directVisuals.get(Terrain.EMPTY));
 		directVisuals.put(Terrain.CUSTOM_DECO_EMPTY,directVisuals.get(Terrain.EMPTY));
+		//TODO
+		directVisuals.put(Terrain.THEME_TILE_1,     THEME_FLOOR_1);
+		directVisuals.put(Terrain.THEME_TILE_2,     THEME_FLOOR_1);
+		directVisuals.put(Terrain.THEME_TILE_3,     THEME_FLOOR_3);
+		directVisuals.put(Terrain.THEME_TILE_4,     THEME_FLOOR_4);
+		directVisuals.put(Terrain.THEME_TILE_5,     THEME_FLOOR_5);
+		directVisuals.put(Terrain.THEME_TILE_6,     THEME_FLOOR_6);
+		directVisuals.put(Terrain.THEME_TILE_7,     THEME_FLOOR_7);
+		directVisuals.put(Terrain.THEME_TILE_8,     THEME_FLOOR_8);
 
 		directVisuals.put(Terrain.EMPTY_DECO,       FLOOR_DECO);
 		directVisuals.put(Terrain.LOCKED_EXIT,      LOCKED_EXIT);
@@ -431,10 +472,16 @@ public class DungeonTileSheet {
 
 		directFlatVisuals.put(Terrain.MINE_CRYSTAL,     FLAT_MINE_CRYSTAL);
 		directFlatVisuals.put(Terrain.MINE_BOULDER,     FLAT_MINE_BOULDER);
+		//TODO
+		directFlatVisuals.put(Terrain.THEME_TILE_3,     THEME_FLAT_3);
+		directFlatVisuals.put(Terrain.THEME_TILE_4,     THEME_FLAT_4);
+		directFlatVisuals.put(Terrain.THEME_TILE_5,     THEME_FLAT_5);
+		directFlatVisuals.put(Terrain.THEME_TILE_6,     THEME_FLAT_6);
+		directFlatVisuals.put(Terrain.THEME_TILE_7,     THEME_FLAT_7);
+		directFlatVisuals.put(Terrain.THEME_TILE_8,     THEME_FLAT_8);
 
 		directFlatVisuals.put(Terrain.SECRET_DOOR,      directFlatVisuals.get(Terrain.WALL));
 	}
-
 
 	/**********************************************************************
 	 * Logic for the selection of alternate tile visuals

@@ -133,7 +133,7 @@ public class WndGame extends Window {
 			}
 		});
 		curBtn.icon(Icons.get(Icons.DISPLAY));
-		if (CDSettings.intro()) curBtn.enable(false);
+		//if (CDSettings.intro()) curBtn.enable(false);
 
 		resize( WIDTH, pos );
 	}

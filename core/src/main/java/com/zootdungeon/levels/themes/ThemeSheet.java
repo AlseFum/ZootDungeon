@@ -35,7 +35,7 @@ public class ThemeSheet {
     public static ThemePack HallsTheme;
     public static ThemePack PrisonTheme;
     public static ThemePack DebugTheme;
-    public static ThemePack DeviceTheme;
+    public static ThemePack DevTheme;
     // public static ThemePack CrystalTempleTheme;
     // public static ThemePack ShadowForestTheme;
     
@@ -58,7 +58,7 @@ public class ThemeSheet {
         
         DebugTheme = new ThemePack(DebugLevel.class, DebugLevel.class);
 
-        DeviceTheme = new ThemePack(DeviceSewerLevel.class, DeviceSewerBossLevel.class,
+        DevTheme = new ThemePack(DeviceSewerLevel.class, DeviceSewerBossLevel.class,
                 (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 25) ? (short) 4 : (short) 0);
         
         // Initialize with default themes
@@ -79,7 +79,7 @@ public class ThemeSheet {
         registerThemePack("caves", CavesTheme);
         registerThemePack("city", CityTheme);
         registerThemePack("halls", HallsTheme);
-        registerThemePack("device", DeviceTheme);
+        registerThemePack("dev", DevTheme);
         // // 注册新的特殊主题包
         // registerThemePack("crystal_temple", new ThemePack(CrystalTempleLevel.class, CrystalTempleLevel.class, (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 5) ? (short) 1 : (short) 0));
         // registerThemePack("shadow_forest", new ThemePack(ShadowForestLevel.class, ShadowForestLevel.class));
