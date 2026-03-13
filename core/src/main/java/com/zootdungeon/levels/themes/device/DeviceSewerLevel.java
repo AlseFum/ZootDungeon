@@ -30,12 +30,12 @@ public class DeviceSewerLevel extends SewerLevel {
     private static final int[] THEME_TERRAINS = new int[]{
             Terrain.THEME_TILE_1,
             Terrain.THEME_TILE_2,
-            // Terrain.THEME_TILE_3,
-            // Terrain.THEME_TILE_4,
-            // Terrain.THEME_TILE_5,
-            // Terrain.THEME_TILE_6,
-            // Terrain.THEME_TILE_7,
-            // Terrain.THEME_TILE_8
+            Terrain.THEME_TILE_3,
+            Terrain.THEME_TILE_4,
+            Terrain.THEME_TILE_5,
+            Terrain.THEME_TILE_6,
+            Terrain.THEME_TILE_7,
+            Terrain.THEME_TILE_8
     };
 
     @Override

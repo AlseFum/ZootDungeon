@@ -42,7 +42,7 @@ import com.zootdungeon.actors.mobs.Wraith;
 import com.zootdungeon.actors.mobs.npcs.RatKing;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.journal.Bestiary;
-import com.zootdungeon.levels.themes.ThemeManager;
+import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.scenes.GameScene;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -112,7 +112,7 @@ public class DistortionTrap extends Trap{
 					int floor;
 					do {
 						floor = Random.Int(25);
-					} while( ThemeManager.bossLevel(floor));
+					} while( Theme.bossLevel(floor));
 					mob = Reflection.newInstance(MobSpawner.getMobRotation(floor).get(0));
 					break;
 				case 2:

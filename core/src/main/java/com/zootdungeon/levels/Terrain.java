@@ -133,7 +133,6 @@ public class Terrain {
 		flags[MINE_CRYSTAL] = SOLID;
 		flags[MINE_BOULDER] = SOLID;
 		
-		// all themed terrains are ground-based.
 		flags[THEME_TILE_1] = flags[EMPTY];
 		flags[THEME_TILE_2] = flags[EMPTY];
 		flags[THEME_TILE_3] = flags[EMPTY];
@@ -143,15 +142,14 @@ public class Terrain {
 		flags[THEME_TILE_7] = flags[EMPTY];
 		flags[THEME_TILE_8] = flags[EMPTY];
 
-		// 8 themed terrains = 2*2*2 combinations of A/B/C flags on ground base.
-		flags[THEME_TILE_1] |= 0;                                   // 000
-		flags[THEME_TILE_2] |= THEME_FLAG_A;                        // 001
-		flags[THEME_TILE_3] |= THEME_FLAG_B;                        // 010
-		flags[THEME_TILE_4] |= THEME_FLAG_C;                        // 100
-		flags[THEME_TILE_5] |= THEME_FLAG_A | THEME_FLAG_B;         // 011
-		flags[THEME_TILE_6] |= THEME_FLAG_A | THEME_FLAG_C;         // 101
-		flags[THEME_TILE_7] |= THEME_FLAG_B | THEME_FLAG_C;         // 110
-		flags[THEME_TILE_8] |= THEME_FLAG_A | THEME_FLAG_B | THEME_FLAG_C; // 111
+		//flags[THEME_TILE_1] |= 0;
+		flags[THEME_TILE_2] |= THEME_FLAG_A;
+		flags[THEME_TILE_3] |= THEME_FLAG_B;
+		flags[THEME_TILE_4] |= THEME_FLAG_C;
+		flags[THEME_TILE_5] |= THEME_FLAG_A | THEME_FLAG_B;
+		flags[THEME_TILE_6] |= THEME_FLAG_A | THEME_FLAG_C;
+		flags[THEME_TILE_7] |= THEME_FLAG_B | THEME_FLAG_C;
+		flags[THEME_TILE_8] |= THEME_FLAG_A | THEME_FLAG_B | THEME_FLAG_C;
 	}
 
 	public static int discover( int terr ) {

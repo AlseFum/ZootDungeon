@@ -44,6 +44,7 @@ import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.features.Chasm;
 import com.zootdungeon.levels.features.LevelTransition;
 import com.zootdungeon.levels.rooms.special.SpecialRoom;
+import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.GameLog;
 import com.zootdungeon.ui.IconButton;
@@ -626,6 +627,7 @@ public class InterlevelScene extends PixelScene {
 			}
 
 			Level level = Dungeon.newLevel();
+			Theme.onEnterLevel(level);
 			Dungeon.switchLevel( level, -1 );
 		} else {
 			System.out.println("Dungeon.hero is not null");
@@ -636,6 +638,7 @@ public class InterlevelScene extends PixelScene {
 			Mob.holdAllies( Dungeon.level );
 			Dungeon.saveAll();
 
+			Theme.onLeaveLevel(Dungeon.level);
 			if (curTransition != null){
 				Dungeon.depth = curTransition.destDepth;
 				Dungeon.branch = curTransition.destBranch;
@@ -658,6 +661,7 @@ public class InterlevelScene extends PixelScene {
 				}
 			}
 			curTransition = null;
+			Theme.onEnterLevel(level);
 			
 			Dungeon.switchLevel( level, destCell );
 		}
@@ -684,6 +688,7 @@ public class InterlevelScene extends PixelScene {
 	private void ascend() throws IOException {
 		Mob.holdAllies( Dungeon.level );
 		Dungeon.saveAll();
+		Theme.onLeaveLevel(Dungeon.level);
 
 		if (curTransition != null){
 			Dungeon.depth = curTransition.destDepth;
@@ -707,6 +712,7 @@ public class InterlevelScene extends PixelScene {
 			}
 		}
 		curTransition = null;
+		Theme.onEnterLevel(level);
 		
 		Dungeon.switchLevel( level, destCell );
 	}

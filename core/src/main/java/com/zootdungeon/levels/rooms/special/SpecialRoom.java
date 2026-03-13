@@ -31,7 +31,7 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.zootdungeon.levels.themes.ThemeManager;
+import com.zootdungeon.levels.themes.Theme;
 
 public abstract class SpecialRoom extends Room {
 	
@@ -171,7 +171,7 @@ public abstract class SpecialRoom extends Room {
 		
 		} else {
 			
-			if (ThemeManager.bossLevel(Dungeon.depth + 1)){
+			if (Theme.bossLevel(Dungeon.depth + 1)){
 				floorSpecials.remove(WeakFloorRoom.class);
 			}
 

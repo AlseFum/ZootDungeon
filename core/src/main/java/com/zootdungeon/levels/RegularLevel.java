@@ -59,7 +59,7 @@ import com.zootdungeon.levels.traps.FrostTrap;
 import com.zootdungeon.levels.traps.PitfallTrap;
 import com.zootdungeon.levels.traps.Trap;
 import com.zootdungeon.levels.traps.WornDartTrap;
-import com.zootdungeon.levels.themes.ThemeManager;
+import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.mechanics.ShadowCaster;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
@@ -116,7 +116,7 @@ public abstract class RegularLevel extends Level {
 			initRooms.add(s);
 		}
 		
-		if (ThemeManager.shopOnLevel())
+		if (Theme.shopOnLevel())
 			initRooms.add(new ShopRoom());
 
 		//force max special rooms and add one more for large levels

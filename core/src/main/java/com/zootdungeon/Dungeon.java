@@ -69,7 +69,7 @@ import com.zootdungeon.levels.RegularLevel;
 import com.zootdungeon.levels.features.LevelTransition;
 import com.zootdungeon.levels.rooms.secret.SecretRoom;
 import com.zootdungeon.levels.rooms.special.SpecialRoom;
-import com.zootdungeon.levels.themes.ThemeManager;
+import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.ui.QuickSlotButton;
@@ -305,7 +305,7 @@ public class Dungeon {
         Dungeon.level = null;
         Actor.clear();
 
-        Level level = ThemeManager.createLevel(depth, branch);
+        Level level = Theme.createLevel(depth, branch);
 
         //dead end levels get cleared, don't count as generated
         if (!(level instanceof DeadEndLevel)) {
@@ -383,15 +383,15 @@ public class Dungeon {
     }
 
     // public static boolean shopOnLevel() {
-    //    return ThemeManager.shopOnLevel(depth);
+    //    return Theme.shopOnLevel(depth);
     // }
 
     public static boolean bossLevel() {
-        return ThemeManager.bossLevel(depth);
+        return Theme.bossLevel(depth);
     }
 
     // public static boolean bossLevel(int depth) {
-    //     return ThemeManager.bossLevel(depth);
+    //     return Theme.bossLevel(depth);
     //     // return depth == 5 || depth == 10 || depth == 15 || depth == 20 || depth == 25;
     // }
 
