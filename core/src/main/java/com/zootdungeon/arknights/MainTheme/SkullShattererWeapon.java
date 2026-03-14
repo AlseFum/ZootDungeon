@@ -6,12 +6,15 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.DefenseDown;
+import com.zootdungeon.actors.buffs.FlavourBuff;
+import com.zootdungeon.actors.buffs.Vulnerable;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
@@ -20,6 +23,10 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 可切换模式：近程 = 近战，远程 = 按冷却发射榴弹（瞄准一回合后发射）。
@@ -99,7 +106,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
                 int actualDmg = dmg - ch.drRoll();
                 if (actualDmg > 0) {
                     ch.damage(actualDmg, owner);
-                    Buff.affect(ch, DefenseDown.class, DefenseDown.DURATION);
+                    Buff.affect(ch, ShatterDebuff.class, ShatterDebuff.DURATION);
                 }
             }
         }
@@ -169,5 +176,44 @@ public class SkullShattererWeapon extends MeleeWeapon {
         grenadeCooldown = bundle.getInt(GRENADE_CD);
         grenadeTargetCell = bundle.getInt(GRENADE_TARGET);
         aimingPhase = bundle.getBoolean(AIMING_PHASE);
+    }
+
+    public static class ShatterDebuff extends FlavourBuff {
+        public static final float DURATION = DefenseDown.DURATION;
+        private static final Set<Class<? extends Buff>> CHILDREN =
+                Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(
+                        Vulnerable.class,
+                        DefenseDown.class
+                )));
+
+        {
+            type = buffType.NEGATIVE;
+            announced = true;
+        }
+
+        @Override
+        public Set<Class<? extends Buff>> reifiesTo() {
+            return CHILDREN;
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.VULNERABLE;
+        }
+
+        @Override
+        public float iconFadePercent() {
+            return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+        }
+
+        @Override
+        public String name() {
+            return "碎甲";
+        }
+
+        @Override
+        public String desc() {
+            return "目标陷入碎甲状态：更容易受到伤害，且护甲骰减半。";
+        }
     }
 }

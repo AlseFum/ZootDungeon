@@ -246,6 +246,9 @@ public class Damage {
 
     private static int computeDr(Char attacker, Char defender) {
         int dr = Math.round(defender.drRoll() * AscensionChallenge.statModifier(defender));
+        if (!defender.buffs(DefenseDown.class).isEmpty()) {
+            dr /= 2;
+        }
         if (attacker instanceof Hero h) {
             if (h.belongings.attackingWeapon() instanceof MissileWeapon
                     && h.subClass == HeroSubClass.SNIPER

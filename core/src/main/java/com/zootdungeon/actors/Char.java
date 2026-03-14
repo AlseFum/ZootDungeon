@@ -51,7 +51,6 @@ import com.zootdungeon.actors.buffs.Stamina;
 import com.zootdungeon.actors.buffs.Terror;
 import com.zootdungeon.actors.buffs.Vertigo;
 import com.zootdungeon.actors.buffs.Vulnerable;
-import com.zootdungeon.actors.buffs.DefenseDown;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.actors.hero.HeroSubClass;
@@ -350,7 +349,7 @@ public abstract class Char extends Actor {
 
 	public static boolean hit( Char attacker, Char defender, float accMulti, boolean magic ) {
 		float acuStat = attacker.attackSkill( defender );
-		float defStat = defender.defenseSkill( attacker ) * defender.defenseSkillMultiplier();
+		float defStat = defender.defenseSkill( attacker );
         System.out.printf("acuStat: %.2f, defStat: %.2f%n", acuStat, defStat);
 		if (defender instanceof Hero && ((Hero) defender).damageInterrupt){
 			((Hero) defender).interrupt();
@@ -414,11 +413,6 @@ public abstract class Char extends Actor {
 	
 	public int defenseSkill( Char enemy ) {
 		return 0;
-	}
-
-	/** 受减防 debuff 影响的防御乘数，命中等计算时用 defenseSkill(enemy) * defenseSkillMultiplier()。 */
-	public float defenseSkillMultiplier() {
-		return buff(DefenseDown.class) != null ? 0.5f : 1f;
 	}
 
 	public String defenseVerb() {

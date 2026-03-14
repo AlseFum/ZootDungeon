@@ -46,7 +46,7 @@ public class WndTitledMessage extends Window {
 		int width = WIDTH_MIN;
 
 		titlebar.setRect( 0, 0, width, 0 );
-		add(titlebar);
+		add( titlebar );
 
 		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
 		if (!useHighlighting()) text.setHightlighting(false);

@@ -23,69 +23,68 @@ package com.zootdungeon.windows;
 
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.CharSprite;
-import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.ui.HealthBar;
+import com.zootdungeon.ui.IconButton;
+import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.ui.Component;
 
 public class WndInfoMob extends WndTitledMessage {
-	
+
+	private static final int GAP = 2;
+	private static final int BTN_SIZE = 16;
+
 	public WndInfoMob( Mob mob ) {
 		super( new MobTitle( mob ), mob.info() );
+		IconButton allBuffsBtn = new IconButton( Icons.get( Icons.BUFFS ) ) {
+			@Override
+			protected void onClick() {
+				super.onClick();
+				GameScene.show( new WndAllBuffs( mob ) );
+			}
+		};
+		allBuffsBtn.setRect( width - BTN_SIZE - GAP, GAP, BTN_SIZE, BTN_SIZE );
+		add( allBuffsBtn );
+		bringToFront( allBuffsBtn );
 	}
-	
+
 	private static class MobTitle extends Component {
 
-		private static final int GAP	= 2;
-		
+		private static final int GAP = 2;
+
 		private CharSprite image;
 		private RenderedTextBlock name;
 		private HealthBar health;
-		private BuffIndicator buffs;
-		
+
 		public MobTitle( Mob mob ) {
-			
 			name = PixelScene.renderTextBlock( Messages.titleCase( mob.name() ), 9 );
 			name.hardlight( TITLE_COLOR );
 			add( name );
-			
+
 			image = mob.sprite();
 			add( image );
 
 			health = new HealthBar();
-			health.level(mob);
+			health.level( mob );
 			add( health );
-
-			buffs = new BuffIndicator( mob, false );
-			add( buffs );
 		}
-		
+
 		@Override
 		protected void layout() {
-			
 			image.x = 0;
 			image.y = Math.max( 0, name.height() + health.height() - image.height() );
 
 			float w = width - image.width() - GAP;
-			int extraBuffSpace = 0;
+			name.maxWidth( (int) w );
+			name.setPos( x + image.width() + GAP,
+					image.height() > name.height() ? y + (image.height() - name.height()) / 2 : y );
 
-			//Tries to make space for up to 11 visible buffs
-			do {
-				name.maxWidth((int)w - extraBuffSpace);
-				buffs.setSize(w - name.width() - 8, 8);
-				extraBuffSpace += 8;
-			} while (extraBuffSpace <= 40 && !buffs.allBuffsVisible());
+			health.setRect( image.width() + GAP, name.bottom() + GAP, w, health.height() );
 
-			name.setPos(x + image.width() + GAP,
-					image.height() > name.height() ? y +(image.height() - name.height()) / 2 : y);
-
-			health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
-
-			buffs.setPos(name.right(), name.bottom() - BuffIndicator.SIZE_SMALL-2);
-
-			height = Math.max(image.y + image.height(), health.bottom());
+			height = Math.max( image.y + image.height(), health.bottom() );
 		}
 	}
 }

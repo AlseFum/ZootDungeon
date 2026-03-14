@@ -115,7 +115,7 @@ public class StateSwitchWeapon extends MeleeWeapon {
             Hero hero = (Hero) attacker;
             
             // 获取防御骰值（含减防 debuff）
-            int defenseRoll = Math.round(defender.defenseSkill(hero) * defender.defenseSkillMultiplier());
+            int defenseRoll = defender.defenseSkill(hero);
             
             // 将防御骰值按比例加入伤害
             int bonusDamage = Math.round(defenseRoll * DEFENSE_TO_ATTACK_RATIO);

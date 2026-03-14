@@ -48,10 +48,15 @@ public class Buff extends Actor {
 	}
 
 	private transient boolean detachingFromRoot = false;
+	private Class<? extends Buff> runtimeReifyFrom = null;
 
 	// Non-null means this buff is a reified child of another buff.
 	public Class<? extends Buff> reifyFrom() {
-		return null;
+		return runtimeReifyFrom;
+	}
+
+	public void setReifiedFrom(Class<? extends Buff> rootClass) {
+		runtimeReifyFrom = rootClass;
 	}
 
 	// Non-empty means this buff is composite and should materialize these child buffs.
@@ -165,6 +170,7 @@ public class Buff extends Actor {
 			if (child == null) {
 				return false;
 			}
+			child.setReifiedFrom((Class<? extends Buff>) getClass());
 			if (!target.canAddBuff(child) || target.isImmune(childClass)) {
 				return false;
 			}
@@ -180,15 +186,20 @@ public class Buff extends Actor {
 
 		// A composite buff is responsible for ensuring all of its children exist.
 		for (Class<? extends Buff> childClass : reifiesTo()) {
-			Buff child = target.buff(childClass);
+			Buff child = findReifiedChild(childClass);
 			if (child == null) {
 				child = Reflection.newInstance(childClass);
-				if (child == null || child.reifyFrom() != getClass() || !child.attachTo(target)) {
+				if (child == null) {
+					return false;
+				}
+				child.setReifiedFrom((Class<? extends Buff>) getClass());
+				if (child.reifyFrom() != getClass() || !child.attachTo(target)) {
 					return false;
 				}
 			} else if (child.reifyFrom() != getClass()) {
 				return false;
 			}
+			syncReifiedChildDuration(child);
 		}
 		return true;
 	}
@@ -199,10 +210,34 @@ public class Buff extends Actor {
 		}
 
 		for (Class<? extends Buff> childClass : reifiesTo()) {
-			Buff child = target.buff(childClass);
-			if (child != null && child.reifyFrom() == getClass()) {
+			Buff child = findReifiedChild(childClass);
+			if (child != null) {
 				child.detachFromRoot();
 			}
+		}
+	}
+
+	protected Buff findReifiedChild(Class<? extends Buff> childClass) {
+		if (target == null) {
+			return null;
+		}
+		for (Buff buff : target.buffs(childClass)) {
+			if (buff.getClass() == childClass && buff.reifyFrom() == getClass()) {
+				return buff;
+			}
+		}
+		return null;
+	}
+
+	protected void syncReifiedChildDuration(Buff child) {
+		if (!(this instanceof FlavourBuff) || !(child instanceof FlavourBuff)) {
+			return;
+		}
+
+		float rootCooldown = cooldown();
+		float childCooldown = child.cooldown();
+		if (childCooldown < rootCooldown) {
+			child.postpone(rootCooldown - childCooldown);
 		}
 	}
 
