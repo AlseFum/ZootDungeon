@@ -7,11 +7,6 @@ import com.zootdungeon.utils.GLog;
 
 import java.util.ArrayList;
 
-/**
- * 「醒时」主题：Arknights MainTheme Hour of an Awakening.
- * 默认可用深度 1–5（与下水道区间重叠，权重相同时随机二选一）。
- * 本主题不生成粘液怪（Slime）。
- */
 public final class HourOfAnAwakeningTheme {
 
     public static final Theme THEME = new Theme(
@@ -21,7 +16,7 @@ public final class HourOfAnAwakeningTheme {
     ){
         @Override
         public void enterTheme() {
-            GLog.n("awc");
+            // GLog.n("awc");
         }
 
         @Override

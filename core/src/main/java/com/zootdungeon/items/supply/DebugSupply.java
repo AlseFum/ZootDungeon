@@ -19,7 +19,9 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.windows.WndGeneral;
+import com.zootdungeon.windows.WndOptions;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
@@ -125,11 +127,6 @@ public class DebugSupply extends Supply {
         plants.add(() -> create(Swiftthistle.Seed.class, 100));
         plants.add(() -> create(RandomBuffCard.class, 50));
         categories.put(CAT_PLANTS, plants);
-
-        onOpen = () -> {
-            Dungeon.energy += 800;
-            return null;
-        };
     }
 
     private static Item create(Class<? extends Item> clazz) {
@@ -161,7 +158,7 @@ public class DebugSupply extends Supply {
         WndGeneral.Builder b = WndGeneral.make().title(Messages.get(DebugSupply.class, "name"));
         for (String catKey : categories.keySet()) {
             final String key = catKey;
-            if (CAT_CHEAT.equals(key) || CAT_WEAPONS.equals(key)) {
+            if (CAT_CHEAT.equals(key)) {
                 b.option(Messages.get(DebugSupply.class, key), () -> grantAllInCategory(hero, key));
             } else {
                 b.option(Messages.get(DebugSupply.class, key), () -> showItemSelection(hero, key));
@@ -184,15 +181,16 @@ public class DebugSupply extends Supply {
         List<Supplier<Item>> items = categories.get(categoryKey);
         if (items == null || items.isEmpty()) return;
 
-        WndGeneral.Builder b = WndGeneral.make()
-                .title(Messages.get(DebugSupply.class, categoryKey));
+        WndOptions.Builder b = WndOptions.make()
+                .title(Messages.get(DebugSupply.class, categoryKey))
+                .message(" ");
         for (int i = 0; i < items.size(); i++) {
             final int idx = i;
             Item sample = items.get(i).get();
             String label = sample != null ? sample.name() : "?";
-            b.option(label, () -> grantItem(hero, items.get(idx)));
+            b.option(label, x -> grantItem(hero, items.get(idx)));
         }
-        b.show();
+        GameScene.show(b.build());
     }
 
     private void grantItem(Hero hero, Supplier<Item> supplier) {

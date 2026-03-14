@@ -41,8 +41,8 @@ public class WndGeneral extends Window {
 	private static final int MARGIN = 4;
 	private static final int GAP = 2;
 	private static final int BTN_HEIGHT = 18;
-	/** 内容超过此高度时启用滚动 */
-	private static final int MAX_CONTENT_HEIGHT = 200;
+	/** 内容超过此高度时启用滚动，且不超过屏幕 */
+	private static final int MAX_CONTENT_HEIGHT = 180;
 
 	/** 简单展示：标题 + 多行文本，每行一个字符串 */
 	public static void show(String title, String... lines) {
@@ -122,6 +122,9 @@ public class WndGeneral extends Window {
 
 		if (bodyY > MAX_CONTENT_HEIGHT) {
 			final List<ClickRegion> regions = new ArrayList<>(clickRegions);
+			int scrollH = Math.min((int) bodyY, MAX_CONTENT_HEIGHT);
+			int maxScrollH = Math.max(100, (int) (PixelScene.uiCamera.height - 80));
+			if (scrollH > maxScrollH) scrollH = maxScrollH;
 			ScrollPane scroll = new ScrollPane(body) {
 				@Override
 				public void onClick(float x, float y) {
@@ -134,7 +137,7 @@ public class WndGeneral extends Window {
 					}
 				}
 			};
-			scroll.setRect(0, (int) y, WIDTH, Math.min((int) bodyY, MAX_CONTENT_HEIGHT));
+			scroll.setRect(0, (int) y, WIDTH, scrollH);
 			add(scroll);
 			y += scroll.height() + MARGIN;
 		} else {
@@ -143,7 +146,11 @@ public class WndGeneral extends Window {
 			y = body.bottom() + MARGIN;
 		}
 
-		resize(WIDTH, (int) y);
+		int finalH = (int) y;
+		if (finalH > PixelScene.uiCamera.height - 20) {
+			finalH = PixelScene.uiCamera.height - 20;
+		}
+		resize(WIDTH, finalH);
 	}
 
 	private static class Row {

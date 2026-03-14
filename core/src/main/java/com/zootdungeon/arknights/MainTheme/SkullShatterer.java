@@ -11,13 +11,20 @@ import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.keys.SkeletonKey;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.GnollSprite;
+import com.zootdungeon.sprites.MobSprite;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.BossHealthBar;
+import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 public class SkullShatterer extends Mob {
+
+    static {
+        SpriteRegistry.registerMob("mod:skull_shatterer",
+                new SpriteRegistry.MobDef("cola/skullshatter.png", 64,64));
+    }
 
     private final SkullShattererWeapon weapon = new SkullShattererWeapon();
 
@@ -143,7 +150,29 @@ public class SkullShatterer extends Mob {
         HUNTING = new Hunting();
     }
 
-    public static class Sprite extends GnollSprite {
+    public static class Sprite extends MobSprite {
+        public Sprite() {
+            super();
+
+            TextureFilm frames = textureWithFallback("mod:skull_shatterer", Assets.Sprites.GNOLL, 64,64);
+            scale.set(0.28f);
+            idle = new Animation(2, true);
+            idle.frames(frames, 0);
+
+            run = new Animation(12, true);
+            run.frames(frames, 0);
+
+            attack = new Animation(12, false);
+            attack.frames(frames, 0);
+
+            die = new Animation(12, false);
+            die.frames(frames, 0);
+
+            zap = attack.clone();
+
+            play(idle);
+        }
+
         @Override
         public void zap(int cell) {
             super.zap(cell);
