@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.themes.device;
+package com.zootdungeon.levels.themes.dev;
 
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.mobs.Device;
@@ -6,14 +6,27 @@ import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.painters.Painter;
 import com.zootdungeon.levels.painters.RegularPainter;
 import com.zootdungeon.levels.rooms.Room;
-import com.zootdungeon.levels.themes.sewer.SewerBossLevel;
+import com.zootdungeon.levels.themes.sewer.SewerLevel;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
-public class DeviceSewerBossLevel extends SewerBossLevel {
+public class DevLevel extends SewerLevel {
+{
 
-    private static final float THEME_TERRAIN_DENSITY = 0.03f;
+}
+@Override
+	public String tilesTex() {
+		// 通过 SpriteRegistry 查询当前关卡的 tilemapKey，对应材质包可覆盖；
+		// 若未注册则回退到原版洞穴贴图。
+		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
+				com.zootdungeon.Assets.Environment.TILES_DEV,
+				tilemapKey
+		);
+	}
+
+    private static final float THEME_TERRAIN_DENSITY = 0.5f;
+    private static final float DEVICE_SPAWN_CHANCE = 0.5f;
     private static final int[] THEME_TERRAINS = new int[]{
             Terrain.THEME_TILE_1,
             Terrain.THEME_TILE_2,
@@ -37,7 +50,7 @@ public class DeviceSewerBossLevel extends SewerBossLevel {
         return new RegularPainter() {
             @Override
             protected void decorate(com.zootdungeon.levels.Level level, ArrayList<Room> rooms) {
-                // Device theme temporarily disables sewer painter decoration.
+                // Dev theme temporarily disables sewer painter decoration.
             }
         };
     }
@@ -52,6 +65,7 @@ public class DeviceSewerBossLevel extends SewerBossLevel {
             }
             map[i] = THEME_TERRAINS[Random.Int(THEME_TERRAINS.length)];
 
+            if (Random.Float() >= DEVICE_SPAWN_CHANCE) continue;
             if (Actor.findChar(i) != null) continue;
             Device d = new Device();
             d.pos = i;

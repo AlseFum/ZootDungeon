@@ -9,8 +9,8 @@ import com.zootdungeon.levels.themes.caves.CavesBossLevel;
 import com.zootdungeon.levels.themes.caves.CavesLevel;
 import com.zootdungeon.levels.themes.city.CityBossLevel;
 import com.zootdungeon.levels.themes.city.CityLevel;
-import com.zootdungeon.levels.themes.device.DeviceSewerBossLevel;
-import com.zootdungeon.levels.themes.device.DeviceSewerLevel;
+import com.zootdungeon.levels.themes.dev.DevBossLevel;
+import com.zootdungeon.levels.themes.dev.DevLevel;
 import com.zootdungeon.levels.themes.halls.HallsBossLevel;
 import com.zootdungeon.levels.themes.halls.HallsLevel;
 import com.zootdungeon.levels.themes.prison.PrisonBossLevel;
@@ -237,12 +237,9 @@ public class Theme implements Bundlable {
                 return mobs;
             }
         };
-
-        DebugTheme = new Theme(DebugLevel.class, DebugLevel.class);
-
         DevTheme = new Theme(
-                DeviceSewerLevel.class, DeviceSewerBossLevel.class,
-                (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 25) ? (short) 4 : (short) 0) {
+                DevLevel.class, DevBossLevel.class,
+                (depth, branch) -> 0) {
             @Override
             public ArrayList<Class<? extends Mob>> getMobRotation(int depth, int branch) {
                 if (depth >= 1 && depth <= 5) return SewerTheme.getMobRotation(depth, branch);
