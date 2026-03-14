@@ -8,6 +8,7 @@ import com.zootdungeon.items.cheat.RedStone;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.cheat.Panacea;
 import com.zootdungeon.items.cheat.ItemRemover;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.items.supply.Supply;
 import com.zootdungeon.items.cheat.ThrowingWeaponBox;
 import com.zootdungeon.items.cheat.WandBox;
@@ -15,9 +16,13 @@ import com.zootdungeon.items.cheat.BombBox;
 import com.zootdungeon.items.cheat.ItemEditor;
 
 public class DebugBag extends Bag {
-
+    static {
+        SpriteRegistry.registerItemTexture("cola/debug_bag.png",32)
+                .label("debug_bag");
+    }
+    
     {
-        image = ItemSpriteSheet.BACKPACK;
+        image = SpriteRegistry.itemByName("debug_bag");
         unique = true;
     }
 

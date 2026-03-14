@@ -115,24 +115,11 @@ public class TitleScene extends PixelScene {
 		StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")){
 			@Override
 			protected void onClick() {
-				if (GamesInProgress.checkAll().size() == 0){
-					GamesInProgress.selectedClass = null;
-					GamesInProgress.curSlot = 1;
-					ColaDungeon.switchScene(HeroSelectScene.class);
-				} else {
-					ColaDungeon.switchNoFade( StartScene.class );
-				}
+				ColaDungeon.switchNoFade( StartScene.class );
 			}
 			
 			@Override
 			protected boolean onLongClick() {
-				//making it easier to start runs quickly while debugging
-				if (DeviceCompat.isDebug()) {
-					GamesInProgress.selectedClass = null;
-					GamesInProgress.curSlot = 1;
-					ColaDungeon.switchScene(HeroSelectScene.class);
-					return true;
-				}
 				return super.onLongClick();
 			}
 		};

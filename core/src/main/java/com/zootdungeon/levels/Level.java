@@ -494,8 +494,6 @@ public abstract class Level implements Bundlable {
 		return length;
 	}
 	
-	// Optional: set this in subclass constructor to use dynamic tilemap from SpriteRegistry
-	// Example: tilemapKey = "mymod:shadow_forest";
 	protected String tilemapKey = null;
 	
 	public String tilesTex() {

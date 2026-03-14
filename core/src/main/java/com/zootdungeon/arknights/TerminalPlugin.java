@@ -27,6 +27,7 @@ import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 可安装到罗德岛终端上的插件物品。
@@ -39,12 +40,12 @@ public class TerminalPlugin extends Item {
 
 	static {
 		// 使用与终端相同的贴图作为占位，可后续替换为 cola/terminal_plugin.png
-		SpriteRegistry.registerItemTexture("cola/command_terminal.png", 32)
-				.label("terminal_plugin");
+		SpriteRegistry.registerItemTexture("cola/mod_unlock_token.png", 32)
+				.label("mod_unlock_token");
 	}
 
 	{
-		image = SpriteRegistry.itemByName("terminal_plugin");
+		image = SpriteRegistry.itemByName("mod_unlock_token");
 		levelKnown = true;
 	}
 
@@ -58,6 +59,31 @@ public class TerminalPlugin extends Item {
 	 */
 	public float costRegenMultiplier() {
 		return 1f + level() * 0.1f;
+	}
+
+	/** 安装时调用，可在此向 terminal 写入或恢复 actor。 */
+	public void mount(RhodesIslandTerminal terminal) {
+	}
+
+	/** 打开终端或切回插件 Tab 时调用，可在此恢复或刷新 actor。 */
+	public void onResume(RhodesIslandTerminal terminal) {
+	}
+
+	/** 卸载时调用，可在此清理 actor。 */
+	public void onUnmount(RhodesIslandTerminal terminal) {
+	}
+
+	/** 关闭终端或切走插件 Tab 时调用，可选实现。 */
+	public void onPause(RhodesIslandTerminal terminal) {
+	}
+
+	/**
+	 * 返回该插件在被动 Tab 中显示的统计项，每项为 [名称, 说明, 数值]。无则返回空列表。
+	 */
+	public List<String[]> getPassiveEntries(RhodesIslandTerminal terminal) {
+		List<String[]> list = new ArrayList<>();
+		list.add(new String[]{"COST恢复", "部署费用恢复倍率。", String.format("%.1fx", costRegenMultiplier())});
+		return list;
 	}
 
 	/**

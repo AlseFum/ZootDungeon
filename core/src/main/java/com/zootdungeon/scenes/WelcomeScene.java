@@ -153,14 +153,8 @@ public class WelcomeScene extends PixelScene {
 					}
 
 					CDSettings.version(ColaDungeon.versionCode);
-					GamesInProgress.selectedClass = null;
-					GamesInProgress.curSlot = GamesInProgress.firstEmpty();
-					if (GamesInProgress.curSlot == -1 || Rankings.INSTANCE.totalNumber > 0){
-						CDSettings.intro(false);
-						ColaDungeon.switchScene(TitleScene.class);
-					} else {
-						ColaDungeon.switchScene(HeroSelectScene.class);
-					}
+					CDSettings.intro(false);
+					ColaDungeon.switchScene(TitleScene.class);
 				} else {
 					updateVersion(previousVersion);
 					ColaDungeon.switchScene(TitleScene.class);
