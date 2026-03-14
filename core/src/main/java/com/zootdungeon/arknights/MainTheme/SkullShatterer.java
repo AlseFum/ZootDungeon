@@ -1,13 +1,18 @@
 package com.zootdungeon.arknights.MainTheme;
 
 import com.zootdungeon.Assets;
+import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.MagicMissile;
+import com.zootdungeon.items.keys.SkeletonKey;
 import com.zootdungeon.items.material.Gold;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GnollSprite;
+import com.zootdungeon.ui.BossHealthBar;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -42,6 +47,24 @@ public class SkullShatterer extends Mob {
     @Override
     public int drRoll() {
         return super.drRoll() + Random.NormalIntRange(0, 4);
+    }
+
+    @Override
+    public void die(Object cause) {
+        super.die(cause);
+        Dungeon.level.unseal();
+        GameScene.bossSlain();
+        Dungeon.level.drop(new SkeletonKey(Dungeon.depth), pos).sprite.drop();
+        Badges.validateBossSlain();
+    }
+
+    @Override
+    public void notice() {
+        super.notice();
+        if (!BossHealthBar.isAssigned()) {
+            BossHealthBar.assignBoss(this);
+            Dungeon.level.seal();
+        }
     }
 
     private boolean hasAllyInNeighbour8() {

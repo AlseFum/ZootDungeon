@@ -34,7 +34,6 @@ import com.zootdungeon.actors.mobs.DM201;
 import com.zootdungeon.actors.mobs.Elemental;
 import com.zootdungeon.actors.mobs.Mimic;
 import com.zootdungeon.actors.mobs.Mob;
-import com.zootdungeon.actors.mobs.MobSpawner;
 import com.zootdungeon.actors.mobs.Piranha;
 import com.zootdungeon.actors.mobs.Senior;
 import com.zootdungeon.actors.mobs.Statue;
@@ -113,7 +112,11 @@ public class DistortionTrap extends Trap{
 					do {
 						floor = Random.Int(25);
 					} while( Theme.bossLevel(floor));
-					mob = Reflection.newInstance(MobSpawner.getMobRotation(floor).get(0));
+					Theme theme = Theme.getThemeForDepth(floor, 0);
+					ArrayList<Class<? extends Mob>> rotation = theme != null
+							? theme.getMobRotation(floor, 0)
+							: Theme.SewerTheme.getMobRotation(Math.min(floor, 5), 0);
+					mob = Reflection.newInstance(rotation.get(0));
 					break;
 				case 2:
 					switch (2){

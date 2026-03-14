@@ -93,6 +93,7 @@ import com.zootdungeon.items.wands.WandOfRegrowth;
 import com.zootdungeon.items.wands.WandOfWarding;
 import com.zootdungeon.items.weapon.missiles.HeavyBoomerang;
 import com.zootdungeon.levels.features.Chasm;
+import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.levels.features.Door;
 import com.zootdungeon.levels.features.HighGrass;
 import com.zootdungeon.levels.features.LevelTransition;
@@ -524,10 +525,16 @@ public abstract class Level implements Bundlable {
 	abstract protected boolean build();
 	
 	private ArrayList<Class<?extends Mob>> mobsToSpawn = new ArrayList<>();
-	
+
+	protected ArrayList<Class<? extends Mob>> getMobRotationForLevel() {
+		Theme theme = Theme.resolveForLevel(this);
+		if (theme == null) theme = Theme.getThemeForDepth(Dungeon.depth, Dungeon.branch);
+		return theme != null ? theme.getMobRotation(Dungeon.depth, Dungeon.branch) : Theme.SewerTheme.getMobRotation(1, 0);
+	}
+
 	public Mob createMob() {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
-			mobsToSpawn = MobSpawner.getMobRotation(Dungeon.depth);
+			mobsToSpawn = getMobRotationForLevel();
 		}
 
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
