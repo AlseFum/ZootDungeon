@@ -146,6 +146,7 @@ public abstract class Char extends Actor {
 	public boolean[] fieldOfView = null;
 	
 	private LinkedHashSet<Buff> buffs = new LinkedHashSet<>();
+	private transient boolean restoringBuffs = false;
 
 	@Override
 	protected boolean act() {
@@ -310,12 +311,19 @@ public abstract class Char extends Actor {
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
 		cachedShield = bundle.getInt( TAG_SHLD );
-		
-		for (Bundlable b : bundle.getCollection( BUFFS )) {
-			if (b != null) {
-				((Buff)b).attachTo(this);
+
+		restoringBuffs = true;
+		try {
+			for (Bundlable b : bundle.getCollection( BUFFS )) {
+				if (b != null) {
+					((Buff)b).attachTo(this);
+				}
 			}
+		} finally {
+			restoringBuffs = false;
 		}
+
+		syncReifiedBuffs();
 	}
 
 	final public boolean attack( Char enemy ){
@@ -865,7 +873,7 @@ public abstract class Char extends Actor {
 		return false;
 	}
 
-	public synchronized boolean add( Buff buff ) {
+	public synchronized boolean canAddBuff( Buff buff ) {
 
 		if (buff(PotionOfCleansing.Cleanse.class) != null) { //cleansing buff
 			if (buff.type == Buff.buffType.NEGATIVE
@@ -877,6 +885,19 @@ public abstract class Char extends Actor {
 
 		if (sprite != null && buff(Challenge.SpectatorFreeze.class) != null){
 			return false; //can't add buffs while frozen and game is loaded
+		}
+
+		return true;
+	}
+
+	public boolean isRestoringBuffs() {
+		return restoringBuffs;
+	}
+
+	public synchronized boolean add( Buff buff ) {
+
+		if (!canAddBuff(buff)) {
+			return false;
 		}
 
 		buffs.add( buff );
@@ -926,6 +947,30 @@ public abstract class Char extends Actor {
 		for (Buff buff:buffs) {
 			buff.fx( true );
 		}
+	}
+
+	private synchronized void syncReifiedBuffs() {
+		boolean changed;
+		do {
+			changed = false;
+
+			for (Buff buff : buffs.toArray(new Buff[0])) {
+				if (buff.reifyFrom() != null) {
+					Class<? extends Buff> rootClass = buff.reifyFrom();
+					if (rootClass == null || buff(rootClass) == null) {
+						buff.detachFromRoot();
+						changed = true;
+					}
+				}
+			}
+
+			for (Buff buff : buffs.toArray(new Buff[0])) {
+				if (buff.hasReifiedChildren() && !buff.syncReifiedChildren()) {
+					buff.detach();
+					changed = true;
+				}
+			}
+		} while (changed);
 	}
 	
 	public float stealth() {
@@ -1007,7 +1052,7 @@ public abstract class Char extends Actor {
 		
 		float result = 1f;
 		for (Class c : resists){
-			if (c.isAssignableFrom(effect)){
+			if (Buff.classMatches(c, effect)){
 				result *= 0.5f;
 			}
 		}
@@ -1029,7 +1074,7 @@ public abstract class Char extends Actor {
 		}
 		
 		for (Class c : immunes){
-			if (c.isAssignableFrom(effect)){
+			if (Buff.classMatches(c, effect)){
 				return true;
 			}
 		}
