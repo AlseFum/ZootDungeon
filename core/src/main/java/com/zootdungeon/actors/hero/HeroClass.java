@@ -30,6 +30,8 @@ public class HeroClass implements Comparable<HeroClass>, Bundlable {
 	public Supplier<String> unlockMsgSupplier;
 	public Supplier<Boolean> unlockedSupplier;
 	public Supplier<String> spritesheetSupplier;
+	public int spriteCellWidth = 12;
+	public int spriteCellHeight = 15;
 	public Supplier<String> splashArtSupplier;
 	public Supplier<ArmorAbility[]> armorAbilitiesSupplier;
 	public Supplier<Badges.Badge> masteryBadgeSupplier;

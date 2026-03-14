@@ -53,6 +53,22 @@ public class StartScene extends PixelScene {
 	
 	private static final int SLOT_WIDTH = 120;
 	private static final int SLOT_HEIGHT = 22;
+	private static final int HERO_PORTRAIT_WIDTH = 12;
+	private static final int HERO_PORTRAIT_HEIGHT = 15;
+
+	private static Image createHeroPortrait(HeroClass heroClass, int armorTier) {
+		Image portrait = new Image(
+				Assets.getTexture(heroClass.spritesheet()),
+				0,
+				heroClass.spriteCellHeight * armorTier,
+				heroClass.spriteCellWidth,
+				heroClass.spriteCellHeight);
+		float scale = Math.min(
+				(float) HERO_PORTRAIT_WIDTH / heroClass.spriteCellWidth,
+				(float) HERO_PORTRAIT_HEIGHT / heroClass.spriteCellHeight);
+		portrait.scale.set(scale);
+		return portrait;
+	}
 	
 	@Override
 	public void create() {
@@ -270,8 +286,8 @@ public class StartScene extends PixelScene {
 				}
 				
 				if (hero == null){
-					String sheet = info.heroClass != null ? info.heroClass.spritesheet() : Assets.Sprites.WARRIOR;
-					hero = new Image(Assets.getTexture(sheet), 0, 15*info.armorTier, 12, 15);
+					HeroClass heroClass = info.heroClass != null ? info.heroClass : HeroClass.WARRIOR;
+					hero = createHeroPortrait(heroClass, info.armorTier);
 					add(hero);
 					
 					steps = new Image(Icons.get(Icons.STAIRS));
@@ -279,15 +295,15 @@ public class StartScene extends PixelScene {
 					depth = new BitmapText(PixelScene.pixelFont);
 					add(depth);
 					
-					classIcon = new Image(Icons.get(info.heroClass != null ? info.heroClass : HeroClass.WARRIOR));
+					classIcon = new Image(Icons.get(heroClass));
 					add(classIcon);
 					level = new BitmapText(PixelScene.pixelFont);
 					add(level);
 				} else if (info.heroClass != null) {
-					hero.copy(new Image(Assets.getTexture(info.heroClass.spritesheet()), 0, 15*info.armorTier, 12, 15));
+					hero.copy(createHeroPortrait(info.heroClass, info.armorTier));
 					classIcon.copy(Icons.get(info.heroClass));
 				} else {
-					hero.copy(new Image(Assets.getTexture(Assets.Sprites.WARRIOR), 0, 15*info.armorTier, 12, 15));
+					hero.copy(createHeroPortrait(HeroClass.WARRIOR, info.armorTier));
 					classIcon.copy(Icons.get(HeroClass.WARRIOR));
 				}
 

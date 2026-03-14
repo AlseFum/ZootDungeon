@@ -24,6 +24,8 @@ public class HeroClassBuilder {
     private Supplier<String> unlockMsg;
     private Supplier<Boolean> unlocked = () -> DeviceCompat.isDebug();
     private Supplier<String> spritesheet = () -> Assets.Sprites.WARRIOR;
+    private int spriteCellWidth = 12;
+    private int spriteCellHeight = 15;
     private Supplier<String> splashArt = () -> Assets.Splashes.WARRIOR;
     private Supplier<ArmorAbility[]> abilities = () -> new ArmorAbility[0];
     private Supplier<Badges.Badge> masteryBadge = () -> null;
@@ -101,6 +103,12 @@ public class HeroClassBuilder {
         return this;
     }
 
+    public HeroClassBuilder spriteCellSize(int width, int height) {
+        this.spriteCellWidth = width;
+        this.spriteCellHeight = height;
+        return this;
+    }
+
     public HeroClassBuilder splashArt(String splashArt) {
         return splashArt(() -> splashArt);
     }
@@ -166,6 +174,8 @@ public class HeroClassBuilder {
         heroClass.unlockMsgSupplier = unlockMsg;
         heroClass.unlockedSupplier = unlocked;
         heroClass.spritesheetSupplier = spritesheet;
+        heroClass.spriteCellWidth = spriteCellWidth;
+        heroClass.spriteCellHeight = spriteCellHeight;
         heroClass.splashArtSupplier = splashArt;
         heroClass.armorAbilitiesSupplier = abilities;
         heroClass.masteryBadgeSupplier = masteryBadge;

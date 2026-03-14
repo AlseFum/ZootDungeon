@@ -244,6 +244,7 @@ public final class HeroClassSheet {
             .register();
     public static final HeroClass ReservedOp=registerStandardClass("reservedOp")
             .spritesheet("cola/guard.png")
+            .spriteCellSize(22, 23)
             .splashArt(Assets.Splashes.WARRIOR)
             .classTalentsTier1(
                 Talent.IRON_STOMACH,

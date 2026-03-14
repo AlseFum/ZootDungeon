@@ -70,6 +70,9 @@ import java.util.TimeZone;
 
 public class HeroSelectScene extends PixelScene {
 
+	private static final int HERO_PORTRAIT_WIDTH = 12;
+	private static final int HERO_PORTRAIT_HEIGHT = 15;
+
 	private Image background;
 	private Image fadeLeft, fadeRight;
 	private IconButton btnFade; //only on landscape
@@ -84,6 +87,20 @@ public class HeroSelectScene extends PixelScene {
 	private IconButton btnOptions;
 	private GameOptions optionsPane;
 	private IconButton btnExit;
+
+	private static Image createHeroPortrait(HeroClass cl, int row) {
+		Image portrait = new Image(
+				cl.spritesheet(),
+				0,
+				cl.spriteCellHeight * row,
+				cl.spriteCellWidth,
+				cl.spriteCellHeight);
+		float scale = Math.min(
+				(float) HERO_PORTRAIT_WIDTH / cl.spriteCellWidth,
+				(float) HERO_PORTRAIT_HEIGHT / cl.spriteCellHeight);
+		portrait.scale.set(scale);
+		return portrait;
+	}
 
 	@Override
 	public void create() {
@@ -543,7 +560,7 @@ public class HeroSelectScene extends PixelScene {
 
 			this.cl = cl;
 
-			icon(new Image(cl.spritesheet(), 0, 90, 12, 15));
+			icon(createHeroPortrait(cl, 6));
 
 		}
 
