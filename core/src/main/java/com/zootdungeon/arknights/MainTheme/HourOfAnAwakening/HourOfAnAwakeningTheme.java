@@ -1,7 +1,7 @@
 package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 
 import com.zootdungeon.actors.mobs.Mob;
-import com.zootdungeon.actors.mobs.Slime;
+import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.Infantry;
 import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.utils.GLog;
 
@@ -26,8 +26,9 @@ public final class HourOfAnAwakeningTheme {
 
         @Override
         public ArrayList<Class<? extends Mob>> getMobRotation(int depth, int branch) {
-            ArrayList<Class<? extends Mob>> mobs = Theme.SewerTheme.getMobRotation(depth, branch);
-            return Theme.exclude(mobs, Slime.class);
+            ArrayList<Class<? extends Mob>> mobs = new ArrayList<>();
+            mobs.add(Infantry.class);
+            return mobs;
         }
     };
 
