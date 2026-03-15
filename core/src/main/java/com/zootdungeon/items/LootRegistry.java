@@ -205,7 +205,8 @@ public final class LootRegistry {
         @Override
         public final int weight(AtomBundle ctx) {
             int exp = ctx.getInt("quantityBonusRate", 0);
-            return Math.max(0, weight + (int) Math.pow(quality, exp));
+            int luck = ctx.getInt("luck", 0);
+            return Math.max(0, weight + (int) Math.pow(quality, exp) + quality * luck);
         }
 
         @Override

@@ -972,6 +972,17 @@ public abstract class Mob extends Char {
 			ctx.put("depth", Dungeon.depth);
 			ctx.put("pos", pos);
 			ctx.put("source", "MOB_KILL");
+			if (Dungeon.hero != null) {
+				int wealth = Ring.getBuffedBonus(Dungeon.hero, RingOfWealth.Wealth.class);
+				if (wealth > 0) {
+					ctx.put("bonusRollX", wealth * 40);
+					ctx.put("quantityBonusRate", wealth);
+				}
+				Lucky.LuckProc luckProc = buff(Lucky.LuckProc.class);
+				if (luckProc != null) {
+					ctx.put("luck", Math.max(0, luckProc.ringLevel + 10));
+				}
+			}
 			Item fromTable = LootRegistry.rollOne(lootTableId, ctx);
 			if (fromTable != null) return fromTable;
 		}
