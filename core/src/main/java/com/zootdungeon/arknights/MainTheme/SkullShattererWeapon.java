@@ -19,6 +19,7 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
+import com.zootdungeon.utils.Select;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
@@ -76,19 +77,22 @@ public class SkullShattererWeapon extends MeleeWeapon {
     public void doGrenadeAt(Char owner, int cell) {
         PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
         int dmg = Random.NormalIntRange(8 + Dungeon.scalingDepth(), 14 + Dungeon.scalingDepth() * 2);
-        for (int i = 0; i < PathFinder.distance.length; i++) {
-            if (PathFinder.distance[i] == Integer.MAX_VALUE) continue;
-            Char ch = Actor.findChar(i);
-            if (ch != null && ch != owner) {
-                int actualDmg = dmg - ch.drRoll();
-                if (actualDmg > 0) {
-                    ch.damage(actualDmg, owner);
-                    Buff.affect(ch, ShatterDebuff.class, ShatterDebuff.DURATION);
-                }
-            }
+        for (Char ch : Select.chars().all()
+                .at(Select.place().all().that(i -> PathFinder.distance[i] != Integer.MAX_VALUE))
+                .except(Select.chars().of(owner))
+                .query()) {
+            int actualDmg = dmg - ch.drRoll();
+            if (actualDmg > 0) ch.damage(actualDmg, owner);
+            Buff.affect(ch, ShatterDebuff.class, ShatterDebuff.DURATION);
         }
         CellEmitter.center(cell).burst(BlastParticle.FACTORY, 12);
-        GameScene.flash(0xFF6600);
+    }
+
+    private static SkullShattererWeapon weaponOf(Hero h) {
+        KindOfWeapon w = h.belongings.weapon();
+        if (w instanceof SkullShattererWeapon) return (SkullShattererWeapon) w;
+        w = h.belongings.secondWep();
+        return w instanceof SkullShattererWeapon ? (SkullShattererWeapon) w : null;
     }
 
     @Override
@@ -170,8 +174,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
         @Override
         public void onSelect(Integer cell) {
             if (cell != null && Dungeon.hero != null) {
-                SkullShattererWeapon w = (SkullShattererWeapon) Dungeon.hero.belongings.weapon();
-                if (w == null) w = (SkullShattererWeapon) Dungeon.hero.belongings.secondWep();
+                SkullShattererWeapon w = weaponOf(Dungeon.hero);
                 if (w != null && w.canFireRanged()) {
                     ((GrenadeLaunchBuff) Buff.affect(Dungeon.hero, GrenadeLaunchBuff.class, 1f)).setCell(cell);
                     GLog.p("瞄准完成，下回合将发射。");
@@ -264,10 +267,8 @@ public class SkullShattererWeapon extends MeleeWeapon {
             }
             if (target instanceof Hero && targetCell >= 0) {
                 Hero h = (Hero) target;
-                KindOfWeapon w = h.belongings.weapon();
-                if (!(w instanceof SkullShattererWeapon)) w = h.belongings.secondWep();
-                if (w instanceof SkullShattererWeapon) {
-                    SkullShattererWeapon sw = (SkullShattererWeapon) w;
+                SkullShattererWeapon sw = weaponOf(h);
+                if (sw != null) {
                     Sample.INSTANCE.play(Assets.Sounds.BLAST);
                     sw.doGrenadeAt(h, targetCell);
                     sw.clearGrenadeState();
@@ -308,12 +309,8 @@ public class SkullShattererWeapon extends MeleeWeapon {
         @Override
         public boolean act() {
             if (target instanceof Hero) {
-                Hero h = (Hero) target;
-                KindOfWeapon w = h.belongings.weapon();
-                if (!(w instanceof SkullShattererWeapon)) w = h.belongings.secondWep();
-                if (w instanceof SkullShattererWeapon) {
-                    ((SkullShattererWeapon) w).tickCooldown();
-                }
+                SkullShattererWeapon w = weaponOf((Hero) target);
+                if (w != null) w.tickCooldown();
             }
             spend(Actor.TICK);
             return true;
