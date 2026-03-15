@@ -14,6 +14,7 @@ import com.zootdungeon.arknights.WandOfPrisonCage;
 import com.zootdungeon.arknights.SummoningThrowingWeapon;
 import com.zootdungeon.arknights.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
+import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
@@ -121,6 +122,7 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(TwinBlade.class, 5));
         weapons.add(() -> create(InstantMechWeapon.class, 1));
         weapons.add(() -> create(TransferMechWeapon.class, 1));
+        weapons.add(() -> create(SkullShattererWeapon.class, 1));
         categories.put(CAT_WEAPONS, weapons);
 
         List<Supplier<Item>> plants = new ArrayList<>();

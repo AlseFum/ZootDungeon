@@ -84,8 +84,9 @@ public class SkullShatterer extends Mob {
         return false;
     }
 
-    public void onZapComplete() {
-        weapon.onZapComplete(this);
+    public void onZapComplete(int cell) {
+        weapon.doGrenadeAt(this, cell);
+        weapon.clearGrenadeState();
         spend(TICK);
         next();
     }
@@ -115,29 +116,9 @@ public class SkullShatterer extends Mob {
             target = enemy.pos;
             weapon.tickCooldown();
 
-            if (weapon.isReleaseTurn()) {
-                int cell = weapon.getGrenadeTargetCell();
-                if (cell == -1) {
-                    spend(TICK);
-                    return true;
-                }
-                if (sprite != null && (sprite.visible || (Actor.findChar(cell) != null && Actor.findChar(cell).sprite.visible))) {
-                    sprite.zap(cell);
-                    return false;
-                }
-                weapon.doGrenadeAt(SkullShatterer.this, cell);
-                weapon.clearGrenadeState();
-                spend(TICK);
-                return true;
-            }
-
             if (weapon.canFireRanged() && !hasAllyInNeighbour8() && !Dungeon.level.adjacent(pos, enemy.pos)) {
-                weapon.startAim(SkullShatterer.this, enemy.pos);
-                if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-                    sprite.zap(enemy.pos);
-                    return false;
-                }
-                weapon.finishAimPhase();
+                weapon.doGrenadeAt(SkullShatterer.this, enemy.pos);
+                weapon.clearGrenadeState();
                 spend(TICK);
                 return true;
             }
@@ -178,7 +159,7 @@ public class SkullShatterer extends Mob {
             super.zap(cell);
             MagicMissile.boltFromChar(parent, MagicMissile.FIRE_CONE, this, cell,
                     (Callback) () -> {
-                        if (ch instanceof SkullShatterer) ((SkullShatterer) ch).onZapComplete();
+                        if (ch instanceof SkullShatterer) ((SkullShatterer) ch).onZapComplete(cell);
                     });
         }
     }

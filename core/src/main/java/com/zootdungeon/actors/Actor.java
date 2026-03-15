@@ -78,7 +78,7 @@ public abstract class Actor implements Bundlable {
 
     public static final float TICK = 1f;
 
-    private float time;
+    public float time;
 
     private int id = 0;
 
@@ -190,7 +190,7 @@ public abstract class Actor implements Bundlable {
     // 静态成员变量
     private static final HashSet<Actor> all = new HashSet<>();
     private static final HashSet<Char> chars = new HashSet<>();
-    private static volatile Actor current;
+    public static volatile Actor current;
     private static final SparseArray<Actor> ids = new SparseArray<>();
     private static int nextID = 1;
 

@@ -145,8 +145,10 @@ public class WndOptions extends Window {
 	public static class Builder{
 		private String title;
 		private String message;
-		private String[] options = new String[10];
-		private Consumer<Object>[] onSelect = new Consumer[10];
+		private static final int MAX_OPTIONS = 24;
+		private String[] options = new String[MAX_OPTIONS];
+		@SuppressWarnings("unchecked")
+		private Consumer<Object>[] onSelect = new Consumer[MAX_OPTIONS];
 		private int index = 0;
 		public Builder title(String title){
 			this.title = title;
@@ -160,7 +162,7 @@ public class WndOptions extends Window {
 			if (index >= options.length) {
 				throw new IllegalStateException(
 					"选项数量超过限制（当前限制为" + options.length + "个）。" +
-					"请修改 WndOptions.Builder 类中的数组初始化大小。"
+					"请修改 WndOptions.Builder 的 MAX_OPTIONS。"
 				);
 			}
 			options[index] = option;

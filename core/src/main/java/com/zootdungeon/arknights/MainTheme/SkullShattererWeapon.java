@@ -11,9 +11,12 @@ import com.zootdungeon.actors.buffs.Vulnerable;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
+import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.messages.Messages;
+import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -33,21 +36,27 @@ import java.util.Set;
  */
 public class SkullShattererWeapon extends MeleeWeapon {
 
+    static {
+        // gunweapon.png 每行 14 格，第二行第10列 = index 1*14+9 = 23
+        SpriteRegistry.registerItemTexture("cola/gunweapon.png", 16)
+                .span(23).label("shatteredweapon");
+    }
+
     public enum Mode { MELEE, RANGED }
 
     {
-        image = ItemSpriteSheet.SWORD;
+        image = SpriteRegistry.itemByName("shatteredweapon");
         tier = 3;
         bones = false;
+        usesTargeting = true;
     }
 
     private Mode mode = Mode.MELEE;
     private int grenadeCooldown = 0;
-    private boolean aimingPhase;
-    private int grenadeTargetCell = -1;
     private static final int GRENADE_COOLDOWN_TURNS = 8;
 
     public static final String AC_SWITCH = "SWITCH";
+    public static final String AC_GRENADE = "GRENADE";
 
     public Mode mode() { return mode; }
     public void setMode(Mode m) { mode = m; }
@@ -60,40 +69,8 @@ public class SkullShattererWeapon extends MeleeWeapon {
         return mode == Mode.RANGED && grenadeCooldown <= 0;
     }
 
-    /** 上一回合已瞄准，本回合应发射 */
-    public boolean isReleaseTurn() {
-        return grenadeTargetCell != -1 && !aimingPhase;
-    }
-
-    public int getGrenadeTargetCell() { return grenadeTargetCell; }
-
-    /** 发射后清除目标并进入冷却（供无动画时调用，或由 onZapComplete 内部使用） */
     public void clearGrenadeState() {
-        grenadeTargetCell = -1;
         grenadeCooldown = GRENADE_COOLDOWN_TURNS;
-    }
-
-    /** 无动画时结束瞄准阶段 */
-    public void finishAimPhase() { aimingPhase = false; }
-
-    /** 开始瞄准（下一回合发射） */
-    public void startAim(Char owner, int cell) {
-        grenadeTargetCell = cell;
-        aimingPhase = true;
-    }
-
-    /** zap 动画结束时由持有者调用；若为瞄准结束则只结束回合，若为发射则造成 AOE 并进入冷却 */
-    public void onZapComplete(Char owner) {
-        if (aimingPhase) {
-            aimingPhase = false;
-            return;
-        }
-        if (grenadeTargetCell != -1) {
-            Sample.INSTANCE.play(Assets.Sounds.BLAST);
-            doGrenadeAt(owner, grenadeTargetCell);
-            grenadeTargetCell = -1;
-            grenadeCooldown = GRENADE_COOLDOWN_TURNS;
-        }
     }
 
     public void doGrenadeAt(Char owner, int cell) {
@@ -112,6 +89,11 @@ public class SkullShattererWeapon extends MeleeWeapon {
         }
         CellEmitter.center(cell).burst(BlastParticle.FACTORY, 12);
         GameScene.flash(0xFF6600);
+    }
+
+    @Override
+    public int STRReq(int lvl) {
+        return 10;
     }
 
     @Override
@@ -140,33 +122,79 @@ public class SkullShattererWeapon extends MeleeWeapon {
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
-        if (isEquipped(hero)) actions.add(AC_SWITCH);
+        if (isEquipped(hero)) {
+            actions.add(AC_SWITCH);
+            if (mode == Mode.RANGED) actions.add(AC_GRENADE);
+        }
         return actions;
     }
 
     @Override
+    public String actionName(String action, Hero hero) {
+        if (action.equals(AC_SWITCH)) return Messages.get(this, "ac_switch");
+        if (action.equals(AC_GRENADE)) return Messages.get(this, "ac_grenade");
+        return super.actionName(action, hero);
+    }
+
+    @Override
+    public String defaultAction() {
+        if (Dungeon.hero != null && isEquipped(Dungeon.hero) && mode == Mode.RANGED) return AC_GRENADE;
+        return super.defaultAction();
+    }
+
+    @Override
     public void execute(Hero hero, String action) {
+        super.execute(hero, action);
         if (action.equals(AC_SWITCH)) {
             mode = mode == Mode.MELEE ? Mode.RANGED : Mode.MELEE;
             GLog.p(mode == Mode.RANGED ? "切换为远程模式" : "切换为近程模式");
             updateQuickslot();
-        } else {
-            super.execute(hero, action);
+            return;
+        }
+        if (action.equals(AC_GRENADE)) {
+            if (!isEquipped(hero) || mode != Mode.RANGED) return;
+            if (STRReq() > hero.STR()) {
+                GLog.w(Messages.get(MeleeWeapon.class, "ability_low_str"));
+                return;
+            }
+            if (!canFireRanged()) {
+                GLog.w("榴弹冷却中，还需 " + grenadeCooldown + " 回合。");
+                return;
+            }
+            GameScene.selectCell(grenadeAimSelector);
+            return;
         }
     }
 
+    private final CellSelector.Listener grenadeAimSelector = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer cell) {
+            if (cell != null && Dungeon.hero != null) {
+                SkullShattererWeapon w = (SkullShattererWeapon) Dungeon.hero.belongings.weapon();
+                if (w == null) w = (SkullShattererWeapon) Dungeon.hero.belongings.secondWep();
+                if (w != null && w.canFireRanged()) {
+                    ((GrenadeLaunchBuff) Buff.affect(Dungeon.hero, GrenadeLaunchBuff.class, 1f)).setCell(cell);
+                    GLog.p("瞄准完成，下回合将发射。");
+                    Dungeon.hero.spendAndNext(1f);
+                    w.updateQuickslot();
+                }
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return "选择榴弹落点";
+        }
+    };
+
     private static final String MODE = "mode";
     private static final String GRENADE_CD = "grenade_cd";
-    private static final String GRENADE_TARGET = "grenade_target";
-    private static final String AIMING_PHASE = "aiming_phase";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(MODE, mode);
         bundle.put(GRENADE_CD, grenadeCooldown);
-        bundle.put(GRENADE_TARGET, grenadeTargetCell);
-        bundle.put(AIMING_PHASE, aimingPhase);
     }
 
     @Override
@@ -174,8 +202,6 @@ public class SkullShattererWeapon extends MeleeWeapon {
         super.restoreFromBundle(bundle);
         if (bundle.contains(MODE)) mode = bundle.getEnum(MODE, Mode.class);
         grenadeCooldown = bundle.getInt(GRENADE_CD);
-        grenadeTargetCell = bundle.getInt(GRENADE_TARGET);
-        aimingPhase = bundle.getBoolean(AIMING_PHASE);
     }
 
     public static class ShatterDebuff extends FlavourBuff {
@@ -215,5 +241,111 @@ public class SkullShattererWeapon extends MeleeWeapon {
         public String desc() {
             return "目标陷入碎甲状态：更容易受到伤害，且护甲骰减半。";
         }
+    }
+
+    /** 瞄准后挂上，持续 1 回合，结束时自动发射榴弹。需比英雄先行动，否则同时间下英雄会先 ready() 导致卡顿。 */
+    public static class GrenadeLaunchBuff extends FlavourBuff {
+        {
+            actPriority = Actor.HERO_PRIO + 1;
+        }
+
+        private int targetCell = -1;
+
+        public GrenadeLaunchBuff setCell(int cell) {
+            targetCell = cell;
+            return this;
+        }
+
+        @Override
+        public boolean act() {
+            if (cooldown() > 0) {
+                spend(Actor.TICK);
+                return true;
+            }
+            if (target instanceof Hero && targetCell >= 0) {
+                Hero h = (Hero) target;
+                KindOfWeapon w = h.belongings.weapon();
+                if (!(w instanceof SkullShattererWeapon)) w = h.belongings.secondWep();
+                if (w instanceof SkullShattererWeapon) {
+                    SkullShattererWeapon sw = (SkullShattererWeapon) w;
+                    Sample.INSTANCE.play(Assets.Sounds.BLAST);
+                    sw.doGrenadeAt(h, targetCell);
+                    sw.clearGrenadeState();
+                    sw.updateQuickslot();
+                    h.spend(Actor.TICK);
+                }
+            }
+            detach();
+            return true;
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.NONE;
+        }
+
+        private static final String CELL = "cell";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(CELL, targetCell);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            targetCell = bundle.getInt(CELL);
+        }
+    }
+
+    /** 装备碎颅者时挂在英雄身上，每回合只 tick 武器冷却，卸下时移除。 */
+    public static class GrenadeCooldownBuff extends Buff {
+        {
+            actPriority = BUFF_PRIO;
+        }
+
+        @Override
+        public boolean act() {
+            if (target instanceof Hero) {
+                Hero h = (Hero) target;
+                KindOfWeapon w = h.belongings.weapon();
+                if (!(w instanceof SkullShattererWeapon)) w = h.belongings.secondWep();
+                if (w instanceof SkullShattererWeapon) {
+                    ((SkullShattererWeapon) w).tickCooldown();
+                }
+            }
+            spend(Actor.TICK);
+            return true;
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.NONE;
+        }
+    }
+
+    @Override
+    public boolean doEquip(Hero hero) {
+        if (super.doEquip(hero)) {
+            Buff.affect(hero, GrenadeCooldownBuff.class);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equipSecondary(Hero hero) {
+        if (super.equipSecondary(hero)) {
+            Buff.affect(hero, GrenadeCooldownBuff.class);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean doUnequip(Hero hero, boolean collect, boolean single) {
+        Buff.detach(hero, GrenadeCooldownBuff.class);
+        return super.doUnequip(hero, collect, single);
     }
 }

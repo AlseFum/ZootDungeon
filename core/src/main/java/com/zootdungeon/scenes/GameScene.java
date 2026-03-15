@@ -129,6 +129,7 @@ import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
+import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
@@ -209,7 +210,8 @@ public class GameScene extends PixelScene {
 	private LootIndicator loot;
 	private ActionIndicator action;
 	private ResumeIndicator resume;
-    private ConsoleButton consoleBtn;
+	private ConsoleButton consoleBtn;
+	private BitmapText actorDebugText;
 
 	{
 		inGameScene = true;
@@ -413,6 +415,13 @@ public class GameScene extends PixelScene {
         consoleBtn.setRect(uiCamera.width-18, 2, 16, 16);
         consoleBtn.visible = consoleBtn.active = CDSettings.devConsole();
         add(consoleBtn);
+
+		actorDebugText = new BitmapText(PixelScene.pixelFont);
+		actorDebugText.camera = uiCamera;
+		actorDebugText.x = 2;
+		actorDebugText.y = 2;
+		actorDebugText.scale.set(PixelScene.align(0.5f));
+		add(actorDebugText);
 
 		if (uiSize > 0){
 			bringToFront(status);
@@ -672,12 +681,19 @@ public class GameScene extends PixelScene {
 	}
 	
 	public void destroy() {
-		
-		//tell the actor thread to finish, then wait for it to complete any actions it may be doing.
-		if (!waitForActorThread( 4500, true )){
-			Throwable t = new Throwable();
-			t.setStackTrace(actorThread.getStackTrace());
-			throw new RuntimeException("timeout waiting for actor thread! ", t);
+		// 先通知 Actor 线程退出，再等待其结束
+		endActorThread();
+		if (actorThread != null && actorThread.isAlive()) {
+			try {
+				actorThread.join(4500);
+			} catch (InterruptedException e) {
+				ColaDungeon.reportException(e);
+			}
+			if (actorThread.isAlive()) {
+				Throwable t = new Throwable();
+				t.setStackTrace(actorThread.getStackTrace());
+				throw new RuntimeException("timeout waiting for actor thread! ", t);
+			}
 		}
 
 		Emitter.freezeEmitters = false;
@@ -765,6 +781,11 @@ public class GameScene extends PixelScene {
 		}
 
         super.update();
+
+		if (actorDebugText != null) {
+			Actor cur = Actor.current;
+			actorDebugText.text(cur != null ? cur.getClass().getSimpleName() + " t=" + String.format(Locale.US, "%.2f", cur.time) : "null");
+		}
 		
 		if (notifyDelay > 0) notifyDelay -= Game.elapsed;
 
