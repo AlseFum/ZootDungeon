@@ -3,7 +3,12 @@ package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.Assets;
+import com.zootdungeon.items.Generator;
+import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.material.Gold;
+import com.zootdungeon.items.potions.PotionOfHealing;
+import com.zootdungeon.items.potions.PotionOfStrength;
+import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.sprites.MobSprite;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.TextureFilm;
@@ -14,6 +19,16 @@ public class Infantry extends Mob {
     static {
         SpriteRegistry.registerMob("mod:infantry",
                 new SpriteRegistry.MobDef("cola/Infantry.png", 32,32));
+        LootRegistry.register("mob:infantry:loot",
+                new LootRegistry.LootTable()
+                        .pool(new LootRegistry.LootPool()
+                                .rolls(10)
+                                .bonusRolls(1.3f)
+                                .add(new LootRegistry.ItemEntry(3, Gold.class))
+                                .add(new LootRegistry.ItemEntry(1, PotionOfStrength.class))
+                                .add(new LootRegistry.ItemEntry(1, ScrollOfUpgrade.class))
+                                .add(new LootRegistry.ItemEntry(2, PotionOfHealing.class))
+                                .add(new LootRegistry.CategoryEntry(1, Generator.Category.SEED))));
     }
 
     {
@@ -25,8 +40,8 @@ public class Infantry extends Mob {
         EXP = 3;
         maxLvl = 8;
 
-        loot = Gold.class;
-        lootChance = 0.4f;
+        lootTableId = "mob:infantry:loot";
+        lootChance=0.4f;
     }
 
     @Override

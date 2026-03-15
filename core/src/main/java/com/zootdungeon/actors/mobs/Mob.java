@@ -60,6 +60,7 @@ import com.zootdungeon.items.weapon.enchantments.Lucky;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;
 import com.zootdungeon.items.LootRegistry;
+import com.zootdungeon.utils.AtomBundle;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Notes;
 import com.zootdungeon.levels.Level;
@@ -74,8 +75,6 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
-// import com.coladungeon.actors.traits.MobTraitGenerator;
-// import com.coladungeon.actors.traits.Trait;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -968,13 +967,13 @@ public abstract class Mob extends Char {
 	@SuppressWarnings("unchecked")
 	public Item createLoot() {
 
-		// 新系统：优先使用 LootRegistry 表
-		if (lootTableId != null){
-			LootRegistry.LootContext ctx = LootRegistry.LootContext.forMobKill(this, Dungeon.hero, pos);
+		if (lootTableId != null) {
+			AtomBundle ctx = new AtomBundle();
+			ctx.put("depth", Dungeon.depth);
+			ctx.put("pos", pos);
+			ctx.put("source", "MOB_KILL");
 			Item fromTable = LootRegistry.rollOne(lootTableId, ctx);
-			if (fromTable != null){
-				return fromTable;
-			}
+			if (fromTable != null) return fromTable;
 		}
 
 		// 兼容旧逻辑：沿用 loot 字段与 Generator 的行为
