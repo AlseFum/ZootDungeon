@@ -11,7 +11,7 @@ import com.zootdungeon.arknights.RangeReducedWeapon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.TransferMechWeapon;
 import com.zootdungeon.arknights.WandOfPrisonCage;
-import com.zootdungeon.arknights.SummoningThrowingWeapon;
+import com.zootdungeon.arknights.necrass.SummoningThrowingWeapon;
 import com.zootdungeon.arknights.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;

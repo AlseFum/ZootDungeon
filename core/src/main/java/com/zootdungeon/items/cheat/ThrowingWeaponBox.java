@@ -19,7 +19,7 @@ import com.zootdungeon.items.weapon.missiles.ThrowingSpike;
 import com.zootdungeon.items.weapon.missiles.ThrowingStone;
 import com.zootdungeon.items.weapon.missiles.Tomahawk;
 import com.zootdungeon.items.weapon.missiles.Trident;
-import com.zootdungeon.arknights.SummoningThrowingWeapon;
+import com.zootdungeon.arknights.necrass.SummoningThrowingWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.AdrenalineDart;
 import com.zootdungeon.items.weapon.missiles.darts.BlindingDart;
 import com.zootdungeon.items.weapon.missiles.darts.ChillingDart;
