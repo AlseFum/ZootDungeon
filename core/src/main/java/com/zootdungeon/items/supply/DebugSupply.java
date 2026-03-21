@@ -6,7 +6,7 @@ import com.zootdungeon.arknights.StateSwitchWeapon;
 import com.zootdungeon.arknights.InstantMechWeapon;
 import com.zootdungeon.arknights.MomentumWeapon;
 import com.zootdungeon.arknights.PropertyHuntingWeapon;
-import com.zootdungeon.arknights.RandomBuffCard;
+import com.zootdungeon.arknights.gitano.GitanoCard;
 import com.zootdungeon.arknights.RangeReducedWeapon;
 import com.zootdungeon.arknights.SummoningAmbushWeapon;
 import com.zootdungeon.arknights.TransferMechWeapon;
@@ -127,7 +127,7 @@ public class DebugSupply extends Supply {
 
         List<Supplier<Item>> plants = new ArrayList<>();
         plants.add(() -> create(Swiftthistle.Seed.class, 100));
-        plants.add(() -> create(RandomBuffCard.class, 50));
+        plants.add(() -> create(GitanoCard.class, 50));
         categories.put(CAT_PLANTS, plants);
     }
 
