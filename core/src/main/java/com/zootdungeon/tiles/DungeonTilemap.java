@@ -37,11 +37,15 @@ import com.watabou.utils.PointF;
 public abstract class DungeonTilemap extends Tilemap {
 
 	public static final int SIZE = 16;
+	/** Atlas cell size in pixels; displayed scaled by {@code SIZE / TEXTURE_TILE}. */
+	public static final int TEXTURE_TILE = 32;
 
 	protected int[] map;
 	
 	public DungeonTilemap(String tex) {
-		super(tex, new TextureFilm( tex, SIZE, SIZE ) );
+		super(tex, new TextureFilm( tex, TEXTURE_TILE, TEXTURE_TILE ) );
+		float s = SIZE / (float) TEXTURE_TILE;
+		scale.set( s, s );
 	}
 
 	/**
@@ -58,7 +62,7 @@ public abstract class DungeonTilemap extends Tilemap {
 		String key = level.tilemapKey();
 		if (key == null) return;
 
-		SpriteRegistry.applyTilesetToFilm(tileset, key, SIZE);
+		SpriteRegistry.applyTilesetToFilm(tileset, key, TEXTURE_TILE);
 	}
 
 	@Override
@@ -141,6 +145,8 @@ public abstract class DungeonTilemap extends Tilemap {
 		final Image tile = new Image( texture );
 		tile.frame( tileset.get( getTileVisual( pos, oldValue, false)));
 		tile.point( tileToWorld( pos ) );
+		float s = SIZE / (float) TEXTURE_TILE;
+		tile.scale.set( s, s );
 
 		parent.add( tile );
 		
