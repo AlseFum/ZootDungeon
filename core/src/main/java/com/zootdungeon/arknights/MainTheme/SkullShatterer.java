@@ -6,7 +6,9 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.HourOfAnAwakeningBossLevel;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.keys.SkeletonKey;
 import com.zootdungeon.items.material.Gold;
@@ -71,6 +73,17 @@ public class SkullShatterer extends Mob {
         if (!BossHealthBar.isAssigned()) {
             BossHealthBar.assignBoss(this);
             Dungeon.level.seal();
+        }
+    }
+
+    @Override
+    protected void afterFieldOfViewUpdated() {
+        super.afterFieldOfViewUpdated();
+        if (!(Dungeon.level instanceof HourOfAnAwakeningBossLevel)) return;
+        Hero h = Dungeon.hero;
+        if (!h.isAlive() || h.invisible > 0) return;
+        if (fieldOfView[h.pos]) {
+            ((HourOfAnAwakeningBossLevel) Dungeon.level).onShattererSquadSpottedHero();
         }
     }
 

@@ -153,12 +153,17 @@ public abstract class Char extends Actor {
 			fieldOfView = new boolean[Dungeon.level.length()];
 		}
 		Dungeon.level.updateFieldOfView( this, fieldOfView );
+		afterFieldOfViewUpdated();
 
 		//throw any items that are on top of an immovable char
 		if (properties().contains(Property.IMMOVABLE)){
 			throwItems();
 		}
 		return false;
+	}
+
+	/** Called right after {@link Dungeon.Level#updateFieldOfView(Char, boolean[])} in {@link #act()}. */
+	protected void afterFieldOfViewUpdated() {
 	}
 
 	protected void throwItems(){
