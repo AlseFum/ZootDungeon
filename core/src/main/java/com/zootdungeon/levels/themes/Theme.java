@@ -18,7 +18,7 @@ import com.zootdungeon.levels.themes.prison.PrisonLevel;
 import com.zootdungeon.levels.themes.sewer.SewerLevel;
 import com.zootdungeon.levels.themes.sewer.SewerBossLevel;
 import com.zootdungeon.actors.mobs.*;
-import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.HourOfAnAwakeningTheme;
+import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.HourOfAnAwakening;
 import com.zootdungeon.items.trinkets.RatSkull;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundlable;
@@ -261,7 +261,7 @@ public class Theme implements Bundlable {
         registerTheme("city", CityTheme);
         registerTheme("halls", HallsTheme);
         registerTheme("dev", DevTheme);
-        HourOfAnAwakeningTheme.register();
+        HourOfAnAwakening.register();
     }
 
     public static void registerTheme(String name, Theme theme) {

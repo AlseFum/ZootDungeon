@@ -5,15 +5,13 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.Yokai;
 import com.zootdungeon.arknights.Junkman;
 import com.zootdungeon.arknights.OriginumSlug;
-import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.Infantry;
 import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.MobileShieldSoldier;
 import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.Rebellist;
 import com.zootdungeon.levels.themes.Theme;
-import com.zootdungeon.utils.GLog;
 
 import java.util.ArrayList;
 
-public final class HourOfAnAwakeningTheme {
+public final class HourOfAnAwakening {
 
     public static final Theme THEME = new Theme(
             HourOfAnAwakeningLevel.class,
