@@ -37,11 +37,18 @@ import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GhostSprite;
-import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Random;
 
 public class SummoningAmbushWeapon extends AmbushWeapon {
+
+    private static final int PHANTOM_KNIFE_IMAGE;
+
+    static {
+        SpriteRegistry.registerItemTexture("cola/phantom_knife.png", 64).label("phantom_knife");
+        PHANTOM_KNIFE_IMAGE = SpriteRegistry.itemByName("phantom_knife");
+    }
     
     private static final String CHARGE = "charge";
     private static final String CHARGE_CAP = "chargeCap";
@@ -50,7 +57,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
     private int chargeCap = 10;
     
     {
-        image = ItemSpriteSheet.DAGGER;
+        image = PHANTOM_KNIFE_IMAGE;
         tier = 1;
         bones = false;
         ambushRate = 0.5f;
