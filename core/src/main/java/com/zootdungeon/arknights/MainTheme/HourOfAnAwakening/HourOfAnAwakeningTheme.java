@@ -3,8 +3,11 @@ package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 import com.zootdungeon.actors.mobs.Hound;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.Yokai;
+import com.zootdungeon.arknights.Junkman;
 import com.zootdungeon.arknights.OriginumSlug;
 import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.Infantry;
+import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.MobileShieldSoldier;
+import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.Rebellist;
 import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.utils.GLog;
 
@@ -26,9 +29,12 @@ public final class HourOfAnAwakeningTheme {
         public ArrayList<Class<? extends Mob>> getMobRotation(int depth, int branch) {
             ArrayList<Class<? extends Mob>> mobs = new ArrayList<>();
             mobs.add(Infantry.class);
+            mobs.add(MobileShieldSoldier.class);
+            mobs.add(Rebellist.class);
             mobs.add(OriginumSlug.class);
             mobs.add(Hound.class);
             mobs.add(Yokai.class);
+            mobs.add(Junkman.class);
             return mobs;
         }
     };

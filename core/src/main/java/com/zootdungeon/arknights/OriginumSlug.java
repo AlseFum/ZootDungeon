@@ -6,6 +6,8 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.sprites.MobSprite;
 import com.zootdungeon.sprites.SpriteRegistry;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Random;
 
@@ -46,19 +48,31 @@ public class OriginumSlug extends Mob {
 	public static class OriginumSlugSprite extends MobSprite {
 		public OriginumSlugSprite() {
 			super();
-			TextureFilm frames = textureWithFallback("mod:originum_slug", Assets.Sprites.RAT, 32, 32);
+			Object texHandle = SpriteRegistry.mobTextureOr(Assets.Sprites.RAT, "mod:originum_slug");
+			texture(texHandle);
+			SmartTexture tex = TextureCache.get(texHandle);
+			int fw = 32, fh = 32;
+			if (tex.width / fw == 0 || tex.height / fh == 0) {
+				fw = 16;
+				fh = 16;
+			}
+			if (tex.width / fw == 0 || tex.height / fh == 0) {
+				fw = Math.max(1, tex.width);
+				fh = Math.max(1, tex.height);
+			}
+			TextureFilm frames = new TextureFilm(texture, fw, fh);
 
-			idle = new Animation(2, true);
-			idle.frames(frames, 0, 0, 0, 1);
+			idle = new Animation(1, true);
+			idle.frames(frames, 0);
 
 			run = new Animation(10, true);
-			run.frames(frames, 6, 7, 8, 9, 10);
+			run.frames(frames, 0);
 
-			attack = new Animation(15, false);
-			attack.frames(frames, 2, 3, 4, 5, 0);
+			attack = new Animation(10, false);
+			attack.frames(frames, 0);
 
 			die = new Animation(10, false);
-			die.frames(frames, 11, 12, 13, 14);
+			die.frames(frames, 0);
 
 			play(idle);
 		}
