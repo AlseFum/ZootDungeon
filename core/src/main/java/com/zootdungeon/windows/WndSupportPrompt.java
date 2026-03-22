@@ -72,7 +72,7 @@ public class WndSupportPrompt extends Window {
 			}
 		};
 		link.setRect(0, text.bottom() + 4, width, 18);
-		add(link);
+		// add(link);
 
 		RedButton close = new RedButton(Messages.get(this, "close")){
 			@Override
