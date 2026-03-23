@@ -36,6 +36,7 @@ import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.utils.GLog;
+import com.zootdungeon.messages.Messages;
 import com.watabou.noosa.ui.Component;
 
 public class WndRhodesIslandTerminal extends WndTabbed {
@@ -70,7 +71,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 		this.terminal = terminal;
 
 		// 窗口标题：终端图标 + 名称
-		IconTitle title = new IconTitle(new ItemSprite(terminal), "罗德岛终端");
+		IconTitle title = new IconTitle(new ItemSprite(terminal), Messages.get(RhodesIslandTerminal.class, "name"));
 		title.setRect(0, 0, WIDTH, 0);
 		add(title);
 		contentTop = title.bottom() + GAP;
@@ -79,7 +80,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 		activePanel = new Component();
 		float y = 0;
 		RenderedTextBlock costLabel = PixelScene.renderTextBlock(
-				"COST: " + Dungeon.cost + "/" + RhodesIslandTerminal.COST_CAP, 8);
+				Messages.get(RhodesIslandTerminal.class, "cost_display", Dungeon.cost, RhodesIslandTerminal.COST_CAP), 8);
 		costLabel.maxWidth(WIDTH);
 		costLabel.setRect(0, y, WIDTH, 12);
 		activePanel.add(costLabel);
@@ -90,14 +91,14 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 			float rowY = y;
 			String nameText = skill.name();
 			if (skill.cost > 0) {
-				nameText += " (消耗 " + skill.cost + " cost)";
+				nameText += " (" + Messages.get(RhodesIslandTerminal.class, "cost_use", skill.cost) + ")";
 			}
 			RenderedTextBlock nameBlock = PixelScene.renderTextBlock(nameText, 8);
 			nameBlock.maxWidth(WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2);
 			nameBlock.setRect(0, rowY, WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2, 12);
 			activePanel.add(nameBlock);
 
-			RedButton infoBtn = new RedButton("说明", 7) {
+			RedButton infoBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_info"), 7) {
 				@Override
 				protected void onClick() {
 					GameScene.show(new WndMessage(finalSkill.desc()));
@@ -106,11 +107,11 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 			infoBtn.setRect(WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
 			activePanel.add(infoBtn);
 
-			RedButton activateBtn = new RedButton("激活", 7) {
+			RedButton activateBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_activate"), 7) {
 				@Override
 				protected void onClick() {
 					if (Dungeon.cost < finalSkill.cost) {
-						GLog.w("cost不足，需要 " + finalSkill.cost + "。");
+						GLog.w(Messages.get(RhodesIslandTerminal.class, "cost_not_enough", finalSkill.cost));
 						return;
 					}
 					Dungeon.cost -= finalSkill.cost;
@@ -235,7 +236,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 					nameBlock.setRect(0, rowY, nameW, 12);
 					add(nameBlock);
 
-					RedButton infoBtn = new RedButton("说明", 7) {
+					RedButton infoBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_info"), 7) {
 						@Override
 						protected void onClick() {
 							GameScene.show(new WndMessage(desc));
@@ -253,7 +254,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 			}
 
 			if (layoutY == GAP) {
-				RenderedTextBlock empty = PixelScene.renderTextBlock("暂无被动统计", 8);
+				RenderedTextBlock empty = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "passive_empty"), 8);
 				empty.maxWidth(WIDTH);
 				empty.setRect(0, layoutY, WIDTH, 14);
 				add(empty);
@@ -281,7 +282,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 			clear();
 			layoutY = GAP;
 			// 已安装插件标题
-			RenderedTextBlock title = PixelScene.renderTextBlock("已安装插件", 8);
+			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "plugins_title"), 8);
 			title.maxWidth(WIDTH);
 			title.setRect(0, layoutY, WIDTH, 14);
 			add(title);
@@ -309,7 +310,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 				name.setRect(PLUGIN_ICON + GAP, rowTop + 2, nameAreaWidth, 12);
 				add(name);
 
-				RedButton uninstall = new RedButton("卸载") {
+				RedButton uninstall = new RedButton(Messages.get(RhodesIslandTerminal.class, "uninstall")) {
 					@Override
 					protected void onClick() {
 						terminal.uninstallPlugin(index, hero);
@@ -342,7 +343,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 			}
 
 			if (terminal.canInstallMorePlugins()) {
-				RedButton installBtn = new RedButton("安装插件") {
+				RedButton installBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "install_plugin")) {
 					@Override
 					protected void onClick() {
 						GameScene.selectItem(pluginSelector);
@@ -358,7 +359,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 		private static final WndBag.ItemSelector pluginSelector = new WndBag.ItemSelector() {
 			@Override
 			public String textPrompt() {
-				return "选择要安装的插件";
+				return Messages.get(RhodesIslandTerminal.class, "install_prompt");
 			}
 			@Override
 			public Class<? extends com.zootdungeon.items.bags.Bag> preferredBag() {
@@ -374,7 +375,7 @@ public class WndRhodesIslandTerminal extends WndTabbed {
 					RhodesIslandTerminal term = Dungeon.hero.belongings.getItem(RhodesIslandTerminal.class);
 					if (term != null && term.canInstallMorePlugins()) {
 						term.installPlugin((TerminalPlugin) item, Dungeon.hero);
-						GLog.p("插件已安装。");
+						GLog.p(Messages.get(RhodesIslandTerminal.class, "plugin_installed"));
 						if (openInstance != null) openInstance.refreshPlugins();
 					}
 				}
