@@ -39,12 +39,9 @@ import com.zootdungeon.items.potions.PotionOfStrength;
 import com.zootdungeon.items.potions.exotic.PotionOfShroudingFog;
 import com.zootdungeon.items.scrolls.ScrollOfIdentify;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
-import com.zootdungeon.items.stones.StoneOfDeath;
-import com.zootdungeon.items.cheat.StoneOfDummy;
 import com.zootdungeon.items.cheat.StoneOfDungeonTravel;
-import com.zootdungeon.items.cheat.StoneOfGeneration;
 import com.zootdungeon.items.cheat.StoneOfLevelSelect;
-import com.zootdungeon.items.cheat.StoneOfSummoning;
+import com.zootdungeon.items.cheat.StoneOfSpawn;
 import com.zootdungeon.items.TengusMask;
 import com.zootdungeon.items.KingsCrown;
 import com.zootdungeon.plants.Swiftthistle;
@@ -85,18 +82,15 @@ public class DebugSupply extends Supply {
         categories.put(CAT_POTIONS, potions);
 
         List<Supplier<Item>> stones = new ArrayList<>();
-        stones.add(() -> create(StoneOfGeneration.class, 300));
-        stones.add(() -> create(StoneOfDungeonTravel.class, 300));
-        stones.add(() -> create(StoneOfSummoning.class, 300));
+        stones.add(() -> create(StoneOfSpawn.class, 300));
         stones.add(() -> create(StoneOfLevelSelect.class, 50));
-        stones.add(() -> create(StoneOfDummy.class, 300));
-        stones.add(() -> create(StoneOfDeath.class, 300));
         categories.put(CAT_STONES, stones);
 
         List<Supplier<Item>> cheat = new ArrayList<>();
         cheat.add(() -> create(DivineAnkh.class, 1));
         cheat.add(() -> create(ItemRemover.class));
         cheat.add(() -> create(ItemEditor.class, 1));
+        cheat.add(() -> create(StoneOfDungeonTravel.class, 1));
         cheat.add(() -> create(Panacea.class, 1));
         cheat.add(() -> create(Codex.class, 1));
         cheat.add(() -> create(RedStone.class, 1));

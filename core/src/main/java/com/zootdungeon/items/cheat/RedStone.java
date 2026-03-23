@@ -117,16 +117,16 @@ public class RedStone extends Item {
                     }
             ).addItem(
                     new ItemSprite(ItemSpriteSheet.STONE_BLINK),
-                    "生成符文石：生成随机物品",
+                    "召唤符文石：召唤怪物或Dummy",
                     () -> {
-                        selectedStone = StoneOfGeneration.class;
+                        selectedStone = StoneOfSpawn.class;
                         GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
                     }
             ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_SHOCK),
-                    "传送符文石：传送到其他楼层",
+                    new ItemSprite(ItemSpriteSheet.STONE_CLAIRVOYANCE),
+                    "选层符文石：在已生成楼层间跳转",
                     () -> {
-                        selectedStone = StoneOfDungeonTravel.class;
+                        selectedStone = StoneOfLevelSelect.class;
                         GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
                     }
             ).addItem(

@@ -14,6 +14,7 @@ import com.zootdungeon.items.cheat.ThrowingWeaponBox;
 import com.zootdungeon.items.cheat.WandBox;
 import com.zootdungeon.items.cheat.BombBox;
 import com.zootdungeon.items.cheat.ItemEditor;
+import com.zootdungeon.items.cheat.StoneOfDungeonTravel;
 
 public class DebugBag extends Bag {
     static {
@@ -38,6 +39,7 @@ public class DebugBag extends Bag {
             || item instanceof WandBox
             || item instanceof BombBox
             || item instanceof ItemEditor
+            || item instanceof StoneOfDungeonTravel
             ; 
     }
 

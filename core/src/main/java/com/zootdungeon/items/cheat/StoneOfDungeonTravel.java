@@ -28,8 +28,8 @@ import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.InterlevelScene;
@@ -40,23 +40,40 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 
-public class StoneOfDungeonTravel extends Runestone {
+public class StoneOfDungeonTravel extends Item {
     
     {
         image = ItemSpriteSheet.STONE_SHOCK;
-        defaultAction = AC_APPLY;
+        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
+        stackable = false;
+        unique = true;
+        defaultAction = AC_TRAVEL;
     }
     
-    public static final String AC_APPLY = "APPLY";
+    public static final String AC_TRAVEL = "TRAVEL";
     
     private int lastFloor = -1;
     private boolean activated = false;
     
     @Override
+    public java.util.ArrayList<String> actions(Hero hero) {
+        java.util.ArrayList<String> actions = super.actions(hero);
+        actions.add(AC_TRAVEL);
+        return actions;
+    }
+
+    @Override
+    public String actionName(String action, Hero hero) {
+        if (AC_TRAVEL.equals(action)) {
+            return "楼层旅行";
+        }
+        return super.actionName(action, hero);
+    }
+
+    @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
-        
-        if (action.equals(AC_APPLY)) {
+        if (AC_TRAVEL.equals(action)) {
             activate(hero);
         }
     }
@@ -70,12 +87,12 @@ public class StoneOfDungeonTravel extends Runestone {
         activated = true;
         
         GameScene.show(new WndOptions(
-                "Dungeon Travel Stone",
-                "Where would you like to travel?",
-                "One Floor Up",
-                "One Floor Down",
-                "Five Floors Up", 
-                "Five Floors Down"
+                "楼层旅行工具",
+                "你想前往哪里？",
+                "上升一层",
+                "下降一层",
+                "上升五层", 
+                "下降五层"
         ) {
             @Override
             protected void onSelect(int index) {
@@ -107,26 +124,11 @@ public class StoneOfDungeonTravel extends Runestone {
                     InterlevelScene.returnPos = -1;
                     Game.switchScene(InterlevelScene.class);
                     
-                    // 使用后消耗
-                    detach(hero.belongings.backpack);
-                    
                     CellEmitter.get(hero.pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
                     Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
                 }
             }
         });
-    }
-    
-    @Override
-    protected void activate(int cell) {
-        if (!activated) {
-            activate(Dungeon.hero);
-        }
-    }
-    
-    @Override
-    public String desc() {
-        return Messages.get(this, "desc");
     }
     
     private static final String LAST_FLOOR = "last_floor";
@@ -148,11 +150,26 @@ public class StoneOfDungeonTravel extends Runestone {
     
     @Override
     public int value() {
-        return 50 * quantity;
+        return 0;
     }
     
     @Override
     public String name() {
-        return Messages.get(this, "name");
+        return "楼层旅行工具";
+    }
+
+    @Override
+    public String desc() {
+        return "调试工具，可快速在楼层间移动（上下1层或5层）。";
+    }
+
+    @Override
+    public boolean isIdentified() {
+        return true;
+    }
+
+    @Override
+    public boolean isUpgradable() {
+        return false;
     }
 } 

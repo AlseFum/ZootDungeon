@@ -2,12 +2,15 @@ package com.zootdungeon.items.cheat;
 
 import java.util.ArrayList;
 
+import com.zootdungeon.actors.Actor;
+import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.scenes.GameScene;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndBag;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.windows.WndOptions;
@@ -29,12 +32,14 @@ public class ItemRemover extends Item {
 
     public static final String AC_REMOVE = "REMOVE";
     public static final String AC_CLEAR = "CLEAR";
+    public static final String AC_KILL = "KILL";
 
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
         actions.add(AC_REMOVE);
         actions.add(AC_CLEAR);
+        actions.add(AC_KILL);
         return actions;
     }
 
@@ -93,6 +98,18 @@ public class ItemRemover extends Item {
                     heap.destroy();
                 }
             });
+        } else if (action.equals(AC_KILL)) {
+            GameScene.selectCell("选择要清除的单位", (Integer pos) -> {
+                if (pos == -1) {
+                    return;
+                }
+                Char ch = Actor.findChar(pos);
+                if (ch != null && ch.isAlive()) {
+                    ch.die(this);
+                } else {
+                    GLog.w("该位置没有可清除的单位。");
+                }
+            });
         }
     }
 
@@ -104,6 +121,9 @@ public class ItemRemover extends Item {
         if (action.equals(AC_CLEAR)) {
             return "清除格子";
         }
+        if (action.equals(AC_KILL)) {
+            return "清除单位";
+        }
         return super.actionName(action, hero);
     }
 
@@ -114,6 +134,6 @@ public class ItemRemover extends Item {
 
     @Override
     public String desc() {
-        return "to delete item more easily";
+        return "调试工具：删除背包物品、清除地格掉落物，也可直接清除指定格子的单位。";
     }
 }

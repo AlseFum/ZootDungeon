@@ -273,9 +273,6 @@ public final class HeroClassSheet {
                 new ScrollOfMagicMapping().identify();
                 new PotionOfInvisibility().identify();
                 new RhodesIslandTerminal().identify().collect();
-                // 预备干员开局携带若干终端插件，可在终端窗口中安装
-                new TerminalPlugin().identify().collect();
-                new TerminalPlugin().identify().collect();
 
             })
             .register();
