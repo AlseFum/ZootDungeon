@@ -2,14 +2,12 @@ package com.zootdungeon.items.weapon.gun;
 
 import java.util.ArrayList;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -18,6 +16,7 @@ public class Rifle extends Gun {
     private static final int SHOTS_PER_BURST = 3; // 每次点射发射的子弹数
     private static final int SHOTS_PER_SPRAY = 10; // 扫射消耗的弹药量
     private static final float SPRAY_CHANCE = 0.4f; // 扫射命中周围格子的基础概率
+    private static final float RAPID_MISSILE_SPEED = 2400f; // 保留动画，但更快
 
     private static final String AC_BLAST = "blast";
     private static final String AC_SPRAY = "spray";
@@ -113,13 +112,11 @@ public class Rifle extends Gun {
         }
         curUser.sprite.zap(targetPos);
         for (int i = 0; i < SHOTS_PER_BURST; i++) {
-            fire(targetPos, false); // 使用fire而不是shoot，并且不消耗行动点
-            float pitch = 0.8f + Random.Float(0.4f);
-            Sample.INSTANCE.play(Assets.Sounds.HIT, pitch);
+            fireWithSpeed(targetPos, false, RAPID_MISSILE_SPEED);
             consumeAmmo(1);
-            }
-            curUser.spendAndNext(delayFactor(curUser));
-        
+        }
+        curUser.spendAndNext(delayFactor(curUser));
+        updateQuickslot();
     }
 
     private void spray(int targetPos) {
@@ -139,12 +136,11 @@ public class Rifle extends Gun {
                 actualTargetPos = targetPos + randomNeighbor;
             }
             
-            fire(actualTargetPos, false); // 使用fire而不是shoot，并且不消耗行动点
-            float pitch = 0.8f + Random.Float(0.4f);
-            Sample.INSTANCE.play(Assets.Sounds.HIT, pitch);
+            fireWithSpeed(actualTargetPos, false, RAPID_MISSILE_SPEED);
             consumeAmmo(1);
         }
         curUser.spendAndNext(delayFactor(curUser));
+        updateQuickslot();
     }
 
     @Override

@@ -3,9 +3,9 @@ package com.zootdungeon.items.weapon.gun;
 import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.ammo.Ammo;
 import com.zootdungeon.items.weapon.ammo.Cartridge;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
@@ -32,16 +32,18 @@ public class HandGun extends Gun {
     @Override
     protected void executeSubAction(Hero hero, String action) {
         if (action.equals(AC_QUICKDRAW)) {
-            Weapon originalWeapon = (Weapon) hero.belongings.weapon;
-            hero.belongings.weapon = this;
+            if (ammo <= 0) {
+                GLog.w(Messages.get(Gun.class, "no_ammo"));
+                return;
+            }
             GameScene.selectCell(new CellSelector.Listener() {
                 @Override
                 public void onSelect(Integer target) {
                     if (target != null) {
-                        fire(target);
-                    }
-                    if (originalWeapon != null) {
-                        hero.belongings.backpack.items.add(originalWeapon);
+                        consumeAmmo(1);
+                        fire(target, false);
+                        hero.spendAndNext(0.5f);
+                        updateQuickslot();
                     }
                 }
                 @Override

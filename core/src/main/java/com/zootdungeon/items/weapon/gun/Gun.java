@@ -77,7 +77,21 @@ public class Gun extends Weapon {
     public void fire(int targetPos){
         fire(targetPos,true);
     }
+
+    /**
+     * Resolve one shot immediately without missile animation.
+     * Useful for multi-shot skills (burst/spray) that should settle in one action.
+     */
+    protected void fireImmediate(int targetPos, boolean shouldSpend) {
+        HitResult[] hitResults = fire_hits(curUser, targetPos, Ballistica.PROJECTILE);
+        processFireResults(hitResults, shouldSpend);
+    }
+
     public void fire(int targetPos,boolean shouldSpend) {
+        fireWithSpeed(targetPos, shouldSpend, 800f);
+    }
+
+    protected void fireWithSpeed(int targetPos, boolean shouldSpend, float missileSpeed) {
         HitResult[] hitResults = fire_hits(curUser, targetPos, Ballistica.PROJECTILE);
         
         // 创建子弹轨迹粒子效果 - 使用更快的速度
@@ -96,13 +110,14 @@ public class Gun extends Weapon {
             }
         );
         
-        missile.setSpeed(800f);
+        missile.setSpeed(missileSpeed);
         curUser.sprite.parent.add(missile);
     }
     
     protected void processFireResults(HitResult[] hitResults, boolean shouldSpend) {
         for (HitResult hitResult : hitResults) {
             Object target = hitResult.who();
+            boolean resolvedHit = false;
             if (target instanceof Char targetChar) {
                 boolean hit = Random.Float() < accuracyFactor(curUser, targetChar);
                 if (hit) {
@@ -110,13 +125,14 @@ public class Gun extends Weapon {
                     int actualDamage = fire_proc(curUser, targetChar, baseDamage);
                     targetChar.damage(actualDamage, this);
                     Sample.INSTANCE.play(Assets.Sounds.HIT);
-                }else{
+                    resolvedHit = true;
                 }
-            }else{
+            } else {
+                // Hitting terrain/empty cell should still allow impact effects.
+                resolvedHit = true;
             }
-            // Apply the cartridge's effect
-            if(cartridge.onHit!=null){
-            cartridge.onHit.onHit.apply(curUser, hitResult.where(), (int) (cartridge.power * getAmmoPowerMultiplier()), 0);
+            if (resolvedHit && cartridge != null && cartridge.onHit != null && cartridge.onHit.onHit != null) {
+                cartridge.onHit.onHit.apply(curUser, hitResult.where(), (int) (cartridge.power * getAmmoPowerMultiplier()), 0);
             }
         }
         if(shouldSpend){

@@ -85,7 +85,7 @@ public class SniperGun extends Gun {
 
     private void startAiming(Char target) {
         if (ammo <= 0) {
-            GLog.w("弹药不足！");
+            GLog.w(Messages.get(Gun.class, "no_ammo"));
             return;
         }
         SniperAim aim = Buff.affect(
