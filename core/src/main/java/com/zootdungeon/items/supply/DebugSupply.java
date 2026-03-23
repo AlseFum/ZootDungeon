@@ -20,16 +20,13 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
-import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.windows.WndGeneral;
-import com.zootdungeon.windows.WndOptions;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
 import com.zootdungeon.items.cheat.ItemEditor;
 import com.zootdungeon.items.cheat.Panacea;
 import com.zootdungeon.items.cheat.RedStone;
-import com.zootdungeon.items.cheat.WaterPlacer;
 import com.zootdungeon.items.cheat.ThrowingWeaponBox;
 import com.zootdungeon.items.cheat.WandBox;
 import com.zootdungeon.items.cheat.BombBox;
@@ -97,7 +94,6 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(ThrowingWeaponBox.class, 1));
         cheat.add(() -> create(WandBox.class, 1));
         cheat.add(() -> create(BombBox.class, 1));
-        cheat.add(() -> create(WaterPlacer.class, 1));
         cheat.add(() -> create(TengusMask.class, 1));
         cheat.add(() -> create(KingsCrown.class, 1));
         categories.put(CAT_CHEAT, cheat);
@@ -177,16 +173,15 @@ public class DebugSupply extends Supply {
         List<Supplier<Item>> items = categories.get(categoryKey);
         if (items == null || items.isEmpty()) return;
 
-        WndOptions.Builder b = WndOptions.make()
-                .title(Messages.get(DebugSupply.class, categoryKey))
-                .message(" ");
+        WndGeneral.Builder b = WndGeneral.make()
+                .title(Messages.get(DebugSupply.class, categoryKey));
         for (int i = 0; i < items.size(); i++) {
             final int idx = i;
             Item sample = items.get(i).get();
             String label = sample != null ? sample.name() : "?";
-            b.option(label, x -> grantItem(hero, items.get(idx)));
+            b.option(label, () -> grantItem(hero, items.get(idx)));
         }
-        GameScene.show(b.build());
+        b.show();
     }
 
     private void grantItem(Hero hero, Supplier<Item> supplier) {

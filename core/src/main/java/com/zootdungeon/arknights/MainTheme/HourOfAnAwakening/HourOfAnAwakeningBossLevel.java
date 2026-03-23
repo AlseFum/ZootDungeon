@@ -3,12 +3,15 @@ package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.Statistics;
+import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.arknights.MainTheme.SkullShatterer;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.RegularLevel;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.builders.Builder;
 import com.zootdungeon.levels.builders.FigureEightBuilder;
 import com.zootdungeon.levels.builders.LoopBuilder;
+import com.zootdungeon.levels.features.LevelTransition;
 import com.zootdungeon.levels.painters.Painter;
 import com.zootdungeon.levels.painters.RegularPainter;
 import com.zootdungeon.levels.rooms.Room;
@@ -29,6 +32,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -51,6 +55,12 @@ public class HourOfAnAwakeningBossLevel extends RegularLevel {
 
 	public void onShattererSquadSpottedHero() {
 		shattererSquadHeroLinked = true;
+		for (Mob mob : mobs.toArray(new Mob[0])) {
+			if (mob instanceof SkullShatterer boss && mob.isAlive()) {
+				boss.notice();
+				boss.aggro(Dungeon.hero);
+			}
+		}
 	}
 
 	public boolean areShattererSquadLinkedOnHero() {
@@ -165,8 +175,38 @@ public class HourOfAnAwakeningBossLevel extends RegularLevel {
 		if ( !super.build() ) {
 			return false;
 		}
+		forceExitIntoChamber();
 		Level.set( exit(), Terrain.LOCKED_EXIT, this );
 		return true;
+	}
+
+	private void forceExitIntoChamber() {
+		SkullShattererChamberRoom chamber = null;
+		for (Room r : rooms()) {
+			if (r instanceof SkullShattererChamberRoom) {
+				chamber = (SkullShattererChamberRoom) r;
+				break;
+			}
+		}
+		if (chamber == null) return;
+
+		LevelTransition exitTransition = getTransition(LevelTransition.Type.REGULAR_EXIT);
+		if (exitTransition == null) return;
+
+		int oldExit = exitTransition.cell();
+		Point c = chamber.center();
+		Point targetPoint = new Point(c.x, Math.min(chamber.bottom - 1, c.y + 1));
+		if (!chamber.inside(targetPoint)) {
+			targetPoint = chamber.random(1);
+		}
+		int newExit = pointToCell(targetPoint);
+
+		exitTransition.centerCell = newExit;
+		exitTransition.set(targetPoint.x, targetPoint.y, targetPoint.x, targetPoint.y);
+
+		if (oldExit >= 0 && oldExit < length() && map[oldExit] == Terrain.EXIT) {
+			Level.set(oldExit, Terrain.EMPTY, this);
+		}
 	}
 
 	@Override

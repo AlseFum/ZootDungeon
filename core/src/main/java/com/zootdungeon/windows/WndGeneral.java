@@ -72,7 +72,6 @@ public class WndGeneral extends Window {
 
 		Component body = new Component();
 		float bodyY = 0;
-		final List<ClickRegion> clickRegions = new ArrayList<>();
 
 		for (Row row : b.rows) {
 			RenderedTextBlock block = PixelScene.renderTextBlock(row.text, 6);
@@ -92,10 +91,6 @@ public class WndGeneral extends Window {
 			};
 			btn.setRect(MARGIN, bodyY, WIDTH - MARGIN * 2, BTN_HEIGHT);
 			body.add(btn);
-			clickRegions.add(new ClickRegion(bodyY, BTN_HEIGHT, () -> {
-				if (opt.onClick != null) opt.onClick.run();
-				hide();
-			}));
 			bodyY = btn.bottom() + GAP;
 		}
 
@@ -109,10 +104,6 @@ public class WndGeneral extends Window {
 			};
 			btn.setRect(MARGIN, bodyY, WIDTH - MARGIN * 2, BTN_HEIGHT);
 			body.add(btn);
-			clickRegions.add(new ClickRegion(bodyY, BTN_HEIGHT, () -> {
-				if (b.onButton != null) b.onButton.run();
-				hide();
-			}));
 			bodyY = btn.bottom() + MARGIN;
 		} else if (bodyY > 0) {
 			bodyY += MARGIN;
@@ -121,22 +112,10 @@ public class WndGeneral extends Window {
 		body.setSize(WIDTH, (int) bodyY);
 
 		if (bodyY > MAX_CONTENT_HEIGHT) {
-			final List<ClickRegion> regions = new ArrayList<>(clickRegions);
 			int scrollH = Math.min((int) bodyY, MAX_CONTENT_HEIGHT);
 			int maxScrollH = Math.max(100, (int) (PixelScene.uiCamera.height - 80));
 			if (scrollH > maxScrollH) scrollH = maxScrollH;
-			ScrollPane scroll = new ScrollPane(body) {
-				@Override
-				public void onClick(float x, float y) {
-					if (x < MARGIN || x > WIDTH - MARGIN) return;
-					for (ClickRegion r : regions) {
-						if (y >= r.top && y < r.top + r.height) {
-							r.action.run();
-							return;
-						}
-					}
-				}
-			};
+			ScrollPane scroll = new ScrollPane(body);
 			scroll.setRect(0, (int) y, WIDTH, scrollH);
 			add(scroll);
 			y += scroll.height() + MARGIN;
@@ -162,13 +141,6 @@ public class WndGeneral extends Window {
 		final String label;
 		final Runnable onClick;
 		Option(String label, Runnable onClick) { this.label = label; this.onClick = onClick; }
-	}
-
-	private static class ClickRegion {
-		final float top;
-		final float height;
-		final Runnable action;
-		ClickRegion(float top, float height, Runnable action) { this.top = top; this.height = height; this.action = action; }
 	}
 
 	public static class Builder {

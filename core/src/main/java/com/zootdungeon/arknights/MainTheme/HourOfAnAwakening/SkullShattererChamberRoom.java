@@ -19,6 +19,26 @@ import java.util.ArrayList;
 public class SkullShattererChamberRoom extends SpecialRoom {
 
 	@Override
+	public int minWidth() {
+		return Math.max(super.minWidth(), 11);
+	}
+
+	@Override
+	public int minHeight() {
+		return Math.max(super.minHeight(), 11);
+	}
+
+	@Override
+	public int maxWidth() {
+		return Math.max(super.maxWidth(), 13);
+	}
+
+	@Override
+	public int maxHeight() {
+		return Math.max(super.maxHeight(), 13);
+	}
+
+	@Override
 	public void paint( Level level ) {
 		Painter.fill( level, this, Terrain.WALL );
 		Painter.fill( level, this, 1, Terrain.EMPTY );
@@ -47,10 +67,21 @@ public class SkullShattererChamberRoom extends SpecialRoom {
 		}
 		Random.shuffle( spawnCells );
 
-		int nMinions = Math.min( 4, spawnCells.size() );
-		for ( int i = 0; i < nMinions; i++ ) {
+		// Reduce squad spawn density: roll each slot independently.
+		int maxSlots = Math.min( 4, spawnCells.size() );
+		int spawned = 0;
+		for ( int i = 0; i < maxSlots; i++ ) {
+			if ( Random.Float() > 0.45f ) continue;
 			ShattererSquadMob m = new ShattererSquadMob();
 			m.pos = spawnCells.get( i );
+			level.mobs.add( m );
+			Actor.ensureActorAdded( m );
+			spawned++;
+		}
+		// Keep at least one support mob in the chamber.
+		if ( spawned == 0 && maxSlots > 0 ) {
+			ShattererSquadMob m = new ShattererSquadMob();
+			m.pos = spawnCells.get( 0 );
 			level.mobs.add( m );
 			Actor.ensureActorAdded( m );
 		}

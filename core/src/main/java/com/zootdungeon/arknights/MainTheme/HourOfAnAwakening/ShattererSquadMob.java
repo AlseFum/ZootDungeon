@@ -21,6 +21,16 @@ public class ShattererSquadMob extends Mob {
 		maxLvl = 6;
 		loot = Gold.class;
 		lootChance = 0.25f;
+		state = WANDERING;
+	}
+
+	@Override
+	protected boolean act() {
+		// Chamber squad should never remain in sleeping state.
+		if (state == SLEEPING) {
+			state = WANDERING;
+		}
+		return super.act();
 	}
 
 	@Override
