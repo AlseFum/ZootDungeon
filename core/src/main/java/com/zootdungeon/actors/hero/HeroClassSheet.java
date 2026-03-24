@@ -272,7 +272,12 @@ public final class HeroClassSheet {
                 // 自动识别
                 new ScrollOfMagicMapping().identify();
                 new PotionOfInvisibility().identify();
-                new RhodesIslandTerminal().identify().collect();
+
+                RhodesIslandTerminal terminal = new RhodesIslandTerminal();
+                terminal.identify().collect();
+                TerminalPlugin starterPlugin = new TerminalPlugin();
+                starterPlugin.identify().collect();
+                terminal.installPlugin(starterPlugin, hero);
 
             })
             .register();

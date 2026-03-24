@@ -1,385 +1,510 @@
-/*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
- *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
-
 package com.zootdungeon.windows;
+
+import com.watabou.noosa.ui.Component;
+
+import java.util.ArrayList;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Belongings;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.arknights.skills.Skill;
-import com.zootdungeon.arknights.skills.SkillSheet;
-import com.zootdungeon.items.Item;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.arknights.TerminalPlugin;
+import com.zootdungeon.items.Item;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
-import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
+import com.zootdungeon.ui.ScrollPane;
+import com.zootdungeon.ui.Window;
 import com.zootdungeon.utils.GLog;
-import com.zootdungeon.messages.Messages;
-import com.watabou.noosa.ui.Component;
 
-public class WndRhodesIslandTerminal extends WndTabbed {
+public class WndRhodesIslandTerminal extends Window {
 
-	private static final int WIDTH        = 140;
-	private static final int BTN_HEIGHT   = 18;
-	private static final int GAP          = 2;
-	private static final int TAB_HEIGHT   = 25;
-	private static final int PLUGIN_ICON       = 16;
-	private static final int INFO_FONT         = 6;
-	private static final int INFO_MAX_H        = 32;
-	/** 自定义显示组件的最大高度（插件子类 createDisplayComponent 返回的组件） */
+	private static final int WIDTH = 176;
+	private static final int GAP = 2;
+	private static final int MARGIN = 3;
+	private static final int BTN_HEIGHT = 16;
+	private static final int TAB_BTN_H = 14;
+	private static final int MIN_VIEW_H = 96;
+
+	private static final int BTN_INFO_W = 26;
+	private static final int BTN_ACTIVATE_W = 36;
+	private static final int VALUE_W = 32;
+	private static final int BTN_UNINSTALL_W = 32;
+	private static final int BTN_TOGGLE_W = 32;
+	private static final int INFO_FONT = 6;
+	private static final int INFO_MAX_H = 32;
 	private static final int CUSTOM_COMPONENT_H = 56;
+	private static final int EMPTY_TEXT_H = 14;
 
-	/** 当前打开的终端窗口，用于安装插件后刷新插件面板 */
 	private static WndRhodesIslandTerminal openInstance;
 
-	private static final int BTN_INFO_W = 32;
-	private static final int BTN_ACTIVATE_W = 40;
-	private static final int VALUE_W = 36;
-
 	private final RhodesIslandTerminal terminal;
-	private Component activePanel;
-	private PassivePanel passivePanel;
-	private PluginPanel pluginPanel;
-	private float contentTop;
-	private int activeContentHeight;
+	private IconTitle title;
+	private RedButton tabActiveBtn;
+	private RedButton tabPassiveBtn;
+	private RedButton tabPluginBtn;
+	private ScrollPane contentPane;
+	private TabType currentTab = TabType.ACTIVE;
+
+	private enum TabType {
+		ACTIVE, PASSIVE, PLUGINS
+	}
 
 	public WndRhodesIslandTerminal(RhodesIslandTerminal terminal) {
-		super();
-		openInstance = this;
 		this.terminal = terminal;
+		openInstance = this;
+		buildWindow();
+	}
 
-		// 窗口标题：终端图标 + 名称
-		IconTitle title = new IconTitle(new ItemSprite(terminal), Messages.get(RhodesIslandTerminal.class, "name"));
-		title.setRect(0, 0, WIDTH, 0);
+	private void buildWindow() {
+		title = new IconTitle(new ItemSprite(terminal), Messages.get(RhodesIslandTerminal.class, "name"));
 		add(title);
-		contentTop = title.bottom() + GAP;
 
-		// 主动 Tab：技能列表，每行 [名称] [说明] [激活]
-		activePanel = new Component();
-		float y = 0;
+		tabActiveBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "tab_active"), 7) {
+			@Override
+			protected void onClick() {
+				switchTab(TabType.ACTIVE);
+			}
+		};
+		add(tabActiveBtn);
+
+		tabPassiveBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "tab_passive"), 7) {
+			@Override
+			protected void onClick() {
+				switchTab(TabType.PASSIVE);
+			}
+		};
+		add(tabPassiveBtn);
+
+		tabPluginBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "tab_plugins"), 7) {
+			@Override
+			protected void onClick() {
+				switchTab(TabType.PLUGINS);
+			}
+		};
+		add(tabPluginBtn);
+
+		relayout();
+		switchTab(TabType.ACTIVE);
+	}
+
+	private void relayout() {
+		float y = MARGIN;
+		title.setRect(0, y, WIDTH, 0);
+		y = title.bottom() + GAP;
+
+		float firstW = (float) Math.floor(WIDTH * 0.333f) - GAP;
+		float secondW = (float) Math.floor(WIDTH * 0.333f) - GAP;
+		float thirdW = WIDTH - firstW - secondW - GAP * 2;
+		tabActiveBtn.setRect(0, y, firstW, TAB_BTN_H);
+		tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, secondW, TAB_BTN_H);
+		tabPluginBtn.setRect(tabPassiveBtn.right() + GAP, y, thirdW, TAB_BTN_H);
+		y = tabActiveBtn.bottom() + GAP;
+
+		int viewH = getAvailableViewHeight(y);
+		if (contentPane != null) {
+			contentPane.setRect(0, y, WIDTH, viewH);
+		}
+		resize(WIDTH, (int) (y + viewH + MARGIN));
+	}
+
+	private int getAvailableViewHeight(float contentTop) {
+		int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
+		int bySpace = (int) (maxWindowHeight - contentTop - MARGIN);
+		return Math.max(MIN_VIEW_H, bySpace);
+	}
+
+	private void switchTab(TabType tab) {
+		currentTab = tab;
+		if (contentPane != null) {
+			remove(contentPane);
+			contentPane = null;
+		}
+
+		Component content = buildTabContent(tab);
+		contentPane = new ScrollPane(content);
+		contentPane.scrollTo(0, 0);
+		add(contentPane);
+		relayout();
+		refreshTabButtons();
+	}
+
+	private void refreshTabButtons() {
+		tabActiveBtn.enable(currentTab != TabType.ACTIVE);
+		tabPassiveBtn.enable(currentTab != TabType.PASSIVE);
+		tabPluginBtn.enable(currentTab != TabType.PLUGINS);
+	}
+
+	public void refreshPlugins() {
+		switchTab(currentTab);
+	}
+
+	private Component buildTabContent(TabType tab) {
+		switch (tab) {
+			case PASSIVE:
+				return buildPassiveContent();
+			case PLUGINS:
+				return buildPluginContent();
+			case ACTIVE:
+			default:
+				return buildActiveContent();
+		}
+	}
+
+	private Component buildActiveContent() {
+		Component root = new Component();
+		ColumnLayout col = new ColumnLayout(root, 0, 0, WIDTH, GAP);
+		boolean hasActiveEntry = false;
+
 		RenderedTextBlock costLabel = PixelScene.renderTextBlock(
 				Messages.get(RhodesIslandTerminal.class, "cost_display", Dungeon.cost, RhodesIslandTerminal.COST_CAP), 8);
 		costLabel.maxWidth(WIDTH);
-		costLabel.setRect(0, y, WIDTH, 12);
-		activePanel.add(costLabel);
-		y = costLabel.bottom() + GAP;
+		col.addAutoHeight(costLabel);
 
-		for (Skill skill : SkillSheet.values()) {
-			final Skill finalSkill = skill;
-			float rowY = y;
-			String nameText = skill.name();
-			if (skill.cost > 0) {
-				nameText += " (" + Messages.get(RhodesIslandTerminal.class, "cost_use", skill.cost) + ")";
-			}
-			RenderedTextBlock nameBlock = PixelScene.renderTextBlock(nameText, 8);
-			nameBlock.maxWidth(WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2);
-			nameBlock.setRect(0, rowY, WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2, 12);
-			activePanel.add(nameBlock);
-
-			RedButton infoBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_info"), 7) {
-				@Override
-				protected void onClick() {
-					GameScene.show(new WndMessage(finalSkill.desc()));
+		for (int i = 0; i < terminal.slotCount(); i++) {
+			final int slotIndex = i;
+			RhodesIslandTerminal.PluginSlot slot = terminal.getSlot(i);
+			if (slot == null || slot.plugin == null) continue;
+			for (TerminalPlugin.ActiveSpec spec : slot.plugin.activeSpecs(terminal, slot)) {
+				if (spec == null) continue;
+				final TerminalPlugin.ActiveSpec active = spec;
+				String rowTitle = "[S" + (slotIndex + 1) + "] " + (active.name != null ? active.name : active.id);
+				if (active.cost > 0) {
+					rowTitle += " (" + Messages.get(RhodesIslandTerminal.class, "cost_use", active.cost) + ")";
 				}
-			};
-			infoBtn.setRect(WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
-			activePanel.add(infoBtn);
-
-			RedButton activateBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_activate"), 7) {
-				@Override
-				protected void onClick() {
-					if (Dungeon.cost < finalSkill.cost) {
-						GLog.w(Messages.get(RhodesIslandTerminal.class, "cost_not_enough", finalSkill.cost));
+				boolean canActivate = slot.enabled && Dungeon.cost >= active.cost && slot.plugin.canActivate(terminal, slot, active);
+				hasActiveEntry = true;
+				addActionRow(root, col, rowTitle, active.desc != null ? active.desc : "", active.cost, canActivate, () -> {
+					if (Dungeon.cost < active.cost) {
+						GLog.w(Messages.get(RhodesIslandTerminal.class, "cost_not_enough", active.cost));
 						return;
 					}
-					Dungeon.cost -= finalSkill.cost;
-					finalSkill.execute(Dungeon.hero);
+					terminal.activatePluginAction(slotIndex, active.id);
 					hide();
+				});
+			}
+		}
+		if (!hasActiveEntry) {
+			RenderedTextBlock empty = PixelScene.renderTextBlock("No active actions from installed plugins.", 8);
+			empty.maxWidth(WIDTH);
+			empty.setRect(0, col.y, WIDTH, EMPTY_TEXT_H);
+			root.add(empty);
+			col.y = empty.bottom() + GAP;
+		}
+
+		root.setSize(WIDTH, col.bottom());
+		return root;
+	}
+
+	private Component buildPassiveContent() {
+		Component root = new Component();
+		ColumnLayout col = new ColumnLayout(root, 0, 0, WIDTH, GAP);
+		int nameW = WIDTH - BTN_INFO_W - VALUE_W - GAP * 2;
+
+		for (RhodesIslandTerminal.PluginSlot slot : terminal.slots) {
+			if (slot == null || slot.plugin == null) continue;
+			for (TerminalPlugin.PassiveEntry entry : slot.plugin.passiveEntries(terminal, slot)) {
+				if (entry == null || !entry.available) continue;
+				float rowY = col.y;
+				String name = entry.name != null ? entry.name : "";
+				String desc = entry.desc != null ? entry.desc : "";
+				String value = entry.valueText != null ? entry.valueText : "";
+
+				RenderedTextBlock nameBlock = PixelScene.renderTextBlock(name, 8);
+				nameBlock.maxWidth(nameW);
+				nameBlock.setRect(0, rowY, nameW, 12);
+				root.add(nameBlock);
+
+				RedButton infoBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_info"), 7) {
+					@Override
+					protected void onClick() {
+						GameScene.show(new WndMessage(desc));
+					}
+				};
+				infoBtn.setRect(WIDTH - BTN_INFO_W - VALUE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
+				root.add(infoBtn);
+
+				RenderedTextBlock valueBlock = PixelScene.renderTextBlock(value, 8);
+				valueBlock.setRect(WIDTH - VALUE_W, rowY + 4, VALUE_W, 12);
+				root.add(valueBlock);
+
+				col.y = Math.max(nameBlock.bottom(), infoBtn.bottom()) + GAP;
+			}
+		}
+
+		if (col.y <= 0.001f) {
+			RenderedTextBlock empty = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "passive_empty"), 8);
+			empty.maxWidth(WIDTH);
+			col.addAutoHeight(empty);
+		}
+
+		root.setSize(WIDTH, col.bottom());
+		return root;
+	}
+
+	private Component buildPluginContent() {
+		Component root = new Component();
+		ColumnLayout col = new ColumnLayout(root, 0, 0, WIDTH, GAP);
+		Hero hero = Dungeon.hero;
+		boolean hasPlugin = false;
+
+		RenderedTextBlock pluginsTitle = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "plugins_title"), 8);
+		pluginsTitle.maxWidth(WIDTH);
+		col.addAutoHeight(pluginsTitle);
+		RenderedTextBlock slotsInfo = PixelScene.renderTextBlock("Slots: " + terminal.slots.size() + "/" + terminal.maxPlugins, 7);
+		slotsInfo.maxWidth(WIDTH);
+		col.addAutoHeight(slotsInfo);
+
+		int rightButtons = BTN_UNINSTALL_W + GAP + BTN_TOGGLE_W;
+		int nameW = WIDTH - rightButtons - GAP;
+
+		for (int i = 0; i < terminal.slots.size(); i++) {
+			final int index = i;
+			RhodesIslandTerminal.PluginSlot slot = terminal.slots.get(i);
+			if (slot == null || slot.plugin == null) continue;
+			TerminalPlugin plugin = slot.plugin;
+			hasPlugin = true;
+
+			float rowY = col.y;
+			String pluginName = plugin.pluginName(terminal, slot);
+			if (pluginName == null || pluginName.isEmpty()) pluginName = plugin.name();
+			if (!slot.enabled) pluginName += " [" + Messages.get(RhodesIslandTerminal.class, "slot_off") + "]";
+
+			RenderedTextBlock nameBlock = PixelScene.renderTextBlock(pluginName, 8);
+			nameBlock.maxWidth(nameW);
+			nameBlock.setRect(0, rowY + 2, nameW, 12);
+			root.add(nameBlock);
+
+			FlowLayout buttons = new FlowLayout(WIDTH - rightButtons, rowY, rightButtons + GAP, GAP);
+			RedButton toggle = new RedButton(slot.enabled
+					? Messages.get(RhodesIslandTerminal.class, "btn_disable")
+					: Messages.get(RhodesIslandTerminal.class, "btn_enable")) {
+				@Override
+				protected void onClick() {
+					if (slot.enabled) terminal.disableSlot(index);
+					else terminal.enableSlot(index);
+					refreshPlugins();
 				}
 			};
-			activateBtn.setRect(WIDTH - BTN_ACTIVATE_W, rowY, BTN_ACTIVATE_W, BTN_HEIGHT);
-			if (Dungeon.cost < skill.cost) activateBtn.enable(false);
-			activePanel.add(activateBtn);
+			buttons.add(toggle, BTN_TOGGLE_W, BTN_HEIGHT);
 
-			y = Math.max(nameBlock.bottom(), activateBtn.bottom()) + GAP;
-		}
-		activeContentHeight = (int) y;
-		activePanel.setRect(0, contentTop, WIDTH, activeContentHeight);
-		add(activePanel);
-		activePanel.active = activePanel.visible = false;
+			RedButton uninstall = new RedButton(Messages.get(RhodesIslandTerminal.class, "uninstall")) {
+				@Override
+				protected void onClick() {
+					terminal.uninstallPlugin(index, hero);
+					refreshPlugins();
+				}
+			};
+			buttons.add(uninstall, BTN_UNINSTALL_W, BTN_HEIGHT);
+			buttons.commit(root);
 
-		// 被动 Tab：仅显示已安装插件提供的统计
-		passivePanel = new PassivePanel(terminal);
-		add(passivePanel);
-		passivePanel.refresh();
-		float passiveContentHeight = passivePanel.getContentHeight();
-		passivePanel.setRect(0, contentTop, WIDTH, passiveContentHeight);
-		passivePanel.active = passivePanel.visible = false;
+			col.y = Math.max(nameBlock.bottom(), rowY + BTN_HEIGHT) + GAP;
 
-		// 插件面板
-		pluginPanel = new PluginPanel(terminal);
-		add(pluginPanel);
-		pluginPanel.refresh();
-		float pluginContentHeight = pluginPanel.getContentHeight();
-		pluginPanel.setRect(0, contentTop, WIDTH, pluginContentHeight);
-
-		int contentHeight = (int) Math.max(Math.max(activeContentHeight, passiveContentHeight), pluginContentHeight);
-		resize(WIDTH, (int) (contentTop + contentHeight));
-
-		// 标签：主动、被动、插件
-		add(new IconTab(Icons.get(Icons.TALENT)) {
-			@Override
-			protected void select(boolean value) {
-				super.select(value);
-				activePanel.active = activePanel.visible = value;
-			}
-		});
-		add(new IconTab(Icons.get(Icons.STATS)) {
-			@Override
-			protected void select(boolean value) {
-				super.select(value);
-				passivePanel.active = passivePanel.visible = value;
-				if (value) passivePanel.refresh();
-			}
-		});
-		add(new IconTab(new ItemSprite(new TerminalPlugin())) {
-			@Override
-			protected void select(boolean value) {
-				super.select(value);
-				pluginPanel.active = pluginPanel.visible = value;
-				if (value) {
-					pluginPanel.refresh();
-					for (TerminalPlugin p : terminal.getInstalledPlugins()) {
-						p.onResume(terminal);
-					}
+			Component custom = plugin.createDisplayComponent(terminal);
+			if (custom != null) {
+				custom.setRect(0, col.y, WIDTH, CUSTOM_COMPONENT_H);
+				root.add(custom);
+				col.y = custom.bottom() + GAP;
+			} else {
+				String infoText = plugin.pluginDesc(terminal, slot);
+				if (infoText == null || infoText.isEmpty()) infoText = plugin.desc();
+				if (infoText != null && !infoText.isEmpty()) {
+					RenderedTextBlock info = PixelScene.renderTextBlock(infoText, INFO_FONT);
+					info.maxWidth(WIDTH);
+					info.setRect(0, col.y, WIDTH, INFO_MAX_H);
+					root.add(info);
+					col.y = info.bottom() + GAP;
 				}
 			}
-		});
-
-		layoutTabs();
-		select(0); // 默认选中主动页
-	}
-
-	/** 刷新插件/被动标签页内容（安装/卸载后由 ItemSelector 调用），并动态收缩面板与窗口高度 */
-	public void refreshPlugins() {
-		if (pluginPanel == null) return;
-		pluginPanel.refresh();
-		if (passivePanel != null) passivePanel.refresh();
-		float ph = pluginPanel.getContentHeight();
-		float pah = passivePanel != null ? passivePanel.getContentHeight() : 0;
-		pluginPanel.setRect(0, contentTop, WIDTH, ph);
-		if (passivePanel != null) passivePanel.setRect(0, contentTop, WIDTH, pah);
-		int maxH = (int) Math.max(Math.max(activeContentHeight, pah), ph);
-		resize(WIDTH, (int) (contentTop + maxH));
-	}
-
-	@Override
-	public void destroy() {
-		for (TerminalPlugin p : terminal.getInstalledPlugins()) {
-			p.onPause(terminal);
 		}
-		super.destroy();
-		if (openInstance == this) openInstance = null;
-	}
-
-	private static class PassivePanel extends Component {
-		private final RhodesIslandTerminal terminal;
-		private float layoutY;
-		private float contentHeight;
-
-		PassivePanel(RhodesIslandTerminal terminal) {
-			this.terminal = terminal;
+		if (!hasPlugin) {
+			RenderedTextBlock empty = PixelScene.renderTextBlock("No plugins installed.", 8);
+			empty.maxWidth(WIDTH);
+			empty.setRect(0, col.y, WIDTH, EMPTY_TEXT_H);
+			root.add(empty);
+			col.y = empty.bottom() + GAP;
 		}
 
-		float getContentHeight() {
-			return contentHeight;
-		}
-
-		void refresh() {
-			clear();
-			layoutY = GAP;
-			java.util.ArrayList<TerminalPlugin> plugins = terminal.getInstalledPlugins();
-			int nameW = WIDTH - BTN_INFO_W - VALUE_W - GAP * 2;
-
-			for (TerminalPlugin plugin : plugins) {
-				for (String[] entry : plugin.getPassiveEntries(terminal)) {
-					if (entry == null || entry.length < 3) continue;
-					final String name = entry[0];
-					final String desc = entry[1];
-					String value = entry[2];
-					float rowY = layoutY;
-
-					RenderedTextBlock nameBlock = PixelScene.renderTextBlock(name, 8);
-					nameBlock.maxWidth(nameW);
-					nameBlock.setRect(0, rowY, nameW, 12);
-					add(nameBlock);
-
-					RedButton infoBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_info"), 7) {
-						@Override
-						protected void onClick() {
-							GameScene.show(new WndMessage(desc));
-						}
-					};
-					infoBtn.setRect(WIDTH - BTN_INFO_W - VALUE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
-					add(infoBtn);
-
-					RenderedTextBlock valueBlock = PixelScene.renderTextBlock(value, 8);
-					valueBlock.setRect(WIDTH - VALUE_W, rowY + 4, VALUE_W, 12);
-					add(valueBlock);
-
-					layoutY = Math.max(nameBlock.bottom(), infoBtn.bottom()) + GAP;
+		if (terminal.canInstallMorePlugins()) {
+			RedButton installBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "install_plugin")) {
+				@Override
+				protected void onClick() {
+					openPluginSelector();
 				}
-			}
-
-			if (layoutY == GAP) {
-				RenderedTextBlock empty = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "passive_empty"), 8);
-				empty.maxWidth(WIDTH);
-				empty.setRect(0, layoutY, WIDTH, 14);
-				add(empty);
-				layoutY = empty.bottom() + GAP;
-			}
-			contentHeight = layoutY;
+			};
+			col.addFixedHeight(installBtn, BTN_HEIGHT);
 		}
+
+		root.setSize(WIDTH, col.bottom());
+		return root;
 	}
 
-	private static class PluginPanel extends Component {
-		private final RhodesIslandTerminal terminal;
-		private float layoutY;
-		/** refresh 后内容总高度，供父窗口动态设置面板与窗口高度 */
-		private float contentHeight;
+	private void addActionRow(Component root, ColumnLayout col, String titleText, String desc, int cost, boolean enabled, Runnable onActivate) {
+		float rowY = col.y;
+		int titleW = WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2;
 
-		PluginPanel(RhodesIslandTerminal terminal) {
-			this.terminal = terminal;
-		}
+		RenderedTextBlock titleBlock = PixelScene.renderTextBlock(titleText, 8);
+		titleBlock.maxWidth(titleW);
+		titleBlock.setRect(0, rowY, titleW, 12);
+		root.add(titleBlock);
 
-		float getContentHeight() {
-			return contentHeight;
-		}
-
-		void refresh() {
-			clear();
-			layoutY = GAP;
-			// 已安装插件标题
-			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "plugins_title"), 8);
-			title.maxWidth(WIDTH);
-			title.setRect(0, layoutY, WIDTH, 14);
-			add(title);
-			layoutY = title.bottom() + GAP;
-
-			Hero hero = Dungeon.hero;
-			java.util.ArrayList<TerminalPlugin> plugins = terminal.getInstalledPlugins();
-			int nameAreaWidth = WIDTH - (PLUGIN_ICON + GAP) - (48 + GAP); // 名称区域宽度，右侧留卸载按钮
-
-			for (int i = 0; i < plugins.size(); i++) {
-				final int index = i;
-				TerminalPlugin plugin = plugins.get(i);
-				float rowTop = layoutY;
-
-				// 第一行：图标 + 名称 + 卸载按钮
-				ItemSprite sprite = new ItemSprite(plugin);
-				sprite.x = 0;
-				sprite.y = rowTop;
-				sprite.width = PLUGIN_ICON;
-				sprite.height = PLUGIN_ICON;
-				add(sprite);
-
-				RenderedTextBlock name = PixelScene.renderTextBlock(plugin.name(), 8);
-				name.maxWidth(nameAreaWidth);
-				name.setRect(PLUGIN_ICON + GAP, rowTop + 2, nameAreaWidth, 12);
-				add(name);
-
-				RedButton uninstall = new RedButton(Messages.get(RhodesIslandTerminal.class, "uninstall")) {
-					@Override
-					protected void onClick() {
-						terminal.uninstallPlugin(index, hero);
-						refresh();
-					}
-				};
-				uninstall.setRect(WIDTH - 48, rowTop, 48, BTN_HEIGHT);
-				add(uninstall);
-
-				// 第二行：自定义显示组件 或 默认描述
-				float contentTop = rowTop + BTN_HEIGHT + GAP;
-				int contentWidth = WIDTH - (PLUGIN_ICON + GAP);
-				Component custom = plugin.createDisplayComponent(terminal);
-				if (custom != null) {
-					custom.setRect(PLUGIN_ICON + GAP, contentTop, contentWidth, CUSTOM_COMPONENT_H);
-					add(custom);
-					layoutY = custom.bottom() + GAP;
-				} else {
-					String infoText = plugin.desc();
-					if (infoText != null && !infoText.isEmpty()) {
-						RenderedTextBlock info = PixelScene.renderTextBlock(infoText, INFO_FONT);
-						info.maxWidth(contentWidth);
-						info.setRect(PLUGIN_ICON + GAP, contentTop, contentWidth, INFO_MAX_H);
-						add(info);
-						layoutY = info.bottom() + GAP;
-					} else {
-						layoutY = contentTop + GAP;
-					}
-				}
+		RedButton infoBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_info"), 7) {
+			@Override
+			protected void onClick() {
+				GameScene.show(new WndMessage(desc));
 			}
+		};
+		infoBtn.setRect(WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
+		root.add(infoBtn);
 
-			if (terminal.canInstallMorePlugins()) {
-				RedButton installBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "install_plugin")) {
-					@Override
-					protected void onClick() {
-						GameScene.selectItem(pluginSelector);
-					}
-				};
-				installBtn.setRect(0, layoutY, WIDTH, BTN_HEIGHT);
-				add(installBtn);
-				layoutY = installBtn.bottom() + GAP;
+		RedButton activateBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_activate"), 7) {
+			@Override
+			protected void onClick() {
+				onActivate.run();
 			}
-			contentHeight = layoutY;
-		}
+		};
+		activateBtn.setRect(WIDTH - BTN_ACTIVATE_W, rowY, BTN_ACTIVATE_W, BTN_HEIGHT);
+		activateBtn.enable(enabled && Dungeon.cost >= cost);
+		root.add(activateBtn);
 
-		private static final WndBag.ItemSelector pluginSelector = new WndBag.ItemSelector() {
+		col.y = Math.max(titleBlock.bottom(), activateBtn.bottom()) + GAP;
+	}
+
+	private void openPluginSelector() {
+		WndBag.ItemSelector selector = new WndBag.ItemSelector() {
 			@Override
 			public String textPrompt() {
 				return Messages.get(RhodesIslandTerminal.class, "install_prompt");
 			}
+
 			@Override
 			public Class<? extends com.zootdungeon.items.bags.Bag> preferredBag() {
 				return Belongings.Backpack.class;
 			}
+
 			@Override
 			public boolean itemSelectable(Item item) {
 				return item instanceof TerminalPlugin;
 			}
+
 			@Override
 			public void onSelect(Item item) {
-				if (item != null && item instanceof TerminalPlugin && Dungeon.hero != null) {
+				if (item instanceof TerminalPlugin plugin && Dungeon.hero != null) {
 					RhodesIslandTerminal term = Dungeon.hero.belongings.getItem(RhodesIslandTerminal.class);
 					if (term != null && term.canInstallMorePlugins()) {
-						term.installPlugin((TerminalPlugin) item, Dungeon.hero);
+						term.installPlugin(plugin, Dungeon.hero);
 						GLog.p(Messages.get(RhodesIslandTerminal.class, "plugin_installed"));
 						if (openInstance != null) openInstance.refreshPlugins();
 					}
 				}
 			}
 		};
+		GameScene.selectItem(selector);
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		if (openInstance == this) openInstance = null;
+	}
+
+	private static class ColumnLayout {
+		public final Component parent;
+		public final float x;
+		public float y;
+		public final float width;
+		public final float gap;
+
+		public ColumnLayout(Component parent, float x, float y, float width, float gap) {
+			this.parent = parent;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.gap = gap;
+		}
+
+		public void addAutoHeight(Component c) {
+			c.setRect(x, y, width, 0);
+			parent.add(c);
+			y = c.bottom() + gap;
+		}
+
+		public void addFixedHeight(Component c, float height) {
+			c.setRect(x, y, width, height);
+			parent.add(c);
+			y = c.bottom() + gap;
+		}
+
+		public int bottom() {
+			return (int) Math.ceil(y);
+		}
+	}
+
+	private static class FlowLayout {
+		private final float x;
+		private final float y;
+		private final float width;
+		private final float gap;
+		private float cursor;
+		private float maxBottom;
+		private final ArrayList<Node> items = new ArrayList<>();
+
+		private static class Node {
+			Component component;
+			float width;
+			float height;
+
+			Node(Component component, float width, float height) {
+				this.component = component;
+				this.width = width;
+				this.height = height;
+			}
+		}
+
+		public FlowLayout(float x, float y, float width, float gap) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.gap = gap;
+			this.cursor = x;
+			this.maxBottom = y;
+		}
+
+		public void add(Component c, float itemWidth, float itemHeight) {
+			items.add(new Node(c, itemWidth, itemHeight));
+		}
+
+		public void commit(Component parent) {
+			for (Node node : items) {
+				node.component.setRect(cursor, y, node.width, node.height);
+				parent.add(node.component);
+				cursor = node.component.right() + gap;
+				maxBottom = Math.max(maxBottom, node.component.bottom());
+			}
+		}
+
+		public void commitByRatio(Component parent) {
+			cursor = x;
+			for (int i = 0; i < items.size(); i++) {
+				Node node = items.get(i);
+				float ratioWidth;
+				if (i < items.size() - 1) {
+					ratioWidth = (float) Math.floor(width * node.width) - gap;
+				} else {
+					ratioWidth = x + width - cursor;
+				}
+				node.component.setRect(cursor, y, ratioWidth, node.height);
+				parent.add(node.component);
+				cursor = node.component.right() + gap;
+				maxBottom = Math.max(maxBottom, node.component.bottom());
+			}
+		}
+
+		public float bottom() {
+			return maxBottom;
+		}
 	}
 }

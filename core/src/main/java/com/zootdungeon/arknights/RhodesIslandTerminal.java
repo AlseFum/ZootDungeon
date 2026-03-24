@@ -1,10 +1,12 @@
 package com.zootdungeon.arknights;
 
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.utils.AtomBundle;
 import com.zootdungeon.windows.WndRhodesIslandTerminal;
 import com.watabou.utils.Bundle;
 
@@ -16,15 +18,20 @@ public class RhodesIslandTerminal extends Artifact {
 	public static final String AC_OPEN = "OPEN";
 
 	public static final int COST_CAP = 99;
-	public static final int MAX_PLUGINS = 3;
+	public static final int DEFAULT_MAX_PLUGINS = 3;
 
 	private static final String PLUGINS = "plugins";
-	private static final String PLUGIN_STORAGE = "plugin_storage";
+	private static final String MAX_PLUGINS = "max_plugins";
+	private static final String SLOT_COUNT = "slot_count";
+	private static final String SLOT_PLUGIN = "slot_plugin";
+	private static final String SLOT_ENABLED = "slot_enabled";
+	private static final String SLOT_MODE = "slot_mode";
+	private static final String SLOT_STATE = "slot_state";
+	private static final String RUNTIME_ACTOR_ID = "runtime_actor_id";
 
-	/** 已安装的插件（从背包安装后存放在此） */
-	private ArrayList<TerminalPlugin> installedPlugins = new ArrayList<>();
-	/** 与 installedPlugins 一一对应的插件存储，供插件读写状态 */
-	private ArrayList<Bundle> pluginStorageData = new ArrayList<>();
+	public int maxPlugins = DEFAULT_MAX_PLUGINS;
+	public ArrayList<PluginSlot> slots = new ArrayList<>();
+	public int runtimeActorId = -1;
 
 	static {
 		SpriteRegistry.registerItemTexture("cola/command_terminal.png", 32)
@@ -36,46 +43,66 @@ public class RhodesIslandTerminal extends Artifact {
 		defaultAction = AC_OPEN;
 	}
 
-	/** 获取已安装的插件列表（只读） */
 	public ArrayList<TerminalPlugin> getInstalledPlugins() {
-		return installedPlugins;
-	}
-
-	/** 是否还能安装更多插件 */
-	public boolean canInstallMorePlugins() {
-		return installedPlugins.size() < MAX_PLUGINS;
-	}
-
-	/** 获取或创建指定插件的存储 Bundle，供插件读写状态。按 installedPlugins 中的索引一一对应。 */
-	public Bundle getOrCreatePluginStorage(TerminalPlugin plugin) {
-		int idx = installedPlugins.indexOf(plugin);
-		if (idx < 0) return null;
-		while (pluginStorageData.size() <= idx) {
-			pluginStorageData.add(new Bundle());
+		ArrayList<TerminalPlugin> result = new ArrayList<>();
+		for (PluginSlot slot : slots) {
+			if (slot != null && slot.plugin != null) result.add(slot.plugin);
 		}
-		return pluginStorageData.get(idx);
+		return result;
 	}
 
-	/** 安装插件：从背包中移除该物品并加入终端。成功返回 true。安装成功后调用 plugin.mount(this)。 */
+	public boolean canInstallMorePlugins() {
+		return slots.size() < maxPlugins;
+	}
+
+	public int slotCount() {
+		return slots.size();
+	}
+
+	public PluginSlot getSlot(int index) {
+		if (index < 0 || index >= slots.size()) return null;
+		return slots.get(index);
+	}
+
+	public PluginSlot findSlotByPlugin(TerminalPlugin plugin) {
+		for (PluginSlot slot : slots) {
+			if (slot != null && slot.plugin == plugin) return slot;
+		}
+		return null;
+	}
+
+	public AtomBundle getOrCreatePluginStorage(TerminalPlugin plugin) {
+		PluginSlot slot = findSlotByPlugin(plugin);
+		if (slot == null) return null;
+		if (slot.state == null) slot.state = new AtomBundle();
+		return slot.state;
+	}
+
 	public boolean installPlugin(TerminalPlugin plugin, Hero hero) {
 		if (plugin == null || !canInstallMorePlugins()) return false;
 		if (!hero.belongings.backpack.contains(plugin)) return false;
 		plugin.detach(hero.belongings.backpack);
-		installedPlugins.add(plugin);
-		pluginStorageData.add(new Bundle());
-		plugin.mount(this);
+		PluginSlot slot = new PluginSlot();
+		slot.plugin = plugin;
+		slot.state = new AtomBundle();
+		slot.enabled = true;
+		slot.activeModeState = "normal";
+		slots.add(slot);
+		plugin.onInstall(this, slot);
+		if (slot.enabled) plugin.onEnable(this, slot);
+		ensureRuntimeActor();
 		return true;
 	}
 
-	/** 卸载插件：从终端移除并放回英雄背包。卸载前调用 plugin.onUnmount(this)。成功返回被卸载的插件。 */
 	public TerminalPlugin uninstallPlugin(int index, Hero hero) {
-		if (index < 0 || index >= installedPlugins.size()) return null;
-		TerminalPlugin plugin = installedPlugins.get(index);
-		plugin.onUnmount(this);
-		installedPlugins.remove(index);
-		if (index < pluginStorageData.size()) {
-			pluginStorageData.remove(index);
+		if (index < 0 || index >= slots.size()) return null;
+		PluginSlot slot = slots.get(index);
+		TerminalPlugin plugin = slot != null ? slot.plugin : null;
+		if (plugin != null && slot != null) {
+			if (slot.enabled) plugin.onDisable(this, slot);
+			plugin.onUninstall(this, slot);
 		}
+		slots.remove(index);
 		if (plugin != null && hero.belongings.backpack != null) {
 			if (!plugin.collect(hero.belongings.backpack)) {
 				Dungeon.level.drop(plugin, hero.pos);
@@ -84,13 +111,123 @@ public class RhodesIslandTerminal extends Artifact {
 		return plugin;
 	}
 
-	/** 计算当前部署费用恢复倍率（基础 1.0 + 各插件加成） */
 	public float getCostRegenMultiplier() {
 		float mult = 1f;
-		for (TerminalPlugin p : installedPlugins) {
-			mult *= p.costRegenMultiplier();
+		for (PluginSlot slot : slots) {
+			if (!canSlotRun(slot)) continue;
+			mult *= slot.plugin.costRegenMultiplier(this, slot);
 		}
 		return mult;
+	}
+
+	public void enableSlot(int index) {
+		PluginSlot slot = getSlot(index);
+		if (slot == null || slot.plugin == null || slot.enabled) return;
+		slot.enabled = true;
+		slot.plugin.onEnable(this, slot);
+	}
+
+	public void disableSlot(int index) {
+		PluginSlot slot = getSlot(index);
+		if (slot == null || slot.plugin == null || !slot.enabled) return;
+		slot.plugin.onDisable(this, slot);
+		slot.enabled = false;
+	}
+
+	public boolean canSlotRun(PluginSlot slot) {
+		if (slot == null || slot.plugin == null || !slot.enabled) return false;
+		String state = slot.activeModeState;
+		return state == null || (!"jammed".equals(state) && !"cursed".equals(state));
+	}
+
+	public void activatePluginAction(int slotIndex, String actionId) {
+		PluginSlot slot = getSlot(slotIndex);
+		if (slot == null || !canSlotRun(slot)) return;
+		for (TerminalPlugin.ActiveSpec spec : slot.plugin.activeSpecs(this, slot)) {
+			if (spec == null || spec.id == null || !spec.id.equals(actionId)) continue;
+			if (!slot.plugin.canActivate(this, slot, spec)) return;
+			if (Dungeon.cost < spec.cost) return;
+			Dungeon.cost -= spec.cost;
+			slot.plugin.onActivate(this, slot, spec);
+			return;
+		}
+	}
+
+	public void deactivatePluginAction(int slotIndex, String actionId) {
+		PluginSlot slot = getSlot(slotIndex);
+		if (slot == null || slot.plugin == null) return;
+		for (TerminalPlugin.ActiveSpec spec : slot.plugin.activeSpecs(this, slot)) {
+			if (spec != null && actionId.equals(spec.id)) {
+				slot.plugin.onDeactivate(this, slot, spec);
+				return;
+			}
+		}
+	}
+
+	public void consumePluginCharge(int slotIndex, String actionId) {
+		PluginSlot slot = getSlot(slotIndex);
+		if (slot == null || slot.plugin == null) return;
+		for (TerminalPlugin.ActiveSpec spec : slot.plugin.activeSpecs(this, slot)) {
+			if (spec != null && actionId.equals(spec.id)) {
+				slot.plugin.onConsumeCharge(this, slot, spec);
+				return;
+			}
+		}
+	}
+
+	public TerminalRuntimeActor ensureRuntimeActor() {
+		if (runtimeActorId != -1) {
+			Actor existing = Actor.findById(runtimeActorId);
+			if (existing instanceof TerminalRuntimeActor tra) {
+				tra.bind(this);
+				return tra;
+			}
+		}
+		TerminalRuntimeActor actor = new TerminalRuntimeActor();
+		actor.bind(this);
+		Actor.add(actor);
+		runtimeActorId = actor.id();
+		return actor;
+	}
+
+	public void bindRuntimeActor(TerminalRuntimeActor actor) {
+		if (actor == null) return;
+		actor.bind(this);
+		runtimeActorId = actor.id();
+	}
+
+	public void onInstall(Hero hero) {
+		for (PluginSlot slot : slots) {
+			if (slot != null && slot.plugin != null) slot.plugin.onInstall(this, slot);
+		}
+	}
+
+	public void onLoad() {
+		ensureRuntimeActor();
+		for (PluginSlot slot : slots) {
+			if (slot == null || slot.plugin == null) continue;
+			slot.plugin.onLoad(this, slot);
+			if (slot.enabled) slot.plugin.onEnable(this, slot);
+		}
+	}
+
+	public void onEnable() {
+		ensureRuntimeActor();
+		for (PluginSlot slot : slots) {
+			if (slot != null && slot.plugin != null && slot.enabled) slot.plugin.onEnable(this, slot);
+		}
+	}
+
+	public void onDisable() {
+		for (PluginSlot slot : slots) {
+			if (slot != null && slot.plugin != null && slot.enabled) slot.plugin.onDisable(this, slot);
+		}
+	}
+
+	public void onUninstall(Hero hero) {
+		for (int i = slots.size() - 1; i >= 0; i--) {
+			uninstallPlugin(i, hero);
+		}
 	}
 
 	@Override
@@ -116,34 +253,70 @@ public class RhodesIslandTerminal extends Artifact {
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		bundle.put(PLUGINS, new ArrayList<>(installedPlugins));
-		while (pluginStorageData.size() < installedPlugins.size()) {
-			pluginStorageData.add(new Bundle());
+		ArrayList<TerminalPlugin> plugins = getInstalledPlugins();
+		bundle.put(PLUGINS, plugins);
+		bundle.put(MAX_PLUGINS, maxPlugins);
+		bundle.put(SLOT_COUNT, slots.size());
+		for (int i = 0; i < slots.size(); i++) {
+			PluginSlot slot = slots.get(i);
+			if (slot == null || slot.plugin == null) continue;
+			String p = "slot_" + i + "_";
+			bundle.put(p + SLOT_PLUGIN, slot.plugin.getClass().getName());
+			bundle.put(p + SLOT_ENABLED, slot.enabled ? 1 : 0);
+			bundle.put(p + SLOT_MODE, slot.activeModeState != null ? slot.activeModeState : "normal");
+			bundle.put(p + SLOT_STATE, slot.state != null ? slot.state.toString() : new AtomBundle().toString());
 		}
-		for (int i = 0; i < pluginStorageData.size(); i++) {
-			bundle.put(PLUGIN_STORAGE + "_" + i, pluginStorageData.get(i));
-		}
+		bundle.put(RUNTIME_ACTOR_ID, runtimeActorId);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		Collection<?> col = bundle.getCollection(PLUGINS);
-		installedPlugins = new ArrayList<>();
+		ArrayList<TerminalPlugin> fallbackPlugins = new ArrayList<>();
 		for (Object o : col) {
 			if (o instanceof TerminalPlugin) {
-				installedPlugins.add((TerminalPlugin) o);
+				fallbackPlugins.add((TerminalPlugin) o);
 			}
 		}
-		pluginStorageData = new ArrayList<>();
-		for (int i = 0; i < installedPlugins.size(); i++) {
-			String key = PLUGIN_STORAGE + "_" + i;
-			if (bundle.contains(key)) {
-				pluginStorageData.add(bundle.getBundle(key));
-			} else {
-				pluginStorageData.add(new Bundle());
+		maxPlugins = bundle.contains(MAX_PLUGINS) ? bundle.getInt(MAX_PLUGINS) : DEFAULT_MAX_PLUGINS;
+		slots = new ArrayList<>();
+		int slotCount = bundle.contains(SLOT_COUNT) ? bundle.getInt(SLOT_COUNT) : fallbackPlugins.size();
+		for (int i = 0; i < slotCount; i++) {
+			String p = "slot_" + i + "_";
+			PluginSlot slot = new PluginSlot();
+			if (bundle.contains(p + SLOT_PLUGIN)) {
+				Object obj = null;
+				try {
+					Class<?> cls = Class.forName(bundle.getString(p + SLOT_PLUGIN));
+					obj = cls.getDeclaredConstructor().newInstance();
+				} catch (Exception ignored) {
+				}
+				if (obj instanceof TerminalPlugin tp) {
+					slot.plugin = tp;
+				}
 			}
+			if (slot.plugin == null && i < fallbackPlugins.size()) {
+				slot.plugin = fallbackPlugins.get(i);
+			}
+			slot.enabled = !bundle.contains(p + SLOT_ENABLED) || bundle.getInt(p + SLOT_ENABLED) != 0;
+			slot.activeModeState = bundle.contains(p + SLOT_MODE) ? bundle.getString(p + SLOT_MODE) : "normal";
+			slot.state = new AtomBundle();
+			if (bundle.contains(p + SLOT_STATE)) {
+				String raw = bundle.getString(p + SLOT_STATE);
+				if (raw != null && !raw.isEmpty()) {
+					try {
+						slot.state = AtomBundle.fromString(raw);
+					} catch (Exception ignored) {
+						slot.state = new AtomBundle();
+					}
+				}
+			}
+			if (slot.plugin != null) slots.add(slot);
 		}
+		runtimeActorId = bundle.contains(RUNTIME_ACTOR_ID) ? bundle.getInt(RUNTIME_ACTOR_ID) : -1;
+		onLoad();
 	}
 
 	public class TerminalBuff extends ArtifactBuff {
@@ -158,6 +331,37 @@ public class RhodesIslandTerminal extends Artifact {
 				partialCharge -= 1f;
 				Dungeon.cost = Math.min(cap, Dungeon.cost + 1);
 			}
+		}
+	}
+
+	public static class PluginSlot {
+		public TerminalPlugin plugin;
+		public AtomBundle state = new AtomBundle();
+		public boolean enabled = true;
+		public String activeModeState = "normal";
+	}
+
+	public static class TerminalRuntimeActor extends Actor {
+
+		public RhodesIslandTerminal terminal;
+
+		public void bind(RhodesIslandTerminal terminal) {
+			this.terminal = terminal;
+		}
+
+		@Override
+		protected boolean act() {
+			if (terminal != null) {
+				for (PluginSlot slot : terminal.slots) {
+					if (!terminal.canSlotRun(slot)) continue;
+					for (TerminalPlugin.ActiveSpec spec : slot.plugin.activeSpecs(terminal, slot)) {
+						slot.plugin.onRuntimeTick(terminal, slot, spec);
+					}
+					slot.plugin.onPassiveTick(terminal, slot);
+				}
+			}
+			spend(TICK);
+			return true;
 		}
 	}
 }

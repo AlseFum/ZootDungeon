@@ -24,6 +24,7 @@ package com.zootdungeon.arknights;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.utils.AtomBundle;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -57,33 +58,74 @@ public class TerminalPlugin extends Item {
 	/**
 	 * 插件对终端部署费用恢复速度的加成倍数。1.0 为无加成。
 	 */
-	public float costRegenMultiplier() {
+	public float costRegenMultiplier(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
 		return 1f + level() * 0.1f;
 	}
 
-	/** 安装时调用，可在此向 terminal 写入或恢复 actor。 */
-	public void mount(RhodesIslandTerminal terminal) {
+	public String pluginId() {
+		return getClass().getName();
 	}
 
-	/** 打开终端或切回插件 Tab 时调用，可在此恢复或刷新 actor。 */
-	public void onResume(RhodesIslandTerminal terminal) {
+	public String pluginName(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+		return name();
 	}
 
-	/** 卸载时调用，可在此清理 actor。 */
-	public void onUnmount(RhodesIslandTerminal terminal) {
+	public String pluginDesc(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+		return desc();
 	}
 
-	/** 关闭终端或切走插件 Tab 时调用，可选实现。 */
-	public void onPause(RhodesIslandTerminal terminal) {
+	public void onInstall(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
 	}
 
-	/**
-	 * 返回该插件在被动 Tab 中显示的统计项，每项为 [名称, 说明, 数值]。无则返回空列表。
-	 */
-	public List<String[]> getPassiveEntries(RhodesIslandTerminal terminal) {
-		List<String[]> list = new ArrayList<>();
-		list.add(new String[]{"COST恢复", "部署费用恢复倍率。", String.format("%.1fx", costRegenMultiplier())});
+	public void onLoad(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+	}
+
+	public void onEnable(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+	}
+
+	public void onDisable(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+	}
+
+	public void onUninstall(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+	}
+
+	public List<PassiveEntry> passiveEntries(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+		List<PassiveEntry> list = new ArrayList<>();
+		PassiveEntry e = new PassiveEntry();
+		e.id = "cost_regen";
+		e.name = "COST恢复";
+		e.desc = "部署费用恢复倍率。";
+		e.valueText = String.format("%.1fx", costRegenMultiplier(terminal, slot));
+		e.available = true;
+		list.add(e);
 		return list;
+	}
+
+	public List<ActiveSpec> activeSpecs(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+		return new ArrayList<>();
+	}
+
+	public boolean canActivate(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot, ActiveSpec spec) {
+		return slot != null && slot.enabled && terminal != null;
+	}
+
+	public void onActivate(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot, ActiveSpec spec) {
+	}
+
+	public void onDeactivate(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot, ActiveSpec spec) {
+	}
+
+	public void onRuntimeTick(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot, ActiveSpec spec) {
+	}
+
+	public void onPassiveTick(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+	}
+
+	public void onConsumeCharge(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot, ActiveSpec spec) {
+	}
+
+	public AtomBundle state(RhodesIslandTerminal terminal, RhodesIslandTerminal.PluginSlot slot) {
+		return slot != null ? slot.state : null;
 	}
 
 	/**
@@ -107,5 +149,31 @@ public class TerminalPlugin extends Item {
 	@Override
 	public int value() {
 		return 40;
+	}
+
+	public enum ActiveMode {
+		INSTANT,
+		SUSTAIN,
+		CHARGED
+	}
+
+	public static class ActiveSpec {
+		public String id;
+		public String name;
+		public String desc;
+		public ActiveMode mode = ActiveMode.INSTANT;
+		public int cost = 0;
+		public int duration = 0;
+		public int charges = 0;
+		public int cooldown = 0;
+		public String targeting = "none";
+	}
+
+	public static class PassiveEntry {
+		public String id;
+		public String name;
+		public String desc;
+		public String valueText;
+		public boolean available = true;
 	}
 }
