@@ -19,6 +19,7 @@ import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Window;
 import com.zootdungeon.utils.GLog;
+import com.watabou.noosa.PointerArea;
 
 public class WndRhodesIslandTerminal extends Window {
 
@@ -53,8 +54,18 @@ public class WndRhodesIslandTerminal extends Window {
 		ACTIVE, PASSIVE, PLUGINS
 	}
 
+	@Override
+	public void offset(int xOffset, int yOffset) {
+		super.offset(xOffset, yOffset);
+		// GameScene.show() 可能会给新窗口继承 offset；带 ScrollPane 的窗口需要在 offset 后刷新布局
+		relayout();
+	}
+
 	public WndRhodesIslandTerminal(RhodesIslandTerminal terminal) {
 		this.terminal = terminal;
+		if (openInstance != null && openInstance.parent != null) {
+			openInstance.hide();
+		}
 		openInstance = this;
 		buildWindow();
 	}
@@ -106,9 +117,21 @@ public class WndRhodesIslandTerminal extends Window {
 
 		int viewH = getAvailableViewHeight(y);
 		if (contentPane != null) {
+			// clamp window height to screen, then clamp content height accordingly
+			int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
+			int finalH = (int) (y + viewH + MARGIN);
+			if (finalH > maxWindowHeight) {
+				finalH = maxWindowHeight;
+			}
+			viewH = Math.max(0, finalH - (int) y - MARGIN);
 			contentPane.setRect(0, y, WIDTH, viewH);
+			resize(WIDTH, finalH);
+			return;
 		}
-		resize(WIDTH, (int) (y + viewH + MARGIN));
+		int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
+		int finalH = (int) (y + viewH + MARGIN);
+		if (finalH > maxWindowHeight) finalH = maxWindowHeight;
+		resize(WIDTH, finalH);
 	}
 
 	private int getAvailableViewHeight(float contentTop) {
@@ -120,12 +143,13 @@ public class WndRhodesIslandTerminal extends Window {
 	private void switchTab(TabType tab) {
 		currentTab = tab;
 		if (contentPane != null) {
+			contentPane.destroy();
 			remove(contentPane);
 			contentPane = null;
 		}
 
 		Component content = buildTabContent(tab);
-		contentPane = new ScrollPane(content);
+		contentPane = new InteractiveScrollPane(content);
 		contentPane.scrollTo(0, 0);
 		add(contentPane);
 		relayout();
@@ -409,6 +433,20 @@ public class WndRhodesIslandTerminal extends Window {
 	public void destroy() {
 		super.destroy();
 		if (openInstance == this) openInstance = null;
+	}
+
+	/**
+	 * ScrollPane 的默认滚动热区会 block pointer 输入，导致滚动区域里的 Button 点不到。
+	 * 这里把滚动热区改成 NEVER_BLOCK，让按钮仍然能收到点击事件，同时保留滚动能力。
+	 */
+	private static class InteractiveScrollPane extends ScrollPane {
+		public InteractiveScrollPane(Component content) {
+			super(content);
+			// ScrollPane.createChildren() 里会创建 controller，这里直接调整它的 blockLevel
+			if (controller != null) {
+				controller.blockLevel = PointerArea.NEVER_BLOCK;
+			}
+		}
 	}
 
 	private static class ColumnLayout {

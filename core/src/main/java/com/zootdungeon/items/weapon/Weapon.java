@@ -29,6 +29,7 @@ import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Berserk;
 import com.zootdungeon.actors.buffs.MagicImmune;
+import com.zootdungeon.actors.buffs.NextAttackReachBoost;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
@@ -322,6 +323,10 @@ abstract public class Weapon extends KindOfWeapon {
         }
         if (owner instanceof Hero && owner.buff(AscendedForm.AscendBuff.class) != null) {
             reach += 2;
+        }
+        NextAttackReachBoost nextAttackReachBoost = owner.buff(NextAttackReachBoost.class);
+        if (nextAttackReachBoost != null) {
+            reach += nextAttackReachBoost.bonusReach;
         }
         if (hasEnchant(Projecting.class, owner)) {
             return reach + Math.round(enchantment.procChanceMultiplier(owner));

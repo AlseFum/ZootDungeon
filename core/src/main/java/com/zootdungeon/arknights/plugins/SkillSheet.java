@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights.skills;
+package com.zootdungeon.arknights.plugins;
 
 import com.zootdungeon.actors.buffs.Adrenaline;
 import com.zootdungeon.actors.buffs.Buff;
@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class SkillSheet {
-	
+
 	// 注册的技能映射
 	public static final Map<String, Skill> registeredSkills = new HashMap<>();
-	
+
 	// 技能1：占位符技能
 	public static final Skill SKILL_1 = new Skill("skill_1", "base_skill_1", 0) {
 		@Override
@@ -23,7 +23,7 @@ public final class SkillSheet {
 			// TODO: 实现技能1的具体逻辑
 		}
 	};
-	
+
 	// 技能2：占位符技能
 	public static final Skill SKILL_2 = new Skill("skill_2", "base_skill_2", 0) {
 		@Override
@@ -38,11 +38,11 @@ public final class SkillSheet {
 		@Override
 		public void execute(Hero hero) {
 			RhodesIslandTerminal terminal = hero.belongings.getItem(RhodesIslandTerminal.class);
-			
+
 			Buff.affect(hero, Adrenaline.class, 15f);
 		}
 	};
-	
+
 	// 下一次攻击强化：给hero下一次攻击提升30%伤害的buff，攻击后失效
 	public static final Skill NEXT_ATTACK_BOOST = new Skill("next_attack_boost", "attack_boost", 0) {
 		@Override
@@ -51,6 +51,7 @@ public final class SkillSheet {
 			GLog.p("下一次攻击伤害提升30%");
 		}
 	};
+
 	//@@ skill_sheet_def
 	// 静态初始化块，注册所有技能
 	static {
@@ -58,14 +59,14 @@ public final class SkillSheet {
 		register(SKILL_2);
 		register(ATTACK_UP_ALPHA);
 		register(NEXT_ATTACK_BOOST);
-	//@@ skill_sheet_static
-	//@@ skill_sheet_static+++
-	//@@ skill_sheet_static---
+		//@@ skill_sheet_static
+		//@@ skill_sheet_static+++
+		//@@ skill_sheet_static---
 	}
-	
+
 	/**
 	 * 注册一个技能
-	 * 
+	 *
 	 * @param skill 要注册的技能
 	 * @return 注册的技能
 	 */
@@ -73,29 +74,28 @@ public final class SkillSheet {
 		registeredSkills.put(skill.id, skill);
 		return skill;
 	}
-	
+
 	/**
 	 * 根据ID获取技能
-	 * 
+	 *
 	 * @param id 技能ID
 	 * @return 对应的技能，如果不存在则返回null
 	 */
 	public static Skill get(String id) {
 		return registeredSkills.get(id);
 	}
-	
+
 	/**
 	 * 获取所有注册的技能
-	 * 
+	 *
 	 * @return 技能数组
 	 */
 	public static Skill[] values() {
 		return registeredSkills.values().toArray(new Skill[0]);
 	}
-	
+
 	// 私有构造函数，防止实例化
 	private SkillSheet() {
 		throw new AssertionError("SkillSheet is a utility class and should not be instantiated");
 	}
 }
-

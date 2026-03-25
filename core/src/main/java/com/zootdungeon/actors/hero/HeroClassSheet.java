@@ -26,6 +26,11 @@ import com.zootdungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.zootdungeon.actors.hero.abilities.warrior.Shockwave;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.arknights.TerminalPlugin;
+import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
+import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
+import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
+import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
+import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.armor.ClothArmor;
@@ -275,9 +280,15 @@ public final class HeroClassSheet {
 
                 RhodesIslandTerminal terminal = new RhodesIslandTerminal();
                 terminal.identify().collect();
-                TerminalPlugin starterPlugin = new TerminalPlugin();
+                TerminalPlugin starterPlugin = new ReachBoostPlugin();
                 starterPlugin.identify().collect();
                 terminal.installPlugin(starterPlugin, hero);
+                Dungeon.cost = 40;
+
+                new NextAttackDamageBoostPlugin().identify().collect();
+                new NextAttackCostRefundPlugin().identify().collect();
+                new DefenseBoostPlugin().identify().collect();
+                new PullEnemyPlugin().identify().collect();
 
             })
             .register();

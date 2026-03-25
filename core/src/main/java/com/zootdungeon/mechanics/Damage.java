@@ -360,6 +360,23 @@ public class Damage {
             nextAttackBoost.used = true;
             nextAttackBoost.detach();
         }
+        NextAttackReachBoost nextAttackReachBoost = attacker.buff(NextAttackReachBoost.class);
+        if (nextAttackReachBoost != null) {
+            nextAttackReachBoost.detach();
+        }
+        NextAttackDamageBoost nextAttackDamageBoost = attacker.buff(NextAttackDamageBoost.class);
+        if (nextAttackDamageBoost != null) {
+            nextAttackDamageBoost.detach();
+        }
+        NextAttackCostRefund nextAttackCostRefund = attacker.buff(NextAttackCostRefund.class);
+        if (nextAttackCostRefund != null) {
+            int gain = Math.max(0, (int) Math.floor(totalDamage * nextAttackCostRefund.rate));
+            if (gain > 0) {
+                int cap = com.zootdungeon.arknights.RhodesIslandTerminal.COST_CAP;
+                Dungeon.cost = Math.min(cap, Dungeon.cost + gain);
+            }
+            nextAttackCostRefund.detach();
+        }
         FireImbue fireImbue = attacker.buff(FireImbue.class);
         if (fireImbue != null) fireImbue.proc(defender);
         if (!defender.isAlive() && attacker instanceof Hero h) {
@@ -409,6 +426,10 @@ public class Damage {
             for (UnaryOperator<Float> amp : amps) {
                 if (amp != null) out = amp.apply(out);
             }
+            if (context != null && context.from != null && context.damageType == PHYSICAL && context.damageForm == DIRECT) {
+                NextAttackDamageBoost b = context.from.buff(NextAttackDamageBoost.class);
+                if (b != null) out *= b.multiplier;
+            }
             context.baseAmount = out;
             return out;
         }
@@ -419,6 +440,10 @@ public class Damage {
             float out = amount;
             for (UnaryOperator<Float> amp : amps) {
                 if (amp != null) out = amp.apply(out);
+            }
+            if (context != null && context.to != null) {
+                DefenseBoost def = context.to.buff(DefenseBoost.class);
+                if (def != null) out *= (1f - def.reduction);
             }
             context.mitigatedAmount = out;
             return out;
