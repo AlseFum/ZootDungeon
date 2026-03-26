@@ -31,6 +31,7 @@ import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
 import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
 import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
 import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
+import com.zootdungeon.arknights.plugins.MetabolismOverclockPlugin;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.armor.ClothArmor;
@@ -289,6 +290,7 @@ public final class HeroClassSheet {
                 new NextAttackCostRefundPlugin().identify().collect();
                 new DefenseBoostPlugin().identify().collect();
                 new PullEnemyPlugin().identify().collect();
+                new MetabolismOverclockPlugin().identify().collect();
 
             })
             .register();

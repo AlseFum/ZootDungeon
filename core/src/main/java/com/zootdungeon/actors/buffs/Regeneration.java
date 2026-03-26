@@ -80,6 +80,8 @@ public class Regeneration extends Buff {
 				if (target.buff(LockedFloor.class) == null) {
 					delay /= SaltCube.healthRegenMultiplier();
 				}
+				MetabolismOverclock overclock = target.buff(MetabolismOverclock.class);
+				if (overclock != null && overclock.regenMult > 0) delay /= overclock.regenMult;
 
 				partialRegen += 1f / delay;
 
