@@ -45,7 +45,8 @@ public class CDSettings extends GameSettings {
 	}
 	
 	public static boolean fullscreen() {
-		return getBoolean( KEY_FULLSCREEN, DeviceCompat.isDesktop() );
+		// Default to windowed on desktop (fullscreen can be enabled in settings and will persist).
+		return getBoolean( KEY_FULLSCREEN, false );
 	}
 	
 	public static void landscape( boolean value ){
