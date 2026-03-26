@@ -16,6 +16,9 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.MobSprite;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.BossHealthBar;
+import com.zootdungeon.utils.GLog;
+import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.CharSprite;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
@@ -29,6 +32,7 @@ public class SkullShatterer extends Mob {
     }
 
     private final SkullShattererWeapon weapon = new SkullShattererWeapon();
+    private float speechCooldown = 0f;
 
     {
         spriteClass = Sprite.class;
@@ -61,6 +65,7 @@ public class SkullShatterer extends Mob {
     @Override
     public void die(Object cause) {
         super.die(cause);
+        sayOnce("……撤退？不。", true);
         Dungeon.level.unseal();
         GameScene.bossSlain();
         Dungeon.level.drop(new SkeletonKey(Dungeon.depth), pos).sprite.drop();
@@ -70,6 +75,7 @@ public class SkullShatterer extends Mob {
     @Override
     public void notice() {
         super.notice();
+        sayOnce("目标确认。", true);
         if (!BossHealthBar.isAssigned()) {
             BossHealthBar.assignBoss(this);
             Dungeon.level.seal();
@@ -98,6 +104,7 @@ public class SkullShatterer extends Mob {
     }
 
     public void onZapComplete(int cell) {
+        sayOnce("爆破。", false);
         weapon.doGrenadeAt(this, cell);
         weapon.clearGrenadeState();
         spend(TICK);
@@ -122,6 +129,7 @@ public class SkullShatterer extends Mob {
     private class Hunting extends Mob.Hunting {
         @Override
         public boolean act(boolean enemyInFOV, boolean justAlerted) {
+            if (speechCooldown > 0) speechCooldown -= TICK;
             if (!enemyInFOV || enemy == null) {
                 return super.act(enemyInFOV, justAlerted);
             }
@@ -129,7 +137,12 @@ public class SkullShatterer extends Mob {
             target = enemy.pos;
             weapon.tickCooldown();
 
+            if (HP > 0 && HT > 0 && HP <= HT / 3) {
+                sayOnce("别想逃。", false);
+            }
+
             if (weapon.canFireRanged() && !hasAllyInNeighbour8() && !Dungeon.level.adjacent(pos, enemy.pos)) {
+                sayOnce("锁定。", false);
                 weapon.doGrenadeAt(SkullShatterer.this, enemy.pos);
                 weapon.clearGrenadeState();
                 spend(TICK);
@@ -175,5 +188,17 @@ public class SkullShatterer extends Mob {
                         if (ch instanceof SkullShatterer) ((SkullShatterer) ch).onZapComplete(cell);
                     });
         }
+    }
+
+    private void sayOnce(String line, boolean important) {
+        if (line == null || line.isEmpty()) return;
+        if (!important && speechCooldown > 0f) return;
+        // cooldown avoids spamming when boss is repeatedly acting/triggering.
+        speechCooldown = important ? 4f : 2f;
+        if (sprite != null) {
+            sprite.showStatus(CharSprite.NEUTRAL, line);
+        }
+        // Also log it so players on small screens don't miss it.
+        GLog.n(Messages.format("[碎骨] %s", line));
     }
 }
