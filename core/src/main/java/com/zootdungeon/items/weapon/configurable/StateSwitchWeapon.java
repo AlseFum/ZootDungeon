@@ -19,16 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -50,7 +52,7 @@ public class StateSwitchWeapon extends MeleeWeapon {
     private WeaponState currentState = WeaponState.NORMAL;
     
     // 防御转换比例（防御骰值的百分比加入攻击）
-    private static final float DEFENSE_TO_ATTACK_RATIO = 0.5f; // 50%
+    private float defenseToAttackRatio = 0.5f; // 50%
     
     public static final String AC_SWITCH = "SWITCH";
     
@@ -65,11 +67,11 @@ public class StateSwitchWeapon extends MeleeWeapon {
         if (currentState == WeaponState.NORMAL) {
             return baseDesc + "当前状态：普通模式\n\n" +
                    "切换到防御模式后，会将防御骰出的点数按" + 
-                   (int)(DEFENSE_TO_ATTACK_RATIO * 100) + "%的比例加入攻击值中。";
+                   (int)(defenseToAttackRatio * 100) + "%的比例加入攻击值中。";
         } else {
             return baseDesc + "当前状态：防御模式\n\n" +
                    "在此状态下，攻击时会根据敌人的防御骰值，将" + 
-                   (int)(DEFENSE_TO_ATTACK_RATIO * 100) + "%的防御值加入攻击伤害中。";
+                   (int)(defenseToAttackRatio * 100) + "%的防御值加入攻击伤害中。";
         }
     }
     
@@ -118,7 +120,7 @@ public class StateSwitchWeapon extends MeleeWeapon {
             int defenseRoll = defender.defenseSkill(hero);
             
             // 将防御骰值按比例加入伤害
-            int bonusDamage = Math.round(defenseRoll * DEFENSE_TO_ATTACK_RATIO);
+            int bonusDamage = Math.round(defenseRoll * defenseToAttackRatio);
             damage += bonusDamage;
             
             if (bonusDamage > 0) {
@@ -128,13 +130,28 @@ public class StateSwitchWeapon extends MeleeWeapon {
         
         return damage;
     }
+
+    public StateSwitchWeapon randomize() {
+        tier = Random.IntRange(1, 5);
+        level(Random.IntRange(0, 3));
+        defenseToAttackRatio = Random.Float(0.25f, 1.0f);
+        currentState = Random.Int(2) == 0 ? WeaponState.NORMAL : WeaponState.DEFENSE_MODE;
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
+    }
     
     private static final String STATE = "state";
+    private static final String DEF_RATIO = "defenseToAttackRatio";
     
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(STATE, currentState.name());
+        bundle.put(DEF_RATIO, defenseToAttackRatio);
     }
     
     @Override
@@ -146,6 +163,9 @@ public class StateSwitchWeapon extends MeleeWeapon {
             } catch (Exception e) {
                 currentState = WeaponState.NORMAL;
             }
+        }
+        if (bundle.contains(DEF_RATIO)) {
+            defenseToAttackRatio = bundle.getFloat(DEF_RATIO);
         }
     }
 }

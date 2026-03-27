@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -180,6 +180,20 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
         chargeCap += 2;
         if (chargeCap > 20) chargeCap = 20;
         return super.upgrade();
+    }
+
+    public SummoningAmbushWeapon randomize() {
+        tier = Random.IntRange(1, 5);
+        level(Random.IntRange(0, 3));
+        chargeCap = Random.IntRange(8, 20);
+        charge = Random.IntRange(0, chargeCap);
+        ambushRate = Random.Float(0.4f, 1.2f);
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
     }
     
     @Override

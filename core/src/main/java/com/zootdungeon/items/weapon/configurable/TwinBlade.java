@@ -11,7 +11,7 @@
  * (at your option) any later version.
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -29,6 +29,7 @@ import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -48,6 +49,7 @@ public class TwinBlade extends MeleeWeapon {
 
     /** 是否为组合状态（两把合为一把） */
     private boolean combined = false;
+    private float doubleStrikeChance = 1f;
 
     @Override
     public String name() {
@@ -57,7 +59,7 @@ public class TwinBlade extends MeleeWeapon {
     @Override
     public String desc() {
         if (combined) {
-            return "两把刀组合而成。每次攻击会连续挥击两次。\n\n可拆分回两把单刀（拆分后需重新拾取）。";
+            return "两把刀组合而成。有概率触发第二次挥击。\n\n可拆分回两把单刀（拆分后需重新拾取）。";
         }
         return "一把轻便的短刀，可近战也可投掷。\n\n拥有两把时可以选择「组合」，合为一把双刀，攻击时会连续挥击两次。";
     }
@@ -226,6 +228,19 @@ public class TwinBlade extends MeleeWeapon {
         return 5 * (tier + 1) + lvl * (tier + 1);
     }
 
+    public TwinBlade randomize() {
+        tier = Random.IntRange(1, 5);
+        level(Random.IntRange(0, 3));
+        combined = Random.Int(5) == 0;
+        doubleStrikeChance = Random.Float(0.35f, 1f);
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
+    }
+
     // --------------- 组合态：攻击两次 ---------------
     @Override
     public float delayFactor(Char owner) {
@@ -260,7 +275,7 @@ public class TwinBlade extends MeleeWeapon {
     @Override
     public int proc(Char attacker, Char defender, int damage) {
         damage = super.proc(attacker, defender, damage);
-        if (combined && attacker instanceof Hero) {
+        if (combined && attacker instanceof Hero && Random.Float() < doubleStrikeChance) {
             Hero hero = (Hero) attacker;
             TwinStrikeBuff b = hero.buff(TwinStrikeBuff.class);
             if (b != null) {
@@ -312,16 +327,21 @@ public class TwinBlade extends MeleeWeapon {
 
     // --------------- 序列化 ---------------
     private static final String COMBINED = "combined";
+    private static final String DOUBLE_STRIKE_CHANCE = "doubleStrikeChance";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(COMBINED, combined);
+        bundle.put(DOUBLE_STRIKE_CHANCE, doubleStrikeChance);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         combined = bundle.getBoolean(COMBINED);
+        if (bundle.contains(DOUBLE_STRIKE_CHANCE)) {
+            doubleStrikeChance = bundle.getFloat(DOUBLE_STRIKE_CHANCE);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -30,9 +30,17 @@ public class InstantMechWeapon extends MeleeWeapon {
     
     private static final String AC_RELEASE_MECH = "RELEASE_MECH";
     private static final String MECH_COUNT = "mechCount";
+    private static final String EXPLODE_CHANCE = "explodeChance";
+    private static final String AUTO_TARGET_CHANCE = "autoTargetChance";
+    private static final String TRANSFER_RANGE = "transferRange";
+    private static final String EXPLODE_RANGE = "explodeRange";
     
     // 存储所有活跃的mech
     private HashSet<InstantMechBuff> activeMechs = new HashSet<>();
+    public float explodeChance = 0.15f;
+    public float autoTargetChance = 0.2f;
+    public int transferRange = 5;
+    public int explodeRange = 2;
     
     {
         image = ItemSpriteSheet.SWORD;
@@ -98,6 +106,10 @@ public class InstantMechWeapon extends MeleeWeapon {
             InstantMechBuff mech = new InstantMechBuff();
             mech.weapon = this;
             mech.power = tier + buffedLvl();
+            mech.explodeChance = explodeChance;
+            mech.autoTargetChance = autoTargetChance;
+            mech.transferRange = transferRange;
+            mech.explodeRange = explodeRange;
             if (mech.attachTo(target)) {
                 activeMechs.add(mech);
             }
@@ -130,11 +142,30 @@ public class InstantMechWeapon extends MeleeWeapon {
     public int max(int lvl) {
         return 5 * (tier + 1) + lvl * (tier + 1);
     }
+
+    public InstantMechWeapon randomize() {
+        tier = Random.IntRange(1, 5);
+        level(Random.IntRange(0, 3));
+        explodeChance = Random.Float(0.05f, 0.35f);
+        autoTargetChance = Random.Float(0.05f, 0.45f);
+        transferRange = Random.IntRange(3, 9);
+        explodeRange = Random.IntRange(1, 3);
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
+    }
     
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(MECH_COUNT, activeMechs.size());
+        bundle.put(EXPLODE_CHANCE, explodeChance);
+        bundle.put(AUTO_TARGET_CHANCE, autoTargetChance);
+        bundle.put(TRANSFER_RANGE, transferRange);
+        bundle.put(EXPLODE_RANGE, explodeRange);
     }
     
     @Override
@@ -142,6 +173,10 @@ public class InstantMechWeapon extends MeleeWeapon {
         super.restoreFromBundle(bundle);
         // 注意：mech会在游戏加载时自动恢复，这里只需要清空集合
         activeMechs.clear();
+        if (bundle.contains(EXPLODE_CHANCE)) explodeChance = bundle.getFloat(EXPLODE_CHANCE);
+        if (bundle.contains(AUTO_TARGET_CHANCE)) autoTargetChance = bundle.getFloat(AUTO_TARGET_CHANCE);
+        if (bundle.contains(TRANSFER_RANGE)) transferRange = bundle.getInt(TRANSFER_RANGE);
+        if (bundle.contains(EXPLODE_RANGE)) explodeRange = bundle.getInt(EXPLODE_RANGE);
     }
     
     // Mech Buff类
@@ -149,10 +184,10 @@ public class InstantMechWeapon extends MeleeWeapon {
         
         public InstantMechWeapon weapon;
         public int power = 1;
-        private static final float EXPLODE_CHANCE = 0.15f; // 爆炸概率
-        private static final float AUTO_TARGET_CHANCE = 0.2f; // 自动索敌概率（每回合）
-        private static final int TRANSFER_RANGE = 5; // 转移范围
-        private static final int EXPLODE_RANGE = 2; // 爆炸范围
+        public float explodeChance = 0.15f;
+        public float autoTargetChance = 0.2f;
+        public int transferRange = 5;
+        public int explodeRange = 2;
         
         {
             type = buffType.NEGATIVE;
@@ -197,13 +232,13 @@ public class InstantMechWeapon extends MeleeWeapon {
             target.damage(damage, this);
             
             // 检查是否爆炸
-            if (Random.Float() < EXPLODE_CHANCE) {
+            if (Random.Float() < explodeChance) {
                 explode();
                 // 爆炸后转移到其他敌人
                 transferToOtherEnemy();
             } else {
                 // 正常情况也可能自动索敌并转移（较低概率）
-                if (Random.Float() < AUTO_TARGET_CHANCE) {
+                if (Random.Float() < autoTargetChance) {
                     transferToOtherEnemy();
                 }
             }
@@ -219,14 +254,11 @@ public class InstantMechWeapon extends MeleeWeapon {
             int centerPos = target.pos;
             
             // 对爆炸范围内的所有敌人造成伤害
-            for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-                int pos = centerPos + PathFinder.NEIGHBOURS8[i];
-                if (pos >= 0 && pos < Dungeon.level.length()) {
-                    Char ch = Actor.findChar(pos);
-                    if (ch != null && ch.alignment == Char.Alignment.ENEMY && ch != target) {
-                        int explodeDamage = Random.NormalIntRange(power * 2, power * 3);
-                        ch.damage(explodeDamage, this);
-                    }
+            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+                if (mob != null && mob.isAlive() && mob != target
+                        && Dungeon.level.distance(centerPos, mob.pos) <= explodeRange) {
+                    int explodeDamage = Random.NormalIntRange(power * 2, power * 3);
+                    mob.damage(explodeDamage, this);
                 }
             }
             
@@ -252,7 +284,7 @@ public class InstantMechWeapon extends MeleeWeapon {
                 if (mob.alignment == Char.Alignment.ENEMY 
                         && mob.isAlive() 
                         && mob != target
-                        && Dungeon.level.distance(mob.pos, currentPos) <= TRANSFER_RANGE) {
+                        && Dungeon.level.distance(mob.pos, currentPos) <= transferRange) {
                     candidates.add(mob);
                 }
             }

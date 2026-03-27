@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -6,6 +6,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
@@ -23,10 +24,13 @@ import java.util.ArrayList;
 public class MomentumWeapon extends MeleeWeapon {
     
     // 速度阈值：超过这个速度时推开敌人
-    static final float PUSH_THRESHOLD = 1.2f;
+    public float pushThreshold = 1.2f;
     
     // 伤害倍率：每单位速度增加的伤害倍率
-    static final float DAMAGE_MULTIPLIER_PER_SPEED = 0.2f;
+    public float damageMultiplierPerSpeed = 0.2f;
+    
+    // 冲量衰减：每回合衰减
+    public float momentumDecay = 0.15f;
     
     {
         image = ItemSpriteSheet.SPEAR;
@@ -64,8 +68,8 @@ public class MomentumWeapon extends MeleeWeapon {
     @Override
     public String info() {
         return Messages.get(this, "desc", 
-                (int)PUSH_THRESHOLD,
-                (int)(DAMAGE_MULTIPLIER_PER_SPEED * 100));
+                (int)pushThreshold,
+                (int)(damageMultiplierPerSpeed * 100));
     }
     
     @Override
@@ -76,6 +80,20 @@ public class MomentumWeapon extends MeleeWeapon {
     @Override
     public int max(int lvl) {
         return 5 * (tier + 1) + lvl * (tier + 1);
+    }
+
+    public MomentumWeapon randomize() {
+        tier = com.watabou.utils.Random.IntRange(0, 5);
+        level(com.watabou.utils.Random.IntRange(0, 3));
+        pushThreshold = com.watabou.utils.Random.Float(0.8f, 2.2f);
+        damageMultiplierPerSpeed = com.watabou.utils.Random.Float(0.1f, 0.45f);
+        momentumDecay = com.watabou.utils.Random.Float(0.05f, 0.25f);
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
     }
     
     @Override
@@ -111,12 +129,12 @@ public class MomentumWeapon extends MeleeWeapon {
             
             // 根据冲量增加伤害
             if (momentum > 0) {
-                float damageMultiplier = 1.0f + momentum * DAMAGE_MULTIPLIER_PER_SPEED;
+                float damageMultiplier = 1.0f + momentum * damageMultiplierPerSpeed;
                 damage = Math.round(damage * damageMultiplier);
             }
             
             // 如果冲量够高，推开敌人
-            if (momentum >= PUSH_THRESHOLD && defender.isAlive()) {
+            if (momentum >= pushThreshold && defender.isAlive()) {
                 // 计算推开方向：从攻击者指向目标
                 Ballistica trajectory = new Ballistica(attacker.pos, defender.pos, Ballistica.PROJECTILE);
                 
@@ -158,9 +176,6 @@ public class MomentumWeapon extends MeleeWeapon {
             return 3; // 默认值
         }
         
-        // 冲量衰减：每回合衰减
-        private static final float MOMENTUM_DECAY = 0.15f;
-        
         @Override
         public int icon() {
             return BuffIndicator.HASTE;
@@ -187,8 +202,10 @@ public class MomentumWeapon extends MeleeWeapon {
             if (currentMomentum <= 0) {
                 return Messages.get(MomentumWeapon.class, "momentum_desc_no_speed");
             }
-            int damageBonus = (int)(currentMomentum * MomentumWeapon.DAMAGE_MULTIPLIER_PER_SPEED * 100);
-            if (currentMomentum >= MomentumWeapon.PUSH_THRESHOLD) {
+            float dmgScale = weapon == null ? 0.2f : weapon.damageMultiplierPerSpeed;
+            float threshold = weapon == null ? 1.2f : weapon.pushThreshold;
+            int damageBonus = (int)(currentMomentum * dmgScale * 100);
+            if (currentMomentum >= threshold) {
                 return Messages.get(MomentumWeapon.class, "momentum_desc_with_push", 
                         String.format("%.1f", currentMomentum), damageBonus);
             } else {
@@ -220,7 +237,8 @@ public class MomentumWeapon extends MeleeWeapon {
                     calculateMomentum();
                 } else {
                     // 位置没改变，衰减冲量
-                    currentMomentum = Math.max(0f, currentMomentum - MOMENTUM_DECAY);
+                    float decay = weapon == null ? 0.15f : weapon.momentumDecay;
+                    currentMomentum = Math.max(0f, currentMomentum - decay);
                 }
             }
             
@@ -309,7 +327,6 @@ public class MomentumWeapon extends MeleeWeapon {
         
         private static final String POSITION_HISTORY = "position_history";
         private static final String CURRENT_MOMENTUM = "current_momentum";
-        
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
@@ -336,6 +353,26 @@ public class MomentumWeapon extends MeleeWeapon {
             }
             currentMomentum = bundle.contains(CURRENT_MOMENTUM) ? bundle.getFloat(CURRENT_MOMENTUM) : 0f;
         }
+    }
+
+    private static final String PUSH_THRESHOLD = "pushThreshold";
+    private static final String DAMAGE_PER_SPEED = "damageMultiplierPerSpeed";
+    private static final String MOMENTUM_DECAY = "momentumDecay";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(PUSH_THRESHOLD, pushThreshold);
+        bundle.put(DAMAGE_PER_SPEED, damageMultiplierPerSpeed);
+        bundle.put(MOMENTUM_DECAY, momentumDecay);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        if (bundle.contains(PUSH_THRESHOLD)) pushThreshold = bundle.getFloat(PUSH_THRESHOLD);
+        if (bundle.contains(DAMAGE_PER_SPEED)) damageMultiplierPerSpeed = bundle.getFloat(DAMAGE_PER_SPEED);
+        if (bundle.contains(MOMENTUM_DECAY)) momentumDecay = bundle.getFloat(MOMENTUM_DECAY);
     }
 }
 

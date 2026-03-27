@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Method;
 import java.util.function.Supplier;
 
 // ----- 核心逻辑 -----
@@ -248,7 +249,7 @@ public final class LootRegistry {
             List<Item> out = new ArrayList<>();
             if (supplier == null) return out;
             Item item = supplier.get();
-            if (item != null) out.add(item);
+            if (item != null) out.add(randomizeIfPossible(item));
             return out;
         }
     }
@@ -272,7 +273,7 @@ public final class LootRegistry {
             List<Item> out = new ArrayList<>();
             if (category == null) return out;
             Item item = useDefaults ? Generator.randomUsingDefaults(category) : Generator.random(category);
-            if (item != null) out.add(item);
+            if (item != null) out.add(randomizeIfPossible(item));
             return out;
         }
     }
@@ -307,5 +308,19 @@ public final class LootRegistry {
             if (c != null && !c.test(ctx)) return false;
         }
         return true;
+    }
+
+    private static Item randomizeIfPossible(Item item) {
+        if (item == null) return null;
+        try {
+            Method m = item.getClass().getMethod("randomize");
+            Object out = m.invoke(item);
+            if (out instanceof Item) {
+                return (Item) out;
+            }
+        } catch (Exception ignored) {
+            // No custom randomize method: keep item as-is.
+        }
+        return item;
     }
 }

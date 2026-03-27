@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -31,10 +31,14 @@ public class TransferMechWeapon extends MeleeWeapon {
     
     private static final String AC_RELEASE_MECH = "RELEASE_MECH";
     private static final String MECH_COUNT = "mechCount";
+    private static final String AOE_RANGE = "aoeRange";
+    private static final String SEARCH_RANGE = "searchRange";
     
     // 存储所有活跃的mech（包括buff和char形式）
     private HashSet<TransferMechBuff> activeMechBuffs = new HashSet<>();
     private HashSet<TransferMechChar> activeMechChars = new HashSet<>();
+    public int aoeRange = 2;
+    public int searchRange = 8;
     
     {
         image = ItemSpriteSheet.DAGGER;
@@ -101,6 +105,7 @@ public class TransferMechWeapon extends MeleeWeapon {
             TransferMechBuff mech = new TransferMechBuff();
             mech.weapon = this;
             mech.power = tier + buffedLvl();
+            mech.aoeRange = aoeRange;
             if (mech.attachTo(target)) {
                 activeMechBuffs.add(mech);
             }
@@ -122,6 +127,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         TransferMechChar mechChar = new TransferMechChar();
         mechChar.weapon = this;
         mechChar.power = buff.power;
+        mechChar.searchRange = searchRange;
         mechChar.pos = deathPos;
         mechChar.state = mechChar.HUNTING;
         
@@ -142,6 +148,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         TransferMechBuff mechBuff = new TransferMechBuff();
         mechBuff.weapon = this;
         mechBuff.power = mechChar.power;
+        mechBuff.aoeRange = aoeRange;
         if (mechBuff.attachTo(newTarget)) {
             activeMechBuffs.add(mechBuff);
         }
@@ -178,11 +185,26 @@ public class TransferMechWeapon extends MeleeWeapon {
     public int max(int lvl) {
         return 5 * (tier + 1) + lvl * (tier + 1);
     }
+
+    public TransferMechWeapon randomize() {
+        tier = Random.IntRange(1, 5);
+        level(Random.IntRange(0, 3));
+        aoeRange = Random.IntRange(1, 3);
+        searchRange = Random.IntRange(5, 12);
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
+    }
     
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(MECH_COUNT, activeMechBuffs.size() + activeMechChars.size());
+        bundle.put(AOE_RANGE, aoeRange);
+        bundle.put(SEARCH_RANGE, searchRange);
     }
     
     @Override
@@ -191,6 +213,8 @@ public class TransferMechWeapon extends MeleeWeapon {
         // 注意：mech会在游戏加载时自动恢复，这里只需要清空集合
         activeMechBuffs.clear();
         activeMechChars.clear();
+        if (bundle.contains(AOE_RANGE)) aoeRange = bundle.getInt(AOE_RANGE);
+        if (bundle.contains(SEARCH_RANGE)) searchRange = bundle.getInt(SEARCH_RANGE);
     }
     
     // Mech Buff类
@@ -198,7 +222,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         public TransferMechWeapon weapon;
         public int power = 1;
-        private static final int AOE_RANGE = 2; // 对附近单位造成伤害的范围
+        public int aoeRange = 2;
         
         {
             type = buffType.NEGATIVE;
@@ -251,14 +275,11 @@ public class TransferMechWeapon extends MeleeWeapon {
             int centerPos = target.pos;
             
             // 对范围内的所有敌人造成伤害
-            for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-                int pos = centerPos + PathFinder.NEIGHBOURS8[i];
-                if (pos >= 0 && pos < Dungeon.level.length()) {
-                    Char ch = Actor.findChar(pos);
-                    if (ch != null && ch.alignment == Char.Alignment.ENEMY && ch != target) {
-                        int aoeDamage = Random.NormalIntRange(power, power * 2);
-                        ch.damage(aoeDamage, this);
-                    }
+            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+                if (mob != null && mob.isAlive() && mob != target
+                        && Dungeon.level.distance(centerPos, mob.pos) <= aoeRange) {
+                    int aoeDamage = Random.NormalIntRange(power, power * 2);
+                    mob.damage(aoeDamage, this);
                 }
             }
         }
@@ -301,7 +322,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         public TransferMechWeapon weapon;
         public int power = 1;
-        private static final int SEARCH_RANGE = 8; // 搜索敌人的范围
+        public int searchRange = 8; // 搜索敌人的范围
         
         {
             spriteClass = GhostSprite.class;
@@ -400,7 +421,7 @@ public class TransferMechWeapon extends MeleeWeapon {
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                 if (mob.alignment == Alignment.ENEMY && mob.isAlive()) {
                     int dist = Dungeon.level.distance(pos, mob.pos);
-                    if (dist <= SEARCH_RANGE && dist < closestDist) {
+                    if (dist <= searchRange && dist < closestDist) {
                         if (fieldOfView == null || fieldOfView[mob.pos]) {
                             closest = mob;
                             closestDist = dist;

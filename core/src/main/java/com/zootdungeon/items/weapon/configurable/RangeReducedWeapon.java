@@ -19,14 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon.configurable;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 public class RangeReducedWeapon extends MeleeWeapon {
     
@@ -35,6 +38,8 @@ public class RangeReducedWeapon extends MeleeWeapon {
     
     // 最大攻击范围：最多可以攻击4格外的敌人
     private static final int MAX_RANGE = 4;
+    private static final String REDUCE_RATE = "reduceRate";
+    private static final String RANGE = "rch";
     
     {
         image = ItemSpriteSheet.SPEAR;
@@ -82,6 +87,33 @@ public class RangeReducedWeapon extends MeleeWeapon {
         }
         
         return damage;
+    }
+
+    public RangeReducedWeapon randomize() {
+        tier = Random.IntRange(1, 5);
+        level(Random.IntRange(0, 3));
+        reduceRate = Random.Float(0.65f, 0.9f);
+        RCH = Random.IntRange(2, MAX_RANGE);
+        return this;
+    }
+
+    @Override
+    public Item random() {
+        return randomize();
+    }
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(REDUCE_RATE, reduceRate);
+        bundle.put(RANGE, RCH);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        if (bundle.contains(REDUCE_RATE)) reduceRate = bundle.getFloat(REDUCE_RATE);
+        if (bundle.contains(RANGE)) RCH = bundle.getInt(RANGE);
     }
 }
 
