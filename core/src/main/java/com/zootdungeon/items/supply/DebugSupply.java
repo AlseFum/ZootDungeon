@@ -10,7 +10,7 @@ import com.zootdungeon.arknights.gitano.GitanoCard;
 import com.zootdungeon.items.weapon.configurable.RangeReducedWeapon;
 import com.zootdungeon.items.weapon.configurable.SummoningAmbushWeapon;
 import com.zootdungeon.items.weapon.configurable.TransferMechWeapon;
-import com.zootdungeon.arknights.WandOfPrisonCage;
+import com.zootdungeon.arknights.tragodia.WandOfPrisonCage;
 import com.zootdungeon.arknights.necrass.SummoningThrowingWeapon;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;

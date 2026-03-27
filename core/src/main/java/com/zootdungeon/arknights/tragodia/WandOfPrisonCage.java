@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights;
+package com.zootdungeon.arknights.tragodia;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
