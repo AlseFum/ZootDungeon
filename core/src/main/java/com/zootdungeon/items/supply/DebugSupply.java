@@ -18,6 +18,7 @@ import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
+import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndGeneral;
@@ -164,7 +165,12 @@ public class DebugSupply extends Supply {
         if (items == null || items.isEmpty()) return;
         for (Supplier<Item> supplier : items) {
             Item item = supplier.get();
-            if (item != null) item.identify().collect();
+            if (item != null) {
+                item.identify();
+                if (item.collect()) {
+                    tryEquipWeapon(hero, item);
+                }
+            }
         }
         if (onOpen != null) onOpen.get();
     }
@@ -187,11 +193,31 @@ public class DebugSupply extends Supply {
     private void grantItem(Hero hero, Supplier<Item> supplier) {
         Item item = supplier.get();
         if (item != null) {
-            item.identify().collect();
+            item.identify();
+            if (item.collect()) {
+                tryEquipWeapon(hero, item);
+            }
         }
         if (onOpen != null) {
             onOpen.get();
         }
         // 不调用 detach，物品保留在背包
+    }
+
+    /** 调试发放的武器默认装进背包；对可装备武器再穿上，物品栏武器槽才会显示图标。 */
+    private static void tryEquipWeapon(Hero hero, Item item) {
+        if (!(item instanceof KindOfWeapon)) return;
+        KindOfWeapon kw = (KindOfWeapon) item;
+        if (hero.belongings.contains(kw) && kw.quantity() > 0) {
+            kw.doEquip(hero);
+            return;
+        }
+        // collect() 合并进已有堆叠时，引用上的 quantity 可能为 0，改对背包里那一堆装备
+        for (Item it : hero.belongings.backpack.items) {
+            if (it != null && kw.getClass() == it.getClass() && it instanceof KindOfWeapon && it.quantity() > 0) {
+                ((KindOfWeapon) it).doEquip(hero);
+                return;
+            }
+        }
     }
 }

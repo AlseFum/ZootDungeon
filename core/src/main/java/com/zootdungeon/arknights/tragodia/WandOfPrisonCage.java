@@ -35,6 +35,7 @@ import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.items.wands.Wand;
+import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.mechanics.Ballistica;
@@ -55,9 +56,13 @@ public class WandOfPrisonCage extends Wand {
     
     private int charge = 0;
     private int chargeCap = 10;
+    static {
+		SpriteRegistry.registerItemTexture("cola/tragodia_wand.png", 64)
+				.label("tragodia_wand");
+	}
     
     {
-        image = ItemSpriteSheet.WAND_MAGIC_MISSILE;
+        image = SpriteRegistry.itemByName("tragodia_wand");
         
         collisionProperties = Ballistica.MAGIC_BOLT;
     }

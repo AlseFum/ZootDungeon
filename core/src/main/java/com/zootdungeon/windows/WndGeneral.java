@@ -6,6 +6,7 @@ import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Window;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ import java.util.List;
  */
 public class WndGeneral extends Window {
 
+	/** 有滚动列表时非空；需在加入窗口后再 {@link ScrollPane#setRect}，否则 {@link ScrollPane#layout} 会因无 parent/camera 提前返回，子相机保持 1×1，列表不显示 */
+	private ScrollPane scrollPane;
+
 	private static final int WIDTH = 140;
 	private static final int MARGIN = 4;
 	private static final int GAP = 2;
@@ -60,6 +64,7 @@ public class WndGeneral extends Window {
 	private WndGeneral(Builder b) {
 		super();
 		float y = MARGIN;
+		int maxWindowH = Math.max(80, (int) PixelScene.uiCamera.height - 20);
 
 		if (b.title != null && !b.title.isEmpty()) {
 			RenderedTextBlock titleBlock = PixelScene.renderTextBlock(b.title, 9);
@@ -111,25 +116,49 @@ public class WndGeneral extends Window {
 
 		body.setSize(WIDTH, (int) bodyY);
 
-		if (bodyY > MAX_CONTENT_HEIGHT) {
-			int scrollH = Math.min((int) bodyY, MAX_CONTENT_HEIGHT);
-			int maxScrollH = Math.max(100, (int) (PixelScene.uiCamera.height - 80));
-			if (scrollH > maxScrollH) scrollH = maxScrollH;
-			ScrollPane scroll = new ScrollPane(body);
-			scroll.setRect(0, (int) y, WIDTH, scrollH);
-			add(scroll);
-			y += scroll.height() + MARGIN;
+		// 标题以下、底边距以上的可用高度；滚动区高度必须据此计算，否则仅 resize 截断窗口会导致内容画在相机外（长列表窗口空白/裁切）
+		int availableForBody = maxWindowH - (int) y - MARGIN;
+		availableForBody = Math.max(40, availableForBody);
+
+		boolean needScroll = bodyY > availableForBody || bodyY > MAX_CONTENT_HEIGHT;
+
+		if (needScroll && bodyY > 0) {
+			int scrollH = (int) Math.min(bodyY, Math.min(MAX_CONTENT_HEIGHT, availableForBody));
+			scrollH = Math.max(40, scrollH);
+			scrollPane = new InteractiveScrollPane(body);
+			add(scrollPane);
+			scrollPane.setRect(0, (int) y, WIDTH, scrollH);
+			y += scrollPane.height() + MARGIN;
 		} else {
-			body.setPos(0, y);
 			add(body);
+			body.setPos(0, y);
 			y = body.bottom() + MARGIN;
 		}
 
 		int finalH = (int) y;
-		if (finalH > PixelScene.uiCamera.height - 20) {
-			finalH = PixelScene.uiCamera.height - 20;
-		}
+		finalH = Math.min(finalH, maxWindowH);
 		resize(WIDTH, finalH);
+	}
+
+	@Override
+	public void offset(int xOffset, int yOffset) {
+		super.offset(xOffset, yOffset);
+		if (scrollPane != null) {
+			scrollPane.setPos(scrollPane.left(), scrollPane.top());
+		}
+	}
+
+	/**
+	 * 默认 {@link ScrollPane} 的滚动热区会吞掉指针事件，列表里的 {@link RedButton} 无法点击。
+	 * 与 {@link com.zootdungeon.arknights.RhodesIslandTerminal} 中做法一致：{@code NEVER_BLOCK} 让事件穿透到子控件，仍可通过拖拽/滚轮滚动。
+	 */
+	private static class InteractiveScrollPane extends ScrollPane {
+		InteractiveScrollPane(Component content) {
+			super(content);
+			if (controller != null) {
+				controller.blockLevel = PointerArea.NEVER_BLOCK;
+			}
+		}
 	}
 
 	private static class Row {
