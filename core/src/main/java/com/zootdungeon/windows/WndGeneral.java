@@ -2,17 +2,20 @@ package com.zootdungeon.windows;
 
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
-import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.RedButton;
+import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Window;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
+ * <!-- TOC: Column segments + {@link Builder#hrow} | multi-tab {@link Builder#tab} -->
  * 通用表单窗口，便于开发时快速展示结构化信息。
  * <p>
  * 用法示例：
@@ -34,19 +37,42 @@ import java.util.List;
  *     .option("药水卷轴", () -> {})
  *     .option("石头", () -> {})
  *     .show();
+ *
+ * // 多标签：仅使用 {@link #tab} 填入的页面；根级 {@link #line} 等在存在 tab 时忽略
+ * WndGeneral.make()
+ *     .title("多页")
+ *     .tab("甲", p -> p.line("第一页"))
+ *     .tab("乙", p -> p.option("动作", () -> {}))
+ *     .show();
+ *
+ * // 横向一排（默认自上而下为 Column；{@link Builder#hrow} / {@link PaneBuilder#hrow} 插入一行多列）
+ * WndGeneral.make()
+ *     .line("上面独占一行")
+ *     .hrow(r -> r.line("左").button("右", () -> {}))
+ *     .show();
  * </pre>
  */
 public class WndGeneral extends Window {
 
 	/** 有滚动列表时非空；需在加入窗口后再 {@link ScrollPane#setRect}，否则 {@link ScrollPane#layout} 会因无 parent/camera 提前返回，子相机保持 1×1，列表不显示 */
-	private ScrollPane scrollPane;
+	public ScrollPane scrollPane;
 
-	private static final int WIDTH = 140;
-	private static final int MARGIN = 4;
-	private static final int GAP = 2;
-	private static final int BTN_HEIGHT = 18;
+	public static final int WIDTH = 140;
+	public static final int MARGIN = 4;
+	public static final int GAP = 2;
+	public static final int BTN_HEIGHT = 18;
+	public static final int TAB_BTN_H = 14;
 	/** 内容超过此高度时启用滚动，且不超过屏幕 */
-	private static final int MAX_CONTENT_HEIGHT = 180;
+	public static final int MAX_CONTENT_HEIGHT = 180;
+
+	/** 实际窗口内容宽度，不超过屏幕；用于横向滚动与居中 */
+	public int layoutWidth = WIDTH;
+
+	public boolean tabbedMode;
+	public RenderedTextBlock tabbedTitleBlock;
+	public ArrayList<RedButton> tabButtons;
+	public ArrayList<TabSpec> tabSpecs;
+	public int currentTab;
 
 	/** 简单展示：标题 + 多行文本，每行一个字符串 */
 	public static void show(String title, String... lines) {
@@ -61,73 +87,67 @@ public class WndGeneral extends Window {
 		return new Builder();
 	}
 
+	public static int computeLayoutWidth() {
+		Camera cam = PixelScene.uiCamera.visible ? PixelScene.uiCamera : Camera.main;
+		int screenW = (int) cam.width;
+		int edge = 16;
+		return Math.max(80, Math.min(WIDTH, screenW - edge));
+	}
+
+	public static int computeMaxWindowHeight() {
+		Camera cam = PixelScene.uiCamera.visible ? PixelScene.uiCamera : Camera.main;
+		return Math.max(80, (int) cam.height - 20);
+	}
+
+	private void applyWindowBounds() {
+		boundOffsetWithMargin(3);
+	}
+
 	private WndGeneral(Builder b) {
 		super();
+		if (!b.tabs.isEmpty()) {
+			initTabbed(b);
+		} else {
+			initSinglePane(b);
+		}
+	}
+
+	private void initSinglePane(Builder b) {
+		tabbedMode = false;
+		layoutWidth = computeLayoutWidth();
 		float y = MARGIN;
-		int maxWindowH = Math.max(80, (int) PixelScene.uiCamera.height - 20);
+		int maxWindowH = computeMaxWindowHeight();
 
 		if (b.title != null && !b.title.isEmpty()) {
 			RenderedTextBlock titleBlock = PixelScene.renderTextBlock(b.title, 9);
 			titleBlock.hardlight(TITLE_COLOR);
-			titleBlock.maxWidth(WIDTH - MARGIN * 2);
-			titleBlock.setPos(MARGIN, y);
+			titleBlock.maxWidth(layoutWidth - MARGIN * 2);
+			titleBlock.setPos((layoutWidth - titleBlock.width()) / 2f, y);
 			add(titleBlock);
 			y = titleBlock.bottom() + GAP;
 		}
 
-		Component body = new Component();
-		float bodyY = 0;
+		Component body = buildBodyComponent(b.segments, b.buttonText, b.onButton, layoutWidth);
+		float bodyY = body.height();
+		float bodyW = body.width();
 
-		for (Row row : b.rows) {
-			RenderedTextBlock block = PixelScene.renderTextBlock(row.text, 6);
-			block.maxWidth(WIDTH - MARGIN * 2);
-			block.setPos(MARGIN, bodyY);
-			body.add(block);
-			bodyY = block.bottom() + GAP;
-		}
-
-		for (Option opt : b.options) {
-			RedButton btn = new RedButton(opt.label) {
-				@Override
-				protected void onClick() {
-					if (opt.onClick != null) opt.onClick.run();
-					hide();
-				}
-			};
-			btn.setRect(MARGIN, bodyY, WIDTH - MARGIN * 2, BTN_HEIGHT);
-			body.add(btn);
-			bodyY = btn.bottom() + GAP;
-		}
-
-		if (b.buttonText != null) {
-			RedButton btn = new RedButton(b.buttonText) {
-				@Override
-				protected void onClick() {
-					if (b.onButton != null) b.onButton.run();
-					hide();
-				}
-			};
-			btn.setRect(MARGIN, bodyY, WIDTH - MARGIN * 2, BTN_HEIGHT);
-			body.add(btn);
-			bodyY = btn.bottom() + MARGIN;
-		} else if (bodyY > 0) {
-			bodyY += MARGIN;
-		}
-
-		body.setSize(WIDTH, (int) bodyY);
-
-		// 标题以下、底边距以上的可用高度；滚动区高度必须据此计算，否则仅 resize 截断窗口会导致内容画在相机外（长列表窗口空白/裁切）
 		int availableForBody = maxWindowH - (int) y - MARGIN;
 		availableForBody = Math.max(40, availableForBody);
 
-		boolean needScroll = bodyY > availableForBody || bodyY > MAX_CONTENT_HEIGHT;
+		boolean needVScroll = bodyY > availableForBody || bodyY > MAX_CONTENT_HEIGHT;
+		boolean needHScroll = bodyW > layoutWidth + 0.5f;
+		boolean needScroll = (needVScroll || needHScroll) && bodyY > 0;
 
-		if (needScroll && bodyY > 0) {
-			int scrollH = (int) Math.min(bodyY, Math.min(MAX_CONTENT_HEIGHT, availableForBody));
-			scrollH = Math.max(40, scrollH);
+		if (needScroll) {
+			int scrollH;
+			if (needVScroll) {
+				scrollH = (int) Math.min(bodyY, Math.max(40, Math.min(MAX_CONTENT_HEIGHT, availableForBody)));
+			} else {
+				scrollH = (int) Math.min(Math.max(bodyY, 40), availableForBody);
+			}
 			scrollPane = new InteractiveScrollPane(body);
 			add(scrollPane);
-			scrollPane.setRect(0, (int) y, WIDTH, scrollH);
+			scrollPane.setRect(0, (int) y, layoutWidth, scrollH);
 			y += scrollPane.height() + MARGIN;
 		} else {
 			add(body);
@@ -137,13 +157,227 @@ public class WndGeneral extends Window {
 
 		int finalH = (int) y;
 		finalH = Math.min(finalH, maxWindowH);
-		resize(WIDTH, finalH);
+		resize(layoutWidth, finalH);
+		applyWindowBounds();
+	}
+
+	private void initTabbed(Builder b) {
+		tabbedMode = true;
+		layoutWidth = computeLayoutWidth();
+		tabSpecs = new ArrayList<>(b.tabs);
+		tabButtons = new ArrayList<>();
+		float y = MARGIN;
+
+		if (b.title != null && !b.title.isEmpty()) {
+			tabbedTitleBlock = PixelScene.renderTextBlock(b.title, 9);
+			tabbedTitleBlock.hardlight(TITLE_COLOR);
+			tabbedTitleBlock.maxWidth(layoutWidth - MARGIN * 2);
+			tabbedTitleBlock.setPos((layoutWidth - tabbedTitleBlock.width()) / 2f, y);
+			add(tabbedTitleBlock);
+			y = tabbedTitleBlock.bottom() + GAP;
+		}
+
+		int n = tabSpecs.size();
+		for (int i = 0; i < n; i++) {
+			final int idx = i;
+			RedButton btn = new RedButton(tabSpecs.get(i).label, 7) {
+				@Override
+				protected void onClick() {
+					switchTab(idx);
+				}
+			};
+			add(btn);
+			tabButtons.add(btn);
+		}
+
+		switchTab(0);
+	}
+
+	private void relayoutTabbed() {
+		if (!tabbedMode || tabButtons == null || tabSpecs == null) {
+			return;
+		}
+		layoutWidth = computeLayoutWidth();
+		float y = MARGIN;
+		int maxWindowH = computeMaxWindowHeight();
+
+		if (tabbedTitleBlock != null) {
+			tabbedTitleBlock.setPos((layoutWidth - tabbedTitleBlock.width()) / 2f, y);
+			y = tabbedTitleBlock.bottom() + GAP;
+		}
+
+		int n = tabButtons.size();
+		float x = 0;
+		for (int i = 0; i < n; i++) {
+			RedButton btn = tabButtons.get(i);
+			float w = (i == n - 1)
+					? layoutWidth - x
+					: (float) Math.floor((layoutWidth - (n - 1) * GAP) / (float) n);
+			btn.setRect(x, y, w, TAB_BTN_H);
+			x = btn.right() + GAP;
+		}
+		y = tabButtons.get(0).bottom() + GAP;
+
+		if (scrollPane != null) {
+			Component body = scrollPane.content();
+			float bodyY = body.height();
+			float bodyW = body.width();
+
+			int availableForBody = maxWindowH - (int) y - MARGIN;
+			availableForBody = Math.max(40, availableForBody);
+
+			boolean needVScroll = bodyY > availableForBody || bodyY > MAX_CONTENT_HEIGHT;
+			boolean needHScroll = bodyW > layoutWidth + 0.5f;
+
+			int scrollH;
+			if ((needVScroll || needHScroll) && bodyY > 0) {
+				if (needVScroll) {
+					scrollH = (int) Math.min(bodyY, Math.max(40, Math.min(MAX_CONTENT_HEIGHT, availableForBody)));
+				} else {
+					scrollH = (int) Math.min(Math.max(bodyY, 40), availableForBody);
+				}
+			} else {
+				int h = bodyY > 0 ? (int) bodyY : 40;
+				h = Math.min(h, availableForBody);
+				scrollH = Math.max(h, 1);
+			}
+			scrollPane.setRect(0, (int) y, layoutWidth, scrollH);
+			y += scrollPane.height() + MARGIN;
+		}
+
+		int finalH = (int) y;
+		finalH = Math.min(finalH, maxWindowH);
+		resize(layoutWidth, finalH);
+	}
+
+	private void switchTab(int index) {
+		if (!tabbedMode || tabSpecs == null || index < 0 || index >= tabSpecs.size()) {
+			return;
+		}
+		currentTab = index;
+		if (scrollPane != null) {
+			scrollPane.destroy();
+			remove(scrollPane);
+			scrollPane = null;
+		}
+
+		PaneBuilder pane = tabSpecs.get(index).pane;
+		Component body = buildBodyComponent(pane.segments, pane.buttonText, pane.onButton, layoutWidth);
+		scrollPane = new InteractiveScrollPane(body);
+		scrollPane.scrollTo(0, 0);
+		add(scrollPane);
+
+		for (int i = 0; i < tabButtons.size(); i++) {
+			tabButtons.get(i).enable(i != currentTab);
+		}
+
+		relayoutTabbed();
+		applyWindowBounds();
+	}
+
+	private Component buildBodyComponent(
+			List<PaneSegment> segments,
+			String buttonText,
+			Runnable onButton,
+			int layoutW) {
+		Component body = new Component();
+		float bodyY = 0;
+		int colW = Math.max(1, layoutW - MARGIN * 2);
+		float maxRight = MARGIN;
+
+		for (PaneSegment seg : segments) {
+			if (seg instanceof TextLineSeg) {
+				String text = ((TextLineSeg) seg).text;
+				RenderedTextBlock block = PixelScene.renderTextBlock(text, 6);
+				block.maxWidth(colW);
+				block.setPos(MARGIN, bodyY);
+				body.add(block);
+				bodyY = block.bottom() + GAP;
+				maxRight = Math.max(maxRight, block.right());
+			} else if (seg instanceof OptionSeg) {
+				Option opt = ((OptionSeg) seg).option;
+				RedButton btn = new RedButton(opt.label) {
+					@Override
+					protected void onClick() {
+						if (opt.onClick != null) opt.onClick.run();
+						hide();
+					}
+				};
+				btn.setRect(MARGIN, bodyY, colW, BTN_HEIGHT);
+				body.add(btn);
+				bodyY = btn.bottom() + GAP;
+				maxRight = Math.max(maxRight, btn.right());
+			} else if (seg instanceof HRowSeg) {
+				List<HCell> cells = ((HRowSeg) seg).cells;
+				int n = cells.size();
+				if (n <= 0) {
+					continue;
+				}
+				float innerLeft = MARGIN;
+				float innerRight = layoutW - MARGIN;
+				float innerW = innerRight - innerLeft;
+				float totalGap = (n - 1) * GAP;
+				float cellW = (innerW - totalGap) / (float) n;
+				float x = innerLeft;
+				float rowTop = bodyY;
+				float maxBottom = rowTop;
+				for (int i = 0; i < n; i++) {
+					final HCell c = cells.get(i);
+					float w = (i == n - 1) ? (innerRight - x) : (float) Math.floor(cellW);
+					if (c.button) {
+						final Runnable r = c.onClick;
+						RedButton btn = new RedButton(c.text) {
+							@Override
+							protected void onClick() {
+								if (r != null) r.run();
+								hide();
+							}
+						};
+						btn.setRect(x, rowTop, w, BTN_HEIGHT);
+						body.add(btn);
+						maxBottom = Math.max(maxBottom, btn.bottom());
+						maxRight = Math.max(maxRight, btn.right());
+					} else {
+						RenderedTextBlock block = PixelScene.renderTextBlock(c.text, 6);
+						block.maxWidth((int) w);
+						block.setPos(x, rowTop);
+						body.add(block);
+						maxBottom = Math.max(maxBottom, block.bottom());
+						maxRight = Math.max(maxRight, block.right());
+					}
+					x += w + GAP;
+				}
+				bodyY = maxBottom + GAP;
+			}
+		}
+
+		if (buttonText != null) {
+			RedButton btn = new RedButton(buttonText) {
+				@Override
+				protected void onClick() {
+					if (onButton != null) onButton.run();
+					hide();
+				}
+			};
+			btn.setRect(MARGIN, bodyY, colW, BTN_HEIGHT);
+			body.add(btn);
+			bodyY = btn.bottom() + MARGIN;
+			maxRight = Math.max(maxRight, btn.right());
+		} else if (bodyY > 0) {
+			bodyY += MARGIN;
+		}
+
+		int bodyW = Math.max(layoutW, (int) Math.ceil(maxRight));
+		body.setSize(bodyW, (int) bodyY);
+		return body;
 	}
 
 	@Override
 	public void offset(int xOffset, int yOffset) {
 		super.offset(xOffset, yOffset);
-		if (scrollPane != null) {
+		if (tabbedMode) {
+			relayoutTabbed();
+		} else if (scrollPane != null) {
 			scrollPane.setPos(scrollPane.left(), scrollPane.top());
 		}
 	}
@@ -161,9 +395,51 @@ public class WndGeneral extends Window {
 		}
 	}
 
-	private static class Row {
-		final String text;
-		Row(String text) { this.text = text; }
+	public interface PaneSegment {
+	}
+
+	public static class TextLineSeg implements PaneSegment {
+		public final String text;
+
+		public TextLineSeg(String text) {
+			this.text = text;
+		}
+	}
+
+	public static class OptionSeg implements PaneSegment {
+		public final Option option;
+
+		public OptionSeg(Option option) {
+			this.option = option;
+		}
+	}
+
+	public static class HRowSeg implements PaneSegment {
+		public final List<HCell> cells;
+
+		public HRowSeg(List<HCell> cells) {
+			this.cells = new ArrayList<>(cells);
+		}
+	}
+
+	public static class HCell {
+		public final boolean button;
+		public final String text;
+		public final Runnable onClick;
+
+		public HCell(boolean button, String text, Runnable onClick) {
+			this.button = button;
+			this.text = text;
+			this.onClick = onClick;
+		}
+
+		public static HCell text(String t) {
+			return new HCell(false, t != null ? t : "", null);
+		}
+
+		public static HCell button(String label, Runnable onClick) {
+			return new HCell(true, label, onClick);
+		}
 	}
 
 	private static class Option {
@@ -172,12 +448,70 @@ public class WndGeneral extends Window {
 		Option(String label, Runnable onClick) { this.label = label; this.onClick = onClick; }
 	}
 
+	public static class TabSpec {
+		public final String label;
+		public final PaneBuilder pane;
+
+		public TabSpec(String label, PaneBuilder pane) {
+			this.label = label;
+			this.pane = pane;
+		}
+	}
+
+	public static class PaneBuilder {
+		public final List<PaneSegment> segments = new ArrayList<>();
+		public String buttonText;
+		public Runnable onButton;
+
+		public PaneBuilder row(String label, Object value) {
+			segments.add(new TextLineSeg(label + ": " + (value != null ? value : "null")));
+			return this;
+		}
+
+		public PaneBuilder line(String text) {
+			segments.add(new TextLineSeg(text != null ? text : ""));
+			return this;
+		}
+
+		public PaneBuilder option(String label, Runnable onClick) {
+			segments.add(new OptionSeg(new Option(label, onClick)));
+			return this;
+		}
+
+		public PaneBuilder hrow(Consumer<HRowBuilder> fill) {
+			HRowBuilder hb = new HRowBuilder();
+			fill.accept(hb);
+			segments.add(new HRowSeg(hb.cells));
+			return this;
+		}
+
+		public PaneBuilder button(String text, Runnable onClick) {
+			this.buttonText = text;
+			this.onButton = onClick;
+			return this;
+		}
+	}
+
+	public static class HRowBuilder {
+		public final ArrayList<HCell> cells = new ArrayList<>();
+
+		public HRowBuilder line(String text) {
+			cells.add(HCell.text(text));
+			return this;
+		}
+
+		public HRowBuilder button(String label, Runnable onClick) {
+			cells.add(HCell.button(label, onClick));
+			return this;
+		}
+	}
+
 	public static class Builder {
-		private String title;
-		private final List<Row> rows = new ArrayList<>();
-		private final List<Option> options = new ArrayList<>();
-		private String buttonText;
-		private Runnable onButton;
+		public String title;
+		public final List<PaneSegment> segments = new ArrayList<>();
+		public String buttonText;
+		public Runnable onButton;
+		public final List<TabSpec> tabs = new ArrayList<>();
 
 		public Builder title(String title) {
 			this.title = title;
@@ -186,19 +520,27 @@ public class WndGeneral extends Window {
 
 		/** 添加一行：标签 + 值，显示为 "label: value" */
 		public Builder row(String label, Object value) {
-			rows.add(new Row(label + ": " + (value != null ? value : "null")));
+			segments.add(new TextLineSeg(label + ": " + (value != null ? value : "null")));
 			return this;
 		}
 
 		/** 添加一行纯文本 */
 		public Builder line(String text) {
-			rows.add(new Row(text != null ? text : ""));
+			segments.add(new TextLineSeg(text != null ? text : ""));
 			return this;
 		}
 
 		/** 添加可选项，点击后执行 callback 并关闭窗口 */
 		public Builder option(String label, Runnable onClick) {
-			options.add(new Option(label, onClick));
+			segments.add(new OptionSeg(new Option(label, onClick)));
+			return this;
+		}
+
+		/** 横向一排单元格（与 {@link #line} 等穿插时仍按顺序向下排，整体为 Column） */
+		public Builder hrow(Consumer<HRowBuilder> fill) {
+			HRowBuilder hb = new HRowBuilder();
+			fill.accept(hb);
+			segments.add(new HRowSeg(hb.cells));
 			return this;
 		}
 
@@ -206,6 +548,16 @@ public class WndGeneral extends Window {
 		public Builder button(String text, Runnable onClick) {
 			this.buttonText = text;
 			this.onButton = onClick;
+			return this;
+		}
+
+		/**
+		 * 增加一个标签页；与 {@link PaneBuilder} 描述该页内容。若调用了本方法，构建时只展示各 tab，根级 {@link #line} 等不生效。
+		 */
+		public Builder tab(String label, Consumer<PaneBuilder> fill) {
+			PaneBuilder p = new PaneBuilder();
+			fill.accept(p);
+			tabs.add(new TabSpec(label, p));
 			return this;
 		}
 

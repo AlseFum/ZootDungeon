@@ -6,6 +6,7 @@ import com.zootdungeon.actors.buffs.Barrier;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
+import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
 import com.zootdungeon.arknights.plugins.MetabolismOverclockPlugin;
 import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
@@ -13,6 +14,7 @@ import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
 import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
 import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
 import com.zootdungeon.items.Item;
+import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.messages.Messages;
@@ -444,6 +446,28 @@ public class RhodesIslandTerminal extends Artifact {
 			}
 			spend(TICK);
 			return true;
+		}
+	}
+
+	/**
+	 * {@link Talent#RESERVED_OP_PLUGIN_SCAVENGE}：由 {@link LootRegistry} 在击杀掉落结算前挂到怪物上，经 {@link LootRegistry.ExtraLootBuff} 分发。
+	 */
+	public static class ReservedOpTerminalPluginExtraLoot extends LootRegistry.ExtraLootBuff {
+
+		@Override
+		public void onMobLootRollComplete(Mob mob) {
+			try {
+				if (Dungeon.hero == null || !Dungeon.hero.isAlive()) return;
+				if (Dungeon.level == null || mob.pos < 0) return;
+				if (Random.Float() >= 0.06f * Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_PLUGIN_SCAVENGE)) return;
+				TerminalPlugin plugin = RhodesIslandTerminal.createRandomLootPlugin();
+				if (plugin != null) {
+					plugin.identify();
+					Dungeon.level.drop(plugin, mob.pos).sprite.drop();
+				}
+			} finally {
+				detach();
+			}
 		}
 	}
 }

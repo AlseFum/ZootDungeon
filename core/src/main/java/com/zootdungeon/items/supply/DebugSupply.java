@@ -15,12 +15,12 @@ import com.zootdungeon.arknights.necrass.SummoningThrowingWeapon;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
-import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.DivineAnkh;
@@ -97,6 +97,7 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(BombBox.class, 1));
         cheat.add(() -> create(TengusMask.class, 1));
         cheat.add(() -> create(KingsCrown.class, 1));
+        cheat.add(WndGeneralTestProbe::new);
         categories.put(CAT_CHEAT, cheat);
 
         List<Supplier<Item>> weapons = new ArrayList<>();
@@ -218,6 +219,71 @@ public class DebugSupply extends Supply {
                 ((KindOfWeapon) it).doEquip(hero);
                 return;
             }
+        }
+    }
+    public static final class WndGeneralTestProbe extends Item {
+
+        private static final String AC_OPEN = "DBG_WND_GENERAL";
+
+        {
+            image = SpriteRegistry.itemByName("debug_bag");
+            stackable = false;
+            defaultAction = AC_OPEN;
+        }
+
+        @Override
+        public ArrayList<String> actions(Hero hero) {
+            ArrayList<String> actions = super.actions(hero);
+            actions.add(AC_OPEN);
+            return actions;
+        }
+
+        @Override
+        public String actionName(String action, Hero hero) {
+            if (action.equals(AC_OPEN)) {
+                return Messages.get(WndGeneralTestProbe.class, "ac_open");
+            }
+            return super.actionName(action, hero);
+        }
+
+        @Override
+        public void execute(Hero hero, String action) {
+            if (action.equals(AC_OPEN)) {
+                WndGeneral.make()
+                        .title(Messages.get(WndGeneralTestProbe.class, "wnd_title"))
+                        .tab(Messages.get(WndGeneralTestProbe.class, "tab_a"), p -> p
+                                .line(Messages.get(WndGeneralTestProbe.class, "tab_a_line"))
+                                .button(Messages.get(WndGeneralTestProbe.class, "btn_test"),
+                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_clicked"))))
+                        .tab(Messages.get(WndGeneralTestProbe.class, "tab_b"), p -> p
+                                .line(Messages.get(WndGeneralTestProbe.class, "tab_b_line"))
+                                .option(Messages.get(WndGeneralTestProbe.class, "opt_sample"),
+                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_opt"))))
+                        .tab(Messages.get(WndGeneralTestProbe.class, "tab_c"), p -> p
+                                .line(Messages.get(WndGeneralTestProbe.class, "tab_c_line"))
+                                .hrow(r -> r
+                                        .line(Messages.get(WndGeneralTestProbe.class, "hrow_left"))
+                                        .button(Messages.get(WndGeneralTestProbe.class, "hrow_btn"),
+                                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow"))))
+                                .hrow(r -> r
+                                        .button(Messages.get(WndGeneralTestProbe.class, "hrow_a"),
+                                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))
+                                        .button(Messages.get(WndGeneralTestProbe.class, "hrow_b"),
+                                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))))
+                        .show();
+            } else {
+                super.execute(hero, action);
+            }
+        }
+
+        @Override
+        public String name() {
+            return Messages.get(WndGeneralTestProbe.class, "name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(WndGeneralTestProbe.class, "desc");
         }
     }
 }

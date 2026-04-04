@@ -5,7 +5,6 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
-import com.zootdungeon.items.loot.ReservedOpTerminalPluginExtraLoot;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.AtomBundle;
 import com.watabou.utils.Random;
@@ -334,7 +333,7 @@ public final class LootRegistry {
     /**
      * 挂在 {@link Mob} 上的 Buff：在怪物掉落物结算完成后由 {@link #dispatchExtraLootFromMob(Mob)} 遍历并调用
      * {@link #onMobLootRollComplete(Mob)}。可由战斗、关卡生成等提前 {@code Buff.affect}；也可由
-     * {@link #afterMobKillLootRoll(Mob)} 在分发前临时挂上子类（例如 {@link ReservedOpTerminalPluginExtraLoot}）。
+	 * {@link #afterMobKillLootRoll(Mob)} 在分发前临时挂上子类（例如 {@link RhodesIslandTerminal.ReservedOpTerminalPluginExtraLoot}）。
      */
     public static abstract class ExtraLootBuff extends Buff {
         {
@@ -366,7 +365,7 @@ public final class LootRegistry {
         if (Dungeon.hero.lvl > mob.maxLvl + 2) return;
         if (Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_PLUGIN_SCAVENGE) <= 0) return;
         if (Dungeon.hero.buff(RhodesIslandTerminal.TerminalBuff.class) == null) return;
-        Buff.affect(mob, ReservedOpTerminalPluginExtraLoot.class);
+        Buff.affect(mob, RhodesIslandTerminal.ReservedOpTerminalPluginExtraLoot.class);
     }
 
     /**
