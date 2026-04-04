@@ -258,6 +258,13 @@ public final class HeroClassSheet {
                 Talent.RESERVED_OP_PLUGIN_SCAVENGE,
                 Talent.RESERVED_OP_COMMAND_SHIELD
             )
+            .classTalentsTier2(
+                Talent.RESERVED_OP_RAPID_MEAL,
+                Talent.RESERVED_OP_ALCHEMY_SUBSIDY,
+                Talent.RESERVED_OP_COST_SURGE,
+                Talent.RESERVED_OP_COST_MASTERY,
+                Talent.RESERVED_OP_PLUGIN_GRANT
+            )
             .initializer(hero -> {
                 // 基础武器
                 (hero.belongings.weapon = new Dagger()).identify();

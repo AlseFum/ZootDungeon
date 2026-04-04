@@ -371,8 +371,8 @@ public class Damage {
         NextAttackCostRefund nextAttackCostRefund = attacker.buff(NextAttackCostRefund.class);
         if (nextAttackCostRefund != null) {
             int gain = Math.max(0, (int) Math.floor(totalDamage * nextAttackCostRefund.rate));
-            if (gain > 0) {
-                int cap = com.zootdungeon.arknights.RhodesIslandTerminal.COST_CAP;
+            if (gain > 0 && attacker instanceof Hero h) {
+                int cap = com.zootdungeon.arknights.RhodesIslandTerminal.effectiveCostCap(h);
                 Dungeon.cost = Math.min(cap, Dungeon.cost + gain);
             }
             nextAttackCostRefund.detach();

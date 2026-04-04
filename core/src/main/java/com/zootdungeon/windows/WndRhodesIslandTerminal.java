@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Belongings;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.arknights.TerminalPlugin;
 import com.zootdungeon.items.Item;
@@ -184,9 +185,21 @@ public class WndRhodesIslandTerminal extends Window {
 		boolean hasActiveEntry = false;
 
 		RenderedTextBlock costLabel = PixelScene.renderTextBlock(
-				Messages.get(RhodesIslandTerminal.class, "cost_display", Dungeon.cost, RhodesIslandTerminal.COST_CAP), 8);
+				Messages.get(RhodesIslandTerminal.class, "cost_display", Dungeon.cost,
+						RhodesIslandTerminal.effectiveCostCap(Dungeon.hero)), 8);
 		costLabel.maxWidth(WIDTH);
 		col.addAutoHeight(costLabel);
+
+		if (Dungeon.hero != null && Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_COST_SURGE) > 0) {
+			RedButton surgeBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_cost_surge"), 8) {
+				@Override
+				protected void onClick() {
+					RhodesIslandTerminal.surgeAllCostIntoMagicalGear(Dungeon.hero);
+					refreshPlugins();
+				}
+			};
+			col.addFixedHeight(surgeBtn, BTN_HEIGHT);
+		}
 
 		for (int i = 0; i < terminal.slotCount(); i++) {
 			final int slotIndex = i;

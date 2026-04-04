@@ -25,6 +25,8 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.hero.Talent;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.CDKeyBinding;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Statistics;
@@ -56,6 +58,7 @@ import com.zootdungeon.ui.StatusPane;
 import com.zootdungeon.ui.StyledButton;
 import com.zootdungeon.ui.Toolbar;
 import com.zootdungeon.ui.Window;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.IconTitle;
 import com.zootdungeon.windows.WndBag;
 import com.zootdungeon.windows.WndEnergizeItem;
@@ -647,9 +650,18 @@ public class AlchemyScene extends PixelScene {
 				availableEnergy += toolkit.availableEnergy();
 			}
 
+			boolean canAfford = cost <= availableEnergy;
+			if (!canAfford && Dungeon.hero != null) {
+				int shortfall = cost - availableEnergy;
+				int cover = Talent.reservedOpAlchemySubsidyCost(Dungeon.hero, shortfall);
+				canAfford = Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_ALCHEMY_SUBSIDY) > 0
+						&& Dungeon.hero.belongings.getItem(RhodesIslandTerminal.class) != null
+						&& cover <= Dungeon.cost;
+			}
+
 			combines[i].visible = true;
 			combines[i].setRect(combines[0].left(), outputs[i].top()+5, 30, 20);
-			combines[i].enable(cost <= availableEnergy, cost);
+			combines[i].enable(canAfford, cost);
 
 			if (cost > availableEnergy && recipe instanceof TrinketCatalyst.Recipe){
 				promptToAddEnergy = true;
@@ -683,12 +695,32 @@ public class AlchemyScene extends PixelScene {
 		Item result = null;
 		
 		if (recipe != null){
-			int cost = recipe.cost(ingredients);
+			int rawCost = recipe.cost(ingredients);
+			int tkBefore = toolkit != null ? toolkit.availableEnergy() : 0;
+			int fromTk = Math.min(rawCost, tkBefore);
+			int remainder = rawCost - fromTk;
+			int dungeonPayPreview = Math.min(remainder, Dungeon.energy);
+			int shortfallPreview = remainder - dungeonPayPreview;
+			if (shortfallPreview > 0) {
+				int cover = Talent.reservedOpAlchemySubsidyCost(Dungeon.hero, shortfallPreview);
+				if (Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_ALCHEMY_SUBSIDY) <= 0
+						|| Dungeon.hero.belongings.getItem(RhodesIslandTerminal.class) == null
+						|| cover > Dungeon.cost) {
+					GLog.w(Messages.get(Talent.class, "reserved_op_alchemy_subsidy.fail"));
+					return;
+				}
+			}
+			int cost = rawCost;
 			if (toolkit != null){
 				cost = toolkit.consumeEnergy(cost);
 			}
+			int dungeonPay = Math.min(cost, Dungeon.energy);
+			int shortfall = cost - dungeonPay;
+			if (shortfall > 0) {
+				Dungeon.cost -= Talent.reservedOpAlchemySubsidyCost(Dungeon.hero, shortfall);
+			}
 			Catalog.countUses(EnergyCrystal.class, cost);
-			Dungeon.energy -= cost;
+			Dungeon.energy -= dungeonPay;
 
 			String energyText = Messages.get(AlchemyScene.class, "energy") + " " + Dungeon.energy;
 			if (toolkit != null){

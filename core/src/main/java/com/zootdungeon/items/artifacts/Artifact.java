@@ -56,7 +56,7 @@ public class Artifact extends KindofMisc {
 	//better to keep charge as an int and use a separate float than casting.
 	protected float partialCharge = 0;
 	//the maximum charge, varies per artifact, not all artifacts use this.
-	protected int chargeCap = 0;
+	public int chargeCap = 0;
 
 	//used by some artifacts to keep track of duration of effects or cooldowns to use.
 	protected int cooldown = 0;

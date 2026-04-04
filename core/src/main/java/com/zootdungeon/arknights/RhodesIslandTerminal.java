@@ -12,10 +12,14 @@ import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
 import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
 import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
 import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.artifacts.Artifact;
+import com.zootdungeon.items.wands.Wand;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.AtomBundle;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndRhodesIslandTerminal;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
@@ -31,6 +35,53 @@ public class RhodesIslandTerminal extends Artifact {
 
 	public static final int COST_CAP = 99;
 	public static final int DEFAULT_MAX_PLUGINS = 3;
+
+	/** Base cap plus {@link Talent#RESERVED_OP_COST_MASTERY}. */
+	public static int effectiveCostCap( Hero hero ) {
+		int base = COST_CAP;
+		if (hero == null) return base;
+		int p = hero.pointsInTalent(Talent.RESERVED_OP_COST_MASTERY);
+		return base + Math.max(0, p) * 15;
+	}
+
+	/**
+	 * {@link Talent#RESERVED_OP_COST_SURGE}: spend all current COST to recharge wands and charge-based artifacts
+	 * proportionally to their max charge capacity.
+	 */
+	public static void surgeAllCostIntoMagicalGear( Hero hero ) {
+		if (hero == null || hero.pointsInTalent(Talent.RESERVED_OP_COST_SURGE) <= 0) return;
+		int pool = Dungeon.cost;
+		if (pool <= 0) {
+			GLog.i(Messages.get(RhodesIslandTerminal.class, "surge_no_cost"));
+			return;
+		}
+		ArrayList<Wand> wands = new ArrayList<>();
+		ArrayList<Artifact> arts = new ArrayList<>();
+		for (Item it : hero.belongings) {
+			if (it instanceof Wand w) {
+				wands.add(w);
+			} else if (it instanceof Artifact a && !(a instanceof RhodesIslandTerminal) && a.chargeCap > 0) {
+				arts.add(a);
+			}
+		}
+		float totalW = 0f;
+		for (Wand w : wands) totalW += Math.max(1, w.maxCharges);
+		for (Artifact a : arts) totalW += Math.max(1, a.chargeCap);
+		if (totalW <= 0f) {
+			GLog.w(Messages.get(RhodesIslandTerminal.class, "surge_nothing"));
+			return;
+		}
+		Dungeon.cost = 0;
+		for (Wand w : wands) {
+			float share = pool * (Math.max(1, w.maxCharges) / totalW);
+			w.gainCharge(share);
+		}
+		for (Artifact a : arts) {
+			float share = pool * (Math.max(1, a.chargeCap) / totalW);
+			a.charge(hero, share);
+		}
+		GLog.p(Messages.get(RhodesIslandTerminal.class, "surge_done", pool));
+	}
 
 	@SuppressWarnings("unchecked")
 	private static final Class<? extends TerminalPlugin>[] PLUGIN_LOOT_POOL = new Class[]{
@@ -353,7 +404,8 @@ public class RhodesIslandTerminal extends Artifact {
 
 		public void gainCharge(float levelPortion) {
 			if (cursed || target == null || !(target instanceof Hero)) return;
-			int cap = RhodesIslandTerminal.COST_CAP;
+			Hero h = (Hero) target;
+			int cap = RhodesIslandTerminal.effectiveCostCap(h);
 			if (Dungeon.cost >= cap) return;
 			float gain = 2f * levelPortion * getCostRegenMultiplier();
 			partialCharge += gain;

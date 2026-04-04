@@ -31,6 +31,7 @@ import com.zootdungeon.actors.hero.abilities.Ratmogrify;
 import com.zootdungeon.actors.hero.spells.DivineSense;
 import com.zootdungeon.actors.hero.spells.RecallInscription;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
+import com.zootdungeon.arknights.TerminalPlugin;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Flare;
 import com.zootdungeon.effects.FloatingText;
@@ -299,6 +300,12 @@ public class Talent implements Bundlable {
 	public static final Talent RESERVED_OP_FIELD_RATION = new Talent(36, 2, "RESERVED_OP_FIELD_RATION");
 	public static final Talent RESERVED_OP_PLUGIN_SCAVENGE = new Talent(97, 2, "RESERVED_OP_PLUGIN_SCAVENGE");
 	public static final Talent RESERVED_OP_COMMAND_SHIELD = new Talent(35, 2, "RESERVED_OP_COMMAND_SHIELD");
+	// ReservedOp T2
+	public static final Talent RESERVED_OP_RAPID_MEAL = new Talent(218, 2, "RESERVED_OP_RAPID_MEAL");
+	public static final Talent RESERVED_OP_ALCHEMY_SUBSIDY = new Talent(219, 2, "RESERVED_OP_ALCHEMY_SUBSIDY");
+	public static final Talent RESERVED_OP_COST_SURGE = new Talent(220, 2, "RESERVED_OP_COST_SURGE");
+	public static final Talent RESERVED_OP_COST_MASTERY = new Talent(221, 2, "RESERVED_OP_COST_MASTERY");
+	public static final Talent RESERVED_OP_PLUGIN_GRANT = new Talent(222, 2, "RESERVED_OP_PLUGIN_GRANT");
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
@@ -619,6 +626,8 @@ public class Talent implements Bundlable {
 	public static void onTalentUpgraded( Hero hero, Talent talent ){
 		if (talent == RESERVED_OP_APPRAISAL) {
 			reservedOpAppraisal(hero);
+		} else if (talent == RESERVED_OP_PLUGIN_GRANT) {
+			reservedOpPluginGrant(hero);
 		}
 	}
 
@@ -637,6 +646,19 @@ public class Talent implements Bundlable {
 		GLog.p(Messages.get(Talent.class, "reserved_op_appraisal.msg"));
 	}
 
+	private static void reservedOpPluginGrant( Hero hero ) {
+		TerminalPlugin plugin = RhodesIslandTerminal.createRandomLootPlugin();
+		if (plugin == null) {
+			GLog.w(Messages.get(Talent.class, "reserved_op_plugin_grant.fail"));
+			return;
+		}
+		plugin.identify();
+		if (!plugin.collect(hero.belongings.backpack)) {
+			Dungeon.level.drop(plugin, hero.pos);
+		}
+		GLog.p(Messages.get(Talent.class, "reserved_op_plugin_grant.msg"));
+	}
+
 	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
 	public static class NatureBerriesDropped extends CounterBuff{{revivePersists = true;}};
 
@@ -644,13 +666,35 @@ public class Talent implements Bundlable {
 		if (hero.pointsInTalent(RESERVED_OP_FIELD_RATION) > 0
 				&& hero.belongings.getItem(RhodesIslandTerminal.class) != null) {
 			int gain = 2 + 2 * hero.pointsInTalent(RESERVED_OP_FIELD_RATION);
-			int cap = RhodesIslandTerminal.COST_CAP;
+			int cap = RhodesIslandTerminal.effectiveCostCap(hero);
 			int before = Dungeon.cost;
 			Dungeon.cost = Math.min(cap, Dungeon.cost + gain);
 			if (Dungeon.cost > before) {
 				GLog.p(Messages.get(Talent.class, "reserved_op_field_ration.msg", Dungeon.cost - before));
 			}
 		}
+		if (hero.pointsInTalent(RESERVED_OP_RAPID_MEAL) > 0
+				&& hero.belongings.getItem(RhodesIslandTerminal.class) != null) {
+			int gain = 4 + 4 * hero.pointsInTalent(RESERVED_OP_RAPID_MEAL);
+			int cap = RhodesIslandTerminal.effectiveCostCap(hero);
+			int before = Dungeon.cost;
+			Dungeon.cost = Math.min(cap, Dungeon.cost + gain);
+			if (Dungeon.cost > before) {
+				GLog.p(Messages.get(Talent.class, "reserved_op_rapid_meal.msg", Dungeon.cost - before));
+			}
+		}
+	}
+
+	/**
+	 * Missing alchemical energy (after main pool + toolkit) covered by terminal COST.
+	 * Returns {@link Integer#MAX_VALUE} if the talent cannot cover (caller should not enable craft).
+	 */
+	public static int reservedOpAlchemySubsidyCost( Hero hero, int energyShortfall ) {
+		if (hero == null || energyShortfall <= 0) return 0;
+		int p = hero.pointsInTalent(RESERVED_OP_ALCHEMY_SUBSIDY);
+		if (p <= 0) return Integer.MAX_VALUE;
+		int per = Math.max(4, 14 - 5 * p);
+		return energyShortfall * per;
 	}
 
 	public static class WarriorFoodImmunity extends FlavourBuff{
