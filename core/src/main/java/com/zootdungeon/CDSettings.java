@@ -436,8 +436,6 @@ public class CDSettings extends GameSettings {
 	//Languages
 	
 	public static final String KEY_LANG         = "language";
-	public static final String KEY_LANG_OVERLAY = "language_overlay";
-	public static final String LANG_OVERLAY_DISABLED = "__DISABLED__";
 	
 	public static void language(Languages lang) {
 		put( KEY_LANG, lang.code());
@@ -450,15 +448,6 @@ public class CDSettings extends GameSettings {
 		} else {
 			return Languages.matchCode(code);
 		}
-	}
-
-	public static void languageOverlay(String overlayFileName){
-		// When overlayFileName == null, persist a sentinel to indicate overlays are disabled.
-		put(KEY_LANG_OVERLAY, overlayFileName == null ? LANG_OVERLAY_DISABLED : overlayFileName);
-	}
-
-	public static String languageOverlay(){
-		return getString(KEY_LANG_OVERLAY, null, 128);
 	}
 
 	//Window management (desktop only atm)

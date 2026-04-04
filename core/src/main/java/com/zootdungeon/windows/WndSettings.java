@@ -1167,10 +1167,6 @@ public class WndSettings extends WndTabbed {
 		RenderedTextBlock txtLangInfo;
 		ColorBlock sep2;
 		RedButton[] lanBtns;
-		ColorBlock sepOver;
-		RenderedTextBlock txtOverlays;
-		RedButton btnOverlayNone;
-		RedButton[] overlayBtns;
 		ColorBlock sep3;
 		RenderedTextBlock txtTranifex;
 		RedButton btnCredits;
@@ -1222,7 +1218,6 @@ public class WndSettings extends WndTabbed {
 							@Override
 							public void beforeCreate() {
 								CDSettings.language(langs.get(langIndex));
-								// do not change overlay selection when changing base language
 								GameLog.wipe();
 								Game.platform.resetGenerators();
 							}
@@ -1250,70 +1245,6 @@ public class WndSettings extends WndTabbed {
 				}
 				lanBtns[i] = btn;
 				add(btn);
-			}
-
-			// Overlay selection
-			ArrayList<String> overlays = Messages.availableOverlays(currLang);
-			if (!overlays.isEmpty()){
-				sepOver = new ColorBlock(1, 1, 0xFF000000);
-				add(sepOver);
-
-				txtOverlays = PixelScene.renderTextBlock("Overlay Files", 7);
-				add(txtOverlays);
-
-				// 'None' option
-				btnOverlayNone = new RedButton("None", 6){
-					@Override
-					protected void onClick() {
-						super.onClick();
-						// clear overlay
-						ColaDungeon.seamlessResetScene(new Game.SceneChangeCallback() {
-							@Override
-							public void beforeCreate() {
-								CDSettings.languageOverlay(null);
-								Messages.setup(Messages.lang());
-								GameLog.wipe();
-								Game.platform.resetGenerators();
-							}
-							@Override
-							public void afterCreate() { }
-						});
-					}
-				};
-				add(btnOverlayNone);
-
-				overlayBtns = new RedButton[overlays.size()];
-				for (int i = 0; i < overlays.size(); i++){
-					final String fname = overlays.get(i);
-					RedButton btn = new RedButton(fname, 6){
-						@Override
-						protected void onClick() {
-							super.onClick();
-							ColaDungeon.seamlessResetScene(new Game.SceneChangeCallback() {
-								@Override
-								public void beforeCreate() {
-									CDSettings.languageOverlay(fname);
-									Messages.setup(Messages.lang());
-									GameLog.wipe();
-									Game.platform.resetGenerators();
-								}
-								@Override
-								public void afterCreate() { }
-							});
-						}
-					};
-					// highlight current selection
-					if (fname.equals(CDSettings.languageOverlay())){
-						btn.textColor(TITLE_COLOR);
-					}
-					overlayBtns[i] = btn;
-					add(btn);
-				}
-				// highlight None if overlays disabled or unset/empty
-				String sel = CDSettings.languageOverlay();
-				if (sel == null || sel.isEmpty() || CDSettings.LANG_OVERLAY_DISABLED.equals(sel)){
-					btnOverlayNone.textColor(TITLE_COLOR);
-				}
 			}
 
 			sep3 = new ColorBlock(1, 1, 0xFF000000);
@@ -1435,25 +1366,6 @@ public class WndSettings extends WndTabbed {
 			}
 			if (x > 0){
 				y += BTN_HEIGHT+1;
-			}
-
-			// overlays section
-			if (txtOverlays != null){
-				sepOver.size(width, 1);
-				sepOver.y = y;
-				y += 2;
-
-				txtOverlays.setPos(0, sepOver.y + 1 + GAP);
-				txtOverlays.maxWidth((int)width);
-
-				float pos = txtOverlays.bottom() + GAP;
-				btnOverlayNone.setRect(0, pos, width, BTN_HEIGHT);
-				pos = btnOverlayNone.bottom() + 1;
-				for (RedButton b : overlayBtns){
-					b.setRect(0, pos, width, BTN_HEIGHT);
-					pos = b.bottom() + 1;
-				}
-				y = pos;
 			}
 
 			sep3.size(width, 1);
