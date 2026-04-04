@@ -1,5 +1,12 @@
 package com.zootdungeon.items;
 
+import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.hero.Talent;
+import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
+import com.zootdungeon.items.loot.ReservedOpTerminalPluginExtraLoot;
+import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.AtomBundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -322,5 +329,57 @@ public final class LootRegistry {
             // No custom randomize method: keep item as-is.
         }
         return item;
+    }
+
+    /**
+     * 挂在 {@link Mob} 上的 Buff：在怪物掉落物结算完成后由 {@link #dispatchExtraLootFromMob(Mob)} 遍历并调用
+     * {@link #onMobLootRollComplete(Mob)}。可由战斗、关卡生成等提前 {@code Buff.affect}；也可由
+     * {@link #afterMobKillLootRoll(Mob)} 在分发前临时挂上子类（例如 {@link ReservedOpTerminalPluginExtraLoot}）。
+     */
+    public static abstract class ExtraLootBuff extends Buff {
+        {
+            type = buffType.NEUTRAL;
+            announced = false;
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.NONE;
+        }
+
+        /** 在一次 {@code Mob#createLoot()} 流程完成（主掉落已确定）后调用；实现内应自行 {@link #detach()}。 */
+        public abstract void onMobLootRollComplete(Mob mob);
+    }
+
+    /**
+     * 怪物主掉落结算完成后调用（见 {@code Mob#createLoot()} 的 {@code finally}），覆盖所有 return 路径。
+     * 先按需挂上 ReservedOp 等临时 {@link ExtraLootBuff}，再遍历怪物身上全部 {@link ExtraLootBuff} 并分发。
+     */
+    public static void afterMobKillLootRoll(Mob mob) {
+        if (mob == null) return;
+        prepareReservedOpTerminalPluginScavenge(mob);
+        dispatchExtraLootFromMob(mob);
+    }
+
+    private static void prepareReservedOpTerminalPluginScavenge(Mob mob) {
+        if (Dungeon.hero == null || !Dungeon.hero.isAlive()) return;
+        if (Dungeon.hero.lvl > mob.maxLvl + 2) return;
+        if (Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_PLUGIN_SCAVENGE) <= 0) return;
+        if (Dungeon.hero.buff(RhodesIslandTerminal.TerminalBuff.class) == null) return;
+        Buff.affect(mob, ReservedOpTerminalPluginExtraLoot.class);
+    }
+
+    /**
+     * 对 {@code mob} 上所有 {@link ExtraLootBuff} 调用 {@link ExtraLootBuff#onMobLootRollComplete(Mob)}。
+     * 先复制 buff 列表，避免回调中修改集合导致并发修改。
+     */
+    public static void dispatchExtraLootFromMob(Mob mob) {
+        if (mob == null) return;
+        ArrayList<Buff> copy = new ArrayList<>(mob.buffs());
+        for (Buff b : copy) {
+            if (b instanceof ExtraLootBuff) {
+                ((ExtraLootBuff) b).onMobLootRollComplete(mob);
+            }
+        }
     }
 }

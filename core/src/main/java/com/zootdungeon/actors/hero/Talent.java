@@ -30,7 +30,7 @@ import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.actors.hero.abilities.Ratmogrify;
 import com.zootdungeon.actors.hero.spells.DivineSense;
 import com.zootdungeon.actors.hero.spells.RecallInscription;
-import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Flare;
 import com.zootdungeon.effects.FloatingText;
@@ -293,6 +293,12 @@ public class Talent implements Bundlable {
 	public static final Talent RATSISTANCE = new Talent(215, 4,"RATSISTANCE");
 	public static final Talent RATLOMACY = new Talent(216, 4,"RATLOMACY");
 	public static final Talent RATFORCEMENTS = new Talent(217, 4,"RATFORCEMENTS");
+
+	// ReservedOp T1 (Rhodes Island Terminal)
+	public static final Talent RESERVED_OP_APPRAISAL = new Talent(33, 2, "RESERVED_OP_APPRAISAL");
+	public static final Talent RESERVED_OP_FIELD_RATION = new Talent(36, 2, "RESERVED_OP_FIELD_RATION");
+	public static final Talent RESERVED_OP_PLUGIN_SCAVENGE = new Talent(97, 2, "RESERVED_OP_PLUGIN_SCAVENGE");
+	public static final Talent RESERVED_OP_COMMAND_SHIELD = new Talent(35, 2, "RESERVED_OP_COMMAND_SHIELD");
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
@@ -611,14 +617,40 @@ public class Talent implements Bundlable {
 	}
 	// EventBus static initializer removed
 	public static void onTalentUpgraded( Hero hero, Talent talent ){
-		// EventBus removed
+		if (talent == RESERVED_OP_APPRAISAL) {
+			reservedOpAppraisal(hero);
+		}
+	}
+
+	private static void reservedOpAppraisal( Hero hero ) {
+		ArrayList<Item> unidentified = new ArrayList<>();
+		for (Item i : hero.belongings) {
+			if (!i.isIdentified()) {
+				unidentified.add(i);
+			}
+		}
+		if (unidentified.isEmpty()) {
+			GLog.i(Messages.get(Talent.class, "reserved_op_appraisal.none"));
+			return;
+		}
+		Random.element(unidentified).identify();
+		GLog.p(Messages.get(Talent.class, "reserved_op_appraisal.msg"));
 	}
 
 	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
 	public static class NatureBerriesDropped extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-		// EventBus removed
+		if (hero.pointsInTalent(RESERVED_OP_FIELD_RATION) > 0
+				&& hero.belongings.getItem(RhodesIslandTerminal.class) != null) {
+			int gain = 2 + 2 * hero.pointsInTalent(RESERVED_OP_FIELD_RATION);
+			int cap = RhodesIslandTerminal.COST_CAP;
+			int before = Dungeon.cost;
+			Dungeon.cost = Math.min(cap, Dungeon.cost + gain);
+			if (Dungeon.cost > before) {
+				GLog.p(Messages.get(Talent.class, "reserved_op_field_ration.msg", Dungeon.cost - before));
+			}
+		}
 	}
 
 	public static class WarriorFoodImmunity extends FlavourBuff{

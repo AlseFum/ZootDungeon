@@ -966,53 +966,56 @@ public abstract class Mob extends Char {
 	
 	@SuppressWarnings("unchecked")
 	public Item createLoot() {
-
-		if (lootTableId != null) {
-			AtomBundle ctx = new AtomBundle();
-			ctx.put("depth", Dungeon.depth);
-			ctx.put("pos", pos);
-			ctx.put("source", "MOB_KILL");
-			if (Dungeon.hero != null) {
-				int wealth = Ring.getBuffedBonus(Dungeon.hero, RingOfWealth.Wealth.class);
-				if (wealth > 0) {
-					ctx.put("bonusRollX", wealth * 40);
-					ctx.put("quantityBonusRate", wealth);
+		try {
+			if (lootTableId != null) {
+				AtomBundle ctx = new AtomBundle();
+				ctx.put("depth", Dungeon.depth);
+				ctx.put("pos", pos);
+				ctx.put("source", "MOB_KILL");
+				if (Dungeon.hero != null) {
+					int wealth = Ring.getBuffedBonus(Dungeon.hero, RingOfWealth.Wealth.class);
+					if (wealth > 0) {
+						ctx.put("bonusRollX", wealth * 40);
+						ctx.put("quantityBonusRate", wealth);
+					}
+					Lucky.LuckProc luckProc = buff(Lucky.LuckProc.class);
+					if (luckProc != null) {
+						ctx.put("luck", Math.max(0, luckProc.ringLevel + 10));
+					}
 				}
-				Lucky.LuckProc luckProc = buff(Lucky.LuckProc.class);
-				if (luckProc != null) {
-					ctx.put("luck", Math.max(0, luckProc.ringLevel + 10));
-				}
-			}
-			Item fromTable = LootRegistry.rollOne(lootTableId, ctx);
-			if (fromTable != null) return fromTable;
-		}
-
-		// 兼容旧逻辑：沿用 loot 字段与 Generator 的行为
-		Item item;
-		if (loot instanceof Generator.Category) {
-
-			item = Generator.randomUsingDefaults( (Generator.Category)loot );
-
-		} else if (loot instanceof Class<?>) {
-
-			if (ExoticPotion.regToExo.containsKey(loot)){
-				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
-					return Generator.random(ExoticPotion.regToExo.get(loot));
-				}
-			} else if (ExoticScroll.regToExo.containsKey(loot)){
-				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
-					return Generator.random(ExoticScroll.regToExo.get(loot));
-				}
+				Item fromTable = LootRegistry.rollOne(lootTableId, ctx);
+				if (fromTable != null) return fromTable;
 			}
 
-			item = Generator.random( (Class<? extends Item>)loot );
+			// 兼容旧逻辑：沿用 loot 字段与 Generator 的行为
+			Item item;
+			if (loot instanceof Generator.Category) {
 
-		} else {
+				item = Generator.randomUsingDefaults( (Generator.Category)loot );
 
-			item = (Item)loot;
+			} else if (loot instanceof Class<?>) {
 
+				if (ExoticPotion.regToExo.containsKey(loot)){
+					if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+						return Generator.random(ExoticPotion.regToExo.get(loot));
+					}
+				} else if (ExoticScroll.regToExo.containsKey(loot)){
+					if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+						return Generator.random(ExoticScroll.regToExo.get(loot));
+					}
+				}
+
+				item = Generator.random( (Class<? extends Item>)loot );
+
+			} else {
+
+				item = (Item)loot;
+
+			}
+			return item;
+		} finally {
+			LootRegistry.afterMobKillLootRoll(this);
 		}
-		return item;
 	}
 
 	//how many mobs this one should count as when determining spawning totals

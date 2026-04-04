@@ -2,16 +2,28 @@ package com.zootdungeon.arknights;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
+import com.zootdungeon.actors.buffs.Barrier;
+import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.actors.hero.Talent;
+import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
+import com.zootdungeon.arknights.plugins.MetabolismOverclockPlugin;
+import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
+import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
+import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
+import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
 import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.AtomBundle;
 import com.zootdungeon.windows.WndRhodesIslandTerminal;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import com.watabou.utils.Random;
 
 public class RhodesIslandTerminal extends Artifact {
 
@@ -19,6 +31,20 @@ public class RhodesIslandTerminal extends Artifact {
 
 	public static final int COST_CAP = 99;
 	public static final int DEFAULT_MAX_PLUGINS = 3;
+
+	@SuppressWarnings("unchecked")
+	private static final Class<? extends TerminalPlugin>[] PLUGIN_LOOT_POOL = new Class[]{
+			ReachBoostPlugin.class,
+			NextAttackDamageBoostPlugin.class,
+			NextAttackCostRefundPlugin.class,
+			DefenseBoostPlugin.class,
+			PullEnemyPlugin.class,
+			MetabolismOverclockPlugin.class
+	};
+
+	public static TerminalPlugin createRandomLootPlugin() {
+		return Reflection.newInstance(Random.element(PLUGIN_LOOT_POOL));
+	}
 
 	private static final String PLUGINS = "plugins";
 	private static final String MAX_PLUGINS = "max_plugins";
@@ -149,6 +175,10 @@ public class RhodesIslandTerminal extends Artifact {
 			if (Dungeon.cost < spec.cost) return;
 			Dungeon.cost -= spec.cost;
 			slot.plugin.onActivate(this, slot, spec);
+			if (Dungeon.hero != null && Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_COMMAND_SHIELD) > 0) {
+				int sh = Random.Int(2) + 1;
+				Buff.affect(Dungeon.hero, Barrier.class).incShield(sh);
+			}
 			return;
 		}
 	}

@@ -253,10 +253,10 @@ public final class HeroClassSheet {
             .spriteCellSize(22, 23)
             .splashArt(Assets.Splashes.WARRIOR)
             .classTalentsTier1(
-                Talent.IRON_STOMACH,
-        Talent.LIQUID_WILLPOWER,
-        Talent.RUNIC_TRANSFERENCE,
-        Talent.LETHAL_MOMENTUM
+                Talent.RESERVED_OP_APPRAISAL,
+                Talent.RESERVED_OP_FIELD_RATION,
+                Talent.RESERVED_OP_PLUGIN_SCAVENGE,
+                Talent.RESERVED_OP_COMMAND_SHIELD
             )
             .initializer(hero -> {
                 // 基础武器
