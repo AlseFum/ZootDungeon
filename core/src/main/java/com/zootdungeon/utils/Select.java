@@ -64,7 +64,19 @@ public final class Select {
     public static PlaceBuilder place() {
         return new PlaceBuilder();
     }
-    
+
+    /**
+     * 预制：先 {@link PathFinder#buildDistanceMap(int, boolean[], int)}，再取路径步数在 {@code (0, maxSteps]} 内的格子
+     *（与 {@link PathFinder#distance} 一致）。
+     */
+    public static PlaceBuilder placePathRing(int origin, boolean[] passable, int maxSteps) {
+        PathFinder.buildDistanceMap(origin, passable, maxSteps);
+        return place().all().that(
+                i -> i >= 0 && i < PathFinder.distance.length
+                        && PathFinder.distance[i] <= maxSteps
+                        && PathFinder.distance[i] > 0);
+    }
+
     public static class PlaceBuilder {
         private List<Command<Integer>> commands = new ArrayList<>();
 

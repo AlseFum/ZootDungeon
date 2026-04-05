@@ -1,15 +1,11 @@
 package com.zootdungeon.arknights.ascalon;
 
-import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.blobs.Blob;
 import com.zootdungeon.actors.blobs.SmokeScreen;
-import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
-import com.zootdungeon.messages.Messages;
-import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
 
 public class AscalonAmbush extends AmbushWeapon {
@@ -28,7 +24,7 @@ public class AscalonAmbush extends AmbushWeapon {
     
     @Override
     public String name(){
-        return "“复仇者·伏击”";
+        return "“复仇者”";
     }
 
     @Override
@@ -80,24 +76,9 @@ public class AscalonAmbush extends AmbushWeapon {
             
             // 检查是否是伏击攻击
             if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
-                // 在攻击时判断是否在迷雾中
-                boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0 
+                boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
                         || Blob.volumeAt(defender.pos, SmokeScreen.class) > 0;
-                
-                AscalonWound existingWound = defender.buff(AscalonWound.class);
-                AscalonWound wound;
-                if (existingWound != null) {
-                    wound = existingWound;
-                } else {
-                    wound = new AscalonWound();
-                    wound.attachTo(defender);
-                }
-                // 如果buff刚被创建或剩余时间小于DURATION，则延长到DURATION
-                float duration = AscalonWound.DURATION * defender.resist(AscalonWound.class);
-                wound.extend(duration);
-                // 设置hero引用、攻击时的攻击力和迷雾状态
-                float attackDamage = hero.damageRoll();
-                wound.set(hero, attackDamage, inFog);
+                AscalonWound.applyFrom(hero, defender, damage, inFog);
             }
         }
         

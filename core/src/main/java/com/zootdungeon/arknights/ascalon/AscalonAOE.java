@@ -1,39 +1,17 @@
-/*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
- *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2025 Evan Debenham
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
-
 package com.zootdungeon.arknights.ascalon;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.blobs.Blob;
+import com.zootdungeon.actors.blobs.SmokeScreen;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.messages.Messages;
-import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.BuffIndicator;
+import com.zootdungeon.utils.Select;
 import com.watabou.noosa.Image;
-import com.watabou.utils.PathFinder;
 
 public class AscalonAOE extends MeleeWeapon {
     
@@ -55,7 +33,7 @@ public class AscalonAOE extends MeleeWeapon {
     
     @Override
     public String name(){
-        return "“复仇者·范围”";
+        return "“复仇者”";
     }
 
     @Override
@@ -91,45 +69,22 @@ public class AscalonAOE extends MeleeWeapon {
         // 每次攻击时触发范围伤害
         if (attacker instanceof Hero && defender.isAlive()) {
             Hero hero = (Hero) attacker;
-            // 获取范围内的所有位置
-            boolean[] affected = new boolean[Dungeon.level.length()];
-            PathFinder.buildDistanceMap(defender.pos, Dungeon.level.passable, AOE_RADIUS);
-            
-            for (int i = 0; i < Dungeon.level.length(); i++) {
-                if (PathFinder.distance[i] <= AOE_RADIUS && PathFinder.distance[i] > 0) {
-                    affected[i] = true;
-                }
-            }
-            
-            // 对范围内的所有敌人轮流 proc
-            for (int pos = 0; pos < affected.length; pos++) {
-                if (affected[pos]) {
-                    Char ch = Actor.findChar(pos);
-                    if (ch != null && ch != hero && ch != defender && ch.alignment != Char.Alignment.ALLY && ch.isAlive()) {
-                        // 计算 AOE 伤害（30%的原始伤害）
-                        int aoeDamage = Math.max(1, Math.round(damage * AOE_DAMAGE_MULT));
-                        
-                        // 对每个敌人调用 proc，让武器和附魔效果正常处理
-                        proc(hero, ch, aoeDamage);
-                        
-                        // 附加 Wound buff
-                        boolean inFog = com.zootdungeon.actors.blobs.Blob.volumeAt(hero.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0 
-                                || com.zootdungeon.actors.blobs.Blob.volumeAt(ch.pos, com.zootdungeon.actors.blobs.SmokeScreen.class) > 0;
-                        
-                        AscalonWound existingWound = ch.buff(AscalonWound.class);
-                        AscalonWound wound;
-                        if (existingWound != null) {
-                            wound = existingWound;
-                        } else {
-                            wound = new AscalonWound();
-                            wound.attachTo(ch);
-                        }
-                        float duration = AscalonWound.DURATION * ch.resist(AscalonWound.class);
-                        wound.extend(duration);
-                        float attackDamage = hero.damageRoll();
-                        wound.set(hero, attackDamage, inFog);
-                    }
-                }
+            boolean inFogPrimary = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
+                    || Blob.volumeAt(defender.pos, SmokeScreen.class) > 0;
+            AscalonWound.applyFrom(hero, defender, damage, inFogPrimary);
+
+            for (Char ch : Select.chars().all()
+                    .at(Select.placePathRing(defender.pos, Dungeon.level.passable, AOE_RADIUS))
+                    .except(Select.chars().of(hero))
+                    .except(Select.chars().of(defender))
+                    .except(Select.chars().ally())
+                    .that(Char::isAlive)
+                    .query()) {
+                int aoeDamage = Math.max(1, Math.round(damage * AOE_DAMAGE_MULT));
+                proc(hero, ch, aoeDamage);
+                boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
+                        || Blob.volumeAt(ch.pos, SmokeScreen.class) > 0;
+                AscalonWound.applyFrom(hero, ch, aoeDamage, inFog);
             }
         }
         
