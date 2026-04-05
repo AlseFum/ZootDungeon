@@ -73,10 +73,10 @@ public class Hound extends Mob {
 			TextureFilm frames = textureWithFallback("mod:hound", Assets.Sprites.CRAB, 32, 32);
 
 			idle = new Animation( 5, true );
-			idle.frames( frames, 0, 1, 0, 2 );
+			idle.frames( frames, 0 );
 
 			run = new Animation( 15, true );
-			run.frames( frames, 3, 4, 5, 6 );
+			run.frames( frames, 2,3, 4, 5, 6 );
 
 			attack = new Animation( 12, false );
 			attack.frames( frames, 7, 8, 9 );
