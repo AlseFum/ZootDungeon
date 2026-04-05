@@ -5,8 +5,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.Yokai;
 import com.zootdungeon.arknights.Junkman;
 import com.zootdungeon.arknights.OriginumSlug;
-import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.MobileShieldSoldier;
-import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.Rebellist;
+
 import com.zootdungeon.levels.themes.Theme;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public final class HourOfAnAwakening {
     public static final Theme THEME = new Theme(
             HourOfAnAwakeningLevel.class,
             HourOfAnAwakeningBossLevel.class,
-            (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 5) ? (short) 144: (short) 0
+            (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 5) ? (short) 1: (short) 0
     ){
         @Override
         public void enterTheme() {

@@ -75,24 +75,23 @@ public class PropertyHuntingWeapon extends MeleeWeapon {
     }
     
     @Override
-    public String info() {
-        // 构建property列表字符串
+    public String desc() {
         ArrayList<String> propNames = new ArrayList<>();
-        
+
         for (Char.Property prop : targetProperties) {
             propNames.add(Messages.get(this, "property_" + prop.name().toLowerCase()));
         }
-        
+
         String propList;
         if (propNames.isEmpty()) {
             propList = Messages.get(this, "property_none");
         } else {
             propList = String.join(", ", propNames);
         }
-        
-        return Messages.get(this, "desc", 
+
+        return Messages.get(this, "desc",
                 propList,
-                (int)((damageMultiplier - 1.0f) * 100));
+                (int) ((damageMultiplier - 1.0f) * 100));
     }
     
     @Override

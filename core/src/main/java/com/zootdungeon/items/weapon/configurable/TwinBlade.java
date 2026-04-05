@@ -40,15 +40,12 @@ public class TwinBlade extends MeleeWeapon {
 
     @Override
     public String name() {
-        return combined ? "双刀（组合）" : "双刀";
+        return Messages.get(this, combined ? "name_combined" : "name_single");
     }
 
     @Override
     public String desc() {
-        if (combined) {
-            return "两把刀组合而成。有概率触发第二次挥击。\n\n可拆分回两把单刀（拆分后需重新拾取）。";
-        }
-        return "一把轻便的短刀，可近战也可投掷。\n\n拥有两把时可以选择「组合」，合为一把双刀，攻击时会连续挥击两次。";
+        return Messages.get(this, combined ? "desc_combined" : "desc_single");
     }
 
     @Override
@@ -79,8 +76,8 @@ public class TwinBlade extends MeleeWeapon {
 
     @Override
     public String actionName(String action, Hero hero) {
-        if (action.equals(AC_COMBINE)) return "组合";
-        if (action.equals(AC_THROW)) return "投掷";
+        if (action.equals(AC_COMBINE)) return Messages.get(this, "ac_combine");
+        if (action.equals(AC_THROW)) return Messages.get(this, "ac_throw");
         return super.actionName(action, hero);
     }
 
@@ -104,7 +101,7 @@ public class TwinBlade extends MeleeWeapon {
 
     private void doCombine(Hero hero) {
         if (countSingleBlades(hero) < 2) {
-            GLog.w("需要至少两把双刀才能组合。");
+            GLog.w(Messages.get(this, "msg_need_two"));
             return;
         }
         // 先确保两把都在背包里：若装备了单刀则卸下
@@ -119,7 +116,7 @@ public class TwinBlade extends MeleeWeapon {
             }
         }
         if (first == null) {
-            GLog.w("需要至少两把双刀才能组合。");
+            GLog.w(Messages.get(this, "msg_need_two"));
             return;
         }
         int lvl = first.level();
@@ -138,7 +135,7 @@ public class TwinBlade extends MeleeWeapon {
         if (!combinedBlade.collect(hero.belongings.backpack)) {
             Dungeon.level.drop(combinedBlade, hero.pos).sprite.drop();
         }
-        GLog.p("两把刀组合成双刀！");
+        GLog.p(Messages.get(this, "msg_combined"));
         updateQuickslot();
     }
 
@@ -156,7 +153,7 @@ public class TwinBlade extends MeleeWeapon {
         }
         @Override
         public String prompt() {
-            return "选择投掷目标";
+            return Messages.get(TwinBlade.class, "prompt_throw");
         }
     };
 

@@ -44,7 +44,17 @@ public class TransferMechWeapon extends MeleeWeapon {
         image = ItemSpriteSheet.DAGGER;
         tier = 2;
     }
-    
+
+    @Override
+    public String name() {
+        return Messages.get(this, "name");
+    }
+
+    @Override
+    public String desc() {
+        return Messages.get(this, "desc");
+    }
+
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
@@ -57,7 +67,7 @@ public class TransferMechWeapon extends MeleeWeapon {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_RELEASE_MECH)) {
-            return "释放机甲";
+            return Messages.get(this, "ac_release");
         }
         return super.actionName(action, hero);
     }
@@ -85,14 +95,14 @@ public class TransferMechWeapon extends MeleeWeapon {
                 if (targetChar != null && targetChar.alignment == Char.Alignment.ENEMY) {
                     releaseMechs(targetChar, hero);
                 } else {
-                    GLog.w("必须选择一个敌人目标！");
+                    GLog.w(Messages.get(TransferMechWeapon.class, "msg_need_enemy"));
                 }
             }
         }
         
         @Override
         public String prompt() {
-            return "选择目标敌人";
+            return Messages.get(TransferMechWeapon.class, "prompt_target");
         }
     }
     
@@ -115,7 +125,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         CellEmitter.get(target.pos).burst(Speck.factory(Speck.STAR), mechCount * 2);
         Sample.INSTANCE.play(Assets.Sounds.MELD);
         
-        GLog.p("释放了 " + mechCount + " 个机甲！");
+        GLog.p(Messages.get(TransferMechWeapon.class, "msg_released", mechCount));
         hero.spendAndNext(1f);
     }
     
@@ -227,6 +237,11 @@ public class TransferMechWeapon extends MeleeWeapon {
         {
             type = buffType.NEGATIVE;
             announced = true;
+        }
+
+        @Override
+        public String name() {
+            return Messages.get(TransferMechBuff.class, "name");
         }
         
         @Override
@@ -359,12 +374,12 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         @Override
         public String name() {
-            return "转移机甲";
+            return Messages.get(TransferMechChar.class, "name");
         }
         
         @Override
         public String description() {
-            return Messages.get(this, "desc");
+            return Messages.get(TransferMechChar.class, "desc");
         }
         
         @Override

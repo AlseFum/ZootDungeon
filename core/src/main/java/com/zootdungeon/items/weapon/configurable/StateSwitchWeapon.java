@@ -26,7 +26,6 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
-import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -58,21 +57,15 @@ public class StateSwitchWeapon extends MeleeWeapon {
     
     @Override
     public String name(){
-        return currentState == WeaponState.NORMAL ? "状态切换武器" : "状态切换武器(防御模式)";
+        return Messages.get(this, currentState == WeaponState.NORMAL ? "name_normal" : "name_defense");
     }
 
     @Override
     public String desc(){
-        String baseDesc = "一把可以切换状态的武器。\n\n";
-        if (currentState == WeaponState.NORMAL) {
-            return baseDesc + "当前状态：普通模式\n\n" +
-                   "切换到防御模式后，会将防御骰出的点数按" + 
-                   (int)(defenseToAttackRatio * 100) + "%的比例加入攻击值中。";
-        } else {
-            return baseDesc + "当前状态：防御模式\n\n" +
-                   "在此状态下，攻击时会根据敌人的防御骰值，将" + 
-                   (int)(defenseToAttackRatio * 100) + "%的防御值加入攻击伤害中。";
-        }
+        int pct = (int) (defenseToAttackRatio * 100);
+        return Messages.get(this,
+                currentState == WeaponState.NORMAL ? "desc_normal" : "desc_defense",
+                pct);
     }
     
     @Override
@@ -81,6 +74,14 @@ public class StateSwitchWeapon extends MeleeWeapon {
         actions.add(AC_SWITCH);
         return actions;
     }
+
+    @Override
+    public String actionName(String action, Hero hero) {
+        if (action.equals(AC_SWITCH)) {
+            return Messages.get(this, "ac_switch");
+        }
+        return super.actionName(action, hero);
+    }
     
     @Override
     public void execute(Hero hero, String action) {
@@ -88,10 +89,10 @@ public class StateSwitchWeapon extends MeleeWeapon {
             // 切换状态
             if (currentState == WeaponState.NORMAL) {
                 currentState = WeaponState.DEFENSE_MODE;
-                GLog.p("武器切换到防御模式！");
+                GLog.p(Messages.get(this, "msg_switch_defense"));
             } else {
                 currentState = WeaponState.NORMAL;
-                GLog.p("武器切换到普通模式！");
+                GLog.p(Messages.get(this, "msg_switch_normal"));
             }
             updateQuickslot();
         } else {
@@ -124,7 +125,7 @@ public class StateSwitchWeapon extends MeleeWeapon {
             damage += bonusDamage;
             
             if (bonusDamage > 0) {
-                GLog.i("防御转换：+" + bonusDamage + " 伤害");
+                GLog.i(Messages.get(this, "msg_defense_bonus", bonusDamage));
             }
         }
         

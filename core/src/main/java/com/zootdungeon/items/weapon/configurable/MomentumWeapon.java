@@ -66,10 +66,10 @@ public class MomentumWeapon extends MeleeWeapon {
     }
     
     @Override
-    public String info() {
-        return Messages.get(this, "desc", 
-                (int)pushThreshold,
-                (int)(damageMultiplierPerSpeed * 100));
+    public String desc() {
+        return Messages.get(this, "desc",
+                (int) pushThreshold,
+                (int) (damageMultiplierPerSpeed * 100));
     }
     
     @Override
@@ -176,6 +176,11 @@ public class MomentumWeapon extends MeleeWeapon {
             return 3; // 默认值
         }
         
+        @Override
+        public String name() {
+            return Messages.get(MomentumTracker.class, "name");
+        }
+
         @Override
         public int icon() {
             return BuffIndicator.HASTE;

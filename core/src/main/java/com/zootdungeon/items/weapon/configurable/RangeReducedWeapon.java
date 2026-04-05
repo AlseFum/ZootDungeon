@@ -56,8 +56,8 @@ public class RangeReducedWeapon extends MeleeWeapon {
     }
     
     @Override
-    public String info() {
-        return Messages.get(this, "desc", MAX_RANGE, (int)(reduceRate * 100));
+    public String desc() {
+        return Messages.get(this, "desc", MAX_RANGE, (int) (reduceRate * 100));
     }
     
     @Override

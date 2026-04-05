@@ -47,7 +47,7 @@ public class HourOfAnAwakeningLevel extends RegularLevel {
         return new RegularPainter() {
             @Override
             protected void decorate(Level level, java.util.ArrayList<Room> rooms) {
-                // 醒时主题默认装饰留空，可在此扩展
+                // 默认装饰留空，可在此扩展
             }
         }
                 .setWater(feeling == Feeling.WATER ? 0.85f : 0.25f, 4)

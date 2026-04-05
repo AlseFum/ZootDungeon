@@ -46,7 +46,17 @@ public class InstantMechWeapon extends MeleeWeapon {
         image = ItemSpriteSheet.SWORD;
         tier = 2;
     }
-    
+
+    @Override
+    public String name() {
+        return Messages.get(this, "name");
+    }
+
+    @Override
+    public String desc() {
+        return Messages.get(this, "desc");
+    }
+
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
@@ -59,7 +69,7 @@ public class InstantMechWeapon extends MeleeWeapon {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_RELEASE_MECH)) {
-            return "释放无人机";
+            return Messages.get(this, "ac_release");
         }
         return super.actionName(action, hero);
     }
@@ -86,14 +96,14 @@ public class InstantMechWeapon extends MeleeWeapon {
                 if (targetChar != null && targetChar.alignment == Char.Alignment.ENEMY) {
                     releaseMechs(targetChar, hero);
                 } else {
-                    GLog.w("必须选择一个敌人目标！");
+                    GLog.w(Messages.get(InstantMechWeapon.class, "msg_need_enemy"));
                 }
             }
         }
         
         @Override
         public String prompt() {
-            return "选择目标敌人";
+            return Messages.get(InstantMechWeapon.class, "prompt_target");
         }
     }
     
@@ -119,7 +129,7 @@ public class InstantMechWeapon extends MeleeWeapon {
         CellEmitter.get(target.pos).burst(Speck.factory(Speck.STAR), mechCount * 2);
         Sample.INSTANCE.play(Assets.Sounds.MELD);
         
-        GLog.p("释放了 " + mechCount + " 个机甲！");
+        GLog.p(Messages.get(InstantMechWeapon.class, "msg_released", mechCount));
         hero.spendAndNext(1f);
     }
     
@@ -194,6 +204,11 @@ public class InstantMechWeapon extends MeleeWeapon {
             announced = true;
         }
         
+        @Override
+        public String name() {
+            return Messages.get(InstantMechBuff.class, "name");
+        }
+
         @Override
         public int icon() {
             return BuffIndicator.CORRUPT;

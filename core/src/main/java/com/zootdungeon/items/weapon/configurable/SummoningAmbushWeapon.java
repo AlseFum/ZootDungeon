@@ -65,18 +65,17 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
     
     @Override
     public String name() {
-        return "魅影";
+        return Messages.get(this, "name");
     }
     
     @Override
     public String desc() {
-        String desc = "一把特殊的突袭武器。在突袭时击杀敌人可以充能。";
+        StringBuilder sb = new StringBuilder(Messages.get(this, "desc_intro"));
         if (charge > 0) {
-            desc += "\n\n当前充能: " + charge + "/" + chargeCap;
+            sb.append("\n\n").append(Messages.get(this, "desc_charge", charge, chargeCap));
         }
-        desc += "\n\n突袭时如果有充能，会在敌人附近召唤召唤物并同时攻击敌人。充能越强，召唤物越强。";
-        desc += "\n\n武器的等级(tier)也会增强召唤物的基础强度。";
-        return desc;
+        sb.append("\n\n").append(Messages.get(this, "desc_body"));
+        return sb.toString();
     }
     
     @Override
@@ -103,7 +102,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
                 if (willKill && charge < chargeCap) {
                     charge++;
                     updateQuickslot();
-                    GLog.p("充能增加! 当前充能: " + charge + "/" + chargeCap);
+                    GLog.p(Messages.get(SummoningAmbushWeapon.class, "msg_charge_up", charge, chargeCap));
                 }
             }
         }
@@ -142,7 +141,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
         charge--;
         updateQuickslot();
         
-        GLog.p("召唤了 " + minion.name() + "!");
+        GLog.p(Messages.get(SummoningAmbushWeapon.class, "msg_summoned", minion.name()));
         
         // 召唤物立即攻击敌人
         if (enemy.isAlive() && Actor.findChar(enemy.pos) == enemy) {
@@ -270,12 +269,12 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
         
         @Override
         public String name() {
-            return "召唤物 (力量 " + powerLevel + ", 等级 " + weaponTier + ")";
+            return Messages.get(SummonedMinion.class, "name", powerLevel, weaponTier);
         }
         
         @Override
         public String description() {
-            return Messages.get(this, "desc");
+            return Messages.get(SummonedMinion.class, "desc");
         }
         
         @Override
