@@ -13,7 +13,7 @@ public class Junkman extends Mob {
 
 	static {
 		SpriteRegistry.registerMob("mod:junkman",
-				new SpriteRegistry.MobDef("cola/junkman.png", 32, 32));
+				new SpriteRegistry.MobDef("cola/junkman.png", 38, 34));
 	}
 
 	{
@@ -49,7 +49,12 @@ public class Junkman extends Mob {
 		public JunkmanSprite() {
 			super();
 
-			TextureFilm frames = textureWithFallback("mod:junkman", Assets.Sprites.GNOLL, 32, 32);
+			// Same frame indices as GnollSprite; die uses index 10. If cola/junkman.png is missing or
+			// the sheet has too few cells, TextureFilm.get(n) is null and play() NPEs — fall back to gnoll sheet.
+			TextureFilm frames = textureWithFallback("mod:junkman", Assets.Sprites.GNOLL, 38, 34);
+			if (frames.get(10) == null) {
+				frames = textureWithFallback(null, Assets.Sprites.GNOLL, 12, 15);
+			}
 
 			idle = new Animation( 2, true );
 			idle.frames( frames, 0, 0, 0, 1, 0, 0, 1, 1 );

@@ -148,17 +148,100 @@ public class DebugSupply extends Supply {
         }
     }
 
+    /**
+     * Root: one {@link WndGeneral} with {@link WndGeneral.Builder#tab} per category (same idea as
+     * {@link WndGeneralTestProbe}). Cheat tab adds {@link WndGeneral.Builder#hrow} shortcuts that open
+     * nested {@link WndGeneral} windows.
+     */
     private void showCategorySelection(Hero hero) {
         WndGeneral.Builder b = WndGeneral.make().title(Messages.get(DebugSupply.class, "name"));
         for (String catKey : categories.keySet()) {
             final String key = catKey;
             if (CAT_CHEAT.equals(key)) {
-                b.option(Messages.get(DebugSupply.class, key), () -> grantAllInCategory(hero, key));
+                b.tab(Messages.get(DebugSupply.class, key), p -> fillCheatTab(p, hero));
             } else {
-                b.option(Messages.get(DebugSupply.class, key), () -> showItemSelection(hero, key));
+                b.tab(Messages.get(DebugSupply.class, key), p -> fillItemTab(p, hero, key));
             }
         }
         b.show();
+    }
+
+    private void fillItemTab(WndGeneral.PaneBuilder p, Hero hero, String categoryKey) {
+        p.line(Messages.get(DebugSupply.class, "tab_hint"));
+        appendItemOptions(p, hero, categoryKey);
+    }
+
+    private void fillCheatTab(WndGeneral.PaneBuilder p, Hero hero) {
+        p.line(Messages.get(DebugSupply.class, "cheat_tab_line"));
+        p.option(Messages.get(DebugSupply.class, "grant_all_cheat"), () -> grantAllInCategory(hero, CAT_CHEAT));
+        p.hrow(r -> r
+                .button(Messages.get(DebugSupply.class, "nested_demo_btn"), () -> showWndGeneralDemoWindow())
+                .button(Messages.get(DebugSupply.class, "nested_stones_btn"), () -> showNestedStonesWindow(hero)));
+        p.line(Messages.get(DebugSupply.class, "cheat_items_line"));
+        appendItemOptions(p, hero, CAT_CHEAT);
+    }
+
+    private void appendItemOptions(WndGeneral.PaneBuilder p, Hero hero, String categoryKey) {
+        List<Supplier<Item>> items = categories.get(categoryKey);
+        if (items == null) {
+            return;
+        }
+        for (Supplier<Item> supplier : items) {
+            final Supplier<Item> sup = supplier;
+            Item sample = sup.get();
+            String label = sample != null ? sample.name() : "?";
+            p.option(label, () -> grantItem(hero, sup));
+        }
+    }
+
+    /** Second-layer window: same stone entries as the Stones tab (nested demo). */
+    private void showNestedStonesWindow(Hero hero) {
+        WndGeneral.Builder b = WndGeneral.make()
+                .title(Messages.get(DebugSupply.class, "nested_stones_title"));
+        b.line(Messages.get(DebugSupply.class, "nested_stones_line"));
+        appendItemOptionsToRootBuilder(b, hero, CAT_STONES);
+        b.show();
+    }
+
+    private void appendItemOptionsToRootBuilder(WndGeneral.Builder b, Hero hero, String categoryKey) {
+        List<Supplier<Item>> items = categories.get(categoryKey);
+        if (items == null) {
+            return;
+        }
+        for (Supplier<Item> supplier : items) {
+            final Supplier<Item> sup = supplier;
+            Item sample = sup.get();
+            String label = sample != null ? sample.name() : "?";
+            b.option(label, () -> grantItem(hero, sup));
+        }
+    }
+
+    /**
+     * Shared with {@link WndGeneralTestProbe}: three-tab sample matching TestProbe / WndGeneral docs.
+     */
+    static void showWndGeneralDemoWindow() {
+        WndGeneral.make()
+                .title(Messages.get(WndGeneralTestProbe.class, "wnd_title"))
+                .tab(Messages.get(WndGeneralTestProbe.class, "tab_a"), p -> p
+                        .line(Messages.get(WndGeneralTestProbe.class, "tab_a_line"))
+                        .button(Messages.get(WndGeneralTestProbe.class, "btn_test"),
+                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_clicked"))))
+                .tab(Messages.get(WndGeneralTestProbe.class, "tab_b"), p -> p
+                        .line(Messages.get(WndGeneralTestProbe.class, "tab_b_line"))
+                        .option(Messages.get(WndGeneralTestProbe.class, "opt_sample"),
+                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_opt"))))
+                .tab(Messages.get(WndGeneralTestProbe.class, "tab_c"), p -> p
+                        .line(Messages.get(WndGeneralTestProbe.class, "tab_c_line"))
+                        .hrow(r -> r
+                                .line(Messages.get(WndGeneralTestProbe.class, "hrow_left"))
+                                .button(Messages.get(WndGeneralTestProbe.class, "hrow_btn"),
+                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow"))))
+                        .hrow(r -> r
+                                .button(Messages.get(WndGeneralTestProbe.class, "hrow_a"),
+                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))
+                                .button(Messages.get(WndGeneralTestProbe.class, "hrow_b"),
+                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))))
+                .show();
     }
 
     private void grantAllInCategory(Hero hero, String categoryKey) {
@@ -176,21 +259,6 @@ public class DebugSupply extends Supply {
         if (onOpen != null) onOpen.get();
     }
 
-    private void showItemSelection(Hero hero, String categoryKey) {
-        List<Supplier<Item>> items = categories.get(categoryKey);
-        if (items == null || items.isEmpty()) return;
-
-        WndGeneral.Builder b = WndGeneral.make()
-                .title(Messages.get(DebugSupply.class, categoryKey));
-        for (int i = 0; i < items.size(); i++) {
-            final int idx = i;
-            Item sample = items.get(i).get();
-            String label = sample != null ? sample.name() : "?";
-            b.option(label, () -> grantItem(hero, items.get(idx)));
-        }
-        b.show();
-    }
-
     private void grantItem(Hero hero, Supplier<Item> supplier) {
         Item item = supplier.get();
         if (item != null) {
@@ -202,7 +270,6 @@ public class DebugSupply extends Supply {
         if (onOpen != null) {
             onOpen.get();
         }
-        // 不调用 detach，物品保留在背包
     }
 
     /** 调试发放的武器默认装进背包；对可装备武器再穿上，物品栏武器槽才会显示图标。 */
@@ -213,7 +280,6 @@ public class DebugSupply extends Supply {
             kw.doEquip(hero);
             return;
         }
-        // collect() 合并进已有堆叠时，引用上的 quantity 可能为 0，改对背包里那一堆装备
         for (Item it : hero.belongings.backpack.items) {
             if (it != null && kw.getClass() == it.getClass() && it instanceof KindOfWeapon && it.quantity() > 0) {
                 ((KindOfWeapon) it).doEquip(hero);
@@ -221,6 +287,7 @@ public class DebugSupply extends Supply {
             }
         }
     }
+
     public static final class WndGeneralTestProbe extends Item {
 
         private static final String AC_OPEN = "DBG_WND_GENERAL";
@@ -249,28 +316,7 @@ public class DebugSupply extends Supply {
         @Override
         public void execute(Hero hero, String action) {
             if (action.equals(AC_OPEN)) {
-                WndGeneral.make()
-                        .title(Messages.get(WndGeneralTestProbe.class, "wnd_title"))
-                        .tab(Messages.get(WndGeneralTestProbe.class, "tab_a"), p -> p
-                                .line(Messages.get(WndGeneralTestProbe.class, "tab_a_line"))
-                                .button(Messages.get(WndGeneralTestProbe.class, "btn_test"),
-                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_clicked"))))
-                        .tab(Messages.get(WndGeneralTestProbe.class, "tab_b"), p -> p
-                                .line(Messages.get(WndGeneralTestProbe.class, "tab_b_line"))
-                                .option(Messages.get(WndGeneralTestProbe.class, "opt_sample"),
-                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_opt"))))
-                        .tab(Messages.get(WndGeneralTestProbe.class, "tab_c"), p -> p
-                                .line(Messages.get(WndGeneralTestProbe.class, "tab_c_line"))
-                                .hrow(r -> r
-                                        .line(Messages.get(WndGeneralTestProbe.class, "hrow_left"))
-                                        .button(Messages.get(WndGeneralTestProbe.class, "hrow_btn"),
-                                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow"))))
-                                .hrow(r -> r
-                                        .button(Messages.get(WndGeneralTestProbe.class, "hrow_a"),
-                                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))
-                                        .button(Messages.get(WndGeneralTestProbe.class, "hrow_b"),
-                                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))))
-                        .show();
+                showWndGeneralDemoWindow();
             } else {
                 super.execute(hero, action);
             }
