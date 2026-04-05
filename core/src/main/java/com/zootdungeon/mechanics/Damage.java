@@ -40,54 +40,29 @@ import com.watabou.utils.Random;
 
 public class Damage {
 
-    private enum DamageType {
-        PHYSICAL,
-        MAGIC,
-        FIRE,
-        FROST,
-        SHOCK,
-        POISON,
-        CORROSION,
-        HUNGER,
-        TRUE
-    }
+    /** Element / damage category — unique ids 1–9 */
+    public static final int PHYSICAL = 1;
+    public static final int MAGIC = 2;
+    public static final int FIRE = 3;
+    public static final int FROST = 4;
+    public static final int SHOCK = 5;
+    public static final int POISON = 6;
+    public static final int CORROSION = 7;
+    public static final int HUNGER = 8;
+    public static final int TRUE = 9;
 
-    private enum DamageForm {
-        DIRECT,
-        RETALIATION,
-        ENVIRONMENT,
-        ADDITIONAL,
-        DOT
-    }
+    /** Delivery form — unique ids 10–14 */
+    public static final int DIRECT = 10;
+    public static final int RETALIATION = 11;
+    public static final int ENVIRONMENT = 12;
+    public static final int ADDITIONAL = 13;
+    public static final int DOT = 14;
 
-    private enum DamageFlag {
-        IGNORE_ARMOR,
-        CANNOT_CRIT,
-        NO_INTERRUPT,
-        NO_FEEDBACK
-    }
-
-    // Type shortcuts for external callers: Damage.PHYSICAL style.
-    public static final Object PHYSICAL = DamageType.PHYSICAL;
-    public static final Object MAGIC = DamageType.MAGIC;
-    public static final Object FIRE = DamageType.FIRE;
-    public static final Object FROST = DamageType.FROST;
-    public static final Object SHOCK = DamageType.SHOCK;
-    public static final Object POISON = DamageType.POISON;
-    public static final Object CORROSION = DamageType.CORROSION;
-    public static final Object HUNGER = DamageType.HUNGER;
-    public static final Object TRUE = DamageType.TRUE;
-
-    public static final Object DIRECT = DamageForm.DIRECT;
-    public static final Object RETALIATION = DamageForm.RETALIATION;
-    public static final Object ENVIRONMENT = DamageForm.ENVIRONMENT;
-    public static final Object ADDITIONAL = DamageForm.ADDITIONAL;
-    public static final Object DOT = DamageForm.DOT;
-
-    public static final Object IGNORE_ARMOR = DamageFlag.IGNORE_ARMOR;
-    public static final Object CANNOT_CRIT = DamageFlag.CANNOT_CRIT;
-    public static final Object NO_INTERRUPT = DamageFlag.NO_INTERRUPT;
-    public static final Object NO_FEEDBACK = DamageFlag.NO_FEEDBACK;
+    /** Flags — unique ids 20–23 */
+    public static final int IGNORE_ARMOR = 20;
+    public static final int CANNOT_CRIT = 21;
+    public static final int NO_INTERRUPT = 22;
+    public static final int NO_FEEDBACK = 23;
 
     public static enum Interrupt {
         Invulnerable,
@@ -125,11 +100,11 @@ public class Damage {
     public static class DamageContext {
         public final Char from;
         public final Char to;
-        public final Object damageType;
-        public final Object damageForm;
+        public final int damageType;
+        public final int damageForm;
         public final float amount;
         public final Object way;
-        public final Set<Object> flags;
+        public final Set<Integer> flags;
 
         public float baseAmount;
         public float mitigatedAmount;
@@ -137,25 +112,25 @@ public class Damage {
         public int effectiveDamage;
         public int shieldAbsorbed;
 
-        public DamageContext(Char from, Char to, Object damageType, Object damageForm, float amount, Object way, Set<Object> flags) {
+        public DamageContext(Char from, Char to, int damageType, int damageForm, float amount, Object way, Set<Integer> flags) {
             this.from = from;
             this.to = to;
             this.damageType = damageType;
             this.damageForm = damageForm;
             this.amount = amount;
             this.way = way;
-            this.flags = flags == null ? Collections.emptySet() : Collections.unmodifiableSet(new HashSet<>(flags));
+            this.flags = flags == null ? Collections.<Integer>emptySet() : Collections.unmodifiableSet(new HashSet<>(flags));
         }
 
-        public static DamageContext of(Char from, Char to, Object damageType, Object damageForm, float amount, Object way, Set<Object> flags) {
+        public static DamageContext of(Char from, Char to, int damageType, int damageForm, float amount, Object way, Set<Integer> flags) {
             return new DamageContext(from, to, damageType, damageForm, amount, way, flags);
         }
 
-        public static DamageContext of(Char from, Char to, Object damageType, Object damageForm, float amount, Object way) {
-            return new DamageContext(from, to, damageType, damageForm, amount, way, Collections.emptySet());
+        public static DamageContext of(Char from, Char to, int damageType, int damageForm, float amount, Object way) {
+            return new DamageContext(from, to, damageType, damageForm, amount, way, Collections.<Integer>emptySet());
         }
 
-        public static DamageContext direct(Char from, Char to, Object damageType, float amount, Object way) {
+        public static DamageContext direct(Char from, Char to, int damageType, float amount, Object way) {
             return of(from, to, damageType, DIRECT, amount, way);
         }
 
@@ -163,7 +138,7 @@ public class Damage {
             return direct(from, to, PHYSICAL, amount, way);
         }
 
-        public boolean hasFlag(Object flag) {
+        public boolean hasFlag(int flag) {
             return flags.contains(flag);
         }
 
@@ -178,19 +153,19 @@ public class Damage {
         return DamagePipeline.process(context);
     }
 
-    public static DamageResult dot(Char to, Object type, float amount, Object way) {
+    public static DamageResult dot(Char to, int type, float amount, Object way) {
         return process(DamageContext.of(null, to, type, DOT, amount, way));
     }
 
-    public static DamageResult environment(Char to, Object type, float amount, Object way) {
+    public static DamageResult environment(Char to, int type, float amount, Object way) {
         return process(DamageContext.of(null, to, type, ENVIRONMENT, amount, way));
     }
 
-    public static DamageResult retaliation(Char from, Char to, Object type, float amount, Object way) {
+    public static DamageResult retaliation(Char from, Char to, int type, float amount, Object way) {
         return process(DamageContext.of(from, to, type, RETALIATION, amount, way));
     }
 
-    public static DamageResult additional(Char from, Char to, Object type, float amount, Object way) {
+    public static DamageResult additional(Char from, Char to, int type, float amount, Object way) {
         return process(DamageContext.of(from, to, type, ADDITIONAL, amount, way));
     }
 
@@ -212,17 +187,17 @@ public class Damage {
         if (defender == null) {
             return new PhysicalResult(false, 0, Interrupt.NotFound, false);
         }
-        boolean visibleFight = Dungeon.level.heroFOV[attacker.pos] || Dungeon.level.heroFOV[defender.pos];
+        boolean isVisibleFight = Dungeon.level.heroFOV[attacker.pos] || Dungeon.level.heroFOV[defender.pos];
         if (defender.isInvulnerable(attacker.getClass())) {
-            if (visibleFight) {
+            if (isVisibleFight) {
                 defender.sprite.showStatus(CharSprite.POSITIVE, Messages.get(defender, "invulnerable"));
                 Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1f, Random.Float(0.96f, 1.05f));
             }
-            return new PhysicalResult(false, 0, Interrupt.Invulnerable, visibleFight);
+            return new PhysicalResult(false, 0, Interrupt.Invulnerable, isVisibleFight);
         }
         if (!Char.hit(attacker, defender, accMulti, false)) {
             defender.sprite.showStatus(CharSprite.NEUTRAL, "miss");
-            return new PhysicalResult(false, 0, Interrupt.Dodge, visibleFight);
+            return new PhysicalResult(false, 0, Interrupt.Dodge, isVisibleFight);
         }
 
         int dr = computeDr(attacker, defender);
@@ -230,18 +205,18 @@ public class Damage {
         DamageContext physicalCtx = DamageContext.directPhysical(attacker, defender, base.baseDmg, attacker);
         base.baseDmg = DamagePipeline.applyComputeAmplifiers(physicalCtx, base.baseDmg);
         if (!defender.isAlive()) {
-            return new PhysicalResult(true, 0, Interrupt.Else, visibleFight);
+            return new PhysicalResult(true, 0, Interrupt.Else, isVisibleFight);
         }
 
         int totalDamage = 0;
         for (int i = 0; i < hitCount; i++) {
-            int dealt = applyOneHit(attacker, defender, base.baseDmg, dr, visibleFight, i == 0);
+            int dealt = applyOneHit(attacker, defender, base.baseDmg, dr, isVisibleFight, i == 0);
             totalDamage += dealt;
             if (!defender.isAlive()) break;
         }
 
         postDamageEffects(attacker, defender, totalDamage, base.prep, base.nextAttackBoost);
-        return new PhysicalResult(true, totalDamage, Interrupt.Else, visibleFight);
+        return new PhysicalResult(true, totalDamage, Interrupt.Else, isVisibleFight);
     }
 
     private static int computeDr(Char attacker, Char defender) {
