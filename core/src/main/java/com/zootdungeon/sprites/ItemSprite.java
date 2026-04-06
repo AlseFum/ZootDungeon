@@ -223,7 +223,18 @@ public class ItemSprite extends MovieClip {
 
 	public void frame(int image) {
 		if (image >= 6000) {
-			ImageMapping map = SpriteRegistry.mapItemImage(image);
+			ImageMapping map = null;
+			if (image >= 114514) {
+				SpriteRegistry.TextureSheet sheet = null;
+				for (SpriteRegistry.TextureSheet s : SpriteRegistry.itemSheets) {
+					if (s.id_start <= image && image <= s.id_start + s.id_size) {
+						s.load();
+						sheet = s;
+						break;
+					}
+				}
+				map = sheet != null ? sheet.get(image) : null;
+			}
 			if (map != null) {
 				texture = map.texture;
 				frame(map.rect);

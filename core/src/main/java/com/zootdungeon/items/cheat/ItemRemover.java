@@ -7,7 +7,6 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.utils.GLog;
@@ -19,7 +18,8 @@ import com.zootdungeon.ui.InventoryPane;
 
 public class ItemRemover extends Item {
     static {
-        SpriteRegistry.registerItemTexture("cola/trashbin.png", 16)
+        SpriteRegistry.texture("sheet.cola.trashbin", "cola/trashbin.png")
+                .grid(16, 16)
                 .label("trashbin");
     }
 

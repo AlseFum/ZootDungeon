@@ -12,8 +12,8 @@ import com.watabou.utils.Random;
 public class Junkman extends Mob {
 
 	static {
-		SpriteRegistry.registerMob("mod:junkman",
-				new SpriteRegistry.MobDef("cola/junkman.png", 38, 34));
+		// SpriteRegistry no longer manages mob textures.
+		SpriteRegistry.texture("mod:junkman", "cola/junkman.png");
 	}
 
 	{

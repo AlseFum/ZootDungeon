@@ -11,7 +11,8 @@ import com.zootdungeon.windows.WndBag;
 
 public class Ammo extends Item {
     static {
-        SpriteRegistry.registerItemTexture("cola/ammo.png", 32)
+        SpriteRegistry.texture("sheet.cola.ammo", "cola/ammo.png")
+                .grid(32, 32)
                 .span(3)
                 .label("ammo")
                 .label("explosive_ammo")

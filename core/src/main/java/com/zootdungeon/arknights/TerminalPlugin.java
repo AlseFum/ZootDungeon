@@ -41,7 +41,8 @@ public class TerminalPlugin extends Item {
 
 	static {
 		// 使用与终端相同的贴图作为占位，可后续替换为 cola/terminal_plugin.png
-		SpriteRegistry.registerItemTexture("cola/mod_unlock_token.png", 32)
+		SpriteRegistry.texture("sheet.cola.mod_unlock_token", "cola/mod_unlock_token.png")
+				.grid(32, 32)
 				.label("mod_unlock_token");
 	}
 

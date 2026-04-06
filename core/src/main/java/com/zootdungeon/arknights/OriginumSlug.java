@@ -5,7 +5,6 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.TextureFilm;
@@ -14,8 +13,7 @@ import com.watabou.utils.Random;
 public class OriginumSlug extends Mob {
 
 	static {
-		SpriteRegistry.registerMob("mod:originum_slug",
-				new SpriteRegistry.MobDef("cola/originum_slug.png", 32, 32));
+		// SpriteRegistry no longer manages mob textures.
 	}
 
 	{
@@ -48,7 +46,7 @@ public class OriginumSlug extends Mob {
 	public static class OriginumSlugSprite extends MobSprite {
 		public OriginumSlugSprite() {
 			super();
-			Object texHandle = SpriteRegistry.mobTextureOr(Assets.Sprites.RAT, "mod:originum_slug");
+			Object texHandle = Assets.getTexture("cola/originum_slug.png");
 			texture(texHandle);
 			SmartTexture tex = TextureCache.get(texHandle);
 			int fw = 32, fh = 32;

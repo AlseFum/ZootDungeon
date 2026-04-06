@@ -46,7 +46,9 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
     private static final int PHANTOM_KNIFE_IMAGE;
 
     static {
-        SpriteRegistry.registerItemTexture("cola/phantom_knife.png", 64).label("phantom_knife");
+        SpriteRegistry.texture("sheet.cola.phantom_knife", "cola/phantom_knife.png")
+                .grid(64, 64)
+                .label("phantom_knife");
         PHANTOM_KNIFE_IMAGE = SpriteRegistry.itemByName("phantom_knife");
     }
     

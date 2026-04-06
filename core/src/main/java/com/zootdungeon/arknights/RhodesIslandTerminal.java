@@ -113,7 +113,8 @@ public class RhodesIslandTerminal extends Artifact {
 	public int runtimeActorId = -1;
 
 	static {
-		SpriteRegistry.registerItemTexture("cola/command_terminal.png", 32)
+		SpriteRegistry.texture("sheet.cola.command_terminal", "cola/command_terminal.png")
+				.grid(32, 32)
 				.label("rhodes_island_terminal");
 	}
 

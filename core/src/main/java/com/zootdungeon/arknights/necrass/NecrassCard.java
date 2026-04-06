@@ -43,7 +43,8 @@ import com.zootdungeon.utils.GLog;
 
 public class NecrassCard extends MissileWeapon {
 	static {
-		SpriteRegistry.registerItemTexture("cola/necrass_card.png", 32)
+		SpriteRegistry.texture("sheet.cola.necrass_card", "cola/necrass_card.png")
+				.grid(32, 32)
 				.label("necrass_card");
 	}
 

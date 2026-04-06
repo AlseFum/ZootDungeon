@@ -11,8 +11,8 @@ import com.watabou.utils.Random;
 public class Rebellist extends Mob {
 
 	static {
-		SpriteRegistry.registerMob("mod:rebellist",
-				new SpriteRegistry.MobDef("cola/rebellist.png", 32, 32));
+		// SpriteRegistry no longer manages mob textures.
+		SpriteRegistry.texture("mod:rebellist", "cola/rebellist.png");
 	}
 
 	{
@@ -47,19 +47,25 @@ public class Rebellist extends Mob {
 		public RebellistSprite() {
 			super();
 			scale.set(0.7f);
-			TextureFilm frames = textureWithFallback("mod:rebellist", Assets.Sprites.RAT, 32, 32);
+			boolean hasMod = SpriteRegistry.the("mod:rebellist") != null;
+			TextureFilm frames = hasMod
+					? textureWithFallback("mod:rebellist", Assets.Sprites.RAT, 32, 32)
+					: textureWithFallback(null, Assets.Sprites.RAT, 16, 15);
 
 			idle = new Animation(1, true);
-			idle.frames(frames, 23);
+			idle.frames(frames, hasMod ? 23 : 0);
 
 			run = new Animation(10, true);
-			run.frames(frames, 0, 1, 2, 3, 4, 5, 6);
+			if (hasMod) run.frames(frames, 0, 1, 2, 3, 4, 5, 6);
+			else run.frames(frames, 0, 1, 2, 3);
 
 			attack = new Animation(10, false);
-			attack.frames(frames, 8, 9, 10, 11, 12);
+			if (hasMod) attack.frames(frames, 8, 9, 10, 11, 12);
+			else attack.frames(frames, 4, 5, 6);
 
 			die = new Animation(9, false);
-			die.frames(frames, 13, 14, 15, 16, 17, 18, 19, 20, 21);
+			if (hasMod) die.frames(frames, 13, 14, 15, 16, 17, 18, 19, 20, 21);
+			else die.frames(frames, 7, 8, 9);
 
 			play(idle);
 		}

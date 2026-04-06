@@ -50,14 +50,21 @@ public class HeroSprite extends CharSprite {
 	private Animation read;
 
 	static {
-		// Register ReservedOp texture
-		SpriteRegistry.registerHeroTexture(HeroClass.ReservedOp, "cola/guard.png");
+		// Register ReservedOp texture label
+		SpriteRegistry.texture("hero.ReservedOp", "cola/guard.png");
+	}
+
+	private static Object heroTextureHandle(HeroClass cls){
+		String label = "hero." + cls.name();
+		SpriteRegistry.texture(label, cls.spritesheet());
+		Object handle = SpriteRegistry.the(label).textureHandle();
+		return handle instanceof String ? Assets.getTexture((String) handle) : handle;
 	}
 
 	public HeroSprite() {
 		super();
 		
-		texture( SpriteRegistry.heroTextureOr(Dungeon.hero.heroClass, Dungeon.hero.heroClass.spritesheet()) );
+		texture( heroTextureHandle(Dungeon.hero.heroClass) );
 		updateArmor();
 		
 		link( Dungeon.hero );
@@ -69,7 +76,7 @@ public class HeroSprite extends CharSprite {
 	}
 
 	public void disguise(HeroClass cls){
-		texture( SpriteRegistry.heroTextureOr(cls, cls.spritesheet()) );
+		texture( heroTextureHandle(cls) );
 		updateArmor();
 	}
 	

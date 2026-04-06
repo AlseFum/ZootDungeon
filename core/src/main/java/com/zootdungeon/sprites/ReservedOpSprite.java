@@ -14,8 +14,11 @@ public class ReservedOpSprite extends HeroSprite {
     public ReservedOpSprite() {
         super();
         // Override the texture and animations after parent constructor
-        Object tex = SpriteRegistry.heroTextureOr(Dungeon.hero.heroClass, Assets.Sprites.ROGUE);
-        texture(TextureCache.get(tex instanceof String ? Assets.getTexture((String) tex) : tex));
+        HeroClass cls = Dungeon.hero != null ? Dungeon.hero.heroClass : HeroClass.WARRIOR;
+        SpriteRegistry.texture("hero." + cls.name(), cls.spritesheet());
+        Object handle = SpriteRegistry.the("hero." + cls.name()).textureHandle();
+        Object resolved = handle instanceof String ? Assets.getTexture((String) handle) : handle;
+        texture(TextureCache.get(resolved));
         updateArmor();
     }
 

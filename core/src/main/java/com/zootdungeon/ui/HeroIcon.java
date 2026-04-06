@@ -21,17 +21,34 @@
 
 package com.zootdungeon.ui;
 
+import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.RectF;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
 
 //icons for hero subclasses and abilities atm, maybe add classes?
 public class HeroIcon extends Image {
 
 	private static final int SIZE = 16;
+	private static SmartTexture heroIconsTex;
+	private static TextureFilm heroIconsFilm;
+
+	private static TextureFilm film(){
+		if (heroIconsFilm == null){
+			SpriteRegistry.texture("ui.hero_icons", Assets.Interfaces.HERO_ICONS);
+			Object handle = SpriteRegistry.the("ui.hero_icons").textureHandle();
+			Object resolved = (handle instanceof String) ? Assets.getTexture((String) handle) : handle;
+			heroIconsTex = TextureCache.get(resolved);
+			heroIconsFilm = new TextureFilm(heroIconsTex, SIZE, SIZE);
+		}
+		return heroIconsFilm;
+	}
 
 	//transparent icon
 	public static final int NONE    = 127;
@@ -116,48 +133,48 @@ public class HeroIcon extends Image {
 		super();
 		
 		int iconId = subCls.icon();
-		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
-		
-		if (mapping != null) {
-			texture = mapping.texture;
-			frame(mapping.rect);
-		}
+		TextureFilm f = film();
+		RectF rect = f.get(iconId);
+		if (rect == null) rect = f.get(NONE);
+		if (rect == null) rect = new RectF(0, 0, 1, 1);
+		texture = heroIconsTex;
+		frame(rect);
 	}
 
 	public HeroIcon(ArmorAbility abil){
 		super();
 		
 		int iconId = abil.icon();
-		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
-		
-		if (mapping != null) {
-			texture = mapping.texture;
-			frame(mapping.rect);
-		}
+		TextureFilm f = film();
+		RectF rect = f.get(iconId);
+		if (rect == null) rect = f.get(NONE);
+		if (rect == null) rect = new RectF(0, 0, 1, 1);
+		texture = heroIconsTex;
+		frame(rect);
 	}
 
 	public HeroIcon(ActionIndicator.Action action){
 		super();
 		
 		int iconId = action.actionIcon();
-		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
-		
-		if (mapping != null) {
-			texture = mapping.texture;
-			frame(mapping.rect);
-		}
+		TextureFilm f = film();
+		RectF rect = f.get(iconId);
+		if (rect == null) rect = f.get(NONE);
+		if (rect == null) rect = new RectF(0, 0, 1, 1);
+		texture = heroIconsTex;
+		frame(rect);
 	}
 
 	public HeroIcon(ClericSpell spell){
 		super();
 		
 		int iconId = spell.icon();
-		SpriteRegistry.ImageMapping mapping = SpriteRegistry.getHeroIconImageMapping(iconId);
-		
-		if (mapping != null) {
-			texture = mapping.texture;
-			frame(mapping.rect);
-		}
+		TextureFilm f = film();
+		RectF rect = f.get(iconId);
+		if (rect == null) rect = f.get(NONE);
+		if (rect == null) rect = new RectF(0, 0, 1, 1);
+		texture = heroIconsTex;
+		frame(rect);
 	}
 
 }

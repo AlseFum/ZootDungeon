@@ -37,7 +37,8 @@ import com.watabou.utils.Random;
 public class RhodesStandardWand extends Wand {
     
     static {
-        SpriteRegistry.registerItemTexture("cola/rhodes_wand.png", 32)
+        SpriteRegistry.texture("sheet.cola.rhodes_wand", "cola/rhodes_wand.png")
+                .grid(32, 32)
                 .label("rhodes_standard_wand");
     }
     

@@ -53,18 +53,12 @@ public class LastShopLevel extends RegularLevel {
 	
 	@Override
 	public String tilesTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-				Assets.Environment.TILES_CITY,
-				tilemapKey
-		);
+		return Assets.Environment.TILES_CITY;
 	}
 	
 	@Override
 	public String waterTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
-				Assets.Environment.WATER_CITY,
-				tilemapKey
-		);
+		return Assets.Environment.WATER_CITY;
 	}
 	
 	@Override

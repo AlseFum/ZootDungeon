@@ -249,7 +249,8 @@ public class SniperGun extends Gun {
 
         @Override
         public Visual primaryVisual() {
-            SpriteRegistry.ImageMapping mapping = SpriteRegistry.getItemImageMapping("gunfire");
+            SpriteRegistry.TextureSheet sheet = SpriteRegistry.the("gunfire");
+            SpriteRegistry.ImageMapping mapping = sheet != null ? sheet.get("gunfire") : null;
             if (mapping == null) {
                 return new HeroIcon(this);
             }

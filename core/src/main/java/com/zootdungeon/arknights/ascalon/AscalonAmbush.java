@@ -11,7 +11,8 @@ import com.zootdungeon.sprites.SpriteRegistry;
 public class AscalonAmbush extends AmbushWeapon {
     
     static {
-        SpriteRegistry.registerItemTexture("cola/ascalon_weapon.png",64)
+        SpriteRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
+                .grid(64, 64)
                 .label("ascalon_ambush");
     }
     

@@ -212,18 +212,12 @@ public class HourOfAnAwakeningBossLevel extends RegularLevel {
 
 	@Override
 	public String tilesTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-				Assets.Environment.TILES_PRISON,
-				tilemapKey
-		);
+		return Assets.Environment.TILES_PRISON;
 	}
 
 	@Override
 	public String waterTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-				Assets.Environment.WATER_PRISON,
-				tilemapKey
-		);
+		return Assets.Environment.WATER_PRISON;
 	}
 
 	@Override

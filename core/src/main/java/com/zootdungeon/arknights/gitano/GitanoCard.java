@@ -54,7 +54,8 @@ public class GitanoCard extends Item {
 	private static final ArrayList<BuffInfo> FORTUNE_BUFFS = new ArrayList<>();
 
 	static {
-		SpriteRegistry.registerItemTexture("cola/gitano_card.png", 32)
+		SpriteRegistry.texture("sheet.cola.gitano_card", "cola/gitano_card.png")
+				.grid(32, 32)
 				.label("gitano_card");
 
 		FORTUNE_BUFFS.add(new BuffInfo(Haste.class, Haste.DURATION));

@@ -74,20 +74,11 @@ public class MiningLevel extends CavesLevel {
 	public String tilesTex() {
 		switch (Blacksmith.Quest.Type()){
 			default:
-				return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-						Assets.Environment.TILES_CAVES,
-						tilemapKey
-				);
+				return Assets.Environment.TILES_CAVES;
 			case Blacksmith.Quest.CRYSTAL:
-				return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-						Assets.Environment.TILES_CAVES_CRYSTAL,
-						tilemapKey
-				);
+				return Assets.Environment.TILES_CAVES_CRYSTAL;
 			case Blacksmith.Quest.GNOLL:
-				return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-						Assets.Environment.TILES_CAVES_GNOLL,
-						tilemapKey
-				);
+				return Assets.Environment.TILES_CAVES_GNOLL;
 		}
 
 	}

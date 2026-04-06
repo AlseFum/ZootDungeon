@@ -37,7 +37,9 @@ public class MirrorSprite extends MobSprite {
 		super();
 		
 		HeroClass cls = Dungeon.hero != null ? Dungeon.hero.heroClass : HeroClass.WARRIOR;
-		texture(SpriteRegistry.heroTextureOr(cls, cls.spritesheet()));
+		SpriteRegistry.texture("hero." + cls.name(), cls.spritesheet());
+		Object handle = SpriteRegistry.the("hero." + cls.name()).textureHandle();
+		texture(handle instanceof String ? com.zootdungeon.Assets.getTexture((String) handle) : handle);
 		updateArmor( 0 );
 		idle();
 	}

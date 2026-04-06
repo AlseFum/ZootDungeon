@@ -32,8 +32,7 @@ import com.watabou.utils.Random;
 public class Hound extends Mob {
 
 	static {
-		SpriteRegistry.registerMob("mod:hound",
-				new SpriteRegistry.MobDef("cola/hound.png", 32, 32));
+		SpriteRegistry.texture("mod:hound", "cola/hound.png");
 	}
 
 	{
@@ -70,7 +69,10 @@ public class Hound extends Mob {
 		public HoundSprite() {
 			super();
 
-			TextureFilm frames = textureWithFallback("mod:hound", Assets.Sprites.CRAB, 32, 32);
+			boolean hasMod = SpriteRegistry.the("mod:hound") != null;
+			TextureFilm frames = hasMod
+					? textureWithFallback("mod:hound", Assets.Sprites.CRAB, 32, 32)
+					: textureWithFallback(null, Assets.Sprites.CRAB, 16, 16);
 
 			idle = new Animation( 5, true );
 			idle.frames( frames, 0 );

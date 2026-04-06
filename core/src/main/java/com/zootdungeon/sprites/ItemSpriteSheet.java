@@ -804,7 +804,12 @@ public class ItemSpriteSheet {
 		private static final int WIDTH = 16;
 		public static final int SIZE = 8;
 
-		public static TextureFilm film = new TextureFilm( SpriteRegistry.resolveItemIconsTexture(), SIZE, SIZE );
+		public static TextureFilm film;
+		static {
+			SpriteRegistry.texture("ui.item_icons", Assets.Sprites.ITEM_ICONS);
+			Object handle = SpriteRegistry.the("ui.item_icons").textureHandle();
+			film = new TextureFilm(handle instanceof String ? Assets.getTexture((String) handle) : handle, SIZE, SIZE);
+		}
 
 		private static int xy(int x, int y){
 			x -= 1; y -= 1;

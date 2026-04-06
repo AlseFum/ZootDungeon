@@ -38,7 +38,7 @@ public class WardSprite extends MobSprite {
 	public WardSprite(){
 		super();
 
-		texture(SpriteRegistry.mobTextureOr(Assets.Sprites.WARDS, "mod:ward"));
+		texture(Assets.getTexture(Assets.Sprites.WARDS));
 
 		tierIdles[1] = new Animation( 1, true );
 		tierIdles[1].frames(texture.uvRect(0, 0, 9, 10));

@@ -26,8 +26,8 @@ import com.watabou.utils.Random;
 public class SkullShatterer extends Mob {
 
     static {
-        SpriteRegistry.registerMob("mod:skull_shatterer",
-                new SpriteRegistry.MobDef("cola/skullshatter.png", 64,64));
+        // SpriteRegistry no longer manages mob textures.
+        SpriteRegistry.texture("mod:skull_shatterer", "cola/skull_shatterer.png");
     }
 
     private final SkullShattererWeapon weapon = new SkullShattererWeapon();

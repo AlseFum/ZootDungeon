@@ -16,7 +16,7 @@
 - 优先复用已有能力。
 - 避免引入新依赖，除非需求明确要求。
 - 不使用Java风格的注释，只用Markdown写注释。
-- 所有由AI生成的成员优先public。无特殊情况不得private。
+- 所有由AI生成的成员优先public。无特殊情况不得private，不得使用无特殊逻辑的setter/getter
 - 内容高度相关的类优先以内部类的形式打包。
 - AI生成的文件头部建议维护Table Of Content。不要在函数头加入过多不必要的注释。
 - 不必要的getter不要写

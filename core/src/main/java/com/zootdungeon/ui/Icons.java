@@ -21,6 +21,7 @@
 
 package com.zootdungeon.ui;
 
+import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.levels.Level;
@@ -28,7 +29,6 @@ import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
 import com.watabou.utils.RectF;
 
@@ -139,9 +139,15 @@ public enum Icons {
 	public Image get() {
 		return get( this );
 	}
+
+	private static Object textureHandle(){
+		SpriteRegistry.texture("ui.icons", Assets.Interfaces.ICONS);
+		Object handle = SpriteRegistry.the("ui.icons").textureHandle();
+		return (handle instanceof String) ? Assets.getTexture((String) handle) : handle;
+	}
 	
 	public static Image get( Icons type ) {
-		Image icon = new Image( SpriteRegistry.resolveUiIconsTexture() );
+		Image icon = new Image( textureHandle() );
 		switch (type) {
 
 			case ENTER:
@@ -448,7 +454,8 @@ public enum Icons {
 		}
 	}
     static {
-        SpriteRegistry.registerItemTexture("cola/command_terminal.png", 32)
+        SpriteRegistry.texture("sheet.cola.command_terminal", "cola/command_terminal.png")
+                .grid(32, 32)
                 .label("rhodes_island_terminal");
     }
 	public static Image get( HeroClass cl ) {

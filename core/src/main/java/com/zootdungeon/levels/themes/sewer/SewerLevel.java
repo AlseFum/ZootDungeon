@@ -115,19 +115,12 @@ public class SewerLevel extends RegularLevel {
 
     @Override
     public String tilesTex() {
-        // 使用 SpriteRegistry 查询，如果没有注册则 fallback 到原版贴图
-        return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-            Assets.Environment.TILES_SEWERS,
-            tilemapKey
-        );
+        return Assets.Environment.TILES_SEWERS;
     }
 
     @Override
     public String waterTex() {
-        return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
-            Assets.Environment.WATER_SEWERS,
-            tilemapKey
-        );
+        return Assets.Environment.WATER_SEWERS;
     }
 
     @Override

@@ -22,10 +22,6 @@
 package com.zootdungeon.tiles;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.levels.Level;
-import com.zootdungeon.sprites.SpriteRegistry;
-import com.watabou.noosa.TextureFilm;
-import com.zootdungeon.Dungeon;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Tilemap;
@@ -46,23 +42,6 @@ public abstract class DungeonTilemap extends Tilemap {
 		super(tex, new TextureFilm( tex, TEXTURE_TILE, TEXTURE_TILE ) );
 		float s = SIZE / (float) TEXTURE_TILE;
 		scale.set( s, s );
-	}
-
-	/**
-	 * Applies a SpriteRegistry.Tileset (if present for the current level) to this
-	 * tilemap's TextureFilm, remapping logical tile ids (DungeonTileSheet constants)
-	 * to the coordinates defined in the tileset's JSON sheet.
-	 *
-	 * This is used by levels that specify a tilemapKey to allow custom tilesheets.
-	 */
-	protected void applyTilesetOverridesForCurrentLevel() {
-		Level level = Dungeon.level;
-		if (level == null) return;
-
-		String key = level.tilemapKey();
-		if (key == null) return;
-
-		SpriteRegistry.applyTilesetToFilm(tileset, key, TEXTURE_TILE);
 	}
 
 	@Override

@@ -84,11 +84,21 @@ public class MobSprite extends CharSprite {
 	}
 
 	/**
-	 * Helper for dynamic sprites: tries a key from SpriteRegistry, falls back to a static texture object.
-	 * After setting texture, returns a TextureFilm with given frame size.
+	 * Helper for dynamic sprites: treats {@code label} as a SpriteRegistry texture label.
+	 * If not registered, uses {@code fallbackTexture}.
 	 */
-	protected TextureFilm textureWithFallback(String key, Object fallbackTexture, int frameW, int frameH){
-		Object tex = SpriteRegistry.mobTextureOr(fallbackTexture, key);
+	protected TextureFilm textureWithFallback(String label, Object fallbackTexture, int frameW, int frameH){
+		Object tex = fallbackTexture;
+		if (label != null) {
+			SpriteRegistry.TextureSheet sheet = SpriteRegistry.the(label);
+			if (sheet != null) {
+				Object handle = sheet.textureHandle();
+				tex = handle;
+			}
+		}
+		if (tex instanceof String) {
+			tex = com.zootdungeon.Assets.getTexture((String) tex);
+		}
 		texture(tex);
 		return new TextureFilm(texture, frameW, frameH);
 	}

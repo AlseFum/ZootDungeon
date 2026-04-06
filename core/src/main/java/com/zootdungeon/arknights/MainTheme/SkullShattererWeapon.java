@@ -40,7 +40,8 @@ public class SkullShattererWeapon extends MeleeWeapon {
 
     static {
         // gunweapon.png 每行 14 格，第二行第10列 = index 1*14+9 = 23
-        SpriteRegistry.registerItemTexture("cola/gunweapon.png", 16)
+        SpriteRegistry.texture("sheet.cola.gunweapon", "cola/gunweapon.png")
+                .grid(16, 16)
                 .span(23).label("shatteredweapon");
     }
 

@@ -17,12 +17,7 @@ public class DevLevel extends SewerLevel {
 }
 @Override
 	public String tilesTex() {
-		// 通过 SpriteRegistry 查询当前关卡的 tilemapKey，对应材质包可覆盖；
-		// 若未注册则回退到原版洞穴贴图。
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-				com.zootdungeon.Assets.Environment.TILES_DEV,
-				tilemapKey
-		);
+		return com.zootdungeon.Assets.Environment.TILES_DEV;
 	}
 
     private static final float THEME_TERRAIN_DENSITY = 0.5f;

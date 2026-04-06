@@ -43,8 +43,7 @@ import java.util.ArrayList;
 public class Yokai extends Mob {
 
 	static {
-		SpriteRegistry.registerMob("mod:yokai",
-				new SpriteRegistry.MobDef("cola/yokai.png", 32, 32));
+		SpriteRegistry.texture("mod:yokai", "cola/yokai.png");
 	}
 
 	{
@@ -60,6 +59,10 @@ public class Yokai extends Mob {
 
 		loot = PotionOfHealing.class;
 		lootChance = 0.1667f; //by default, see lootChance()
+	}
+
+	static {
+		SpriteRegistry.texture("mod:yokai", "cola/yokai.png");
 	}
 
 	private static final float SPLIT_DELAY	= 1f;
@@ -161,7 +164,10 @@ public class Yokai extends Mob {
 		public YokaiSprite() {
 			super();
 
-			TextureFilm frames = textureWithFallback("mod:yokai", Assets.Sprites.SWARM, 32, 32);
+			boolean hasMod = SpriteRegistry.the("mod:yokai") != null;
+			TextureFilm frames = hasMod
+					? textureWithFallback("mod:yokai", Assets.Sprites.SWARM, 32, 32)
+					: textureWithFallback(null, Assets.Sprites.SWARM, 16, 16);
 
 			idle = new Animation( 15, true );
 			idle.frames( frames, 0, 1, 2, 3, 4, 5 );
@@ -170,10 +176,12 @@ public class Yokai extends Mob {
 			run.frames( frames, 0, 1, 2, 3, 4, 5 );
 
 			attack = new Animation( 20, false );
-			attack.frames( frames, 6, 7, 8, 9 );
+			if (hasMod) attack.frames( frames, 6, 7, 8, 9 );
+			else attack.frames( frames, 0, 1, 2, 3 );
 
 			die = new Animation( 15, false );
-			die.frames( frames, 10, 11, 12, 13, 14 );
+			if (hasMod) die.frames( frames, 10, 11, 12, 13, 14 );
+			else die.frames( frames, 4, 5, 0, 1 );
 
 			play( idle );
 		}

@@ -169,20 +169,12 @@ public class CavesLevel extends RegularLevel {
 
 	@Override
 	public String tilesTex() {
-		// 通过 SpriteRegistry 查询当前关卡的 tilemapKey，对应材质包可覆盖；
-		// 若未注册则回退到原版洞穴贴图。
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-				Assets.Environment.TILES_CAVES,
-				tilemapKey
-		);
+		return Assets.Environment.TILES_CAVES;
 	}
 	
 	@Override
 	public String waterTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
-				Assets.Environment.WATER_CAVES,
-				tilemapKey
-		);
+		return Assets.Environment.WATER_CAVES;
 	}
 	
 	@Override

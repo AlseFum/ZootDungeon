@@ -97,18 +97,12 @@ public class CavesBossLevel extends Level {
 
 	@Override
 	public String tilesTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(
-				Assets.Environment.TILES_CAVES,
-				tilemapKey
-		);
+		return Assets.Environment.TILES_CAVES;
 	}
 
 	@Override
 	public String waterTex() {
-		return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(
-				Assets.Environment.WATER_CAVES,
-				tilemapKey
-		);
+		return Assets.Environment.WATER_CAVES;
 	}
 
 	private static int WIDTH = 33;

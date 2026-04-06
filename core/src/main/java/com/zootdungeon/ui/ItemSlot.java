@@ -21,6 +21,7 @@
 
 package com.zootdungeon.ui;
 
+import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
@@ -64,6 +65,12 @@ public class ItemSlot extends Button {
 	private static final String TXT_TYPICAL_STR	= "%d?";
 
 	private static final String TXT_LEVEL	= "%+d";
+
+	private static Object itemIconsTextureHandle(){
+		SpriteRegistry.texture("ui.item_icons", Assets.Sprites.ITEM_ICONS);
+		Object handle = SpriteRegistry.the("ui.item_icons").textureHandle();
+		return (handle instanceof String) ? Assets.getTexture((String) handle) : handle;
+	}
 
 	// Special "virtual items"
 	public static final Item CHEST = new Item() {
@@ -246,7 +253,7 @@ public class ItemSlot extends Button {
 		if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){
 			extra.text( null );
 
-			itemIcon = new Image(SpriteRegistry.resolveItemIconsTexture());
+			itemIcon = new Image(itemIconsTextureHandle());
 			itemIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
 			add(itemIcon);
 

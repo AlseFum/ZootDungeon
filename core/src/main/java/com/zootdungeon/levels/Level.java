@@ -497,18 +497,10 @@ public abstract class Level implements Bundlable {
 	protected String tilemapKey = null;
 	
 	public String tilesTex() {
-		// If tilemapKey is set, try to resolve from SpriteRegistry
-		if (tilemapKey != null) {
-			return com.zootdungeon.sprites.SpriteRegistry.tilemapTilesTextureOr(null, tilemapKey);
-		}
 		return null;
 	}
 	
 	public String waterTex() {
-		// If tilemapKey is set, try to resolve from SpriteRegistry
-		if (tilemapKey != null) {
-			return com.zootdungeon.sprites.SpriteRegistry.tilemapWaterTextureOr(null, tilemapKey);
-		}
 		return null;
 	}
 

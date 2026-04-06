@@ -30,7 +30,8 @@ import com.zootdungeon.sprites.SpriteRegistry;
 public class RhodesStandardShield extends MeleeWeapon {
     
     static {
-        SpriteRegistry.registerItemTexture("cola/rhodes_shield.png", 32)
+        SpriteRegistry.texture("sheet.cola.rhodes_shield", "cola/rhodes_shield.png")
+                .grid(32, 32)
                 .label("rhodes_shield");
     }
     

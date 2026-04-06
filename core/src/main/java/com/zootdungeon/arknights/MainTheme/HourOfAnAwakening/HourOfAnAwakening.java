@@ -15,7 +15,7 @@ public final class HourOfAnAwakening {
     public static final Theme THEME = new Theme(
             HourOfAnAwakeningLevel.class,
             HourOfAnAwakeningBossLevel.class,
-            (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 5) ? (short) 1: (short) 0
+            (depth, branch) -> (branch == 0 && depth >= 1 && depth <= 5) ? (short) 10: (short) 0
     ){
         @Override
         public void enterTheme() {

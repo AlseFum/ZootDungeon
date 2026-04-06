@@ -52,7 +52,8 @@ import java.util.function.Supplier;
 
 public class DebugSupply extends Supply {
     {
-        SpriteRegistry.registerItemTexture("cola/debug_bag.png", 32)
+        SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
+                .grid(32, 32)
                 .label("debug_bag");
         image = SpriteRegistry.itemByName("debug_bag");
     }

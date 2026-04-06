@@ -34,7 +34,8 @@ public class TragodiaWand extends Wand {
     private int charge = 0;
     private int chargeCap = 10;
     static {
-		SpriteRegistry.registerItemTexture("cola/tragodia_wand.png", 64)
+		SpriteRegistry.texture("sheet.cola.tragodia_wand", "cola/tragodia_wand.png")
+				.grid(64, 64)
 				.label("tragodia_wand");
 	}
 
