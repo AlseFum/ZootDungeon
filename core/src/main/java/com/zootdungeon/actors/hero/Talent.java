@@ -878,6 +878,8 @@ public class Talent implements Bundlable {
 				Collections.addAll(tierTalents, PRECISE_ASSAULT, DEADLY_FOLLOWUP);
 		} else if (cls == HeroClassSheet.CLERIC) {
 				Collections.addAll(tierTalents, CLEANSE, LIGHT_READING);
+		} else if (cls == HeroClassSheet.ReservedOp) {
+			// 预备干员无第三层职业天赋
 		} else {
 			// Default to warrior
 			Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
@@ -897,6 +899,9 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initSubclassTalents( Hero hero ){
+		if (hero.heroClass == HeroClassSheet.ReservedOp) {
+			return;
+		}
 		initSubclassTalents( hero.subClass, hero.talents );
 	}
 
@@ -947,6 +952,9 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initArmorTalents( Hero hero ){
+		if (hero.heroClass == HeroClassSheet.ReservedOp) {
+			return;
+		}
 		initArmorTalents( hero.armorAbility, hero.talents);
 	}
 

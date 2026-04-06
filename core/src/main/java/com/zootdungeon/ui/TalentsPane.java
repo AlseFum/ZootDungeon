@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 
 import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.abilities.Ratmogrify;
@@ -65,6 +66,9 @@ public class TalentsPane extends ScrollPane {
             } else if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null) {
                 tiersAvailable = 3;
             }
+            if (Dungeon.hero.heroClass == HeroClass.ReservedOp) {
+                tiersAvailable = Math.min(tiersAvailable, 2);
+            }
         }
 
         tiersAvailable = Math.min(tiersAvailable, talents.size());
@@ -94,8 +98,12 @@ public class TalentsPane extends ScrollPane {
             blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier2"), 6);
             content.add(blockText);
         } else if (tiersAvailable == 2) {
-            blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
-            content.add(blockText);
+            if (Dungeon.hero.heroClass != HeroClass.ReservedOp) {
+                blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
+                content.add(blockText);
+            } else {
+                blockText = null;
+            }
         } else if (tiersAvailable == 3) {
             blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier4"), 6);
             content.add(blockText);
