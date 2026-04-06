@@ -4,7 +4,6 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.arknights.MainTheme.SkullShatterer;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
-import com.zootdungeon.levels.features.Door;
 import com.zootdungeon.levels.painters.Painter;
 import com.zootdungeon.levels.rooms.Room;
 import com.zootdungeon.levels.rooms.special.SpecialRoom;
@@ -68,10 +67,10 @@ public class SkullShattererChamberRoom extends SpecialRoom {
 		Random.shuffle( spawnCells );
 
 		// Reduce squad spawn density: roll each slot independently.
-		int maxSlots = Math.min( 4, spawnCells.size() );
+		int maxSlots = Math.min( 3, spawnCells.size() );
 		int spawned = 0;
 		for ( int i = 0; i < maxSlots; i++ ) {
-			if ( Random.Float() > 0.45f ) continue;
+			if ( Random.Float() > 0.35f ) continue;
 			ShattererSquadMob m = new ShattererSquadMob();
 			m.pos = spawnCells.get( i );
 			level.mobs.add( m );

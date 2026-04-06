@@ -3,6 +3,7 @@ package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.Statistics;
+import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.arknights.MainTheme.SkullShatterer;
 import com.zootdungeon.levels.Level;
@@ -235,6 +236,18 @@ public class HourOfAnAwakeningBossLevel extends RegularLevel {
 	@Override
 	protected float[] trapChances() {
 		return new float[]{4, 2, 2, 2};
+	}
+
+	@Override
+	public int mobLimit() {
+		// Boss 层已固定生成碎骨 + 小队，额外随机怪数量保持很低，避免强度与拥挤度过高。
+		return 2;
+	}
+
+	@Override
+	public Actor addRespawner() {
+		// 禁用刷怪补员，降低“刷怪频率”。
+		return null;
 	}
 
 	@Override

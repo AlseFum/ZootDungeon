@@ -15,8 +15,8 @@ public class ShattererSquadMob extends Mob {
 	{
 		spriteClass = Infantry.InfantrySprite.class;
 
-		HP = HT = 8;
-		defenseSkill = 3;
+		HP = HT = 7;
+		defenseSkill = 2;
 		EXP = 2;
 		maxLvl = 6;
 		loot = Gold.class;
@@ -35,12 +35,12 @@ public class ShattererSquadMob extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange(1, 4);
+		return Random.NormalIntRange(1, 3);
 	}
 
 	@Override
 	public int attackSkill( Char target ) {
-		return 9;
+		return 8;
 	}
 
 	@Override

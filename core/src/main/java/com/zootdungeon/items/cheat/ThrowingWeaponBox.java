@@ -19,7 +19,7 @@ import com.zootdungeon.items.weapon.missiles.ThrowingSpike;
 import com.zootdungeon.items.weapon.missiles.ThrowingStone;
 import com.zootdungeon.items.weapon.missiles.Tomahawk;
 import com.zootdungeon.items.weapon.missiles.Trident;
-import com.zootdungeon.arknights.necrass.SummoningThrowingWeapon;
+import com.zootdungeon.arknights.necrass.NecrassCard;
 import com.zootdungeon.items.weapon.missiles.darts.AdrenalineDart;
 import com.zootdungeon.items.weapon.missiles.darts.BlindingDart;
 import com.zootdungeon.items.weapon.missiles.darts.ChillingDart;
@@ -150,9 +150,9 @@ public class ThrowingWeaponBox extends Item {
                     () -> selectedWeapon = ForceCube.class
             );
             builder.addItemToTab(0,
-                    createMissileIcon(SummoningThrowingWeapon.class),
-                    getWeaponDescription(SummoningThrowingWeapon.class),
-                    () -> selectedWeapon = SummoningThrowingWeapon.class
+                    createMissileIcon(NecrassCard.class),
+                    getWeaponDescription(NecrassCard.class),
+                    () -> selectedWeapon = NecrassCard.class
             );
             
             // 添加飞镖标签页

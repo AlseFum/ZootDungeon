@@ -18,10 +18,10 @@ public class MobileShieldSoldier extends Mob {
 	{
 		spriteClass = MobileShieldSoldierSprite.class;
 
-		HP = HT = 14;
+		HP = HT = 12;
 		defenseSkill = 4;
 
-		EXP = 3;
+		EXP = 2;
 		maxLvl = 8;
 
 		lootTableId = "mob:infantry:loot";
@@ -30,12 +30,12 @@ public class MobileShieldSoldier extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange(2, 6);
+		return Random.NormalIntRange(1, 6);
 	}
 
 	@Override
 	public int attackSkill(Char target) {
-		return 11;
+		return 10;
 	}
 
 	@Override

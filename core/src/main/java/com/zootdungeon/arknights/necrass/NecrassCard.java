@@ -41,7 +41,7 @@ import com.zootdungeon.sprites.GhostSprite;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.GLog;
 
-public class SummoningThrowingWeapon extends MissileWeapon {
+public class NecrassCard extends MissileWeapon {
 	static {
 		SpriteRegistry.registerItemTexture("cola/necrass_card.png", 32)
 				.label("necrass_card");
@@ -60,15 +60,12 @@ public class SummoningThrowingWeapon extends MissileWeapon {
 
 	@Override
 	public String name() {
-		return "尼克拉斯：召唤卡";
+		return Messages.get(this, "name");
 	}
 
 	@Override
 	public String desc() {
-		return "一次性的召唤投掷物。"
-				+ "\n\n投掷命中会造成伤害；若这次伤害击杀了敌人，将在其位置附近召唤一名仆役协助作战。"
-				+ "\n\n仆役会追随你并主动攻击附近敌人，强度与该物品等级相关。"
-				+ "\n\n该卡在投掷后会立即消散，无法回收。";
+		return Messages.get(this, "desc");
 	}
 
 	@Override
@@ -164,7 +161,7 @@ public class SummoningThrowingWeapon extends MissileWeapon {
 		CellEmitter.get(summonPos).burst(Speck.factory(Speck.STAR), 6);
 		Sample.INSTANCE.play(Assets.Sounds.MELD);
 
-		GLog.p("生成了 " + servant.name() + "!");
+		GLog.p(Messages.get(this, "msg_summoned", servant.name()));
 	}
 
 	private int findNearbyEmptyCell(int centerPos) {
@@ -251,7 +248,7 @@ public class SummoningThrowingWeapon extends MissileWeapon {
 
 		@Override
 		public String name() {
-			return "仆役 (力量 " + powerLevel + ", 等级 " + weaponTier + ")";
+			return Messages.get(this, "name", powerLevel, weaponTier);
 		}
 
 		@Override
@@ -376,4 +373,3 @@ public class SummoningThrowingWeapon extends MissileWeapon {
 		}
 	}
 }
-

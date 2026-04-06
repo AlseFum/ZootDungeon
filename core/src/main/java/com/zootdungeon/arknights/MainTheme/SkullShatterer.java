@@ -3,7 +3,6 @@ package com.zootdungeon.arknights.MainTheme;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
@@ -36,9 +35,9 @@ public class SkullShatterer extends Mob {
 
     {
         spriteClass = Sprite.class;
-        HP = HT = 28;
-        defenseSkill = 8;
-        EXP = 6;
+        HP = HT = 24;
+        defenseSkill = 7;
+        EXP = 5;
         maxLvl = 14;
         loot = Gold.class;
         lootChance = 0.4f;
@@ -54,18 +53,18 @@ public class SkullShatterer extends Mob {
 
     @Override
     public int attackSkill(Char target) {
-        return 14;
+        return 12;
     }
 
     @Override
     public int drRoll() {
-        return super.drRoll() + Random.NormalIntRange(0, 4);
+        return super.drRoll() + Random.NormalIntRange(0, 3);
     }
 
     @Override
     public void die(Object cause) {
         super.die(cause);
-        sayOnce("……撤退？不。", true);
+        sayOnce(Messages.get(this, "defeated"), true);
         Dungeon.level.unseal();
         GameScene.bossSlain();
         Dungeon.level.drop(new SkeletonKey(Dungeon.depth), pos).sprite.drop();
@@ -75,7 +74,7 @@ public class SkullShatterer extends Mob {
     @Override
     public void notice() {
         super.notice();
-        sayOnce("目标确认。", true);
+        sayOnce(Messages.get(this, "notice"), true);
         if (!BossHealthBar.isAssigned()) {
             BossHealthBar.assignBoss(this);
             Dungeon.level.seal();
@@ -104,7 +103,7 @@ public class SkullShatterer extends Mob {
     }
 
     public void onZapComplete(int cell) {
-        sayOnce("爆破。", false);
+        sayOnce(Messages.get(this, "grenade"), false);
         weapon.doGrenadeAt(this, cell);
         weapon.clearGrenadeState();
         spend(TICK);

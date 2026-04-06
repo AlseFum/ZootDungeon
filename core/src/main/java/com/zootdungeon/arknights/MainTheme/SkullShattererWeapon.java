@@ -11,6 +11,7 @@ import com.zootdungeon.actors.buffs.Vulnerable;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
+import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
@@ -76,7 +77,8 @@ public class SkullShattererWeapon extends MeleeWeapon {
 
     public void doGrenadeAt(Char owner, int cell) {
         PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
-        int dmg = Random.NormalIntRange(8 + Dungeon.scalingDepth(), 14 + Dungeon.scalingDepth() * 2);
+        int sd = Dungeon.scalingDepth();
+        int dmg = Random.NormalIntRange(6 + sd, 11 + sd + sd / 2);
         for (Char ch : Select.chars().all()
                 .at(Select.place().all().that(i -> PathFinder.distance[i] != Integer.MAX_VALUE))
                 .except(Select.chars().of(owner))
@@ -112,15 +114,17 @@ public class SkullShattererWeapon extends MeleeWeapon {
 
     @Override
     public String name() {
-        return mode == Mode.RANGED ? "碎颅者(远程)" : "碎颅者(近程)";
+        return mode == Mode.RANGED
+                ? Messages.get(this, "name_ranged")
+                : Messages.get(this, "name_melee");
     }
 
     @Override
     public String desc() {
         if (mode == Mode.RANGED) {
-            return "可切换近程/远程。远程模式：瞄准一回合后发射榴弹，对落点周围造成范围伤害，被命中的单位短时间内防御减半，冷却 " + GRENADE_COOLDOWN_TURNS + " 回合。";
+            return Messages.get(this, "desc_ranged", GRENADE_COOLDOWN_TURNS);
         }
-        return "可切换近程/远程。近程模式：普通近战攻击。";
+        return Messages.get(this, "desc_melee");
     }
 
     @Override
@@ -151,7 +155,9 @@ public class SkullShattererWeapon extends MeleeWeapon {
         super.execute(hero, action);
         if (action.equals(AC_SWITCH)) {
             mode = mode == Mode.MELEE ? Mode.RANGED : Mode.MELEE;
-            GLog.p(mode == Mode.RANGED ? "切换为远程模式" : "切换为近程模式");
+            GLog.p(mode == Mode.RANGED
+                    ? Messages.get(this, "msg_switch_ranged")
+                    : Messages.get(this, "msg_switch_melee"));
             updateQuickslot();
             return;
         }
@@ -162,7 +168,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
                 return;
             }
             if (!canFireRanged()) {
-                GLog.w("榴弹冷却中，还需 " + grenadeCooldown + " 回合。");
+                GLog.w(Messages.get(this, "msg_grenade_cd", grenadeCooldown));
                 return;
             }
             GameScene.selectCell(grenadeAimSelector);
@@ -177,16 +183,16 @@ public class SkullShattererWeapon extends MeleeWeapon {
                 SkullShattererWeapon w = weaponOf(Dungeon.hero);
                 if (w != null && w.canFireRanged()) {
                     ((GrenadeLaunchBuff) Buff.affect(Dungeon.hero, GrenadeLaunchBuff.class, 1f)).setCell(cell);
-                    GLog.p("瞄准完成，下回合将发射。");
+                    GLog.p(Messages.get(SkullShattererWeapon.this, "msg_aim_done"));
                     Dungeon.hero.spendAndNext(1f);
-                    w.updateQuickslot();
+                    Item.updateQuickslot();
                 }
             }
         }
 
         @Override
         public String prompt() {
-            return "选择榴弹落点";
+            return Messages.get(SkullShattererWeapon.this, "prompt_aim");
         }
     };
 
@@ -272,7 +278,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
                     Sample.INSTANCE.play(Assets.Sounds.BLAST);
                     sw.doGrenadeAt(h, targetCell);
                     sw.clearGrenadeState();
-                    sw.updateQuickslot();
+                    Item.updateQuickslot();
                     h.spend(Actor.TICK);
                 }
             }

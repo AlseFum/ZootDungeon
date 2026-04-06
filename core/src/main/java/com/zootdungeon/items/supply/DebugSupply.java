@@ -11,7 +11,7 @@ import com.zootdungeon.items.weapon.configurable.RangeReducedWeapon;
 import com.zootdungeon.items.weapon.configurable.SummoningAmbushWeapon;
 import com.zootdungeon.items.weapon.configurable.TransferMechWeapon;
 import com.zootdungeon.arknights.tragodia.TragodiaWand;
-import com.zootdungeon.arknights.necrass.SummoningThrowingWeapon;
+import com.zootdungeon.arknights.necrass.NecrassCard;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
@@ -110,7 +110,7 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(MomentumWeapon.class, 1));
         weapons.add(() -> create(PropertyHuntingWeapon.class, 1));
         weapons.add(() -> create(RhodesStandardWeaponSupply.class, 1));
-        weapons.add(() -> create(SummoningThrowingWeapon.class, 50));
+        weapons.add(() -> create(NecrassCard.class, 50));
         weapons.add(() -> create(TwinBlade.class, 5));
         weapons.add(() -> create(InstantMechWeapon.class, 1));
         weapons.add(() -> create(TransferMechWeapon.class, 1));

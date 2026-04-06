@@ -50,7 +50,7 @@ public class Yokai extends Mob {
 	{
 		spriteClass = YokaiSprite.class;
 
-		HP = HT = 50;
+		HP = HT = 28;
 		defenseSkill = 5;
 
 		EXP = 3;
