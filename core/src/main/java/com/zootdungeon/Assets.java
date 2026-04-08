@@ -132,6 +132,7 @@ public class Assets {
 		public static final String HALLS_TENSE          = "music/halls_tense.ogg";
 		public static final String HALLS_BOSS           = "music/halls_boss.ogg";
 		public static final String HALLS_BOSS_FINALE    = "music/halls_boss_finale.ogg";
+		public static final String AK_SYS_VOID_INTRO    = "music/m_sys_void_intro.wav";
 	}
 
 	public static class Sounds {
