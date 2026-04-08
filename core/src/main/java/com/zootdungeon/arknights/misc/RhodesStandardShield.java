@@ -36,7 +36,7 @@ public class RhodesStandardShield extends MeleeWeapon {
     }
     
     {
-        image = SpriteRegistry.itemByName("rhodes_shield");
+        image = SpriteRegistry.byLabel("rhodes_shield");
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         

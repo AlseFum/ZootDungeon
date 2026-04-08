@@ -69,7 +69,7 @@ public class GitanoCard extends Item {
 	}
 
 	{
-		image = SpriteRegistry.itemByName("gitano_card");
+		image = SpriteRegistry.byLabel("gitano_card");
 		stackable = true;
 		defaultAction = AC_DRAW;
 	}

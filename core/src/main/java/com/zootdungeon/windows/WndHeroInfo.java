@@ -198,10 +198,10 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.CUDGEL),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 			} else if (cls.equals(HeroClass.ReservedOp)) {
-					icons = new Image[]{ new ItemSprite(SpriteRegistry.itemByName("rhodes_island_terminal"))
-							// new ItemSprite(SpriteRegistry.itemByName("cloak_of_shadows")),
-							// new ItemSprite(SpriteRegistry.itemByName("dagger")),
-							// new ItemSprite(SpriteRegistry.itemByName("scroll_isaz"))
+					icons = new Image[]{ new ItemSprite(SpriteRegistry.byLabel("rhodes_island_terminal"))
+							// new ItemSprite(SpriteRegistry.byLabel("cloak_of_shadows")),
+							// new ItemSprite(SpriteRegistry.byLabel("dagger")),
+							// new ItemSprite(SpriteRegistry.byLabel("scroll_isaz"))
 							};
 			} 
 			for (Image im : icons) {

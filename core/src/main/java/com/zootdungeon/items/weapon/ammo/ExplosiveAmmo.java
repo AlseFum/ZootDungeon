@@ -4,7 +4,7 @@ import com.zootdungeon.sprites.SpriteRegistry;
 
 public class ExplosiveAmmo extends Ammo {
     {
-        image = SpriteRegistry.itemByName("explosive_ammo");
+        image = SpriteRegistry.byLabel("explosive_ammo");
     }
     public ExplosiveAmmo() {
         super();

@@ -17,7 +17,7 @@ public class AscalonAmbush extends AmbushWeapon {
     }
     
     {
-        image = SpriteRegistry.itemByName("ascalon_ambush");
+        image = SpriteRegistry.byLabel("ascalon_ambush");
         tier = 0;
         bones = false;
         ambushRate=1.2f;

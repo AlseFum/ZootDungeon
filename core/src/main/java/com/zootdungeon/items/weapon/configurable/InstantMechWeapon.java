@@ -2,7 +2,6 @@ package com.zootdungeon.items.weapon.configurable;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -43,18 +42,8 @@ public class InstantMechWeapon extends MeleeWeapon {
     public int explodeRange = 2;
     
     {
-        image = ItemSpriteSheet.SWORD;
-        tier = 2;
-    }
-
-    @Override
-    public String name() {
-        return Messages.get(this, "name");
-    }
-
-    @Override
-    public String desc() {
-        return Messages.get(this, "desc");
+        image = ItemSpriteSheet.WAND_WARDING;
+        tier = 0;
     }
 
     @Override
@@ -91,13 +80,14 @@ public class InstantMechWeapon extends MeleeWeapon {
         
         @Override
         public void onSelect(Integer target) {
-            if (target != null) {
-                Char targetChar = Actor.findChar(target);
-                if (targetChar != null && targetChar.alignment == Char.Alignment.ENEMY) {
-                    releaseMechs(targetChar, hero);
-                } else {
-                    GLog.w(Messages.get(InstantMechWeapon.class, "msg_need_enemy"));
-                }
+            if (target == null){
+                return;
+            }
+            Char targetChar = Actor.findChar(target);
+            if (targetChar != null && targetChar.alignment == Char.Alignment.ENEMY) {
+                releaseMechs(targetChar, hero);
+            } else {
+                GLog.w(Messages.get(InstantMechWeapon.class, "msg_need_enemy"));
             }
         }
         
@@ -108,8 +98,8 @@ public class InstantMechWeapon extends MeleeWeapon {
     }
     
     private void releaseMechs(Char target, Hero hero) {
-        // 根据tier和level计算mech数量：2 + tier + level
-        int mechCount = 2 + tier + buffedLvl();
+        // 根据 tier 和强化等级计算 mech 数量：2 + tier + level（至少 1）
+        int mechCount = Math.max(2, 2 + tier + buffedLvl());
         
         for (int i = 0; i < mechCount; i++) {
             // 创建mech buff并附加到目标
@@ -126,7 +116,7 @@ public class InstantMechWeapon extends MeleeWeapon {
         }
         
         // 特效
-        CellEmitter.get(target.pos).burst(Speck.factory(Speck.STAR), mechCount * 2);
+        CellEmitter.get(target.pos).burst(Speck.factory(Speck.STAR), mechCount);
         Sample.INSTANCE.play(Assets.Sounds.MELD);
         
         GLog.p(Messages.get(InstantMechWeapon.class, "msg_released", mechCount));
@@ -201,7 +191,6 @@ public class InstantMechWeapon extends MeleeWeapon {
         
         {
             type = buffType.NEGATIVE;
-            announced = true;
         }
         
         @Override
@@ -307,27 +296,11 @@ public class InstantMechWeapon extends MeleeWeapon {
             if (!candidates.isEmpty()) {
                 // 随机选择一个敌人转移
                 Char newTarget = Random.element(candidates);
-                
-                // 保存当前时间状态（在detach之前）
-                float currentTime = cooldown();
-                
-                // 从当前目标移除（如果目标还存在）
-                if (target != null) {
-                    detach();
-                }
-                
-                // 附加到新目标
+
+                // 从当前目标移除并附加到新目标。不要手动改动时间轴，避免出现 0-time 调度导致卡死。
+                detach();
                 if (attachTo(newTarget)) {
-                    // 恢复时间状态，确保转移后时间正确
-                    if (currentTime > 0) {
-                        postpone(currentTime);
-                    } else {
-                        timeToNow();
-                    }
-                    
-                    if (weapon != null) {
-                        weapon.activeMechs.add(this);
-                    }
+                    if (weapon != null) weapon.activeMechs.add(this);
                     return true;
                 }
             }
@@ -344,7 +317,6 @@ public class InstantMechWeapon extends MeleeWeapon {
         }
         
         private static final String POWER = "power";
-        private static final String WEAPON_ID = "weapon_id";
         
         @Override
         public void storeInBundle(Bundle bundle) {

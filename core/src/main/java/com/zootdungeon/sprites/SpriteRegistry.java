@@ -12,33 +12,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-/*
-## Table of content
-- Base: `LazyAtlas` (lazy load texture + `Atlas`)
-- Sheet: `TextureSheet` (grid/slicing + label/id mapping)
-- Registry:
-  - `texture(name, path)` / `texture(name)` / `the(name)`
-  - `dynamic(textureName, baseTextureLabel, painter)`
-  - `allocateSheet(texture, size)` (internal id-range allocation)
-  - `itemByName(label)` / `getItemSegment(dynamicId)` / `mapItemImage(dynamicId)`
-- Built-in labels registered in static block:
-  - `ui.icons`, `ui.buffs_small`, `ui.buffs_large`, `ui.item_icons`, `ui.hero_icons`
-  - `skel`, `gun`, `gunfire`, `arksupply` (item labels)
-*/
 public final class SpriteRegistry {
 
     private SpriteRegistry() {}
 
-    // ---------------------------
-    // Sheet base (Atlas-backed)
-    // ---------------------------
-
-    /*
-    ## LazyAtlas
-    - Owns a `SmartTexture` and an `Atlas`
-    - Loads on demand via `load()`
-    - Subclasses rebuild slicing/labels in `afterLoad()`
-    */
+    /*懒加载的Atlas，作为基类使用。*/
     public abstract static class LazyAtlas {
         protected final Object baseTextureHandle;
         protected Object resolvedTextureHandle;
@@ -50,10 +28,7 @@ public final class SpriteRegistry {
             this.baseTextureHandle = baseTextureHandle;
         }
 
-        /*
-        Loads (or reloads) the underlying texture/atlas on demand.
-        Texture path is resolved through `Assets.getTexture(...)` so sprite packs can override.
-        */
+        /** Loads/reloads the texture and atlas if the resolved handle changed. */
         public final void load() {
             Object handle = baseTextureHandle;
             if (handle instanceof String) handle = Assets.getTexture((String) handle);
@@ -65,36 +40,25 @@ public final class SpriteRegistry {
             }
         }
 
-        /*
-        Hook for subclasses to apply atlas grid/layout after texture load/reload.
-        */
+        /** Called after a (re)load to rebuild atlas slicing/mappings. */
         public void afterLoad() {}
     }
 
-    // ---------------------------
-    // Item dynamic atlas
-    // ---------------------------
-
-    // dynamic item sheets and ids
+    /** 所有已分配的动态物品图集；用于把 image id 解析到具体 sheet。 */
     public static final ArrayList<TextureSheet> itemSheets = new ArrayList<>();
+    /** label -> 全局 image id。 */
     public static final HashMap<String, Integer> ITEM_TEXTURE_ID_MAP = new HashMap<>();
-    public static int latestItemLocation = 120000;
-
-    // ---------------------------
-    // New: lightweight texture builder API (items)
-    // ---------------------------
-
-    /** Named sheet -> sheet (aliases allowed). */
+    /** 名称/label -> sheet（允许别名）。 */
     public static final HashMap<String, TextureSheet> ITEM_SHEETS = new HashMap<>();
-    /** Texture path -> sheet (dedupe). */
+    /** 纹理 path/key -> sheet（按来源去重复用）。 */
     public static final HashMap<String, TextureSheet> ITEM_SHEETS_BY_PATH = new HashMap<>();
+    /** 最新分配的 item id 位置，用于分配新的 item id。 */
+    public static int latestItemLocation = 1024;
+
+    /** 动态纹理序列号，用于区分不同动态纹理。 */
     public static int dynamicTextureSeq = 1;
 
-    /*
-    ## TextureSheet
-    Public sheet API + implementation.
-    This is the only "item sheet" type SpriteRegistry exposes; there is no separate ItemSegment.
-    */
+    /** Item texture sheet with optional grid and named regions. */
     public static final class TextureSheet extends LazyAtlas {
         int id_start;
         int id_size;
@@ -374,7 +338,7 @@ public final class SpriteRegistry {
         }
     }
 
-    public static int itemByName(String name) {
+    public static int byLabel(String name) {
         Integer res = ITEM_TEXTURE_ID_MAP.get(name);
         if (res == null) {
             System.out.println("Invalid texture name: " + name);
@@ -386,7 +350,7 @@ public final class SpriteRegistry {
     static TextureSheet allocateSheet(String texture, int size) {
         TextureSheet s = new TextureSheet(texture, latestItemLocation, size);
         itemSheets.add(s);
-        latestItemLocation += 1000;
+        latestItemLocation += 256;
         return s;
     }
 

@@ -4,7 +4,6 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.watabou.utils.Bundle;
-import com.zootdungeon.sprites.SpriteRegistry;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -89,7 +88,7 @@ public class CustomFood extends Food {
         public String key = "Cola";
         public String label = "Cola";
         public float energy = 10.0f;
-        public int image = SpriteRegistry.itemByName("skel");
+        public int image = SpriteRegistry.byLabel("skel");
         public Consumer<Hero> onEat = h -> {
         };
         public Function<Integer, Integer> price = i -> 10;

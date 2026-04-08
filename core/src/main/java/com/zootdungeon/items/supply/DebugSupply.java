@@ -15,6 +15,14 @@ import com.zootdungeon.arknights.necrass.NecrassCard;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
+import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
+import com.zootdungeon.arknights.plugins.MetabolismOverclockPlugin;
+import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
+import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
+import com.zootdungeon.arknights.plugins.OverclockedStrikesPlugin;
+import com.zootdungeon.arknights.plugins.OverclockedStrikesPlusPlugin;
+import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
+import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
@@ -51,11 +59,13 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class DebugSupply extends Supply {
-    {
+    static {
         SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-                .grid(32, 32)
-                .label("debug_bag");
-        image = SpriteRegistry.itemByName("debug_bag");
+                    .setXY("debug_bag", 0, 0, 32, 32);
+    }
+    {
+        
+        image = SpriteRegistry.byLabel("debug_bag");
     }
 
     private static final String CAT_POTIONS = "cat_potions";
@@ -63,6 +73,7 @@ public class DebugSupply extends Supply {
     private static final String CAT_CHEAT = "cat_cheat";
     private static final String CAT_WEAPONS = "cat_weapons";
     private static final String CAT_PLANTS = "cat_plants";
+    private static final String CAT_PLUGINS = "cat_plugins";
 
     private final Map<String, List<Supplier<Item>>> categories = new LinkedHashMap<>();
 
@@ -100,6 +111,18 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(KingsCrown.class, 1));
         cheat.add(WndGeneralTestProbe::new);
         categories.put(CAT_CHEAT, cheat);
+
+        List<Supplier<Item>> plugins = new ArrayList<>();
+        // ReservedOp 随机赠送/终端掉落池中的插件（调试用直接发放）
+        plugins.add(() -> create(ReachBoostPlugin.class, 1));
+        plugins.add(() -> create(NextAttackDamageBoostPlugin.class, 1));
+        plugins.add(() -> create(NextAttackCostRefundPlugin.class, 1));
+        plugins.add(() -> create(DefenseBoostPlugin.class, 1));
+        plugins.add(() -> create(PullEnemyPlugin.class, 1));
+        plugins.add(() -> create(MetabolismOverclockPlugin.class, 1));
+        plugins.add(() -> create(OverclockedStrikesPlugin.class, 1));
+        plugins.add(() -> create(OverclockedStrikesPlusPlugin.class, 1));
+        categories.put(CAT_PLUGINS, plugins);
 
         List<Supplier<Item>> weapons = new ArrayList<>();
         weapons.add(() -> create(AscalonAmbush.class, 1));
@@ -294,7 +317,7 @@ public class DebugSupply extends Supply {
         private static final String AC_OPEN = "DBG_WND_GENERAL";
 
         {
-            image = SpriteRegistry.itemByName("debug_bag");
+            image = SpriteRegistry.byLabel("debug_bag");
             stackable = false;
             defaultAction = AC_OPEN;
         }

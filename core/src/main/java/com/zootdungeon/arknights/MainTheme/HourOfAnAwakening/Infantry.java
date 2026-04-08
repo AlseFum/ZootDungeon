@@ -18,7 +18,7 @@ public class Infantry extends Mob {
 
     static {
         // SpriteRegistry no longer manages mob textures.
-        SpriteRegistry.texture("mod:infantry", "cola/infantry.png");
+        SpriteRegistry.texture("mod:infantry", "cola/Infantry.png");
         LootRegistry.register("mob:infantry:loot",
                 new LootRegistry.LootTable()
                         .pool(new LootRegistry.LootPool()

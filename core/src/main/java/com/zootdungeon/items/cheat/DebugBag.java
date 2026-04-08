@@ -9,12 +9,11 @@ import com.zootdungeon.items.supply.Supply;
 public class DebugBag extends Bag {
     static {
         SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-                .grid(32, 32)
-                .label("debug_bag");
+                .setXY("debug_bag", 0, 0, 32, 32);
     }
     
     {
-        image = SpriteRegistry.itemByName("debug_bag");
+        image = SpriteRegistry.byLabel("debug_bag");
         unique = true;
     }
 

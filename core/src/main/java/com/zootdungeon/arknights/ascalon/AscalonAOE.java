@@ -21,7 +21,7 @@ public class AscalonAOE extends MeleeWeapon {
     }
     
     {
-        image = SpriteRegistry.itemByName("ascalon_aoe");
+        image = SpriteRegistry.byLabel("ascalon_aoe");
         tier = 0;
         bones = false;
         RCH=3;

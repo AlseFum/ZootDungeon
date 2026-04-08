@@ -27,7 +27,7 @@ public class SkullShatterer extends Mob {
 
     static {
         // SpriteRegistry no longer manages mob textures.
-        SpriteRegistry.texture("mod:skull_shatterer", "cola/skull_shatterer.png");
+        SpriteRegistry.texture("mod:skull_shatterer", "cola/skullshatter.png");
     }
 
     private final SkullShattererWeapon weapon = new SkullShattererWeapon();

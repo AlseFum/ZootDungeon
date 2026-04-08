@@ -48,7 +48,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
     public enum Mode { MELEE, RANGED }
 
     {
-        image = SpriteRegistry.itemByName("shatteredweapon");
+        image = SpriteRegistry.byLabel("shatteredweapon");
         tier = 3;
         bones = false;
         usesTargeting = true;

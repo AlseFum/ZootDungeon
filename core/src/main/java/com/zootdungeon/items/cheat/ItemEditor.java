@@ -18,7 +18,7 @@ public class ItemEditor extends Item {
     }
     
     {
-        image = SpriteRegistry.itemByName("handle_holder");
+        image = SpriteRegistry.byLabel("handle_holder");
         icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
         stackable = false;
         unique = true;

@@ -8,7 +8,7 @@ public class RhodesStandardWeaponSupply extends Supply {
     {
         name = Messages.get(this, "name");
         desc = Messages.get(this, "desc");
-        image = SpriteRegistry.itemByName("arksupply");
+        image = SpriteRegistry.byLabel("arksupply");
     }
     public RhodesStandardWeaponSupply() {
         super();

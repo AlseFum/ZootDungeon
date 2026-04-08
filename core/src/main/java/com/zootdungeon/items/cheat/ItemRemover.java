@@ -24,7 +24,7 @@ public class ItemRemover extends Item {
     }
 
     {
-        image = SpriteRegistry.itemByName("trashbin");
+        image = SpriteRegistry.byLabel("trashbin");
         stackable = false;
         unique = true;
         defaultAction=AC_REMOVE;

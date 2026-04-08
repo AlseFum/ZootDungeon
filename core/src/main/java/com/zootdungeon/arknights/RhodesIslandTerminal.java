@@ -11,6 +11,8 @@ import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
 import com.zootdungeon.arknights.plugins.MetabolismOverclockPlugin;
 import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
 import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
+import com.zootdungeon.arknights.plugins.OverclockedStrikesPlugin;
+import com.zootdungeon.arknights.plugins.OverclockedStrikesPlusPlugin;
 import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
 import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
 import com.zootdungeon.items.Item;
@@ -92,7 +94,9 @@ public class RhodesIslandTerminal extends Artifact {
 			NextAttackCostRefundPlugin.class,
 			DefenseBoostPlugin.class,
 			PullEnemyPlugin.class,
-			MetabolismOverclockPlugin.class
+			MetabolismOverclockPlugin.class,
+			OverclockedStrikesPlugin.class,
+			OverclockedStrikesPlusPlugin.class
 	};
 
 	public static TerminalPlugin createRandomLootPlugin() {
@@ -114,12 +118,11 @@ public class RhodesIslandTerminal extends Artifact {
 
 	static {
 		SpriteRegistry.texture("sheet.cola.command_terminal", "cola/command_terminal.png")
-				.grid(32, 32)
-				.label("rhodes_island_terminal");
+				.setXY("rhodes_island_terminal", 0, 0, 32, 32);
 	}
 
 	{
-		image = SpriteRegistry.itemByName("rhodes_island_terminal");
+		image = SpriteRegistry.byLabel("rhodes_island_terminal");
 		defaultAction = AC_OPEN;
 	}
 

@@ -29,7 +29,7 @@ public class Ammo extends Item {
     //if is full_reload, the amount will be set to gun.max_amount
     public Cartridge cartridge;
     {
-        image = SpriteRegistry.itemByName("ammo");
+        image = SpriteRegistry.byLabel("ammo");
         stackable = true;
         defaultAction = AC_RELOAD;
     }

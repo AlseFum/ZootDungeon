@@ -2,7 +2,6 @@ package com.zootdungeon.items.weapon.configurable;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -23,6 +22,7 @@ import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.Image;
+import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,18 +41,8 @@ public class TransferMechWeapon extends MeleeWeapon {
     public int searchRange = 8;
     
     {
-        image = ItemSpriteSheet.DAGGER;
-        tier = 2;
-    }
-
-    @Override
-    public String name() {
-        return Messages.get(this, "name");
-    }
-
-    @Override
-    public String desc() {
-        return Messages.get(this, "desc");
+        image = ItemSpriteSheet.WAND_WARDING;
+        tier = 0;
     }
 
     @Override
@@ -90,13 +80,14 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         @Override
         public void onSelect(Integer target) {
-            if (target != null) {
-                Char targetChar = Actor.findChar(target);
-                if (targetChar != null && targetChar.alignment == Char.Alignment.ENEMY) {
-                    releaseMechs(targetChar, hero);
-                } else {
-                    GLog.w(Messages.get(TransferMechWeapon.class, "msg_need_enemy"));
-                }
+            if(target == null){
+                return;
+            }
+            Char targetChar = Actor.findChar(target);
+            if (targetChar != null && targetChar.alignment == Char.Alignment.ENEMY) {
+                releaseMechs(targetChar, hero);
+            } else {
+                GLog.w(Messages.get(TransferMechWeapon.class, "msg_need_enemy"));
             }
         }
         
@@ -107,26 +98,88 @@ public class TransferMechWeapon extends MeleeWeapon {
     }
     
     private void releaseMechs(Char target, Hero hero) {
-        // 根据tier和level计算mech数量：2 + tier + level
-        int mechCount = 2 + tier + buffedLvl();
-        
+        // 根据 tier 和强化等级计算 mech 数量：2 + tier + level
+        int mechCount = Math.max(1, 1 + tier + buffedLvl());
+
+        // 优先追踪：点击点附近的敌人（通常就是 target，本逻辑允许“附近替换”）
+        Char preferred = findNearestEnemyAround(target.pos, searchRange);
+        if (preferred == null) preferred = target;
+
+        int spawned = 0;
         for (int i = 0; i < mechCount; i++) {
-            // 创建mech buff并附加到目标
-            TransferMechBuff mech = new TransferMechBuff();
-            mech.weapon = this;
-            mech.power = tier + buffedLvl();
-            mech.aoeRange = aoeRange;
-            if (mech.attachTo(target)) {
-                activeMechBuffs.add(mech);
+            // 先释放 mech（char 形态），追到目标后再转换为 buff
+            int spawnPos = findNearbyEmptyCell(hero.pos, 6);
+            if (spawnPos == -1) {
+                // 没有可用空位：回退为直接挂 buff，保证技能仍然生效
+                TransferMechBuff mech = new TransferMechBuff();
+                mech.weapon = this;
+                mech.power = tier + buffedLvl();
+                mech.aoeRange = aoeRange;
+                if (mech.attachTo(preferred)) {
+                    activeMechBuffs.add(mech);
+                    spawned++;
+                }
+                continue;
             }
+
+            TransferMechChar mechChar = new TransferMechChar();
+            mechChar.weapon = this;
+            mechChar.power = tier + buffedLvl();
+            mechChar.searchRange = searchRange;
+            mechChar.forcedTargetId = preferred.id();
+            mechChar.pos = spawnPos;
+            mechChar.initStats();
+            mechChar.state = mechChar.HUNTING;
+
+            GameScene.add(mechChar);
+            activeMechChars.add(mechChar);
+            spawned++;
         }
         
         // 特效
-        CellEmitter.get(target.pos).burst(Speck.factory(Speck.STAR), mechCount * 2);
+        if (spawned > 0) {
+            CellEmitter.get(hero.pos).burst(Speck.factory(Speck.STAR), spawned);
+        }
         Sample.INSTANCE.play(Assets.Sounds.MELD);
         
-        GLog.p(Messages.get(TransferMechWeapon.class, "msg_released", mechCount));
+        GLog.p(Messages.get(TransferMechWeapon.class, "msg_released", spawned));
         hero.spendAndNext(1f);
+    }
+
+    private int findNearbyEmptyCell(int centerPos, int maxSteps) {
+        if (maxSteps < 1) maxSteps = 1;
+
+        PathFinder.buildDistanceMap(centerPos, Dungeon.level.passable, maxSteps);
+
+        int best = -1;
+        int bestDist = Integer.MAX_VALUE;
+        for (int i = 0; i < Dungeon.level.length(); i++) {
+            int d = PathFinder.distance[i];
+            if (d > 0 && d <= maxSteps
+                    && Dungeon.level.passable[i]
+                    && Actor.findChar(i) == null) {
+                if (d < bestDist) {
+                    best = i;
+                    bestDist = d;
+                }
+            }
+        }
+        return best;
+    }
+
+    private Char findNearestEnemyAround(int centerPos, int range) {
+        Char closest = null;
+        int closestDist = Integer.MAX_VALUE;
+        for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+            if (mob != null && mob.isAlive() && mob.alignment == Char.Alignment.ENEMY) {
+                int dist = Dungeon.level.distance(centerPos, mob.pos);
+                if (dist <= range && dist < closestDist) {
+                    closest = mob;
+                    closestDist = dist;
+                }
+            }
+        }
+        return closest;
     }
     
     // 当敌人死亡时，将buff转换为char
@@ -134,11 +187,15 @@ public class TransferMechWeapon extends MeleeWeapon {
         activeMechBuffs.remove(buff);
         
         // 创建char形式的mech
+        int spawnPos = findNearbyEmptyCell(deathPos, 6);
+        if (spawnPos == -1) return;
+
         TransferMechChar mechChar = new TransferMechChar();
         mechChar.weapon = this;
         mechChar.power = buff.power;
         mechChar.searchRange = searchRange;
-        mechChar.pos = deathPos;
+        mechChar.pos = spawnPos;
+        mechChar.initStats();
         mechChar.state = mechChar.HUNTING;
         
         GameScene.add(mechChar);
@@ -236,7 +293,6 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         {
             type = buffType.NEGATIVE;
-            announced = true;
         }
 
         @Override
@@ -338,6 +394,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         public TransferMechWeapon weapon;
         public int power = 1;
         public int searchRange = 8; // 搜索敌人的范围
+        public int forcedTargetId = -1; // 优先追踪的目标（释放时指定）
         
         {
             spriteClass = GhostSprite.class;
@@ -351,7 +408,10 @@ public class TransferMechWeapon extends MeleeWeapon {
         }
         
         public TransferMechChar() {
-            // 设置基础属性
+            // 属性在 power 赋值后初始化
+        }
+
+        public void initStats() {
             HP = HT = 10 + power * 2;
             defenseSkill = 5 + power;
             maxLvl = Math.max(1, power);
@@ -402,7 +462,7 @@ public class TransferMechWeapon extends MeleeWeapon {
             Dungeon.level.updateFieldOfView(this, fieldOfView);
             
             // 寻找附近的敌人
-            Char target = findNearbyEnemy();
+            Char target = findForcedTargetOrNearbyEnemy();
             
             if (target != null) {
                 // 找到敌人，移动到敌人位置并转换为buff
@@ -411,10 +471,13 @@ public class TransferMechWeapon extends MeleeWeapon {
                     if (weapon != null) {
                         weapon.convertCharToBuff(this, target);
                     }
+                    spend(1 / speed());
                     return true;
                 } else {
                     // 移动到敌人附近
                     if (getCloser(target.pos)) {
+                        // getCloser() 只负责移动，不会消耗时间；这里手动消耗一次行动时间，避免 0-time 循环卡死
+                        spend(1 / speed());
                         return true;
                     } else {
                         // 无法移动，等待
@@ -429,7 +492,16 @@ public class TransferMechWeapon extends MeleeWeapon {
             }
         }
         
-        private Char findNearbyEnemy() {
+        private Char findForcedTargetOrNearbyEnemy() {
+            if (forcedTargetId != -1) {
+                Char forced = (Char) Actor.findById(forcedTargetId);
+                if (forced != null && forced.isAlive() && forced.alignment == Alignment.ENEMY) {
+                    // 不要求在视野内，保证“追到指定目标”
+                    return forced;
+                }
+                forcedTargetId = -1;
+            }
+
             Char closest = null;
             int closestDist = Integer.MAX_VALUE;
             
@@ -462,7 +534,6 @@ public class TransferMechWeapon extends MeleeWeapon {
         }
         
         private static final String POWER = "power";
-        private static final String WEAPON_ID = "weapon_id";
         
         @Override
         public void storeInBundle(Bundle bundle) {
@@ -475,9 +546,7 @@ public class TransferMechWeapon extends MeleeWeapon {
             super.restoreFromBundle(bundle);
             power = bundle.getInt(POWER);
             // 重新设置属性
-            HP = HT = 10 + power * 2;
-            defenseSkill = 5 + power;
-            maxLvl = Math.max(1, power);
+            initStats();
         }
     }
 }

@@ -475,7 +475,7 @@ public enum Icons {
 		} else if (cl == HeroClass.CLERIC) {
 				return new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME);
 		} else if (cl == HeroClass.ReservedOp) {
-            return new ItemSprite(SpriteRegistry.itemByName("rhodes_island_terminal"));
+            return new ItemSprite(SpriteRegistry.byLabel("rhodes_island_terminal"));
         } else {
 				return new ItemSprite(ItemSpriteSheet.SEAL); // Default icon for unknown classes
 		}

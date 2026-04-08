@@ -20,6 +20,7 @@ import com.zootdungeon.actors.buffs.Barkskin;
 import com.zootdungeon.actors.buffs.Bleeding;
 import com.zootdungeon.actors.buffs.Bless;
 import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.OverclockedStrikes;
 import com.zootdungeon.actors.buffs.Burning;
 import com.zootdungeon.actors.buffs.ChampionEnemy;
 import com.zootdungeon.actors.buffs.Charm;
@@ -440,7 +441,10 @@ public abstract class Char extends Actor {
 	// atm attack is always post-armor and defence is already pre-armor
 	
 	public int attackProc( Char enemy, int damage ) {
-		// 移除特质对攻击的影响
+		OverclockedStrikes over = buff(OverclockedStrikes.class);
+		if (over != null) {
+			damage = Math.round(damage * over.damageMultiplier());
+		}
 		return damage;
 	}
 	

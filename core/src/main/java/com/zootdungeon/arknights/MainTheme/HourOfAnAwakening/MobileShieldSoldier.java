@@ -12,7 +12,7 @@ public class MobileShieldSoldier extends Mob {
 
 	static {
 		// SpriteRegistry no longer manages mob textures.
-		SpriteRegistry.texture("mod:shielded", "cola/shielded.png");
+		SpriteRegistry.texture("mod:shielded", "cola/Shielded.png");
 	}
 
 	{

@@ -40,7 +40,7 @@ public class TragodiaWand extends Wand {
 	}
 
     {
-        image = SpriteRegistry.itemByName("tragodia_wand");
+        image = SpriteRegistry.byLabel("tragodia_wand");
 
         collisionProperties = Ballistica.MAGIC_BOLT;
     }

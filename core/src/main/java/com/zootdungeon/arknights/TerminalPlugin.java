@@ -47,7 +47,7 @@ public class TerminalPlugin extends Item {
 	}
 
 	{
-		image = SpriteRegistry.itemByName("mod_unlock_token");
+		image = SpriteRegistry.byLabel("mod_unlock_token");
 		levelKnown = true;
 	}
 

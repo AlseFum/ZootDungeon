@@ -22,7 +22,6 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndOptions;
-import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Bundle;
@@ -41,7 +40,7 @@ public class Gun extends Weapon {
     protected float reloadTime = 1f;
     public int tier=1;
     {
-        image = SpriteRegistry.itemByName("gun");
+        image = SpriteRegistry.byLabel("gun");
         cartridge = new Cartridge(maxAmmo, car_effect);
         usesTargeting = true;
         defaultAction = AC_FIRE;

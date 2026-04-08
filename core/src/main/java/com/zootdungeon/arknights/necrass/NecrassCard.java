@@ -49,7 +49,7 @@ public class NecrassCard extends MissileWeapon {
 	}
 
 	{
-		image = SpriteRegistry.itemByName("necrass_card");
+		image = SpriteRegistry.byLabel("necrass_card");
 		hitSound = Assets.Sounds.HIT_SLASH;
 		hitSoundPitch = 1.2f;
 

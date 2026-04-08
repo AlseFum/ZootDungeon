@@ -49,7 +49,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
         SpriteRegistry.texture("sheet.cola.phantom_knife", "cola/phantom_knife.png")
                 .grid(64, 64)
                 .label("phantom_knife");
-        PHANTOM_KNIFE_IMAGE = SpriteRegistry.itemByName("phantom_knife");
+        PHANTOM_KNIFE_IMAGE = SpriteRegistry.byLabel("phantom_knife");
     }
     
     private static final String CHARGE = "charge";
@@ -90,7 +90,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
             // 检查是否是突袭攻击
             boolean isAmbush = defender instanceof Mob && ((Mob) defender).surprisedBy(hero);
             
-            if (true || isAmbush) {
+            if (isAmbush) {
                 // 检查是否会击杀敌人（在伤害应用之前，通过 HP <= damage 判断）
                 boolean willKill = defender.HP <= damage;
                 
@@ -127,7 +127,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
         int powerLevel = basePower + chargePower;
         
         // 创建召唤物
-        SummonedMinion minion = new SummonedMinion(powerLevel, tier);
+        SummonedMinion minion = new SummonedMinion(this, powerLevel, tier);
         minion.pos = summonPos;
         minion.state = minion.HUNTING;
         minion.setTarget(enemy.pos);
@@ -151,6 +151,16 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
             minion.enemySeen = true;
             // 让召唤物在下一回合攻击
             minion.state = minion.HUNTING;
+        }
+    }
+
+    private void refundCharge(int amount) {
+        if (amount <= 0) return;
+        int before = charge;
+        charge = Math.min(chargeCap, charge + amount);
+        if (charge != before) {
+            updateQuickslot();
+            GLog.p(Messages.get(SummoningAmbushWeapon.class, "msg_charge_up", charge, chargeCap));
         }
     }
     
@@ -215,6 +225,7 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
     // 召唤物内部类
     public static class SummonedMinion extends Mob {
         
+        private SummoningAmbushWeapon weapon;
         private int powerLevel;
         private int weaponTier;
         private int idleTurns = 0; // 没有目标时的空闲回合数
@@ -234,7 +245,8 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
             state = HUNTING;
         }
         
-        public SummonedMinion(int powerLevel, int weaponTier) {
+        public SummonedMinion(SummoningAmbushWeapon weapon, int powerLevel, int weaponTier) {
+            this.weapon = weapon;
             this.powerLevel = powerLevel;
             this.weaponTier = weaponTier;
             
@@ -267,6 +279,16 @@ public class SummoningAmbushWeapon extends AmbushWeapon {
         public int drRoll() {
             // 伤害减免: 0 到 (powerLevel + tier) / 2
             return Random.NormalIntRange(0, (powerLevel + weaponTier) / 2);
+        }
+
+        @Override
+        public boolean attack(Char enemy, float dmgMulti, float dmgBonus, float accMulti, int hitCount) {
+            boolean wasAlive = enemy != null && enemy.isAlive();
+            boolean result = super.attack(enemy, dmgMulti, dmgBonus, accMulti, hitCount);
+            if (wasAlive && enemy != null && !enemy.isAlive() && enemy.alignment == Alignment.ENEMY) {
+                if (weapon != null) weapon.refundCharge(1);
+            }
+            return result;
         }
         
         @Override

@@ -36,6 +36,7 @@ import com.zootdungeon.actors.buffs.LostInventory;
 import com.zootdungeon.actors.buffs.MindVision;
 import com.zootdungeon.actors.buffs.Momentum;
 import com.zootdungeon.actors.buffs.MonkEnergy;
+import com.zootdungeon.actors.buffs.OverclockedStrikes;
 import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.actors.buffs.PhysicalEmpower;
 import com.zootdungeon.actors.buffs.Recharging;
@@ -2456,6 +2457,8 @@ public class Hero extends Char {
         int hitCount = 1;
         KindOfWeapon wep = belongings.attackingWeapon();
         if (wep != null) hitCount = Math.max(1, wep.hitCount());
+        OverclockedStrikes over = buff(OverclockedStrikes.class);
+        if (over != null) hitCount += over.bonusHitCount();
         boolean hit = attack(enemy, 1f, 0f, 1f, hitCount);
 
         // EventBus removed

@@ -43,7 +43,7 @@ public class RhodesStandardWand extends Wand {
     }
     
     {
-        image = SpriteRegistry.itemByName("rhodes_standard_wand");
+        image = SpriteRegistry.byLabel("rhodes_standard_wand");
         collisionProperties = Ballistica.MAGIC_BOLT;
     }
     
