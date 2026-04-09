@@ -69,6 +69,8 @@ public final class SpriteRegistry {
         private final ArrayList<String> labels = new ArrayList<>();
         // localIndex -> optional custom rect for non-grid sprites (rebuild after reload)
         private final ArrayList<RectF> customRects = new ArrayList<>();
+        // localIndex -> custom sprite pixel size for scaling (used when rect is custom)
+        private final ArrayList<Integer> customSizes = new ArrayList<>();
 
         private Integer gridW;
         private Integer gridH;
@@ -115,14 +117,17 @@ public final class SpriteRegistry {
             load();
             int where = id >= id_start ? id - id_start : id;
 
-            RectF rect = (where >= 0 && where < customRects.size() && customRects.get(where) != null)
-                    ? customRects.get(where)
-                    : atlas.get(where);
+            boolean isCustom = where >= 0 && where < customRects.size() && customRects.get(where) != null;
+            RectF rect = isCustom ? customRects.get(where) : atlas.get(where);
             if (atlas.get((Object) where) == null) {
                 atlas.add(where, rect);
             }
 
-            return new ImageMapping(cache, rect, atlas.height(rect), size);
+            int spriteSize = size;
+            if (isCustom && where < customSizes.size() && customSizes.get(where) != null) {
+                spriteSize = Math.max(1, customSizes.get(where));
+            }
+            return new ImageMapping(cache, rect, atlas.height(rect), spriteSize);
         }
 
         public ImageMapping get(String label) {
@@ -167,6 +172,8 @@ public final class SpriteRegistry {
             labels.set(id_size, label);
             while (customRects.size() <= id_size) customRects.add(null);
             customRects.set(id_size, rect);
+            while (customSizes.size() <= id_size) customSizes.add(null);
+            customSizes.set(id_size, Math.max(width, height));
 
             id_size++;
             return this;
