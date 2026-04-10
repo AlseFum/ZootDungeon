@@ -62,6 +62,8 @@ public class WndGeneral extends Window {
 	public static final int GAP = 2;
 	public static final int BTN_HEIGHT = 18;
 	public static final int TAB_BTN_H = 14;
+	/** 单行排 tab 时每个按钮的目标最小宽度；再窄则改为两行均分 */
+	public static final int TAB_BTN_MIN_W = 26;
 	/** 内容超过此高度时启用滚动，且不超过屏幕 */
 	public static final int MAX_CONTENT_HEIGHT = 180;
 
@@ -193,6 +195,25 @@ public class WndGeneral extends Window {
 		switchTab(0);
 	}
 
+	/** 在单行 y 上排 tabButtons[from..to)，等分宽度；返回该行底边 y（不含行间距） */
+	private float layoutTabButtonRow(int from, int to, float rowY) {
+		int count = to - from;
+		if (count <= 0) {
+			return rowY;
+		}
+		float x = 0;
+		for (int i = from; i < to; i++) {
+			RedButton btn = tabButtons.get(i);
+			int idxInRow = i - from;
+			float w = (idxInRow == count - 1)
+					? layoutWidth - x
+					: (float) Math.floor((layoutWidth - (count - 1) * GAP) / (float) count);
+			btn.setRect(x, rowY, w, TAB_BTN_H);
+			x = btn.right() + GAP;
+		}
+		return rowY + TAB_BTN_H;
+	}
+
 	private void relayoutTabbed() {
 		if (!tabbedMode || tabButtons == null || tabSpecs == null) {
 			return;
@@ -207,16 +228,28 @@ public class WndGeneral extends Window {
 		}
 
 		int n = tabButtons.size();
-		float x = 0;
-		for (int i = 0; i < n; i++) {
-			RedButton btn = tabButtons.get(i);
-			float w = (i == n - 1)
-					? layoutWidth - x
-					: (float) Math.floor((layoutWidth - (n - 1) * GAP) / (float) n);
-			btn.setRect(x, y, w, TAB_BTN_H);
-			x = btn.right() + GAP;
+		if (n > 0) {
+			int maxFitOneRow = Math.max(1, (layoutWidth + GAP) / (TAB_BTN_MIN_W + GAP));
+			boolean twoRows = n > maxFitOneRow;
+			if (!twoRows) {
+				float x = 0;
+				for (int i = 0; i < n; i++) {
+					RedButton btn = tabButtons.get(i);
+					float w = (i == n - 1)
+							? layoutWidth - x
+							: (float) Math.floor((layoutWidth - (n - 1) * GAP) / (float) n);
+					btn.setRect(x, y, w, TAB_BTN_H);
+					x = btn.right() + GAP;
+				}
+				y = tabButtons.get(0).bottom() + GAP;
+			} else {
+				int row0 = (n + 1) / 2;
+				y = layoutTabButtonRow(0, row0, y);
+				y += GAP;
+				y = layoutTabButtonRow(row0, n, y);
+				y += GAP;
+			}
 		}
-		y = tabButtons.get(0).bottom() + GAP;
 
 		if (scrollPane != null) {
 			Component body = scrollPane.content();
