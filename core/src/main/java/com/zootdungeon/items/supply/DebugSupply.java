@@ -8,7 +8,7 @@ import com.zootdungeon.items.weapon.configurable.MomentumWeapon;
 import com.zootdungeon.items.weapon.configurable.PropertyHuntingWeapon;
 import com.zootdungeon.arknights.gitano.GitanoCard;
 import com.zootdungeon.items.weapon.configurable.RangeReducedWeapon;
-import com.zootdungeon.items.weapon.configurable.SummoningAmbushWeapon;
+import com.zootdungeon.arknights.phantom.PhantomKnife;
 import com.zootdungeon.items.weapon.configurable.TransferMechWeapon;
 import com.zootdungeon.arknights.tragodia.TragodiaWand;
 import com.zootdungeon.arknights.necrass.NecrassCard;
@@ -128,7 +128,7 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(AscalonAmbush.class, 1));
         weapons.add(() -> create(AscalonAOE.class, 1));
         weapons.add(() -> create(StateSwitchWeapon.class, 1));
-        weapons.add(() -> create(SummoningAmbushWeapon.class, 1));
+        weapons.add(() -> create(PhantomKnife.class, 1));
         weapons.add(() -> create(TragodiaWand.class, 1));
         weapons.add(() -> create(RangeReducedWeapon.class, 1));
         weapons.add(() -> create(MomentumWeapon.class, 1));
@@ -165,11 +165,15 @@ public class DebugSupply extends Supply {
 
     @Override
     public void execute(Hero hero, String action) {
-        if (action.equals("启用")) {
+        if (action.equals(AC_OPEN)) {
             showCategorySelection(hero);
         } else {
             super.execute(hero, action);
         }
+    }
+    @Override
+    public String defaultAction(){
+        return AC_OPEN;
     }
 
     /**

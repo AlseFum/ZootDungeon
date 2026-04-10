@@ -9,7 +9,7 @@ import com.watabou.utils.Bundle;
 
 public class Supply extends Item {
 
-    private static final String AC_OPEN = "启用";
+    public static final String AC_OPEN = "启用";
     public String name="物资包";
     public String desc="一个装满了物资的包，可以从中获取到各种物品。";
     public Supply() {

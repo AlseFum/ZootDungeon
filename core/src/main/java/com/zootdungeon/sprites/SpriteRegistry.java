@@ -7,7 +7,6 @@ import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.gltextures.Atlas;
 import com.watabou.utils.RectF;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -47,11 +46,11 @@ public final class SpriteRegistry {
     /** 所有已分配的动态物品图集；用于把 image id 解析到具体 sheet。 */
     public static final ArrayList<TextureSheet> itemSheets = new ArrayList<>();
     /** label -> 全局 image id。 */
-    public static final HashMap<String, Integer> ITEM_TEXTURE_ID_MAP = new HashMap<>();
+    public static final HashMap<String, Integer> LABEL_ID_MAP = new HashMap<>();
     /** 名称/label -> sheet（允许别名）。 */
-    public static final HashMap<String, TextureSheet> ITEM_SHEETS = new HashMap<>();
+    public static final HashMap<String, TextureSheet> LABEL_SHEETS_MAP = new HashMap<>();
     /** 纹理 path/key -> sheet（按来源去重复用）。 */
-    public static final HashMap<String, TextureSheet> ITEM_SHEETS_BY_PATH = new HashMap<>();
+    public static final HashMap<String, TextureSheet> PATH_SHEETS_MAP = new HashMap<>();
     /** 最新分配的 item id 位置，用于分配新的 item id。 */
     public static int latestItemLocation = 1024;
 
@@ -136,7 +135,7 @@ public final class SpriteRegistry {
             if (rect != null) {
                 return new ImageMapping(cache, rect, atlas.height(rect), size);
             }
-            Integer id = ITEM_TEXTURE_ID_MAP.get(label);
+            Integer id = LABEL_ID_MAP.get(label);
             return id == null ? null : get(id);
         }
 
@@ -163,8 +162,8 @@ public final class SpriteRegistry {
                     (y + height) / (float) cache.height
             );
 
-            ITEM_TEXTURE_ID_MAP.put(label, id_start + id_size);
-            ITEM_SHEETS.put(label, this);
+            LABEL_ID_MAP.put(label, id_start + id_size);
+            LABEL_SHEETS_MAP.put(label, this);
             atlas.add(id_size, rect);
             atlas.add(label, rect);
 
@@ -247,8 +246,8 @@ public final class SpriteRegistry {
 
         public TextureSheet label(String label) {
             load();
-            ITEM_TEXTURE_ID_MAP.put(label, id_start + id_size);
-            ITEM_SHEETS.put(label, this);
+            LABEL_ID_MAP.put(label, id_start + id_size);
+            LABEL_SHEETS_MAP.put(label, this);
 
             RectF rect = atlas.get(id_size);
             atlas.add(id_size, rect);
@@ -276,19 +275,19 @@ public final class SpriteRegistry {
         if (textureName == null) return null;
 
         if (pathToFile != null) {
-            TextureSheet existing = ITEM_SHEETS_BY_PATH.get(pathToFile);
+            TextureSheet existing = PATH_SHEETS_MAP.get(pathToFile);
             if (existing != null) {
-                ITEM_SHEETS.put(textureName, existing);
+                LABEL_SHEETS_MAP.put(textureName, existing);
                 return existing;
             }
         }
 
-        TextureSheet sheet = ITEM_SHEETS.get(textureName);
+        TextureSheet sheet = LABEL_SHEETS_MAP.get(textureName);
         if (sheet == null) {
             // Default grid is 16×16 for backward compatibility; callers can override via grid().
             sheet = allocateSheet(pathToFile, 16);
-            ITEM_SHEETS.put(textureName, sheet);
-            if (pathToFile != null) ITEM_SHEETS_BY_PATH.put(pathToFile, sheet);
+            LABEL_SHEETS_MAP.put(textureName, sheet);
+            if (pathToFile != null) PATH_SHEETS_MAP.put(pathToFile, sheet);
         }
         return sheet;
     }
@@ -297,7 +296,7 @@ public final class SpriteRegistry {
      * Get a previously registered texture sheet by name.
      */
     public static TextureSheet texture(String textureName) {
-        return ITEM_SHEETS.get(textureName);
+        return LABEL_SHEETS_MAP.get(textureName);
     }
 
     /**
@@ -346,7 +345,7 @@ public final class SpriteRegistry {
     }
 
     public static int byLabel(String name) {
-        Integer res = ITEM_TEXTURE_ID_MAP.get(name);
+        Integer res = LABEL_ID_MAP.get(name);
         if (res == null) {
             System.out.println("Invalid texture name: " + name);
             return ItemSpriteSheet.SOMETHING;

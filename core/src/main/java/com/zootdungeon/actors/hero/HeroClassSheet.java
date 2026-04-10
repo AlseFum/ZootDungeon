@@ -66,7 +66,6 @@ import com.zootdungeon.items.weapon.missiles.ThrowingKnife;
 import com.zootdungeon.items.weapon.missiles.ThrowingSpike;
 import com.zootdungeon.items.weapon.missiles.ThrowingStone;
 import com.zootdungeon.journal.Catalog;
-// import com.zootdungeon.utils.EventBus; // EventBus removed - TODO: restore when needed
 
 public final class HeroClassSheet {
 
@@ -288,17 +287,8 @@ public final class HeroClassSheet {
 
                 RhodesIslandTerminal terminal = new RhodesIslandTerminal();
                 terminal.identify().collect();
-                TerminalPlugin starterPlugin = new ReachBoostPlugin();
-                starterPlugin.identify().collect();
-                terminal.installPlugin(starterPlugin, hero);
+                Dungeon.quickslot.setSlot(2, terminal);
                 Dungeon.cost = 40;
-
-                new NextAttackDamageBoostPlugin().identify().collect();
-                new NextAttackCostRefundPlugin().identify().collect();
-                new DefenseBoostPlugin().identify().collect();
-                new PullEnemyPlugin().identify().collect();
-                new MetabolismOverclockPlugin().identify().collect();
-
             })
             .register();
 

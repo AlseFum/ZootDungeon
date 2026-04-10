@@ -24,7 +24,10 @@ import com.watabou.noosa.PointerArea;
 
 public class WndRhodesIslandTerminal extends Window {
 
-	private static final int WIDTH = 176;
+	/** 横屏或宽窗口下的首选宽度；竖屏时改为贴齐可用宽度 */
+	private static final int WIDTH_MAX = 176;
+	/** 最窄宽度：需容纳被动行「名称 + 信息 + 数值」三列 */
+	private static final int LAYOUT_MIN_W = 104;
 	private static final int GAP = 2;
 	private static final int MARGIN = 3;
 	private static final int BTN_HEIGHT = 16;
@@ -42,6 +45,9 @@ public class WndRhodesIslandTerminal extends Window {
 	private static final int EMPTY_TEXT_H = 14;
 
 	private static WndRhodesIslandTerminal openInstance;
+
+	/** 当前布局宽度（随 {@link PixelScene#uiCamera} 在竖屏下变窄） */
+	private int layoutWidth = WIDTH_MAX;
 
 	private final RhodesIslandTerminal terminal;
 	private IconTitle title;
@@ -99,22 +105,48 @@ public class WndRhodesIslandTerminal extends Window {
 		};
 		add(tabPluginBtn);
 
+		syncLayoutWidth();
 		relayout();
 		switchTab(TabType.ACTIVE);
 	}
 
+	/** 按当前 UI 相机尺寸更新窗口宽度（竖屏窄宽时用满宽度，避免固定 176 溢出） */
+	private void syncLayoutWidth() {
+		int screenW = (int) PixelScene.uiCamera.width;
+		int screenH = (int) PixelScene.uiCamera.height;
+		int margin = 10;
+		int maxByScreen = Math.max(LAYOUT_MIN_W, screenW - margin);
+		boolean portrait = screenH > screenW;
+		if (portrait) {
+			layoutWidth = maxByScreen;
+		} else {
+			layoutWidth = Math.min(WIDTH_MAX, maxByScreen);
+		}
+		layoutWidth = Math.max(LAYOUT_MIN_W, Math.min(layoutWidth, screenW - 4));
+	}
+
 	private void relayout() {
+		syncLayoutWidth();
 		float y = MARGIN;
-		title.setRect(0, y, WIDTH, 0);
+		title.setRect(0, y, layoutWidth, 0);
 		y = title.bottom() + GAP;
 
-		float firstW = (float) Math.floor(WIDTH * 0.333f) - GAP;
-		float secondW = (float) Math.floor(WIDTH * 0.333f) - GAP;
-		float thirdW = WIDTH - firstW - secondW - GAP * 2;
-		tabActiveBtn.setRect(0, y, firstW, TAB_BTN_H);
-		tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, secondW, TAB_BTN_H);
-		tabPluginBtn.setRect(tabPassiveBtn.right() + GAP, y, thirdW, TAB_BTN_H);
-		y = tabActiveBtn.bottom() + GAP;
+		if (layoutWidth >= 155) {
+			float firstW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
+			float secondW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
+			float thirdW = layoutWidth - firstW - secondW - GAP * 2;
+			tabActiveBtn.setRect(0, y, firstW, TAB_BTN_H);
+			tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, secondW, TAB_BTN_H);
+			tabPluginBtn.setRect(tabPassiveBtn.right() + GAP, y, thirdW, TAB_BTN_H);
+			y = tabActiveBtn.bottom() + GAP;
+		} else {
+			float half = (layoutWidth - GAP) / 2f;
+			tabActiveBtn.setRect(0, y, half, TAB_BTN_H);
+			tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, layoutWidth - half - GAP, TAB_BTN_H);
+			y = tabActiveBtn.bottom() + GAP;
+			tabPluginBtn.setRect(0, y, layoutWidth, TAB_BTN_H);
+			y = tabPluginBtn.bottom() + GAP;
+		}
 
 		int viewH = getAvailableViewHeight(y);
 		if (contentPane != null) {
@@ -125,14 +157,14 @@ public class WndRhodesIslandTerminal extends Window {
 				finalH = maxWindowHeight;
 			}
 			viewH = Math.max(0, finalH - (int) y - MARGIN);
-			contentPane.setRect(0, y, WIDTH, viewH);
-			resize(WIDTH, finalH);
+			contentPane.setRect(0, y, layoutWidth, viewH);
+			resize(layoutWidth, finalH);
 			return;
 		}
 		int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
 		int finalH = (int) (y + viewH + MARGIN);
 		if (finalH > maxWindowHeight) finalH = maxWindowHeight;
-		resize(WIDTH, finalH);
+		resize(layoutWidth, finalH);
 	}
 
 	private int getAvailableViewHeight(float contentTop) {
@@ -149,6 +181,7 @@ public class WndRhodesIslandTerminal extends Window {
 			contentPane = null;
 		}
 
+		syncLayoutWidth();
 		Component content = buildTabContent(tab);
 		contentPane = new InteractiveScrollPane(content);
 		contentPane.scrollTo(0, 0);
@@ -181,13 +214,13 @@ public class WndRhodesIslandTerminal extends Window {
 
 	private Component buildActiveContent() {
 		Component root = new Component();
-		ColumnLayout col = new ColumnLayout(root, 0, 0, WIDTH, GAP);
+		ColumnLayout col = new ColumnLayout(root, 0, 0, layoutWidth, GAP);
 		boolean hasActiveEntry = false;
 
 		RenderedTextBlock costLabel = PixelScene.renderTextBlock(
 				Messages.get(RhodesIslandTerminal.class, "cost_display", Dungeon.cost,
 						RhodesIslandTerminal.effectiveCostCap(Dungeon.hero)), 8);
-		costLabel.maxWidth(WIDTH);
+		costLabel.maxWidth(layoutWidth);
 		col.addAutoHeight(costLabel);
 
 		if (Dungeon.hero != null && Dungeon.hero.pointsInTalent(Talent.RESERVED_OP_COST_SURGE) > 0) {
@@ -226,20 +259,20 @@ public class WndRhodesIslandTerminal extends Window {
 		}
 		if (!hasActiveEntry) {
 			RenderedTextBlock empty = PixelScene.renderTextBlock("No active actions from installed plugins.", 8);
-			empty.maxWidth(WIDTH);
-			empty.setRect(0, col.y, WIDTH, EMPTY_TEXT_H);
+			empty.maxWidth(layoutWidth);
+			empty.setRect(0, col.y, layoutWidth, EMPTY_TEXT_H);
 			root.add(empty);
 			col.y = empty.bottom() + GAP;
 		}
 
-		root.setSize(WIDTH, col.bottom());
+		root.setSize(layoutWidth, col.bottom());
 		return root;
 	}
 
 	private Component buildPassiveContent() {
 		Component root = new Component();
-		ColumnLayout col = new ColumnLayout(root, 0, 0, WIDTH, GAP);
-		int nameW = WIDTH - BTN_INFO_W - VALUE_W - GAP * 2;
+		ColumnLayout col = new ColumnLayout(root, 0, 0, layoutWidth, GAP);
+		int nameW = layoutWidth - BTN_INFO_W - VALUE_W - GAP * 2;
 
 		for (RhodesIslandTerminal.PluginSlot slot : terminal.slots) {
 			if (slot == null || slot.plugin == null) continue;
@@ -261,11 +294,11 @@ public class WndRhodesIslandTerminal extends Window {
 						GameScene.show(new WndMessage(desc));
 					}
 				};
-				infoBtn.setRect(WIDTH - BTN_INFO_W - VALUE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
+				infoBtn.setRect(layoutWidth - BTN_INFO_W - VALUE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
 				root.add(infoBtn);
 
 				RenderedTextBlock valueBlock = PixelScene.renderTextBlock(value, 8);
-				valueBlock.setRect(WIDTH - VALUE_W, rowY + 4, VALUE_W, 12);
+				valueBlock.setRect(layoutWidth - VALUE_W, rowY + 4, VALUE_W, 12);
 				root.add(valueBlock);
 
 				col.y = Math.max(nameBlock.bottom(), infoBtn.bottom()) + GAP;
@@ -274,29 +307,29 @@ public class WndRhodesIslandTerminal extends Window {
 
 		if (col.y <= 0.001f) {
 			RenderedTextBlock empty = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "passive_empty"), 8);
-			empty.maxWidth(WIDTH);
+			empty.maxWidth(layoutWidth);
 			col.addAutoHeight(empty);
 		}
 
-		root.setSize(WIDTH, col.bottom());
+		root.setSize(layoutWidth, col.bottom());
 		return root;
 	}
 
 	private Component buildPluginContent() {
 		Component root = new Component();
-		ColumnLayout col = new ColumnLayout(root, 0, 0, WIDTH, GAP);
+		ColumnLayout col = new ColumnLayout(root, 0, 0, layoutWidth, GAP);
 		Hero hero = Dungeon.hero;
 		boolean hasPlugin = false;
 
 		RenderedTextBlock pluginsTitle = PixelScene.renderTextBlock(Messages.get(RhodesIslandTerminal.class, "plugins_title"), 8);
-		pluginsTitle.maxWidth(WIDTH);
+		pluginsTitle.maxWidth(layoutWidth);
 		col.addAutoHeight(pluginsTitle);
 		RenderedTextBlock slotsInfo = PixelScene.renderTextBlock("Slots: " + terminal.slots.size() + "/" + terminal.maxPlugins, 7);
-		slotsInfo.maxWidth(WIDTH);
+		slotsInfo.maxWidth(layoutWidth);
 		col.addAutoHeight(slotsInfo);
 
 		int rightButtons = BTN_UNINSTALL_W + GAP + BTN_TOGGLE_W;
-		int nameW = WIDTH - rightButtons - GAP;
+		int nameW = layoutWidth - rightButtons - GAP;
 
 		for (int i = 0; i < terminal.slots.size(); i++) {
 			final int index = i;
@@ -315,7 +348,7 @@ public class WndRhodesIslandTerminal extends Window {
 			nameBlock.setRect(0, rowY + 2, nameW, 12);
 			root.add(nameBlock);
 
-			FlowLayout buttons = new FlowLayout(WIDTH - rightButtons, rowY, rightButtons + GAP, GAP);
+			FlowLayout buttons = new FlowLayout(layoutWidth - rightButtons, rowY, rightButtons + GAP, GAP);
 			RedButton toggle = new RedButton(slot.enabled
 					? Messages.get(RhodesIslandTerminal.class, "btn_disable")
 					: Messages.get(RhodesIslandTerminal.class, "btn_enable")) {
@@ -342,7 +375,7 @@ public class WndRhodesIslandTerminal extends Window {
 
 			Component custom = plugin.createDisplayComponent(terminal);
 			if (custom != null) {
-				custom.setRect(0, col.y, WIDTH, CUSTOM_COMPONENT_H);
+				custom.setRect(0, col.y, layoutWidth, CUSTOM_COMPONENT_H);
 				root.add(custom);
 				col.y = custom.bottom() + GAP;
 			} else {
@@ -350,8 +383,8 @@ public class WndRhodesIslandTerminal extends Window {
 				if (infoText == null || infoText.isEmpty()) infoText = plugin.desc();
 				if (infoText != null && !infoText.isEmpty()) {
 					RenderedTextBlock info = PixelScene.renderTextBlock(infoText, INFO_FONT);
-					info.maxWidth(WIDTH);
-					info.setRect(0, col.y, WIDTH, INFO_MAX_H);
+					info.maxWidth(layoutWidth);
+					info.setRect(0, col.y, layoutWidth, INFO_MAX_H);
 					root.add(info);
 					col.y = info.bottom() + GAP;
 				}
@@ -359,8 +392,8 @@ public class WndRhodesIslandTerminal extends Window {
 		}
 		if (!hasPlugin) {
 			RenderedTextBlock empty = PixelScene.renderTextBlock("No plugins installed.", 8);
-			empty.maxWidth(WIDTH);
-			empty.setRect(0, col.y, WIDTH, EMPTY_TEXT_H);
+			empty.maxWidth(layoutWidth);
+			empty.setRect(0, col.y, layoutWidth, EMPTY_TEXT_H);
 			root.add(empty);
 			col.y = empty.bottom() + GAP;
 		}
@@ -375,13 +408,13 @@ public class WndRhodesIslandTerminal extends Window {
 			col.addFixedHeight(installBtn, BTN_HEIGHT);
 		}
 
-		root.setSize(WIDTH, col.bottom());
+		root.setSize(layoutWidth, col.bottom());
 		return root;
 	}
 
 	private void addActionRow(Component root, ColumnLayout col, String titleText, String desc, int cost, boolean enabled, Runnable onActivate) {
 		float rowY = col.y;
-		int titleW = WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2;
+		int titleW = layoutWidth - BTN_INFO_W - BTN_ACTIVATE_W - GAP * 2;
 
 		RenderedTextBlock titleBlock = PixelScene.renderTextBlock(titleText, 8);
 		titleBlock.maxWidth(titleW);
@@ -394,7 +427,7 @@ public class WndRhodesIslandTerminal extends Window {
 				GameScene.show(new WndMessage(desc));
 			}
 		};
-		infoBtn.setRect(WIDTH - BTN_INFO_W - BTN_ACTIVATE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
+		infoBtn.setRect(layoutWidth - BTN_INFO_W - BTN_ACTIVATE_W - GAP, rowY, BTN_INFO_W, BTN_HEIGHT);
 		root.add(infoBtn);
 
 		RedButton activateBtn = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_activate"), 7) {
@@ -403,7 +436,7 @@ public class WndRhodesIslandTerminal extends Window {
 				onActivate.run();
 			}
 		};
-		activateBtn.setRect(WIDTH - BTN_ACTIVATE_W, rowY, BTN_ACTIVATE_W, BTN_HEIGHT);
+		activateBtn.setRect(layoutWidth - BTN_ACTIVATE_W, rowY, BTN_ACTIVATE_W, BTN_HEIGHT);
 		activateBtn.enable(enabled && Dungeon.cost >= cost);
 		root.add(activateBtn);
 
