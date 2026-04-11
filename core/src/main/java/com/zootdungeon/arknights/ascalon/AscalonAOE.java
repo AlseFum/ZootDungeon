@@ -15,8 +15,10 @@ import com.zootdungeon.utils.Select;
 public class AscalonAOE extends MeleeWeapon {
     
     static {
+        // setXY(label, gx, gy) 按网格格索引；要 64×64 一帧需先 grid(64,64) 再 setXY(label,0,0)。
         SpriteRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
-                .setXY("ascalon_aoe",64,64);
+                .grid(64, 64)
+                .setXY("ascalon_aoe", 0, 0);
     }
     
     {

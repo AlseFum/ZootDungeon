@@ -34,8 +34,10 @@ public class ProximityLineBow extends Weapon {
 	private static final float ORTHO_BONUS = 1.6f;
 
 	private int targetPos;
-	static{
-		SpriteRegistry.texture("mod:proximitylinebow", "cola/province_bow.png").setXY("province_bow",32,32);
+	static {
+		SpriteRegistry.texture("mod:proximitylinebow", "cola/province_bow.png")
+				.grid(32, 32)
+				.setXY("province_bow", 0, 0);
 	}
 	{
 		image = SpriteRegistry.byLabel("province_bow");
