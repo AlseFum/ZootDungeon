@@ -31,7 +31,6 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
-import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.DivineAnkh;
@@ -73,9 +72,9 @@ public class DebugSupply extends Supply {
 
     // private static final String CAT_POTIONS = "cat_potions";
     private static final String CAT_STONES = "cat_stones";
+    private static final String CAT_STANDARD_SUPPLY = "cat_standard_supply";
     private static final String CAT_CHEAT = "cat_cheat";
     private static final String CAT_WEAPONS = "cat_weapons";
-    private static final String CAT_PLANTS = "cat_plants";
     private static final String CAT_PLUGINS = "cat_plugins";
 
     private final Map<String, List<Supplier<Item>>> categories = new LinkedHashMap<>();
@@ -91,6 +90,10 @@ public class DebugSupply extends Supply {
         stones.add(() -> create(StoneOfLevelSelect.class, 50));
         categories.put(CAT_STONES, stones);
 
+        List<Supplier<Item>> standardSupply = new ArrayList<>();
+        standardSupply.add(() -> create(RhodesStandardWeaponSupply.class, 1));
+        categories.put(CAT_STANDARD_SUPPLY, standardSupply);
+
         List<Supplier<Item>> cheat = new ArrayList<>();
         cheat.add(() -> create(DivineAnkh.class, 1));
         cheat.add(() -> create(ItemRemover.class));
@@ -104,7 +107,7 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(BombBox.class, 1));
         cheat.add(() -> create(TengusMask.class, 1));
         cheat.add(() -> create(KingsCrown.class, 1));
-        cheat.add(WndGeneralTestProbe::new);
+        cheat.add(() -> create(Swiftthistle.Seed.class, 100));
         categories.put(CAT_CHEAT, cheat);
 
         List<Supplier<Item>> plugins = new ArrayList<>();
@@ -128,7 +131,7 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(RangeReducedWeapon.class, 1));
         weapons.add(() -> create(MomentumWeapon.class, 1));
         weapons.add(() -> create(PropertyHuntingWeapon.class, 1));
-        weapons.add(() -> create(RhodesStandardWeaponSupply.class, 1));
+        weapons.add(() -> create(GitanoCard.class, 50));
         weapons.add(() -> create(NecrassCard.class, 50));
         weapons.add(() -> create(TwinBlade.class, 5));
         weapons.add(() -> create(InstantMechWeapon.class, 1));
@@ -138,11 +141,6 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(ProximityLineBow.class, 1));
         weapons.add(() -> create(DeployedLineBlade.class, 1));
         categories.put(CAT_WEAPONS, weapons);
-
-        List<Supplier<Item>> plants = new ArrayList<>();
-        plants.add(() -> create(Swiftthistle.Seed.class, 100));
-        plants.add(() -> create(GitanoCard.class, 50));
-        categories.put(CAT_PLANTS, plants);
     }
 
     private static Item create(Class<? extends Item> clazz) {
@@ -174,11 +172,7 @@ public class DebugSupply extends Supply {
         return AC_OPEN;
     }
 
-    /**
-     * Root: one {@link WndGeneral} with {@link WndGeneral.Builder#tab} per category (same idea as
-     * {@link WndGeneralTestProbe}). Cheat tab adds {@link WndGeneral.Builder#hrow} shortcuts that open
-     * nested {@link WndGeneral} windows.
-     */
+    /** Root: one {@link WndGeneral} with {@link WndGeneral.Builder#tab} per category. */
     private void showCategorySelection(Hero hero) {
         WndGeneral.Builder b = WndGeneral.make().title(Messages.get(DebugSupply.class, "name"));
         for (String catKey : categories.keySet()) {
@@ -200,9 +194,6 @@ public class DebugSupply extends Supply {
     private void fillCheatTab(WndGeneral.PaneBuilder p, Hero hero) {
         p.line(Messages.get(DebugSupply.class, "cheat_tab_line"));
         p.option(Messages.get(DebugSupply.class, "grant_all_cheat"), () -> grantAllInCategory(hero, CAT_CHEAT));
-        p.hrow(r -> r
-                .button(Messages.get(DebugSupply.class, "nested_demo_btn"), () -> showWndGeneralDemoWindow())
-                .button(Messages.get(DebugSupply.class, "nested_stones_btn"), () -> showNestedStonesWindow(hero)));
         p.line(Messages.get(DebugSupply.class, "cheat_items_line"));
         appendItemOptions(p, hero, CAT_CHEAT);
     }
@@ -218,56 +209,6 @@ public class DebugSupply extends Supply {
             String label = sample != null ? sample.name() : "?";
             p.option(label, () -> grantItem(hero, sup));
         }
-    }
-
-    /** Second-layer window: same stone entries as the Stones tab (nested demo). */
-    private void showNestedStonesWindow(Hero hero) {
-        WndGeneral.Builder b = WndGeneral.make()
-                .title(Messages.get(DebugSupply.class, "nested_stones_title"));
-        b.line(Messages.get(DebugSupply.class, "nested_stones_line"));
-        appendItemOptionsToRootBuilder(b, hero, CAT_STONES);
-        b.show();
-    }
-
-    private void appendItemOptionsToRootBuilder(WndGeneral.Builder b, Hero hero, String categoryKey) {
-        List<Supplier<Item>> items = categories.get(categoryKey);
-        if (items == null) {
-            return;
-        }
-        for (Supplier<Item> supplier : items) {
-            final Supplier<Item> sup = supplier;
-            Item sample = sup.get();
-            String label = sample != null ? sample.name() : "?";
-            b.option(label, () -> grantItem(hero, sup));
-        }
-    }
-
-    /**
-     * Shared with {@link WndGeneralTestProbe}: three-tab sample matching TestProbe / WndGeneral docs.
-     */
-    static void showWndGeneralDemoWindow() {
-        WndGeneral.make()
-                .title(Messages.get(WndGeneralTestProbe.class, "wnd_title"))
-                .tab(Messages.get(WndGeneralTestProbe.class, "tab_a"), p -> p
-                        .line(Messages.get(WndGeneralTestProbe.class, "tab_a_line"))
-                        .button(Messages.get(WndGeneralTestProbe.class, "btn_test"),
-                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_clicked"))))
-                .tab(Messages.get(WndGeneralTestProbe.class, "tab_b"), p -> p
-                        .line(Messages.get(WndGeneralTestProbe.class, "tab_b_line"))
-                        .option(Messages.get(WndGeneralTestProbe.class, "opt_sample"),
-                                () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_opt"))))
-                .tab(Messages.get(WndGeneralTestProbe.class, "tab_c"), p -> p
-                        .line(Messages.get(WndGeneralTestProbe.class, "tab_c_line"))
-                        .hrow(r -> r
-                                .line(Messages.get(WndGeneralTestProbe.class, "hrow_left"))
-                                .button(Messages.get(WndGeneralTestProbe.class, "hrow_btn"),
-                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow"))))
-                        .hrow(r -> r
-                                .button(Messages.get(WndGeneralTestProbe.class, "hrow_a"),
-                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))
-                                .button(Messages.get(WndGeneralTestProbe.class, "hrow_b"),
-                                        () -> GLog.p(Messages.get(WndGeneralTestProbe.class, "msg_hrow_ab")))))
-                .show();
     }
 
     private void grantAllInCategory(Hero hero, String categoryKey) {
@@ -311,51 +252,6 @@ public class DebugSupply extends Supply {
                 ((KindOfWeapon) it).doEquip(hero);
                 return;
             }
-        }
-    }
-
-    public static final class WndGeneralTestProbe extends Item {
-
-        private static final String AC_OPEN = "DBG_WND_GENERAL";
-
-        {
-            image = SpriteRegistry.byLabel("debug_bag");
-            stackable = false;
-            defaultAction = AC_OPEN;
-        }
-
-        @Override
-        public ArrayList<String> actions(Hero hero) {
-            ArrayList<String> actions = super.actions(hero);
-            actions.add(AC_OPEN);
-            return actions;
-        }
-
-        @Override
-        public String actionName(String action, Hero hero) {
-            if (action.equals(AC_OPEN)) {
-                return Messages.get(WndGeneralTestProbe.class, "ac_open");
-            }
-            return super.actionName(action, hero);
-        }
-
-        @Override
-        public void execute(Hero hero, String action) {
-            if (action.equals(AC_OPEN)) {
-                showWndGeneralDemoWindow();
-            } else {
-                super.execute(hero, action);
-            }
-        }
-
-        @Override
-        public String name() {
-            return Messages.get(WndGeneralTestProbe.class, "name");
-        }
-
-        @Override
-        public String desc() {
-            return Messages.get(WndGeneralTestProbe.class, "desc");
         }
     }
 }

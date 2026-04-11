@@ -5,6 +5,7 @@ import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.arknights.MainTheme.HourOfAnAwakening.HourOfAnAwakeningBossLevel;
@@ -136,12 +137,25 @@ public class SkullShatterer extends Mob {
             target = enemy.pos;
             weapon.tickCooldown();
 
+            // 贴脸用近战模式；拉开距离切榴弹模式
+            if (Dungeon.level.adjacent(pos, enemy.pos)) {
+                weapon.setMode(SkullShattererWeapon.Mode.MELEE);
+            } else {
+                weapon.setMode(SkullShattererWeapon.Mode.RANGED);
+            }
+
             if (HP > 0 && HT > 0 && HP <= HT / 3) {
                 sayOnce("别想逃。", false);
             }
 
+            // 远程模式、冷却就绪、身边无友军、且目标不在邻格：榴弹（有动画则等 zap 回调）
             if (weapon.canFireRanged() && !hasAllyInNeighbour8() && !Dungeon.level.adjacent(pos, enemy.pos)) {
                 sayOnce("锁定。", false);
+                Invisibility.dispel(SkullShatterer.this);
+                if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
+                    sprite.zap(enemy.pos);
+                    return false;
+                }
                 weapon.doGrenadeAt(SkullShatterer.this, enemy.pos);
                 weapon.clearGrenadeState();
                 spend(TICK);

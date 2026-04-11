@@ -14,6 +14,7 @@ public class RhodesStandardWeaponSupply extends Supply {
         super();
         
         put_in(RhodesStandardSword.class, 1);
+        put_in(RhodesStandardHammer.class, 1);
         put_in(RhodesStandardShield.class, 1);
         put_in(RhodesStandardBow.class, 1);
         put_in(RhodesStandardWand.class, 1);
