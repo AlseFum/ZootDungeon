@@ -630,11 +630,6 @@ public class InterlevelScene extends PixelScene {
 			Theme.onEnterLevel(level);
 			Dungeon.switchLevel( level, -1 );
 		} else {
-			System.out.println("Dungeon.hero is not null");
-			System.out.println("[InterlevelScene]Generator.Category.POTION.classes:");
-			for (Class<?> cls : Generator.Category.POTION.classes) {
-				System.out.println("    " + cls.getSimpleName());
-			}
 			Mob.holdAllies( Dungeon.level );
 			Dungeon.saveAll();
 
@@ -658,6 +653,11 @@ public class InterlevelScene extends PixelScene {
 				LevelTransition dest = level.getTransition(curTransition.destType);
 				if (dest != null) {
 					destCell = dest.cell();
+					// 打印目标cell的横纵坐标
+					int width = level.width();
+					int x = destCell % width;
+					int y = destCell / width;
+					System.out.println("[InterlevelScene] 进入目标cell位置: cell=" + destCell + " (x=" + x + ", y=" + y + ")");
 				}
 			}
 			curTransition = null;

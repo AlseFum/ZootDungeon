@@ -48,6 +48,7 @@ public class Junkman extends Mob {
 
 		public JunkmanSprite() {
 			super();
+			scale.set(0.8f);
 
 			// Same frame indices as GnollSprite; die uses index 10. If cola/junkman.png is missing or
 			// the sheet has too few cells, TextureFilm.get(n) is null and play() NPEs — fall back to gnoll sheet.

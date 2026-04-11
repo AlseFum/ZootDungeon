@@ -890,6 +890,10 @@ public class Dungeon {
 
         level.updateFieldOfView(hero, level.heroFOV);
 
+        if (hero.pos < 0 || hero.pos >= level.length()) {
+            return;
+        }
+
         int x = hero.pos % level.width();
         int y = hero.pos / level.width();
 
@@ -911,7 +915,10 @@ public class Dungeon {
 
         //always visit adjacent tiles, even if they aren't seen
         for (int i : PathFinder.NEIGHBOURS9) {
-            level.visited[hero.pos + i] = true;
+            int p = hero.pos + i;
+            if (p >= 0 && p < level.length()) {
+                level.visited[p] = true;
+            }
         }
 
         GameScene.updateFog(l, t, width, height);

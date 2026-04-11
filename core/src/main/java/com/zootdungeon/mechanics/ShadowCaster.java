@@ -53,8 +53,11 @@ public final class ShadowCaster {
 
 		BArray.setFalse(fieldOfView);
 
-		//set source cell to true
-		fieldOfView[y * w + x] = true;
+		//set source cell to true (guard small maps / edge cells: cx,cy can make LOS step OOB)
+		int src = y * w + x;
+		if (src >= 0 && src < fieldOfView.length) {
+			fieldOfView[src] = true;
+		}
 		
 		//scans octants, clockwise
 		try {
@@ -126,9 +129,15 @@ public final class ShadowCaster {
 				if (col == end && inBlocking && (int)Math.ceil((row - 0.5) * rSlope - 0.499) != end){
 					break;
 				}
-				
+
+				if (cell < 0 || cell >= fov.length || cell >= blocking.length) {
+					if (!mXY)   cell += mX;
+					else        cell += mX*w;
+					continue;
+				}
+
 				fov[cell] = true;
-				
+
 				if (blocking[cell]){
 					if (!inBlocking){
 						inBlocking = true;

@@ -12,7 +12,10 @@ import com.zootdungeon.arknights.phantom.PhantomKnife;
 import com.zootdungeon.items.weapon.configurable.TransferMechWeapon;
 import com.zootdungeon.arknights.tragodia.TragodiaWand;
 import com.zootdungeon.arknights.necrass.NecrassCard;
+import com.zootdungeon.items.weapon.chakram.Chakram;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
+import com.zootdungeon.arknights.misc.DeployedLineBlade;
+import com.zootdungeon.arknights.misc.ProximityLineBow;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
 import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
@@ -68,7 +71,7 @@ public class DebugSupply extends Supply {
         image = SpriteRegistry.byLabel("debug_bag");
     }
 
-    private static final String CAT_POTIONS = "cat_potions";
+    // private static final String CAT_POTIONS = "cat_potions";
     private static final String CAT_STONES = "cat_stones";
     private static final String CAT_CHEAT = "cat_cheat";
     private static final String CAT_WEAPONS = "cat_weapons";
@@ -82,14 +85,6 @@ public class DebugSupply extends Supply {
         name = Messages.get(DebugSupply.class, "name");
         desc = Messages.get(DebugSupply.class, "desc");
 
-        List<Supplier<Item>> potions = new ArrayList<>();
-        potions.add(() -> create(PotionOfHealing.class, 20));
-        potions.add(() -> create(ScrollOfIdentify.class, 20));
-        potions.add(() -> create(PotionOfStrength.class, 20));
-        potions.add(() -> create(PotionOfInvisibility.class, 20));
-        potions.add(() -> create(PotionOfShroudingFog.class, 20));
-        potions.add(() -> create(ScrollOfUpgrade.class, 100));
-        categories.put(CAT_POTIONS, potions);
 
         List<Supplier<Item>> stones = new ArrayList<>();
         stones.add(() -> create(StoneOfSpawn.class, 300));
@@ -139,6 +134,9 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(InstantMechWeapon.class, 1));
         weapons.add(() -> create(TransferMechWeapon.class, 1));
         weapons.add(() -> create(SkullShattererWeapon.class, 1));
+        weapons.add(() -> create(Chakram.class, 1));
+        weapons.add(() -> create(ProximityLineBow.class, 1));
+        weapons.add(() -> create(DeployedLineBlade.class, 1));
         categories.put(CAT_WEAPONS, weapons);
 
         List<Supplier<Item>> plants = new ArrayList<>();
