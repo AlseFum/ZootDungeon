@@ -3,7 +3,6 @@ package com.zootdungeon;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.scenes.TitleScene;
-import com.zootdungeon.scenes.WelcomeScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -22,7 +21,8 @@ public class ColaDungeon extends Game {
     public static final int v_latest = 1;
 
     public ColaDungeon(PlatformSupport platform) {
-        super(sceneClass == null ? WelcomeScene.class : sceneClass, platform);
+        // TODO: WelcomeScene 逻辑待修；暂时与 SPD 一样先进标题界面
+        super(sceneClass == null ? TitleScene.class : sceneClass, platform);
     }
 
     @Override

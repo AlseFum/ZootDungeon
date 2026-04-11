@@ -40,6 +40,17 @@ public class GitanoCard extends Item {
 
 	private static final String BUNDLE_DECK_TYPE = "deck_type";
 
+	/**
+	 * 本局固定牌组：{@code -1} 尚未掷骰；{@code 0} 扑克；{@code 1} 大阿卡纳；{@code 2} 小阿卡纳。
+	 * 通过 {@link #storeInBundle}/{@link #restoreFromBundle} 与存档同步。
+	 */
+	public static int deckType = -1;
+
+	/** 新开局或未从存档恢复时清空牌组类型（例如读档前会先 reset 再写入 bundle）。 */
+	public static void resetDeckType() {
+		deckType = -1;
+	}
+
 	private static final String[] PLAYING_SUITS = {"spades", "hearts", "diamonds", "clubs"};
 	private static final String[] PLAYING_RANKS = {"ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"};
 	private static final String[] MINOR_SUITS = {"wands", "cups", "swords", "pentacles"};
@@ -77,15 +88,15 @@ public class GitanoCard extends Item {
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		bundle.put(BUNDLE_DECK_TYPE, GlobalCard.deckType);
+		bundle.put(BUNDLE_DECK_TYPE, deckType);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
-		GlobalCard.reset();
+		resetDeckType();
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(BUNDLE_DECK_TYPE)) {
-			GlobalCard.deckType = bundle.getInt(BUNDLE_DECK_TYPE);
+			deckType = bundle.getInt(BUNDLE_DECK_TYPE);
 		}
 	}
 
@@ -137,16 +148,16 @@ public class GitanoCard extends Item {
 		consume(hero);
 	}
 
-	/** 本局首次抽牌时掷出并写入 {@link GlobalCard#deckType}，之后固定。 */
+	/** 本局首次抽牌时掷出并写入 {@link #deckType}，之后固定。 */
 	private DeckType resolveDeck() {
-		if (GlobalCard.deckType < 0) {
-			GlobalCard.deckType = Random.Int(DeckType.values().length);
+		if (deckType < 0) {
+			deckType = Random.Int(DeckType.values().length);
 		}
-		return DeckType.values()[Math.floorMod(GlobalCard.deckType, DeckType.values().length)];
+		return DeckType.values()[Math.floorMod(deckType, DeckType.values().length)];
 	}
 
 	private String deckNameForInfo() {
-		switch (Math.floorMod(GlobalCard.deckType, 3)) {
+		switch (Math.floorMod(deckType, 3)) {
 			case 0:
 				return Messages.get(this, "deck_playing");
 			case 1:
