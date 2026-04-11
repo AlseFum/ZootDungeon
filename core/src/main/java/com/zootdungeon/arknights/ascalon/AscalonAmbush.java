@@ -12,8 +12,7 @@ public class AscalonAmbush extends AmbushWeapon {
     
     static {
         SpriteRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
-                .grid(64, 64)
-                .label("ascalon_ambush");
+                .setXY("ascalon_ambush",64,64);
     }
     
     {

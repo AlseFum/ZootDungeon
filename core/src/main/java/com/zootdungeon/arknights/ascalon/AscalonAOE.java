@@ -16,8 +16,7 @@ public class AscalonAOE extends MeleeWeapon {
     
     static {
         SpriteRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
-                .grid(64, 64)
-                .label("ascalon_aoe");
+                .setXY("ascalon_aoe",64,64);
     }
     
     {

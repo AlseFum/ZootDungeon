@@ -6,6 +6,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.Splash;
+import com.zootdungeon.items.EquipableItem;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.messages.Messages;
@@ -20,7 +21,8 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 /**
- * 短程灵弓：仅可射击 {@link #MAX_SHOOT_DISTANCE} 格以内的敌人；目标在纯上下左右方向且距离 1～2 格时伤害 +60%。
+ * 短程灵弓：交互与 {@link com.zootdungeon.items.weapon.SpiritBow} 相同（选格射击），射程不超过 {@link #MAX_SHOOT_DISTANCE}；
+ * 目标在纯上下左右方向且距离 1～2 格时伤害 +60%。
  */
 public class ProximityLineBow extends Weapon {
 
@@ -47,9 +49,8 @@ public class ProximityLineBow extends Weapon {
 	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions(hero);
-		if (isEquipped(hero)) {
-			actions.add(AC_SHOOT);
-		}
+		actions.remove(EquipableItem.AC_EQUIP);
+		actions.add(AC_SHOOT);
 		return actions;
 	}
 
@@ -64,7 +65,7 @@ public class ProximityLineBow extends Weapon {
 	@Override
 	public void execute(Hero hero, String action) {
 		super.execute(hero, action);
-		if (AC_SHOOT.equals(action)) {
+		if (action.equals(AC_SHOOT)) {
 			curUser = hero;
 			curItem = this;
 			GameScene.selectCell(shooter);
@@ -132,19 +133,9 @@ public class ProximityLineBow extends Weapon {
 	private final CellSelector.Listener shooter = new CellSelector.Listener() {
 		@Override
 		public void onSelect(Integer target) {
-			if (target == null) {
-				return;
+			if (target != null) {
+				knockBolt().cast(curUser, target);
 			}
-			Char ch = Actor.findChar(target);
-			if (ch == null || !ch.isAlive() || ch == curUser) {
-				GLog.w(Messages.get(ProximityLineBow.this, "bad_target"));
-				return;
-			}
-			if (Dungeon.level.distance(curUser.pos, target) > MAX_SHOOT_DISTANCE) {
-				GLog.w(Messages.get(ProximityLineBow.this, "out_of_range"));
-				return;
-			}
-			knockBolt().cast(curUser, target);
 		}
 
 		@Override
@@ -207,6 +198,10 @@ public class ProximityLineBow extends Weapon {
 
 		@Override
 		public void cast(Hero user, int dst) {
+			if (Dungeon.level.distance(user.pos, dst) > MAX_SHOOT_DISTANCE) {
+				GLog.w(Messages.get(ProximityLineBow.this, "out_of_range"));
+				return;
+			}
 			ProximityLineBow.this.targetPos = throwPos(user, dst);
 			super.cast(user, dst);
 		}

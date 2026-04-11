@@ -241,8 +241,9 @@ public class CDSettings extends GameSettings {
 		put( KEY_INTRO, value );
 	}
 	
+	/** 已关闭「是否首次进入」分支：不再读存档里的 intro，避免开发时反复走新手/限制流程。若要恢复原版行为，改回 {@code getBoolean(KEY_INTRO, true)}。 */
 	public static boolean intro() {
-		return getBoolean( KEY_INTRO, true );
+		return false;
 	}
 	
 	public static void lastClass( int value ) {
