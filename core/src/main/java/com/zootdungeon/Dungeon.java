@@ -103,7 +103,6 @@ public class Dungeon {
         SCROLL_HOLDER,
         POTION_BANDOLIER,
         MAGICAL_HOLSTER,
-        AMMO_HOLDER,
         //lore documents
         LORE_SEWERS,
         LORE_PRISON,

@@ -117,7 +117,6 @@ import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfLivingEarth;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.Weapon;
-import com.zootdungeon.items.weapon.gun.SniperGun;
 import com.zootdungeon.items.weapon.melee.Crossbow;
 import com.zootdungeon.items.weapon.melee.Flail;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
@@ -1992,15 +1991,6 @@ public class Hero extends Char {
         if (cell == -1) {
             return false;
         }
-        //TODO attention here
-        // 检查是否在瞄准状态下，如果是则不能移动
-        if (buff(SniperGun.SniperAim.class) != null) {
-            if (cell != pos) {
-                GLog.w("瞄准时无法移动！");
-                return false;
-            }
-        }
-
         if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()) {
             fieldOfView = new boolean[Dungeon.level.length()];
             Dungeon.level.updateFieldOfView(this, fieldOfView);

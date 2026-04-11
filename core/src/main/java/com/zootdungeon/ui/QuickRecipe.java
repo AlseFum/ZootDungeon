@@ -70,10 +70,6 @@ import com.zootdungeon.items.stones.Runestone;
 
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
-import com.zootdungeon.items.weapon.ammo.Ammo;
-import com.zootdungeon.items.weapon.ammo.ExplosiveAmmo;
-import com.zootdungeon.items.weapon.ammo.ExplosiveAmmoRecipe;
-import com.zootdungeon.items.weapon.ammo.LiquidMetalToAmmoRecipe;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.plants.Plant;
 import com.zootdungeon.scenes.AlchemyScene;
@@ -363,9 +359,7 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe( new ArcaneResin.Recipe(),
 						new ArrayList<Item>(Arrays.asList(new Wand.PlaceHolder())),
 						new ArcaneResin()));
-				result.add(new QuickRecipe( new ExplosiveAmmoRecipe(),
-						new ArrayList<Item>(Arrays.asList(new Ammo(), new Torch())),
-						new ExplosiveAmmo()));
+				result.add(null);
 				return result;
 			case 7:
 				result.add(new QuickRecipe(new UnstableBrew.Recipe(), new ArrayList<>(Arrays.asList(new Potion.PlaceHolder(), new  Plant.Seed.PlaceHolder())), new UnstableBrew()));
@@ -407,23 +401,6 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new BeaconOfReturning.Recipe()));
 				return result;
 			case 9:
-				// 爆炸弹药
-				result.add(new QuickRecipe(
-						new ExplosiveAmmoRecipe(),
-						new ArrayList<>(java.util.Arrays.asList(
-								new Ammo(),
-								new Torch()
-						)),
-						new ExplosiveAmmo()
-				));
-				// 液态金属 → 普通弹药
-				result.add(new QuickRecipe(
-						new LiquidMetalToAmmoRecipe(),
-						new ArrayList<>(java.util.Arrays.asList(
-								new LiquidMetal()
-						)),
-						new Ammo()
-				));
 				return result;
 		}
 	}

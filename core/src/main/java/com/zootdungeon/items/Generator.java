@@ -114,13 +114,6 @@ import com.zootdungeon.items.wands.WandOfPrismaticLight;
 import com.zootdungeon.items.wands.WandOfRegrowth;
 import com.zootdungeon.items.wands.WandOfTransfusion;
 import com.zootdungeon.items.wands.WandOfWarding;
-import com.zootdungeon.items.weapon.ammo.Ammo;
-import com.zootdungeon.items.weapon.gun.GrenadeLauncher;
-import com.zootdungeon.items.weapon.gun.Gun;
-import com.zootdungeon.items.weapon.gun.HandGun;
-import com.zootdungeon.items.weapon.gun.Rifle;
-import com.zootdungeon.items.weapon.gun.Shotgun;
-import com.zootdungeon.items.weapon.gun.SniperGun;
 import com.zootdungeon.items.weapon.ambushWeapon.AssassinsBlade;
 import com.zootdungeon.items.weapon.accurateWeapon.BattleAxe;
 import com.zootdungeon.items.weapon.melee.Crossbow;
@@ -232,10 +225,7 @@ public class Generator {
 		// Add missing categories
 		TRINKET ( 1, 1, Trinket.class, null),
 		CUSTOM_ITEM ( 0, 0, Item.class, null),
-		CUSTOM_FOOD ( 0, 0, Food.class, null),
-
-		GUN(2,2,Gun.class,null),
-		AMMO(3,3,Ammo.class,null);
+		CUSTOM_FOOD ( 0, 0, Food.class, null);
 		
 		public Class<?>[] classes;
 
@@ -569,13 +559,6 @@ public class Generator {
 			});
 		}
 		*/
-		registerItem(Category.GUN, Rifle.class, 2f);
-		registerItem(Category.GUN, HandGun.class, 2f);
-		registerItem(Category.GUN, Shotgun.class, 2f);
-		registerItem(Category.GUN, SniperGun.class, 2f);
-		registerItem(Category.GUN, GrenadeLauncher.class, 2f);
-
-		registerItem(Category.AMMO, Ammo.class, 2f);
 
 		// EventBus.fire("Generator:InitializeItems"); // EventBus removed - TODO: restore when needed
 		// 更新有两套概率的类别的总概率
@@ -695,10 +678,6 @@ public class Generator {
 				return randomCustomItem();
 			case CUSTOM_FOOD:
 				return randomCustomFood();
-			case GUN:
-				return randomGun();
-			case AMMO:
-				return randomAmmo();
 			case TRINKET:
 				// For now, return a basic item from the trinket category
 				// This will be improved in future updates
@@ -924,25 +903,6 @@ public class Generator {
 			}
 		}
 		return false;
-	}
-	public static Gun randomGun(){
-		switch(Random.chances(Category.GUN.probs)){
-			case 0:
-				return new Rifle();
-			case 1:
-				return new HandGun();
-			case 2:
-				return new Shotgun();
-			case 3:
-				return new SniperGun();
-			case 4:
-				return new GrenadeLauncher();
-			default:
-				return new Rifle();
-		}
-	}
-	public static Ammo randomAmmo(){
-		return new Ammo();
 	}
 	private static final String FIRST_DECK = "first_deck";
 	private static final String GENERAL_PROBS = "general_probs";

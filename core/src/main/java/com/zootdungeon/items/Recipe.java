@@ -62,9 +62,7 @@ import com.zootdungeon.items.spells.WildEnergy;
 import com.zootdungeon.items.trinkets.Trinket;
 import com.zootdungeon.items.trinkets.TrinketCatalyst;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.ammo.LiquidMetalToAmmoRecipe;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
-import com.zootdungeon.items.weapon.ammo.ExplosiveAmmoRecipe;
 import com.watabou.utils.Reflection;
 
 public abstract class Recipe {
@@ -197,8 +195,7 @@ public abstract class Recipe {
 		new SummonElemental.Recipe(),
 		new StewedMeat.oneMeat(),
 		new TrinketCatalyst.Recipe(),
-		new Trinket.UpgradeTrinket(),
-		new LiquidMetalToAmmoRecipe()
+		new Trinket.UpgradeTrinket()
 	};
 	
 	private static final Recipe[] twoIngredientRecipes = new Recipe[]{
@@ -214,8 +211,7 @@ public abstract class Recipe {
 		new CurseInfusion.Recipe(),
 		new ReclaimTrap.Recipe(),
 		new WildEnergy.Recipe(),
-		new StewedMeat.twoMeat(),
-		new ExplosiveAmmoRecipe()
+		new StewedMeat.twoMeat()
 	};
 	
 	private static Recipe[] threeIngredientRecipes = new Recipe[]{
