@@ -368,7 +368,7 @@ public class TransferMechWeapon extends MeleeWeapon {
             }
             
             // 对目标本身造成伤害
-            int damage = Random.NormalIntRange(power, power * 2);
+            int damage = Math.max(1, Random.NormalIntRange(power, power * 2));
             target.damage(damage, this);
             
             // 对附近单位造成伤害
@@ -389,7 +389,7 @@ public class TransferMechWeapon extends MeleeWeapon {
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                 if (mob != null && mob.isAlive() && mob != target
                         && Dungeon.level.distance(centerPos, mob.pos) <= aoeRange) {
-                    int aoeDamage = Random.NormalIntRange(power, power * 2);
+                    int aoeDamage = Math.max(1, Random.NormalIntRange(power, power * 2));
                     mob.damage(aoeDamage, this);
                 }
             }
@@ -460,7 +460,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         @Override
         public int damageRoll() {
-            return Random.NormalIntRange(power, power * 2);
+            return Math.max(1, Random.NormalIntRange(power, power * 2));
         }
         
         @Override
