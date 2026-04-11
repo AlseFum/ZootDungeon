@@ -28,6 +28,8 @@ public class WndRhodesIslandTerminal extends Window {
 	private static final int WIDTH_MAX = 176;
 	/** 最窄宽度：需容纳被动行「名称 + 信息 + 数值」三列 */
 	private static final int LAYOUT_MIN_W = 104;
+	/** 窗口整体相对 UI 视口边缘至少留白（与 {@link #boundOffsetWithMargin} 一致） */
+	private static final int SCREEN_EDGE_MARGIN = 24;
 	private static final int GAP = 2;
 	private static final int MARGIN = 3;
 	private static final int BTN_HEIGHT = 16;
@@ -39,6 +41,7 @@ public class WndRhodesIslandTerminal extends Window {
 	private static final int VALUE_W = 32;
 	private static final int BTN_UNINSTALL_W = 32;
 	private static final int BTN_TOGGLE_W = 32;
+	private static final int BTN_EXIT_W = 34;
 	private static final int INFO_FONT = 6;
 	private static final int INFO_MAX_H = 32;
 	private static final int CUSTOM_COMPONENT_H = 56;
@@ -54,6 +57,7 @@ public class WndRhodesIslandTerminal extends Window {
 	private RedButton tabActiveBtn;
 	private RedButton tabPassiveBtn;
 	private RedButton tabPluginBtn;
+	private RedButton btnExit;
 	private ScrollPane contentPane;
 	private TabType currentTab = TabType.ACTIVE;
 
@@ -66,6 +70,11 @@ public class WndRhodesIslandTerminal extends Window {
 		super.offset(xOffset, yOffset);
 		// GameScene.show() 可能会给新窗口继承 offset；带 ScrollPane 的窗口需要在 offset 后刷新布局
 		relayout();
+	}
+
+	@Override
+	public void boundOffsetWithMargin(int margin) {
+		super.boundOffsetWithMargin(SCREEN_EDGE_MARGIN);
 	}
 
 	public WndRhodesIslandTerminal(RhodesIslandTerminal terminal) {
@@ -105,31 +114,49 @@ public class WndRhodesIslandTerminal extends Window {
 		};
 		add(tabPluginBtn);
 
+		btnExit = new RedButton(Messages.get(RhodesIslandTerminal.class, "btn_exit"), 7) {
+			@Override
+			protected void onClick() {
+				hide();
+			}
+		};
+		add(btnExit);
+
 		syncLayoutWidth();
 		relayout();
 		switchTab(TabType.ACTIVE);
 	}
 
 	/** 按当前 UI 相机尺寸更新窗口宽度（竖屏窄宽时用满宽度，避免固定 176 溢出） */
+	private int maxInnerWidth() {
+		return Math.max(LAYOUT_MIN_W,
+				(int) PixelScene.uiCamera.width - 2 * SCREEN_EDGE_MARGIN - chrome.marginHor());
+	}
+
+	private int maxInnerHeight() {
+		return (int) PixelScene.uiCamera.height - 2 * SCREEN_EDGE_MARGIN - chrome.marginVer();
+	}
+
 	private void syncLayoutWidth() {
 		int screenW = (int) PixelScene.uiCamera.width;
 		int screenH = (int) PixelScene.uiCamera.height;
-		int margin = 10;
-		int maxByScreen = Math.max(LAYOUT_MIN_W, screenW - margin);
+		int maxByScreen = maxInnerWidth();
 		boolean portrait = screenH > screenW;
 		if (portrait) {
 			layoutWidth = maxByScreen;
 		} else {
 			layoutWidth = Math.min(WIDTH_MAX, maxByScreen);
 		}
-		layoutWidth = Math.max(LAYOUT_MIN_W, Math.min(layoutWidth, screenW - 4));
+		layoutWidth = Math.max(LAYOUT_MIN_W, Math.min(layoutWidth, maxByScreen));
 	}
 
 	private void relayout() {
 		syncLayoutWidth();
 		float y = MARGIN;
-		title.setRect(0, y, layoutWidth, 0);
-		y = title.bottom() + GAP;
+		float titleW = layoutWidth - BTN_EXIT_W - GAP;
+		title.setRect(0, y, titleW, 0);
+		btnExit.setRect(titleW + GAP, y, BTN_EXIT_W, TAB_BTN_H);
+		y = Math.max(title.bottom(), btnExit.bottom()) + GAP;
 
 		if (layoutWidth >= 155) {
 			float firstW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
@@ -151,7 +178,7 @@ public class WndRhodesIslandTerminal extends Window {
 		int viewH = getAvailableViewHeight(y);
 		if (contentPane != null) {
 			// clamp window height to screen, then clamp content height accordingly
-			int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
+			int maxWindowHeight = maxInnerHeight();
 			int finalH = (int) (y + viewH + MARGIN);
 			if (finalH > maxWindowHeight) {
 				finalH = maxWindowHeight;
@@ -159,16 +186,18 @@ public class WndRhodesIslandTerminal extends Window {
 			viewH = Math.max(0, finalH - (int) y - MARGIN);
 			contentPane.setRect(0, y, layoutWidth, viewH);
 			resize(layoutWidth, finalH);
+			boundOffsetWithMargin(SCREEN_EDGE_MARGIN);
 			return;
 		}
-		int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
+		int maxWindowHeight = maxInnerHeight();
 		int finalH = (int) (y + viewH + MARGIN);
 		if (finalH > maxWindowHeight) finalH = maxWindowHeight;
 		resize(layoutWidth, finalH);
+		boundOffsetWithMargin(SCREEN_EDGE_MARGIN);
 	}
 
 	private int getAvailableViewHeight(float contentTop) {
-		int maxWindowHeight = (int) PixelScene.uiCamera.height - 12;
+		int maxWindowHeight = maxInnerHeight();
 		int bySpace = (int) (maxWindowHeight - contentTop - MARGIN);
 		return Math.max(MIN_VIEW_H, bySpace);
 	}
