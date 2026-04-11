@@ -474,13 +474,12 @@ public class TransferMechWeapon extends MeleeWeapon {
                     spend(1 / speed());
                     return true;
                 } else {
-                    // 移动到敌人附近
+                    // 移动到敌人附近（getCloser 只改 pos，必须 moveSprite 才会显示位移，与 Mob.Hunting / DirectableAlly 一致）
+                    int oldPos = pos;
                     if (getCloser(target.pos)) {
-                        // getCloser() 只负责移动，不会消耗时间；这里手动消耗一次行动时间，避免 0-time 循环卡死
                         spend(1 / speed());
-                        return true;
+                        return moveSprite(oldPos, pos);
                     } else {
-                        // 无法移动，等待
                         spend(1 / speed());
                         return true;
                     }
@@ -502,22 +501,57 @@ public class TransferMechWeapon extends MeleeWeapon {
                 forcedTargetId = -1;
             }
 
-            Char closest = null;
-            int closestDist = Integer.MAX_VALUE;
-            
+            // 与 Mob.chooseEnemy 类似：用路径步数选目标，优先追能走到的敌人；不再要求敌人在机甲视野内
+            PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.passable, fieldOfView, true));
+
+            Char pick = pickChaseTarget(true);
+            if (pick != null) {
+                return pick;
+            }
+            // 范围内没有敌人时，全图追击最近可路径/几何距离的敌人
+            return pickChaseTarget(false);
+        }
+
+        /**
+         * @param onlyWithinSearchRange 为 true 时只考虑与机甲距离 {@link #searchRange} 内的敌人
+         */
+        private Char pickChaseTarget(boolean onlyWithinSearchRange) {
+            Char best = null;
+            int bestPath = Integer.MAX_VALUE;
+            int bestGeom = Integer.MAX_VALUE;
+
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-                if (mob.alignment == Alignment.ENEMY && mob.isAlive()) {
-                    int dist = Dungeon.level.distance(pos, mob.pos);
-                    if (dist <= searchRange && dist < closestDist) {
-                        if (fieldOfView == null || fieldOfView[mob.pos]) {
-                            closest = mob;
-                            closestDist = dist;
-                        }
-                    }
+                if (mob == null || !mob.isAlive() || mob.alignment != Alignment.ENEMY) {
+                    continue;
+                }
+                int geom = Dungeon.level.distance(pos, mob.pos);
+                if (onlyWithinSearchRange && geom > searchRange) {
+                    continue;
+                }
+                int p = steppingDistToAdjacent(mob);
+                if (p < bestPath || (p == bestPath && geom < bestGeom)) {
+                    bestPath = p;
+                    bestGeom = geom;
+                    best = mob;
                 }
             }
-            
-            return closest;
+            return best;
+        }
+
+        /** 从机甲当前位置走到 {@code ch} 邻格的最少步数（与 {@link Mob#chooseEnemy} 一致） */
+        private static int steppingDistToAdjacent(Char ch) {
+            int d = Integer.MAX_VALUE;
+            for (int n : PathFinder.NEIGHBOURS8) {
+                int c = ch.pos + n;
+                if (!Dungeon.level.insideMap(c) || !Dungeon.level.adjacent(ch.pos, c)) {
+                    continue;
+                }
+                int step = PathFinder.distance[c];
+                if (step < d) {
+                    d = step;
+                }
+            }
+            return d;
         }
         
         @Override
