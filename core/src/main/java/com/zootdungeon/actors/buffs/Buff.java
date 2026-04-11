@@ -3,6 +3,7 @@ package com.zootdungeon.actors.buffs;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -269,6 +270,13 @@ public class Buff extends Actor {
 	//visual effect usually attached to the sprite of the character the buff is attacked to
 	public void fx(boolean on) {
 		//do nothing by default
+	}
+
+	/**
+	 * 每帧在角色贴图绘制之后、精灵可见时由 {@link com.zootdungeon.sprites.CharSprite} 对每个 Buff 调用一次。
+	 * 不需要画时直接 return；需要画时用 Noosa 绘制或挂子节点等。
+	 */
+	public void drawSpriteOverlay(CharSprite sprite) {
 	}
 
 	public String heroMessage(){

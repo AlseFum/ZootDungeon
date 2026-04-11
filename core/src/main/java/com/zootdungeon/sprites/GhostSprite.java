@@ -52,8 +52,9 @@ public class GhostSprite extends MobSprite {
 	@Override
 	public void draw() {
 		Blending.setLightMode();
-		super.draw();
+		drawMain();
 		Blending.setNormalMode();
+		drawBuffSigOverlays();
 	}
 	
 	@Override

@@ -27,6 +27,7 @@ import java.util.HashSet;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.effects.DarkBlock;
 import com.zootdungeon.effects.EmoIcon;
 import com.zootdungeon.effects.Flare;
@@ -768,6 +769,12 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	@Override
 	public void draw() {
+		drawMain();
+		drawBuffSigOverlays();
+	}
+
+	/** 阴影 + 角色贴图本体；子类（如 {@link GhostSprite}）可在外层包裹混合模式后再调用 {@link #drawBuffSigOverlays()} */
+	protected void drawMain() {
 		if (texture == null || (!dirty && buffer == null))
 			return;
 
@@ -799,7 +806,16 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 
 		super.draw();
+	}
 
+	/** 在角色本体绘制之后调用；对每个 Buff 尝试 {@link Buff#drawSpriteOverlay}（无引用计数、无单独 State） */
+	protected void drawBuffSigOverlays() {
+		if (ch == null || !visible) {
+			return;
+		}
+		for (Buff b : ch.buffs()) {
+			b.drawSpriteOverlay(this);
+		}
 	}
 
 	@Override

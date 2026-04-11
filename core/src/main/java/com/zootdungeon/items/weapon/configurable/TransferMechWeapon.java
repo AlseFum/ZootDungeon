@@ -17,11 +17,13 @@ import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
+import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.GhostSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
@@ -290,6 +292,9 @@ public class TransferMechWeapon extends MeleeWeapon {
         public TransferMechWeapon weapon;
         public int power = 1;
         public int aoeRange = 2;
+
+        /** 跟随目标 {@link CharSprite} 的机甲附着特效，不写入存档 */
+        private transient Emitter mechSpriteFx;
         
         {
             type = buffType.NEGATIVE;
@@ -313,6 +318,41 @@ public class TransferMechWeapon extends MeleeWeapon {
         @Override
         public String iconTextDisplay() {
             return String.valueOf(power);
+        }
+
+        @Override
+        public void fx(boolean on) {
+            if (!on) {
+                clearMechSpriteFx();
+            }
+        }
+
+        @Override
+        public void drawSpriteOverlay(CharSprite sprite) {
+            if (target == null || !target.isAlive() || sprite == null || sprite.ch != target) {
+                clearMechSpriteFx();
+                return;
+            }
+            if (!sprite.visible) {
+                clearMechSpriteFx();
+                return;
+            }
+            if (mechSpriteFx == null || !mechSpriteFx.alive) {
+                mechSpriteFx = GameScene.emitter();
+                if (mechSpriteFx != null) {
+                    mechSpriteFx.pos(sprite);
+                    float rate = Math.min(0.2f, 0.06f + power * 0.025f);
+                    mechSpriteFx.pour(Speck.factory(Speck.STAR), rate);
+                }
+            }
+        }
+
+        private void clearMechSpriteFx() {
+            if (mechSpriteFx != null) {
+                mechSpriteFx.on = false;
+                mechSpriteFx.killAndErase();
+                mechSpriteFx = null;
+            }
         }
         
         @Override
@@ -357,6 +397,7 @@ public class TransferMechWeapon extends MeleeWeapon {
         
         @Override
         public void detach() {
+            clearMechSpriteFx();
             if (weapon != null) {
                 // 只有当目标还活着时才转换为char（说明是被净化等效果移除的）
                 // 如果目标死亡，在act()中已经处理过转换了
