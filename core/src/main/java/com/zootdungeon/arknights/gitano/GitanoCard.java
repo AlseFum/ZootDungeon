@@ -156,17 +156,6 @@ public class GitanoCard extends Item {
 		return DeckType.values()[Math.floorMod(deckType, DeckType.values().length)];
 	}
 
-	private String deckNameForInfo() {
-		switch (Math.floorMod(deckType, 3)) {
-			case 0:
-				return Messages.get(this, "deck_playing");
-			case 1:
-				return Messages.get(this, "deck_major");
-			default:
-				return Messages.get(this, "deck_minor");
-		}
-	}
-
 	private CardOutcome drawPlayingCard(Hero hero) {
 		int suit = Random.Int(PLAYING_SUITS.length);
 		int rank = Random.Int(PLAYING_RANKS.length) + 1;

@@ -25,8 +25,8 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.spells.HolyLance;
 import com.zootdungeon.actors.mobs.GnollGeomancer;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.arknights.misc.DeployedLineBlade;
-import com.zootdungeon.arknights.misc.ProximityLineBow;
+import com.zootdungeon.arknights.misc.DeployablewCrossBow;
+import com.zootdungeon.arknights.misc.NearRangeCrossBow;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.melee.Crossbow;
 import com.zootdungeon.items.weapon.missiles.Bolas;
@@ -104,8 +104,8 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 		ANGULAR_SPEEDS.put(Trident.class,       0);
 		
 		ANGULAR_SPEEDS.put(SpiritBow.SpiritArrow.class,       0);
-		ANGULAR_SPEEDS.put(ProximityLineBow.ProximityBolt.class, 0);
-		ANGULAR_SPEEDS.put(DeployedLineBlade.LineBolt.class, 0);
+		ANGULAR_SPEEDS.put(NearRangeCrossBow.ProximityBolt.class, 0);
+		ANGULAR_SPEEDS.put(DeployablewCrossBow.LineBolt.class, 0);
 		ANGULAR_SPEEDS.put(ScorpioSprite.ScorpioShot.class,   0);
 		ANGULAR_SPEEDS.put(HolyLance.HolyLanceVFX.class,      0);
 		
@@ -173,8 +173,8 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 			speed *= 3f;
 			
 		} else if (item instanceof SpiritBow.SpiritArrow
-				|| item instanceof ProximityLineBow.ProximityBolt
-				|| item instanceof DeployedLineBlade.LineBolt
+				|| item instanceof NearRangeCrossBow.ProximityBolt
+				|| item instanceof DeployablewCrossBow.LineBolt
 				|| item instanceof ScorpioSprite.ScorpioShot
 				|| item instanceof TenguSprite.TenguShuriken){
 			speed *= 1.5f;

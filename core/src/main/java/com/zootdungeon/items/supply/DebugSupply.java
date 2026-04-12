@@ -14,8 +14,8 @@ import com.zootdungeon.arknights.tragodia.TragodiaWand;
 import com.zootdungeon.arknights.necrass.NecrassCard;
 import com.zootdungeon.items.weapon.chakram.Chakram;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
-import com.zootdungeon.arknights.misc.DeployedLineBlade;
-import com.zootdungeon.arknights.misc.ProximityLineBow;
+import com.zootdungeon.arknights.misc.DeployablewCrossBow;
+import com.zootdungeon.arknights.misc.NearRangeCrossBow;
 import com.zootdungeon.arknights.misc.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
 import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
@@ -138,8 +138,8 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(TransferMechWeapon.class, 1));
         weapons.add(() -> create(SkullShattererWeapon.class, 1));
         weapons.add(() -> create(Chakram.class, 1));
-        weapons.add(() -> create(ProximityLineBow.class, 1));
-        weapons.add(() -> create(DeployedLineBlade.class, 1));
+        weapons.add(() -> create(NearRangeCrossBow.class, 1));
+        weapons.add(() -> create(DeployablewCrossBow.class, 1));
         categories.put(CAT_WEAPONS, weapons);
     }
 

@@ -21,10 +21,10 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 /**
- * 短程灵弓：交互与 {@link com.zootdungeon.items.weapon.SpiritBow} 相同（选格射击），射程不超过 {@link #MAX_SHOOT_DISTANCE}；
+ * 短程弓：交互与 {@link com.zootdungeon.items.weapon.SpiritBow} 相同（选格射击），射程不超过 {@link #MAX_SHOOT_DISTANCE}；
  * 目标在纯上下左右方向且距离 1～2 格时伤害 +60%。
  */
-public class ProximityLineBow extends Weapon {
+public class NearRangeCrossBow extends Weapon {
 
 	public static final String AC_SHOOT = "SHOOT";
 
@@ -36,8 +36,7 @@ public class ProximityLineBow extends Weapon {
 	private int targetPos;
 	static {
 		SpriteRegistry.texture("mod:proximitylinebow", "cola/province_bow.png")
-				.grid(32, 32)
-				.setXY("province_bow", 0, 0);
+				.setXY("province_bow", 0, 0,32,32);
 	}
 	{
 		image = SpriteRegistry.byLabel("province_bow");
@@ -142,7 +141,7 @@ public class ProximityLineBow extends Weapon {
 
 		@Override
 		public String prompt() {
-			return Messages.get(ProximityLineBow.class, "prompt");
+			return Messages.get(NearRangeCrossBow.class, "prompt");
 		}
 	};
 
@@ -157,27 +156,27 @@ public class ProximityLineBow extends Weapon {
 
 		@Override
 		public int damageRoll(Char owner) {
-			return ProximityLineBow.this.damageRoll(owner);
+			return NearRangeCrossBow.this.damageRoll(owner);
 		}
 
 		@Override
 		public boolean hasEnchant(Class<? extends Enchantment> type, Char owner) {
-			return ProximityLineBow.this.hasEnchant(type, owner);
+			return NearRangeCrossBow.this.hasEnchant(type, owner);
 		}
 
 		@Override
 		public int proc(Char attacker, Char defender, int damage) {
-			return ProximityLineBow.this.proc(attacker, defender, damage);
+			return NearRangeCrossBow.this.proc(attacker, defender, damage);
 		}
 
 		@Override
 		public float delayFactor(Char user) {
-			return ProximityLineBow.this.delayFactor(user);
+			return NearRangeCrossBow.this.delayFactor(user);
 		}
 
 		@Override
 		public int STRReq(int lvl) {
-			return ProximityLineBow.this.STRReq();
+			return NearRangeCrossBow.this.STRReq();
 		}
 
 		@Override
@@ -201,10 +200,10 @@ public class ProximityLineBow extends Weapon {
 		@Override
 		public void cast(Hero user, int dst) {
 			if (Dungeon.level.distance(user.pos, dst) > MAX_SHOOT_DISTANCE) {
-				GLog.w(Messages.get(ProximityLineBow.this, "out_of_range"));
+				GLog.w(Messages.get(NearRangeCrossBow.this, "out_of_range"));
 				return;
 			}
-			ProximityLineBow.this.targetPos = throwPos(user, dst);
+			NearRangeCrossBow.this.targetPos = throwPos(user, dst);
 			super.cast(user, dst);
 		}
 	}

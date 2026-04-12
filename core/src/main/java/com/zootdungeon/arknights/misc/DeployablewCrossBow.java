@@ -32,11 +32,11 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 
 /**
- * 机弩：与 {@link ProximityLineBow} 相同，射击距离上限 3；纯上下左右且曼哈顿 1～2 格时伤害 +60%。
+ * 机弩：与 {@link NearRangeCrossBow} 相同，射击距离上限 3；纯上下左右且曼哈顿 1～2 格时伤害 +60%。
  * 可将弩台部署到视野内任意空格；朝向在部署时由「英雄→落点」位移的主轴取正四向（投掷大方向）。
  * 可在相邻格交互再次「调整朝向」。每回合沿朝向射击最多 3 格，带 zap + 弹道动画。
  */
-public class DeployedLineBlade extends Weapon {
+public class DeployablewCrossBow extends Weapon {
 
 	public static final String AC_SHOOT = "SHOOT";
 	public static final String AC_DEPLOY = "DEPLOY";
@@ -117,7 +117,7 @@ public class DeployedLineBlade extends Weapon {
 	@Override
 	public int damageRoll(Char owner) {
 		int dmg = augment.damageFactor(super.damageRoll(owner));
-		if (owner != null && Dungeon.level != null && ProximityLineBow.hasOrthogonalShortLineBonus(owner.pos, targetPos)) {
+		if (owner != null && Dungeon.level != null && NearRangeCrossBow.hasOrthogonalShortLineBonus(owner.pos, targetPos)) {
 			dmg = Math.round(dmg * ORTHO_BONUS);
 		}
 		return dmg;
@@ -204,11 +204,11 @@ public class DeployedLineBlade extends Weapon {
 			}
 			Char ch = Actor.findChar(target);
 			if (ch == null || !ch.isAlive() || ch == curUser) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "bad_target"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "bad_target"));
 				return;
 			}
 			if (Dungeon.level.distance(curUser.pos, target) > MAX_SHOOT_DISTANCE) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "out_of_range"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "out_of_range"));
 				return;
 			}
 			knockBolt().cast(curUser, target);
@@ -216,7 +216,7 @@ public class DeployedLineBlade extends Weapon {
 
 		@Override
 		public String prompt() {
-			return Messages.get(DeployedLineBlade.class, "prompt_shoot");
+			return Messages.get(DeployablewCrossBow.class, "prompt_shoot");
 		}
 	};
 
@@ -227,25 +227,25 @@ public class DeployedLineBlade extends Weapon {
 				return;
 			}
 			if (!Dungeon.level.heroFOV[target]) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "not_visible"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "not_visible"));
 				return;
 			}
 			if (!Dungeon.level.passable[target] && !Dungeon.level.avoid[target]) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "bad_deploy"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "bad_deploy"));
 				return;
 			}
 			if (Actor.findChar(target) != null) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "blocked_spawn"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "blocked_spawn"));
 				return;
 			}
 
 			int facing = snapDeployFacing(curUser.pos, target);
 			if (facing == 0) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "bad_deploy"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "bad_deploy"));
 				return;
 			}
 
-			DeployedLineBlade blade = DeployedLineBlade.this;
+			DeployablewCrossBow blade = DeployablewCrossBow.this;
 			Hero hero = curUser;
 
 			DeployedTurretBuff oldB = hero.buff(DeployedTurretBuff.class);
@@ -262,7 +262,7 @@ public class DeployedLineBlade extends Weapon {
 
 			Item detached = blade.detach(hero.belongings.backpack);
 			if (detached == null) {
-				GLog.w(Messages.get(DeployedLineBlade.this, "deploy_failed"));
+				GLog.w(Messages.get(DeployablewCrossBow.this, "deploy_failed"));
 				return;
 			}
 
@@ -270,7 +270,7 @@ public class DeployedLineBlade extends Weapon {
 				hero.spendAndNext(1f);
 			}
 
-			Avatar mob = new Avatar(hero, (DeployedLineBlade) detached, target, facing);
+			Avatar mob = new Avatar(hero, (DeployablewCrossBow) detached, target, facing);
 			mob.pos = target;
 			GameScene.add(mob);
 			ScrollOfTeleportation.appear(mob, target);
@@ -282,7 +282,7 @@ public class DeployedLineBlade extends Weapon {
 
 		@Override
 		public String prompt() {
-			return Messages.get(DeployedLineBlade.class, "prompt_deploy");
+			return Messages.get(DeployablewCrossBow.class, "prompt_deploy");
 		}
 	};
 
@@ -297,27 +297,27 @@ public class DeployedLineBlade extends Weapon {
 
 		@Override
 		public int damageRoll(Char owner) {
-			return DeployedLineBlade.this.damageRoll(owner);
+			return DeployablewCrossBow.this.damageRoll(owner);
 		}
 
 		@Override
 		public boolean hasEnchant(Class<? extends Enchantment> type, Char owner) {
-			return DeployedLineBlade.this.hasEnchant(type, owner);
+			return DeployablewCrossBow.this.hasEnchant(type, owner);
 		}
 
 		@Override
 		public int proc(Char attacker, Char defender, int damage) {
-			return DeployedLineBlade.this.proc(attacker, defender, damage);
+			return DeployablewCrossBow.this.proc(attacker, defender, damage);
 		}
 
 		@Override
 		public float delayFactor(Char user) {
-			return DeployedLineBlade.this.delayFactor(user);
+			return DeployablewCrossBow.this.delayFactor(user);
 		}
 
 		@Override
 		public int STRReq(int lvl) {
-			return DeployedLineBlade.this.STRReq();
+			return DeployablewCrossBow.this.STRReq();
 		}
 
 		@Override
@@ -340,7 +340,7 @@ public class DeployedLineBlade extends Weapon {
 
 		@Override
 		public void cast(Hero user, int dst) {
-			DeployedLineBlade.this.targetPos = throwPos(user, dst);
+			DeployablewCrossBow.this.targetPos = throwPos(user, dst);
 			super.cast(user, dst);
 		}
 	}
@@ -366,7 +366,7 @@ public class DeployedLineBlade extends Weapon {
 		private static final String TAG_OWNER = "dlb_owner";
 		private static final String TAG_STEP = "dlb_step";
 
-		private DeployedLineBlade blade;
+		private DeployablewCrossBow blade;
 		private Hero owner;
 		private int ownerId = -1;
 		private int stepDelta;
@@ -379,11 +379,11 @@ public class DeployedLineBlade extends Weapon {
 				}
 				int st = cardinalStep(Avatar.this.pos, target);
 				if (st == 0) {
-					GLog.w(Messages.get(DeployedLineBlade.class, "bad_aim"));
+					GLog.w(Messages.get(DeployablewCrossBow.class, "bad_aim"));
 					return;
 				}
 				Avatar.this.stepDelta = st;
-				GLog.p(Messages.get(DeployedLineBlade.class, "aim_set"));
+				GLog.p(Messages.get(DeployablewCrossBow.class, "aim_set"));
 				if (Avatar.this.owner != null) {
 					Avatar.this.owner.spendAndNext(1f);
 				}
@@ -391,7 +391,7 @@ public class DeployedLineBlade extends Weapon {
 
 			@Override
 			public String prompt() {
-				return Messages.get(DeployedLineBlade.class, "prompt_aim");
+				return Messages.get(DeployablewCrossBow.class, "prompt_aim");
 			}
 		};
 
@@ -399,7 +399,7 @@ public class DeployedLineBlade extends Weapon {
 			super();
 		}
 
-		public Avatar(Hero owner, DeployedLineBlade blade, int pos, int stepDelta) {
+		public Avatar(Hero owner, DeployablewCrossBow blade, int pos, int stepDelta) {
 			this.owner = owner;
 			this.blade = blade;
 			this.pos = pos;
@@ -432,7 +432,7 @@ public class DeployedLineBlade extends Weapon {
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			blade = (DeployedLineBlade) bundle.get(TAG_BLADE);
+			blade = (DeployablewCrossBow) bundle.get(TAG_BLADE);
 			stepDelta = bundle.getInt(TAG_STEP);
 			ownerId = bundle.getInt(TAG_OWNER);
 		}
@@ -468,14 +468,14 @@ public class DeployedLineBlade extends Weapon {
 				@Override
 				public void call() {
 					GameScene.show(new WndOptions(sprite(),
-							Messages.get(DeployedLineBlade.class, "turret_menu_title"),
-							Messages.get(DeployedLineBlade.class, "turret_menu_body"),
-							Messages.get(DeployedLineBlade.class, "opt_pickup"),
-							Messages.get(DeployedLineBlade.class, "opt_aim")) {
+							Messages.get(DeployablewCrossBow.class, "turret_menu_title"),
+							Messages.get(DeployablewCrossBow.class, "turret_menu_body"),
+							Messages.get(DeployablewCrossBow.class, "opt_pickup"),
+							Messages.get(DeployablewCrossBow.class, "opt_aim")) {
 						@Override
 						protected void onSelect(int index) {
 							if (index == 0) {
-								GLog.i(Messages.get(DeployedLineBlade.class, "recalled"));
+								GLog.i(Messages.get(DeployablewCrossBow.class, "recalled"));
 								dismissTurret();
 								who.spendAndNext(1f);
 							} else if (index == 1) {
@@ -508,7 +508,7 @@ public class DeployedLineBlade extends Weapon {
 					tb.detach();
 				}
 			}
-			DeployedLineBlade b = blade;
+			DeployablewCrossBow b = blade;
 			int dropPos = pos;
 			blade = null;
 			owner = null;
