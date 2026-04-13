@@ -222,13 +222,21 @@ public class HeroSprite extends CharSprite {
 	}
 	
 	public static Image avatar( HeroClass cl, int armorTier ) {
-		
-		RectF patch = tiers().get( armorTier );
-		Image avatar = new Image( Assets.getTexture(cl.spritesheet()) );
-		RectF frame = avatar.texture.uvRect( 1, 0, FRAME_WIDTH, FRAME_HEIGHT );
-		frame.shift( patch.left, patch.top );
-		avatar.frame( frame );
-		
-		return avatar;
+
+		Image img = new Image( heroTextureHandle(cl) );
+
+		int cellW = cl != null ? cl.spriteCellWidth : FRAME_WIDTH;
+		int cellH = cl != null ? cl.spriteCellHeight : FRAME_HEIGHT;
+		if (cellW <= 0) cellW = FRAME_WIDTH;
+		if (cellH <= 0) cellH = FRAME_HEIGHT;
+
+		// Assume the spritesheet is laid out in armor-tier "bands" stacked vertically,
+		// each band having height = spriteCellHeight, and the UI portrait frame starts at x=1.
+		int y = Math.max(0, armorTier) * cellH;
+		RectF patch = img.texture.uvRect(0, y, img.texture.width, cellH);
+		RectF frame = img.texture.uvRect(1, 0, cellW, cellH);
+		frame.shift(patch.left, patch.top);
+		img.frame(frame);
+		return img;
 	}
 }
