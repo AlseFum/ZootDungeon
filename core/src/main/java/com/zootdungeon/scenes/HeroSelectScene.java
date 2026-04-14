@@ -381,7 +381,7 @@ public class HeroSelectScene extends PixelScene {
 			setSelectedHero(GamesInProgress.selectedClass);
 		}
 
-		if (Badges.isUnlocked(Badges.Badge.VICTORY) && !CDSettings.victoryNagged()) {
+		if (DeviceCompat.isDesktop() && Badges.isUnlocked(Badges.Badge.VICTORY) && !CDSettings.victoryNagged()) {
 			CDSettings.victoryNagged(true);
 			add(new WndVictoryCongrats());
 		}

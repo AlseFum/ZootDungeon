@@ -25,7 +25,6 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.GamesInProgress;
 import com.zootdungeon.CDSettings;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.effects.BannerSprites;
@@ -211,7 +210,7 @@ public class TitleScene extends PixelScene {
 		}
 
 		Badges.loadGlobal();
-		if (Badges.isUnlocked(Badges.Badge.VICTORY) && !CDSettings.victoryNagged()) {
+		if (DeviceCompat.isDesktop() && Badges.isUnlocked(Badges.Badge.VICTORY) && !CDSettings.victoryNagged()) {
 			CDSettings.victoryNagged(true);
 			add(new WndVictoryCongrats());
 		}

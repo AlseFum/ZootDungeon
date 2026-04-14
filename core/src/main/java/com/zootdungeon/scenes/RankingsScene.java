@@ -38,6 +38,7 @@ import com.zootdungeon.ui.ExitButton;
 import com.zootdungeon.ui.IconButton;
 import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RenderedTextBlock;
+import com.watabou.utils.DeviceCompat;
 import com.zootdungeon.ui.Window;
 import com.zootdungeon.windows.IconTitle;
 import com.zootdungeon.windows.WndDailies;
@@ -167,7 +168,7 @@ public class RankingsScene extends PixelScene {
 
 		if (Dungeon.daily){
 			addToFront(new WndDailies());
-		} else if (Badges.isUnlocked(Badges.Badge.VICTORY) && !CDSettings.victoryNagged()) {
+		} else if (DeviceCompat.isDesktop() && Badges.isUnlocked(Badges.Badge.VICTORY) && !CDSettings.victoryNagged()) {
 			CDSettings.victoryNagged(true);
 			add(new WndVictoryCongrats());
 		}
