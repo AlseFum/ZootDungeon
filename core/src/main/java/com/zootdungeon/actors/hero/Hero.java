@@ -117,6 +117,7 @@ import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfLivingEarth;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.firearms.FirearmWeapon;
 import com.zootdungeon.items.weapon.melee.Crossbow;
 import com.zootdungeon.items.weapon.melee.Flail;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
@@ -526,6 +527,8 @@ public class Hero extends Char {
         // temporarily set the hero's weapon to the missile weapon being used
         // TODO improve this!
         belongings.thrownWeapon = wep;
+        // MissileWeapon accuracyFactor is already applied inside Hero.attackSkill()
+        // via belongings.attackingWeapon().accuracyFactor(...). Don't apply it again here.
         boolean hit = attack(enemy);
         Invisibility.dispel();
         belongings.thrownWeapon = null;
@@ -2409,6 +2412,7 @@ public class Hero extends Char {
         int oldPos = pos;
 
         super.move(step, travelling);
+		FirearmWeapon.onHeroMoved(this, oldPos, pos);
 
         // EventBus removed
 

@@ -356,7 +356,6 @@ public abstract class Char extends Actor {
 	public static boolean hit( Char attacker, Char defender, float accMulti, boolean magic ) {
 		float acuStat = attacker.attackSkill( defender );
 		float defStat = defender.defenseSkill( attacker );
-        System.out.printf("acuStat: %.2f, defStat: %.2f%n", acuStat, defStat);
 		if (defender instanceof Hero && ((Hero) defender).damageInterrupt){
 			((Hero) defender).interrupt();
 		}
@@ -407,9 +406,6 @@ public abstract class Char extends Actor {
 			// + 3%/5%
 			defRoll *= 1.01f + 0.02f*Dungeon.hero.pointsInTalent(Talent.BLESS);
 		}
-        System.out.printf("acuRoll=%.2f(acuStat%.2f) defRoll=%.2f(defStat%.2f) accMulti=%.2f acuRoll*accMulti=%.2f>=%.2f->%s%n",
-                acuRoll, acuStat, defRoll, defStat, accMulti, (acuRoll * accMulti), defRoll,
-                (acuRoll * accMulti) >= defRoll ? "hit" : "miss");
 		return (acuRoll * accMulti) >= defRoll;
 	}
 
