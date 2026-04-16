@@ -155,6 +155,10 @@ public class FirearmMagazine extends Item {
 		public FirearmBullet consumeRound() {
 			if (specialMode && specialAmmo > 0) {
 				specialAmmo--;
+				if (specialAmmo <= 0) {
+					// When the last special round is spent, automatically return to normal mode.
+					specialMode = false;
+				}
 				return specialBullet.copy();
 			}
 			primaryMagazine.bullet = defaultBullet.copy();
