@@ -2,7 +2,6 @@ package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bags.Bag;
-import com.zootdungeon.items.DivineAnkh;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.items.supply.Supply;
 

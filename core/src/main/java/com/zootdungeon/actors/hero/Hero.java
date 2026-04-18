@@ -66,7 +66,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.Ankh;
-import com.zootdungeon.items.DivineAnkh;
+import com.zootdungeon.items.cheat.DivineAnkh;
 import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.EquipableItem;
 import com.zootdungeon.items.Heap;

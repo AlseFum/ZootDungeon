@@ -38,7 +38,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.items.cheat.Codex;
-import com.zootdungeon.items.DivineAnkh;
+import com.zootdungeon.items.cheat.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
 import com.zootdungeon.items.cheat.ItemEditor;
 import com.zootdungeon.items.cheat.Panacea;
@@ -49,7 +49,6 @@ import com.zootdungeon.items.cheat.WandBox;
 import com.zootdungeon.items.cheat.BombBox;
 import com.zootdungeon.items.cheat.StoneOfDungeonTravel;
 import com.zootdungeon.items.cheat.StoneOfLevelSelect;
-import com.zootdungeon.items.cheat.StoneOfSpawn;
 import com.zootdungeon.items.TengusMask;
 import com.zootdungeon.items.KingsCrown;
 
@@ -86,7 +85,6 @@ public class DebugSupply extends Supply {
 
 
         List<Supplier<Item>> stones = new ArrayList<>();
-        stones.add(() -> create(StoneOfSpawn.class, 300));
         stones.add(() -> create(StoneOfLevelSelect.class, 50));
         categories.put(CAT_STONES, stones);
 
