@@ -58,16 +58,16 @@ public class Junkman extends Mob {
 			}
 
 			idle = new Animation( 2, true );
-			idle.frames( frames, 0, 0, 0, 1, 0, 0, 1, 1 );
+			idle.frames( frames, 5);
 
 			run = new Animation( 12, true );
-			run.frames( frames, 4, 5, 6, 7 );
+			run.frames( frames, 1,2,3);
 
 			attack = new Animation( 12, false );
-			attack.frames( frames, 2, 3, 0 );
+			attack.frames( frames, 7,8,9);
 
 			die = new Animation( 12, false );
-			die.frames( frames, 8, 9, 10 );
+			die.frames( frames, 5,6);
 
 			play( idle );
 		}

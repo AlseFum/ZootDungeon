@@ -1,13 +1,17 @@
 package com.zootdungeon.windows;
 
+import com.zootdungeon.Assets;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
+import com.zootdungeon.ui.Button;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Window;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -49,6 +53,12 @@ import java.util.function.Consumer;
  * WndGeneral.make()
  *     .line("上面独占一行")
  *     .hrow(r -> r.line("左").button("右", () -> {}))
+ *     .show();
+ *
+ * // 开关（不自动关窗；{@link PaneBuilder#switchRow} / {@link Builder#switchRow}）
+ * WndGeneral.make()
+ *     .title("选项")
+ *     .switchRow("调试绘制", false, on -> applyDebugDraw(on))
  *     .show();
  * </pre>
  */
@@ -327,6 +337,13 @@ public class WndGeneral extends Window {
 				body.add(block);
 				bodyY = block.bottom() + GAP;
 				maxRight = Math.max(maxRight, block.right());
+			} else if (seg instanceof SwitchSeg) {
+				SwitchSeg ss = (SwitchSeg) seg;
+				SwitchRow sw = new SwitchRow(ss.label, ss.initialOn, ss.onChange);
+				sw.setRect(MARGIN, bodyY, colW, BTN_HEIGHT);
+				body.add(sw);
+				bodyY = sw.bottom() + GAP;
+				maxRight = Math.max(maxRight, sw.right());
 			} else if (seg instanceof OptionSeg) {
 				Option opt = ((OptionSeg) seg).option;
 				RedButton btn = new RedButton(opt.label) {
@@ -428,6 +445,74 @@ public class WndGeneral extends Window {
 		}
 	}
 
+	/** 仅用于本窗口的开关行：左侧标签，右侧滑轨 + 滑块。 */
+	private static class SwitchRow extends Button {
+
+		private static final int TRACK_W = 28;
+		private static final int TRACK_H = 10;
+		private static final int THUMB = 8;
+
+		private final RenderedTextBlock label;
+		private final ColorBlock track;
+		private final ColorBlock thumb;
+		private final Consumer<Boolean> onChange;
+		private boolean on;
+
+		SwitchRow(String labelText, boolean initialOn, Consumer<Boolean> onChange) {
+			this.on = initialOn;
+			this.onChange = onChange;
+			label = PixelScene.renderTextBlock(labelText != null ? labelText : "", 6);
+			add(label);
+			track = new ColorBlock(1, 1, 0xFF3a3a3a);
+			add(track);
+			thumb = new ColorBlock(THUMB, THUMB, 0xFFc8c8c8);
+			add(thumb);
+		}
+
+		void setOn(boolean value) {
+			if (on != value) {
+				on = value;
+				layout();
+				if (onChange != null) {
+					onChange.accept(on);
+				}
+			}
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+
+			float h = height;
+			label.maxWidth(Math.max(1, (int) (width - TRACK_W - 6)));
+			label.setPos(x, y + (h - label.height()) / 2f);
+			PixelScene.align(label);
+
+			float trackX = x + width - TRACK_W - 1;
+			float trackY = y + (h - TRACK_H) / 2f;
+			track.size(TRACK_W, TRACK_H);
+			track.x = trackX;
+			track.y = trackY;
+
+			float thumbY = y + (h - THUMB) / 2f;
+			float thumbX = on ? (trackX + TRACK_W - THUMB - 1) : (trackX + 1);
+			thumb.x = thumbX;
+			thumb.y = thumbY;
+
+			track.resetColor();
+			thumb.resetColor();
+			if (on) {
+				track.hardlight(0.42f, 0.72f, 0.46f);
+			}
+		}
+
+		@Override
+		protected void onClick() {
+			Sample.INSTANCE.play(Assets.Sounds.CLICK);
+			setOn(!on);
+		}
+	}
+
 	public interface PaneSegment {
 	}
 
@@ -444,6 +529,18 @@ public class WndGeneral extends Window {
 
 		public OptionSeg(Option option) {
 			this.option = option;
+		}
+	}
+
+	public static class SwitchSeg implements PaneSegment {
+		public final String label;
+		public final boolean initialOn;
+		public final Consumer<Boolean> onChange;
+
+		public SwitchSeg(String label, boolean initialOn, Consumer<Boolean> onChange) {
+			this.label = label;
+			this.initialOn = initialOn;
+			this.onChange = onChange;
 		}
 	}
 
@@ -511,6 +608,12 @@ public class WndGeneral extends Window {
 			return this;
 		}
 
+		/** 开关行：点击切换，不关闭窗口；{@code onChange} 可为 null */
+		public PaneBuilder switchRow(String label, boolean initialOn, Consumer<Boolean> onChange) {
+			segments.add(new SwitchSeg(label, initialOn, onChange));
+			return this;
+		}
+
 		public PaneBuilder hrow(Consumer<HRowBuilder> fill) {
 			HRowBuilder hb = new HRowBuilder();
 			fill.accept(hb);
@@ -566,6 +669,12 @@ public class WndGeneral extends Window {
 		/** 添加可选项，点击后执行 callback 并关闭窗口 */
 		public Builder option(String label, Runnable onClick) {
 			segments.add(new OptionSeg(new Option(label, onClick)));
+			return this;
+		}
+
+		/** 开关行：点击切换，不关闭窗口；{@code onChange} 可为 null */
+		public Builder switchRow(String label, boolean initialOn, Consumer<Boolean> onChange) {
+			segments.add(new SwitchSeg(label, initialOn, onChange));
 			return this;
 		}
 
