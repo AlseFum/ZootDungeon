@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights.misc;
+package com.zootdungeon.arknights.RhodesStandardWeapons;
 
 import com.watabou.noosa.audio.Sample;
 import com.zootdungeon.Assets;

@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights.misc;
+package com.zootdungeon.arknights.RhodesStandardWeapons;
 
 import com.zootdungeon.items.supply.Supply;
 import com.zootdungeon.messages.Messages;

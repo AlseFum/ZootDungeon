@@ -19,26 +19,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zootdungeon.arknights.misc;
+package com.zootdungeon.arknights.RhodesStandardWeapons;
 
 import com.zootdungeon.Assets;
+import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 
-public class RhodesStandardSword extends MeleeWeapon {
-
+public class RhodesStandardShield extends MeleeWeapon {
+    
     static {
-        SpriteRegistry.texture("mod:rhodes_standard_sword", "cola/rhodes_sword.png")
+        SpriteRegistry.texture("sheet.cola.rhodes_shield", "cola/rhodes_shield.png")
                 .grid(32, 32)
-                .label("rhodes_standard_sword");
+                .label("rhodes_shield");
     }
-
+    
     {
-        image = SpriteRegistry.byLabel("rhodes_standard_sword");
+        image = SpriteRegistry.byLabel("rhodes_shield");
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         
         tier = 0;
+    }
+    
+    // 格挡值：基础3，每级+1
+    public int drBase = 3;
+    public int drPerLevel = 1;
+    
+    @Override
+    public String statsInfo() {
+        return Messages.get(this, "stats_desc", DRMax());
     }
     
     @Override
@@ -48,7 +59,21 @@ public class RhodesStandardSword extends MeleeWeapon {
     
     @Override
     public int max(int lvl) {
-        return 5 * (tier + 1) + lvl * (tier + 1);
+        // 盾牌伤害较低
+        return Math.round(3f * (tier + 1)) + lvl * (tier - 1);
+    }
+    
+    @Override
+    public int defenseFactor(Char owner) {
+        return DRMax();
+    }
+    
+    public int DRMax() {
+        return DRMax(buffedLvl());
+    }
+    
+    public int DRMax(int lvl) {
+        return drBase + drPerLevel * lvl;
     }
 }
 
