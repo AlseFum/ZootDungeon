@@ -12,6 +12,7 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndBag;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.windows.WndOptions;
 import com.zootdungeon.ui.InventoryPane;
 
@@ -50,7 +51,7 @@ public class ItemRemover extends Item {
             GameScene.selectItem(new WndBag.ItemSelector() {
                 @Override
                 public String textPrompt() {
-                    return "Select an item to remove(click elsewhere to cancel)";
+                    return Messages.get(ItemRemover.class, "prompt_remove");
                 }
 
                 @Override
@@ -64,16 +65,17 @@ public class ItemRemover extends Item {
                         return;
                     }
                     if (item.quantity() > 5) {
+                        int removeFifth = item.quantity() - (int) (item.quantity() * 4 / 5);
                         GameScene.show(WndOptions.make()
-                        .title("删除物品")
-                        .message("要删除多少？")
-                        .option("1份",(Object o)->{
+                        .title(Messages.get(ItemRemover.class, "title_qty"))
+                        .message(Messages.get(ItemRemover.class, "msg_qty"))
+                        .option(Messages.get(ItemRemover.class, "option_one"), (Object o) -> {
                             item.quantity(item.quantity() - 1);
                         })
-                        .option("5分之一("+(item.quantity() - (int)(item.quantity() * 4 / 5))+")",(Object o)->{
-                            item.quantity((int)(item.quantity() * 4 / 5));
+                        .option(Messages.get(ItemRemover.class, "option_fifth", removeFifth), (Object o) -> {
+                            item.quantity((int) (item.quantity() * 4 / 5));
                         })
-                        .option("全部",(Object o)->{
+                        .option(Messages.get(ItemRemover.class, "option_all"), (Object o) -> {
                             item.quantity(1);
                             item.detach(hero.belongings.backpack);
                             InventoryPane.refresh();
@@ -88,7 +90,7 @@ public class ItemRemover extends Item {
                 }
             });
         } else if (action.equals(AC_CLEAR)) {
-            GameScene.selectCell("选择清除的格子", (Integer pos) -> {
+            GameScene.selectCell(Messages.get(ItemRemover.class, "prompt_clear_cell"), (Integer pos) -> {
                 if (pos == -1) {
                     return;
                 }
@@ -99,7 +101,7 @@ public class ItemRemover extends Item {
                 }
             });
         } else if (action.equals(AC_KILL)) {
-            GameScene.selectCell("选择要清除的单位", (Integer pos) -> {
+            GameScene.selectCell(Messages.get(ItemRemover.class, "prompt_kill"), (Integer pos) -> {
                 if (pos == -1) {
                     return;
                 }
@@ -107,7 +109,7 @@ public class ItemRemover extends Item {
                 if (ch != null && ch.isAlive()) {
                     ch.die(this);
                 } else {
-                    GLog.w("该位置没有可清除的单位。");
+                    GLog.w(Messages.get(ItemRemover.class, "no_unit"));
                 }
             });
         }
@@ -116,24 +118,24 @@ public class ItemRemover extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_REMOVE)) {
-            return "删除物品";
+            return Messages.get(this, "ac_remove");
         }
         if (action.equals(AC_CLEAR)) {
-            return "清除格子";
+            return Messages.get(this, "ac_clear");
         }
         if (action.equals(AC_KILL)) {
-            return "清除单位";
+            return Messages.get(this, "ac_kill");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        return "Item Remover";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "调试工具：删除背包物品、清除地格掉落物，也可直接清除指定格子的单位。";
+        return Messages.get(this, "desc");
     }
 }

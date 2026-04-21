@@ -23,12 +23,18 @@ package com.zootdungeon.arknights.misc;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.SpriteRegistry;
 
 public class RhodesStandardSword extends MeleeWeapon {
-    
+
+    static {
+        SpriteRegistry.texture("mod:rhodes_standard_sword", "cola/rhodes_sword.png")
+                .grid(32, 32)
+                .label("rhodes_standard_sword");
+    }
+
     {
-        image = ItemSpriteSheet.SWORD;
+        image = SpriteRegistry.byLabel("rhodes_standard_sword");
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         

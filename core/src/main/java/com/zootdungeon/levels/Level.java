@@ -573,7 +573,6 @@ public abstract class Level implements Bundlable {
 	public LevelTransition getTransition(int cell){
 		for (LevelTransition transition : transitions){
 			if (transition.inside(cell)){
-				
 				return transition;
 			}
 		}
