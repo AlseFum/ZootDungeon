@@ -240,8 +240,18 @@ public class WndGeneral extends Window {
 		int n = tabButtons.size();
 		if (n > 0) {
 			int maxFitOneRow = Math.max(1, (layoutWidth + GAP) / (TAB_BTN_MIN_W + GAP));
-			boolean twoRows = n > maxFitOneRow;
-			if (!twoRows) {
+			// 根据能放下的最小按钮数决定行数：1 / 2 / 3 行。
+			// 3 行在 tab 太多、两行也排不下时启用，避免按钮被挤成单字符宽度。
+			int rowCount;
+			if (n <= maxFitOneRow) {
+				rowCount = 1;
+			} else if (n <= 2 * maxFitOneRow) {
+				rowCount = 2;
+			} else {
+				rowCount = 3;
+			}
+
+			if (rowCount == 1) {
 				float x = 0;
 				for (int i = 0; i < n; i++) {
 					RedButton btn = tabButtons.get(i);
@@ -252,11 +262,22 @@ public class WndGeneral extends Window {
 					x = btn.right() + GAP;
 				}
 				y = tabButtons.get(0).bottom() + GAP;
-			} else {
+			} else if (rowCount == 2) {
 				int row0 = (n + 1) / 2;
 				y = layoutTabButtonRow(0, row0, y);
 				y += GAP;
 				y = layoutTabButtonRow(row0, n, y);
+				y += GAP;
+			} else { // 3 行
+				// 尽量平均，前面的行最多多一个按钮。
+				int perRow = (n + 2) / 3;
+				int endRow0 = Math.min(perRow, n);
+				int endRow1 = Math.min(endRow0 + perRow, n);
+				y = layoutTabButtonRow(0, endRow0, y);
+				y += GAP;
+				y = layoutTabButtonRow(endRow0, endRow1, y);
+				y += GAP;
+				y = layoutTabButtonRow(endRow1, n, y);
 				y += GAP;
 			}
 		}

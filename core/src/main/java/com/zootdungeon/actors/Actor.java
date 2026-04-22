@@ -301,6 +301,13 @@ public abstract class Actor implements Bundlable {
             add(blob);
         }
 
+        // CellEntity（地面实体）也跟 Mob、Blob 一样参与 Actor 调度
+        if (Dungeon.level.cellEntities != null) {
+            for (com.zootdungeon.levels.entities.CellEntity entity : Dungeon.level.cellEntities.valueList()) {
+                add(entity);
+            }
+        }
+
         current = null;
 
         if (!usePriorityQueue && all.size() > 20) {

@@ -643,6 +643,10 @@ public class Hero extends Char {
         }
 
         evasion *= com.zootdungeon.arknights.ascalon.AscalonAOE.evasionMultiplier(this);
+        {
+            com.zootdungeon.actors.buffs.DodgeBoostBuff dodgeBoost = buff(com.zootdungeon.actors.buffs.DodgeBoostBuff.class);
+            if (dodgeBoost != null) evasion *= dodgeBoost.multiplier();
+        }
 
         if (paralysed > 0) {
             evasion /= 2;

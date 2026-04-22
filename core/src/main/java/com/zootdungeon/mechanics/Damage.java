@@ -112,6 +112,11 @@ public class Damage {
         public int effectiveDamage;
         public int shieldAbsorbed;
 
+        /** 在多次攻击序列中，这次命中是第几次（从 0 开始）。单次攻击默认为 0。 */
+        public int hitIndex = 0;
+        /** 本次 {@link Damage#physical} 调用预计发起的攻击总次数。单次攻击默认为 1。 */
+        public int hitCount = 1;
+
         public DamageContext(Char from, Char to, int damageType, int damageForm, float amount, Object way, Set<Integer> flags) {
             this.from = from;
             this.to = to;
@@ -121,6 +126,16 @@ public class Damage {
             this.way = way;
             this.flags = flags == null ? Collections.<Integer>emptySet() : Collections.unmodifiableSet(new HashSet<>(flags));
         }
+
+        /** 链式设置 hitIndex / hitCount，方便在物理多段攻击循环里标注序号。 */
+        public DamageContext withHitOrder(int hitIndex, int hitCount) {
+            this.hitIndex = Math.max(0, hitIndex);
+            this.hitCount = Math.max(1, hitCount);
+            return this;
+        }
+
+        public boolean isFirstHit() { return hitIndex == 0; }
+        public boolean isLastHit() { return hitIndex == hitCount - 1; }
 
         public static DamageContext of(Char from, Char to, int damageType, int damageForm, float amount, Object way, Set<Integer> flags) {
             return new DamageContext(from, to, damageType, damageForm, amount, way, flags);
@@ -179,7 +194,14 @@ public class Damage {
 
     /**
      * 物理伤害，支持多次命中。
-     * @param hitCount 命中次数（≥1）。一次命中判定，然后按同一基础伤害结算 hitCount 次（每次独立经过防御、DR、proc）。
+     * <p>
+     * 语义：{@code hitCount} 是「本次动作中要独立发起多少次攻击」，<b>不是</b>“一次命中后复用同一伤害数结算多次”。
+     * 循环内每一次命中都会独立执行：命中判定（accuracy）、DR 判定、基础伤害滚动、攻击/防御 proc、伤害结算。
+     * 每次 {@link DamageContext#hitIndex} 从 0 递增至 {@code hitCount-1}；同一序列共享同一个
+     * {@link #isVisibleFight(Char, Char) 可见性} 计算值，并且对 {@link PowerStrike}/{@link Preparation}
+     * 这类“下一击”型 buff 仅在第一次成功命中时消耗一次。
+     *
+     * @param hitCount 攻击次数（≥1）。
      */
     public static PhysicalResult physical(Char attacker, Char defender, float dmgMulti, float dmgBonus, float accMulti, int hitCount) {
         if (hitCount < 1) hitCount = 1;
@@ -195,27 +217,43 @@ public class Damage {
             }
             return new PhysicalResult(false, 0, Interrupt.Invulnerable, isVisibleFight);
         }
-        if (!Char.hit(attacker, defender, accMulti, false)) {
-            defender.sprite.showStatus(CharSprite.NEUTRAL, "miss");
-            return new PhysicalResult(false, 0, Interrupt.Dodge, isVisibleFight);
-        }
 
-        int dr = computeDr(attacker, defender);
-        BaseDamageResult base = computeBaseDamage(attacker, defender, dmgMulti, dmgBonus);
-        DamageContext physicalCtx = DamageContext.directPhysical(attacker, defender, base.baseDmg, attacker);
-        base.baseDmg = DamagePipeline.applyComputeAmplifiers(physicalCtx, base.baseDmg);
-        if (!defender.isAlive()) {
-            return new PhysicalResult(true, 0, Interrupt.Else, isVisibleFight);
-        }
+        // 把「单次命中即可消耗」的 buff 在循环外先抓住引用，循环结束后 postDamageEffects 统一处理。
+        // computeBaseDamage 在第一次成功命中时已经把 PowerStrike 标记为 used，之后的循环不会重复加成。
+        Preparation initialPrep = attacker.buff(Preparation.class);
+        PowerStrike initialBoost = attacker.buff(PowerStrike.class);
 
         int totalDamage = 0;
+        boolean anyHit = false;
+
         for (int i = 0; i < hitCount; i++) {
-            int dealt = applyOneHit(attacker, defender, base.baseDmg, dr, isVisibleFight, i == 0);
+            // 每一击独立 roll accuracy
+            if (!Char.hit(attacker, defender, accMulti, false)) {
+                continue;
+            }
+            anyHit = true;
+
+            // 每一击独立 roll DR 与 base damage
+            int dr = computeDr(attacker, defender);
+            BaseDamageResult base = computeBaseDamage(attacker, defender, dmgMulti, dmgBonus);
+            DamageContext physicalCtx = DamageContext.directPhysical(attacker, defender, base.baseDmg, attacker)
+                    .withHitOrder(i, hitCount);
+            base.baseDmg = DamagePipeline.applyComputeAmplifiers(physicalCtx, base.baseDmg);
+            if (!defender.isAlive()) break;
+
+            int dealt = applyOneHit(attacker, defender, base.baseDmg, dr, isVisibleFight, i == 0, i, hitCount);
             totalDamage += dealt;
             if (!defender.isAlive()) break;
         }
 
-        postDamageEffects(attacker, defender, totalDamage, base.prep, base.nextAttackBoost);
+        if (!anyHit) {
+            // 全部落空：只在最终确认 0 次命中时统一展示一次 miss，触发闪避回调
+            defender.sprite.showStatus(CharSprite.NEUTRAL, "miss");
+            com.zootdungeon.arknights.misc.RhodesDodgeHooks.onDodge(attacker, defender);
+            return new PhysicalResult(false, 0, Interrupt.Dodge, isVisibleFight);
+        }
+
+        postDamageEffects(attacker, defender, totalDamage, initialPrep, initialBoost);
         return new PhysicalResult(true, totalDamage, Interrupt.Else, isVisibleFight);
     }
 
@@ -254,6 +292,9 @@ public class Damage {
         dmg *= dmgMulti;
         if (r.nextAttackBoost != null && !r.nextAttackBoost.used) {
             dmg *= r.nextAttackBoost.boostMultiplier;
+            // 就地消耗：同一次 physical() 里后续的多段命中不会再享受该加成。
+            // postDamageEffects 仍然负责把 buff detach 掉。
+            r.nextAttackBoost.used = true;
         }
         dmg += dmgBonus;
 
@@ -304,8 +345,9 @@ public class Damage {
     }
 
     /** 单次伤害应用：防御 proc、DR、黏性、易伤、攻击 proc、音效、扣血。返回本段造成的伤害值。 */
-    private static int applyOneHit(Char attacker, Char defender, float baseDmg, int dr, boolean visibleFight, boolean playHitSound) {
-        DamageContext hitCtx = DamageContext.directPhysical(attacker, defender, baseDmg, attacker);
+    private static int applyOneHit(Char attacker, Char defender, float baseDmg, int dr, boolean visibleFight, boolean playHitSound, int hitIndex, int hitCount) {
+        DamageContext hitCtx = DamageContext.directPhysical(attacker, defender, baseDmg, attacker)
+                .withHitOrder(hitIndex, hitCount);
         int effective = defender.defenseProc(attacker, Math.round(baseDmg));
         if (effective >= 0) {
             if (!hitCtx.hasFlag(IGNORE_ARMOR)) {
@@ -331,8 +373,9 @@ public class Damage {
     }
 
     private static void postDamageEffects(Char attacker, Char defender, int totalDamage, Preparation prep, PowerStrike nextAttackBoost) {
-        if (nextAttackBoost != null && !nextAttackBoost.used) {
-            nextAttackBoost.used = true;
+        // used 可能已经在 computeBaseDamage 里被置为 true（多段命中时只消耗一次），
+        // 这里只负责把确实被用掉的 PowerStrike 从 attacker 身上摘掉。
+        if (nextAttackBoost != null && nextAttackBoost.used) {
             nextAttackBoost.detach();
         }
         NextAttackReachBoost nextAttackReachBoost = attacker.buff(NextAttackReachBoost.class);

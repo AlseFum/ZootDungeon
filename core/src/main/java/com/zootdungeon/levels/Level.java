@@ -98,6 +98,7 @@ import com.zootdungeon.levels.features.Door;
 import com.zootdungeon.levels.features.HighGrass;
 import com.zootdungeon.levels.features.LevelTransition;
 import com.zootdungeon.levels.painters.Painter;
+import com.zootdungeon.levels.entities.CellEntity;
 import com.zootdungeon.levels.traps.Trap;
 import com.zootdungeon.mechanics.ShadowCaster;
 import com.zootdungeon.messages.Messages;
@@ -185,6 +186,11 @@ public abstract class Level implements Bundlable {
 	public HashMap<Class<? extends Blob>,Blob> blobs;
 	public SparseArray<Plant> plants;
 	public SparseArray<Trap> traps;
+	/**
+	 * 地面实体（Cell Entity）表。类似 {@link #plants} / {@link #traps}，但元素带自己的
+	 * {@link Actor} 调度。每格最多一个实体，后放置者会替换旧的。
+	 */
+	public SparseArray<CellEntity> cellEntities;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
 	
@@ -207,6 +213,7 @@ public abstract class Level implements Bundlable {
 	private static final String HEAPS		= "heaps";
 	private static final String PLANTS		= "plants";
 	private static final String TRAPS       = "traps";
+	private static final String CELL_ENTITIES = "cellEntities";
 	private static final String CUSTOM_TILES= "customTiles";
 	private static final String CUSTOM_WALLS= "customWalls";
 	private static final String MOBS		= "mobs";
@@ -303,6 +310,7 @@ public abstract class Level implements Bundlable {
 			blobs = new HashMap<>();
 			plants = new SparseArray<>();
 			traps = new SparseArray<>();
+			cellEntities = new SparseArray<>();
 			customTiles = new HashSet<>();
 			customWalls = new HashSet<>();
 			
@@ -376,6 +384,7 @@ public abstract class Level implements Bundlable {
 		blobs = new HashMap<>();
 		plants = new SparseArray<>();
 		traps = new SparseArray<>();
+		cellEntities = new SparseArray<>();
 		customTiles = new HashSet<>();
 		customWalls = new HashSet<>();
 		
@@ -408,6 +417,15 @@ public abstract class Level implements Bundlable {
 		for (Bundlable p : collection) {
 			Trap trap = (Trap)p;
 			traps.put( trap.pos, trap );
+		}
+
+		// 老存档没有这张表时静默跳过；新建的 SparseArray 保持为空。
+		if (bundle.contains( CELL_ENTITIES )) {
+			collection = bundle.getCollection( CELL_ENTITIES );
+			for (Bundlable b : collection) {
+				CellEntity entity = (CellEntity) b;
+				cellEntities.put( entity.pos, entity );
+			}
 		}
 
 		collection = bundle.getCollection( CUSTOM_TILES );
@@ -469,6 +487,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( HEAPS, heaps.valueList() );
 		bundle.put( PLANTS, plants.valueList() );
 		bundle.put( TRAPS, traps.valueList() );
+		bundle.put( CELL_ENTITIES, cellEntities.valueList() );
 		bundle.put( CUSTOM_TILES, customTiles );
 		bundle.put( CUSTOM_WALLS, customWalls );
 		bundle.put( MOBS, mobs );
@@ -1065,6 +1084,66 @@ public abstract class Level implements Bundlable {
 		GameScene.updateMap( pos );
 	}
 
+	// ================ Cell Entities ================
+
+	/**
+	 * 登记一个地面实体到指定格子。
+	 * <p>
+	 * 若该格子已有其他 {@link CellEntity}，旧实体会被 {@link #removeCellEntity(CellEntity)} 掉再放新实体。
+	 * 同时把新实体加入 {@link Actor} 调度并通知场景添加 sprite。
+	 *
+	 * @return 传入的 entity 本身，便于链式调用。
+	 */
+	public CellEntity addCellEntity( CellEntity entity, int pos ) {
+		if (entity == null) return null;
+
+		CellEntity existing = cellEntities.get( pos );
+		if (existing != null && existing != entity) {
+			removeCellEntity( existing );
+		}
+
+		entity.pos = pos;
+		cellEntities.put( pos, entity );
+		Actor.add( entity );
+		entity.onSpawn( this );
+
+		// GameScene.addCellEntitySprite 自己会在 scene 尚未就绪时 no-op；安全调用即可。
+		GameScene.addCellEntitySprite( entity );
+		return entity;
+	}
+
+	/** 从关卡上摘下指定实体（若它确实登记在此关卡）。 */
+	public void removeCellEntity( CellEntity entity ) {
+		if (entity == null) return;
+
+		// 常规路径：entity.pos 与登记 key 一致
+		CellEntity stored = cellEntities.get( entity.pos );
+		if (stored == entity) {
+			cellEntities.remove( entity.pos );
+		} else {
+			// 保险路径：entity.pos 被外部改过；遍历 key 数组找到真正登记位置
+			int realKey = -1;
+			for (int key : cellEntities.keyArray()) {
+				if (cellEntities.get( key ) == entity) {
+					realKey = key;
+					break;
+				}
+			}
+			if (realKey == -1) return;
+			cellEntities.remove( realKey );
+		}
+
+		entity.onDespawn( this );
+		Actor.remove( entity );
+
+		GameScene.removeCellEntitySprite( entity );
+	}
+
+	/** 查询某格子当前登记的地面实体。 */
+	public CellEntity cellEntityAt( int pos ) {
+		return cellEntities.get( pos );
+	}
+
 	public Trap setTrap( Trap trap, int pos ){
 		Trap existingTrap = traps.get(pos);
 		if (existingTrap != null){
@@ -1187,6 +1266,18 @@ public abstract class Level implements Bundlable {
 
 		if (ch.isAlive() && ch instanceof Piranha && !water[ch.pos]){
 			((Piranha) ch).dieOnLand();
+		}
+
+		// CellEntity 触发：飞行 / 非飞行单位都会调用 onStep；飞行单位另外调用 onFlyOver。
+		// 放在最后，确保水、草、陷阱等地块效果已经先处理过。
+		if (ch.isAlive()) {
+			CellEntity entity = cellEntities.get( ch.pos );
+			if (entity != null) {
+				entity.onStep( ch );
+				if (ch.flying) {
+					entity.onFlyOver( ch );
+				}
+			}
 		}
 	}
 	

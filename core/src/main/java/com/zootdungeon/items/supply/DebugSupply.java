@@ -16,6 +16,13 @@ import com.zootdungeon.items.weapon.chakram.Chakram;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
 import com.zootdungeon.arknights.misc.DeployablewCrossBow;
 import com.zootdungeon.arknights.misc.NearRangeCrossBow;
+import com.zootdungeon.arknights.misc.RhodesArmorPierceGauntlet;
+import com.zootdungeon.arknights.misc.RhodesChargeGauntlet;
+import com.zootdungeon.arknights.misc.RhodesCritGauntlet;
+import com.zootdungeon.arknights.misc.RhodesDefBreakerGauntlet;
+import com.zootdungeon.arknights.misc.RhodesDodgeGauntlet;
+import com.zootdungeon.arknights.misc.RhodesKnockbackGauntlet;
+import com.zootdungeon.arknights.misc.RhodesLockOnGauntlet;
 import com.zootdungeon.arknights.RhodesStandardWeapons.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
 import com.zootdungeon.arknights.firearms.BlackSteelGun;
@@ -37,9 +44,11 @@ import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndGeneral;
+import com.zootdungeon.items.cheat.CellEntityPlacer;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.cheat.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
+import com.zootdungeon.items.cheat.StackingBuffTester;
 import com.zootdungeon.items.cheat.ItemEditor;
 import com.zootdungeon.items.cheat.Panacea;
 import com.zootdungeon.items.cheat.RedStone;
@@ -75,6 +84,9 @@ public class DebugSupply extends Supply {
     private static final String CAT_WEAPONS = "cat_weapons";
     private static final String CAT_FIREARMS = "cat_firearms";
     private static final String CAT_PLUGINS = "cat_plugins";
+    private static final String CAT_RHODES_GAUNTLETS = "cat_rhodes_gauntlets";
+    private static final String CAT_CELL_ENTITIES = "cat_cell_entities";
+    private static final String CAT_BUFF_TESTS = "cat_buff_tests";
 
     private final Map<String, List<Supplier<Item>>> categories = new LinkedHashMap<>();
 
@@ -139,6 +151,24 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(NearRangeCrossBow.class, 1));
         weapons.add(() -> create(DeployablewCrossBow.class, 1));
         categories.put(CAT_WEAPONS, weapons);
+
+        List<Supplier<Item>> rhodesGauntlets = new ArrayList<>();
+        rhodesGauntlets.add(() -> create(RhodesLockOnGauntlet.class, 1));
+        rhodesGauntlets.add(() -> create(RhodesArmorPierceGauntlet.class, 1));
+        rhodesGauntlets.add(() -> create(RhodesDodgeGauntlet.class, 1));
+        rhodesGauntlets.add(() -> create(RhodesKnockbackGauntlet.class, 1));
+        rhodesGauntlets.add(() -> create(RhodesCritGauntlet.class, 1));
+        rhodesGauntlets.add(() -> create(RhodesChargeGauntlet.class, 1));
+        rhodesGauntlets.add(() -> create(RhodesDefBreakerGauntlet.class, 1));
+        categories.put(CAT_RHODES_GAUNTLETS, rhodesGauntlets);
+
+        List<Supplier<Item>> cellEntities = new ArrayList<>();
+        cellEntities.add(() -> create(CellEntityPlacer.class, 1));
+        categories.put(CAT_CELL_ENTITIES, cellEntities);
+
+        List<Supplier<Item>> buffTests = new ArrayList<>();
+        buffTests.add(() -> create(StackingBuffTester.class, 1));
+        categories.put(CAT_BUFF_TESTS, buffTests);
 
         // Firearms: one tab, 4 rows x 3 columns (type rows, A/B/C columns)
         categories.put(CAT_FIREARMS, List.of()); // placeholder; rendered by a custom pane

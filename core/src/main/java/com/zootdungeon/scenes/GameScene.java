@@ -189,6 +189,7 @@ public class GameScene extends PixelScene {
 	private Group plants;
 	private Group traps;
 	private Group heaps;
+	private Group cellEntities;
 	private Group mobs;
 	private Group floorEmitters;
 	private Group emitters;
@@ -298,6 +299,15 @@ public class GameScene extends PixelScene {
 		
 		for ( Heap heap : Dungeon.level.heaps.valueList() ) {
 			addHeapSprite( heap );
+		}
+
+		// 地面实体（CellEntity）层：位于 heaps 之上、mobs/hero 之下
+		cellEntities = new Group();
+		add( cellEntities );
+		if (Dungeon.level.cellEntities != null) {
+			for (com.zootdungeon.levels.entities.CellEntity entity : Dungeon.level.cellEntities.valueList()) {
+				addCellEntitySprite( entity );
+			}
 		}
 
 		emitters = new Group();
@@ -985,6 +995,27 @@ public class GameScene extends PixelScene {
 	private void addTrapSprite( Trap trap ) {
 
 	}
+
+	private void addCellEntitySpriteInternal( com.zootdungeon.levels.entities.CellEntity entity ) {
+		if (entity == null || cellEntities == null) return;
+		Class<? extends com.zootdungeon.levels.entities.CellEntitySprite> clazz = entity.spriteClass();
+		if (clazz == null) return;
+		com.zootdungeon.levels.entities.CellEntitySprite sprite
+				= com.watabou.utils.Reflection.newInstance(clazz);
+		if (sprite == null) return;
+		sprite.link(entity);
+		sprite.visible = Dungeon.level.heroFOV[entity.pos];
+		cellEntities.add(sprite);
+		entity.sprite = sprite;
+	}
+
+	private void removeCellEntitySpriteInternal( com.zootdungeon.levels.entities.CellEntity entity ) {
+		if (entity == null) return;
+		if (entity.sprite != null) {
+			entity.sprite.killAndErase();
+			entity.sprite = null;
+		}
+	}
 	
 	private void addBlobSprite( final Blob gas ) {
 		if (gas.emitter == null) {
@@ -1105,6 +1136,24 @@ public class GameScene extends PixelScene {
 
 	public static void addSprite( Mob mob ) {
 		scene.addMobSprite( mob );
+	}
+
+	/** 由 {@link com.zootdungeon.levels.Level#addCellEntity} 触发；静默处理 scene 尚未就绪的情况。 */
+	public static void addCellEntitySprite( com.zootdungeon.levels.entities.CellEntity entity ) {
+		if (scene != null) {
+			scene.addCellEntitySpriteInternal( entity );
+		}
+	}
+
+	/** 由 {@link com.zootdungeon.levels.Level#removeCellEntity} 触发。 */
+	public static void removeCellEntitySprite( com.zootdungeon.levels.entities.CellEntity entity ) {
+		if (scene != null) {
+			scene.removeCellEntitySpriteInternal( entity );
+		}
+	}
+
+	public static GameScene scene() {
+		return scene;
 	}
 	
 	public static void add( Mob mob, float delay ) {
