@@ -2,7 +2,6 @@ package com.zootdungeon.windows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,36 +15,64 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
+import com.zootdungeon.ui.CheckBox;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
+import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Window;
 import com.zootdungeon.utils.GLog;
-import com.watabou.noosa.BitmapText;
-import com.watabou.utils.Reflection;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.ui.Component;
 
+/**
+ * 物品编辑器窗口。
+ *
+ * 显示优化要点（兼顾安卓竖屏的小屏幕）：
+ * <ul>
+ *   <li>窗口宽度按屏幕动态裁切，最大不超过 {@link #PREFERRED_W}，
+ *       且至少留 {@code edge} 像素安全边距，避免在窄屏被裁掉。</li>
+ *   <li>内容超过最大高度时自动启用 {@link ScrollPane} 滚动，
+ *       标题保持固定可见，不随内容滚走。</li>
+ *   <li>布尔字段使用 {@link CheckBox}，单击直接切换，
+ *       不再弹窗或重建整个窗口；触摸目标更大、反馈更明确。</li>
+ *   <li>数值/字符串字段使用「左侧标签 + 右侧按钮」两栏布局，
+ *       让所有字段在一行内展示，避免长 label 把按钮挤下一行。</li>
+ *   <li>编辑成功后只刷新对应按钮文本，不再重新打开窗口
+ *       （之前每次编辑都会丢失滚动位置，对手机用户尤为不便）。</li>
+ * </ul>
+ */
 public class WndItemEditor extends Window {
 
-    private static final int WIDTH = 180;
-    private static final int BTN_HEIGHT = 20;
+    /** 期望宽度上限；屏幕过窄时按屏幕宽度收缩。 */
+    private static final int PREFERRED_W = 160;
+    /** 内容高度上限；超过则启用滚动。 */
+    private static final int MAX_CONTENT_HEIGHT = 180;
+
+    private static final int BTN_HEIGHT = 16;
+    private static final int ROW_HEIGHT = 16;
     private static final int GAP = 2;
     private static final int MARGIN = 2;
 
-    private Item item;
-    private int pos;
-    private Map<String, Field> editableFields = new HashMap<>();
-    private Map<String, Object> configValues = new HashMap<>();
+    /** 分节标题颜色（亮黄色，便于在低分辨率下区分组）。 */
+    private static final int SECTION_COLOR = 0xFFFF44;
+
+    private final Item item;
+    private final Map<String, Object> configValues = new HashMap<>();
+    private int layoutW;
 
     public WndItemEditor(Item item) {
         super();
 
         this.item = item;
+        layoutW = computeLayoutWidth();
+        int maxWindowH = computeMaxWindowHeight();
 
         IconTitle title = new IconTitle(new ItemSprite(item), Messages.titleCase(item.name()));
-        title.setRect(0, 0, WIDTH, 0);
+        title.setRect(0, 0, layoutW, 0);
         add(title);
-        pos = (int) title.bottom() + GAP;
+        float topY = title.bottom() + GAP;
 
-        // 尝试获取 getConfig 方法
         try {
             Method getConfig = item.getClass().getMethod("getConfig");
             Object config = getConfig.invoke(item);
@@ -54,456 +81,422 @@ public class WndItemEditor extends Window {
                 Map<String, Object> configMap = (Map<String, Object>) config;
                 configValues.putAll(configMap);
             }
-        } catch (Exception e) {
-            // getConfig 方法不存在或调用失败，使用默认字段
+        } catch (Exception ignored) {
+            // 不支持 getConfig 即跳过配置项展示。
         }
 
-        // 添加基本信息显示
-        addInfo("物品类型", item.getClass().getSimpleName());
-        addInfo("等级", String.valueOf(item.level()));
-        addInfo("数量", String.valueOf(item.quantity()));
-        addInfo("已鉴定", item.isIdentified() ? "是" : "否");
-        addInfo("诅咒", item.cursed ? "是" : "否");
+        Component body = buildBody();
 
-        // 添加可编辑字段
-        addEditableField("等级", "level", item.level(), Integer.class);
-        addEditableField("数量", "quantity", item.quantity(), Integer.class);
-        addEditableField("诅咒", "cursed", item.cursed, Boolean.class);
+        int availH = maxWindowH - (int) topY - MARGIN;
+        availH = Math.max(60, availH);
+        int bodyH = (int) body.height();
+        boolean needScroll = bodyH > availH || bodyH > MAX_CONTENT_HEIGHT;
 
-        // 根据物品类型添加特定字段
+        if (needScroll) {
+            int scrollH = Math.min(bodyH, Math.min(MAX_CONTENT_HEIGHT, availH));
+            ScrollPane scroll = new InteractiveScrollPane(body);
+            add(scroll);
+            scroll.setRect(0, topY, layoutW, scrollH);
+            resize(layoutW, (int) (topY + scrollH + MARGIN));
+        } else {
+            add(body);
+            body.setPos(0, topY);
+            resize(layoutW, (int) (topY + bodyH + MARGIN));
+        }
+
+        boundOffsetWithMargin(3);
+    }
+
+    private static int computeLayoutWidth() {
+        Camera cam = PixelScene.uiCamera.visible ? PixelScene.uiCamera : Camera.main;
+        int screenW = (int) cam.width;
+        int edge = 16;
+        return Math.max(120, Math.min(PREFERRED_W, screenW - edge));
+    }
+
+    private static int computeMaxWindowHeight() {
+        Camera cam = PixelScene.uiCamera.visible ? PixelScene.uiCamera : Camera.main;
+        return Math.max(80, (int) cam.height - 24);
+    }
+
+    private Component buildBody() {
+        Component body = new Component();
+        float y = 0;
+
+        y = addSectionHeader(body, "基本信息", y);
+        y = addInfoRow(body, "类型", item.getClass().getSimpleName(), y);
+        y = addInfoRow(body, "已鉴定", item.isIdentified() ? "是" : "否", y);
+
+        y = addSectionHeader(body, "通用属性", y + GAP);
+        y = addIntField(body, "等级", "level", item.level(), y);
+        y = addIntField(body, "数量", "quantity", item.quantity(), y);
+        y = addBooleanField(body, "诅咒", "cursed", item.cursed, y);
+
         if (item instanceof Weapon) {
             Weapon weapon = (Weapon) item;
-            addEditableFieldSafe("Tier", "tier", Integer.class);
-            addEditableField("附魔硬化", "enchantHardened", weapon.enchantHardened, Boolean.class);
-            addEditableField("诅咒灌注加成", "curseInfusionBonus", weapon.curseInfusionBonus, Boolean.class);
-            addEditableField("精通药剂加成", "masteryPotionBonus", weapon.masteryPotionBonus, Boolean.class);
+            y = addSectionHeader(body, "武器属性", y + GAP);
+            y = addIntFieldSafe(body, "Tier", "tier", y);
+            y = addBooleanField(body, "附魔硬化", "enchantHardened", weapon.enchantHardened, y);
+            y = addBooleanField(body, "诅咒灌注加成", "curseInfusionBonus", weapon.curseInfusionBonus, y);
+            y = addBooleanField(body, "精通药剂加成", "masteryPotionBonus", weapon.masteryPotionBonus, y);
+        } else if (item instanceof Armor) {
+            y = addSectionHeader(body, "护甲属性", y + GAP);
+            y = addBooleanFieldSafe(body, "附魔硬化", "enchantHardened", y);
+            y = addBooleanFieldSafe(body, "诅咒灌注加成", "curseInfusionBonus", y);
+            y = addBooleanFieldSafe(body, "精通药剂加成", "masteryPotionBonus", y);
         }
 
-        if (item instanceof Armor) {
-            // 使用反射来安全访问可能不存在的字段
-            addEditableFieldSafe("附魔硬化", "enchantHardened", Boolean.class);
-            addEditableFieldSafe("诅咒灌注加成", "curseInfusionBonus", Boolean.class);
-            addEditableFieldSafe("精通药剂加成", "masteryPotionBonus", Boolean.class);
-        }
         if (item instanceof AmbushWeapon) {
             AmbushWeapon aw = (AmbushWeapon) item;
-            addEditableField("突袭倍率加成", "ambushRate", aw.ambushRate, Float.class);
+            y = addFloatField(body, "突袭倍率加成", "ambushRate", aw.ambushRate, y);
         }
 
         if (item instanceof Wand) {
             Wand wand = (Wand) item;
-            addEditableField("充能", "curCharges", wand.curCharges, Integer.class);
+            y = addSectionHeader(body, "法杖属性", y + GAP);
+            y = addIntField(body, "充能", "curCharges", wand.curCharges, y);
         }
 
         if (item instanceof Ring) {
-            // 使用反射来安全访问可能不存在的字段
-            addEditableFieldSafe("等级加成", "levelBonus", Integer.class);
+            y = addSectionHeader(body, "戒指属性", y + GAP);
+            y = addIntFieldSafe(body, "等级加成", "levelBonus", y);
         }
 
-        // 添加从 getConfig 获取的字段
-        for (Map.Entry<String, Object> entry : configValues.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (value instanceof Integer) {
-                addConfigField(key, (Integer) value);
-            } else if (value instanceof Boolean) {
-                addConfigField(key, (Boolean) value);
-            } else if (value instanceof Float) {
-                addConfigField(key, (Float) value);
-            } else if (value instanceof String) {
-                addConfigField(key, (String) value);
+        if (!configValues.isEmpty()) {
+            y = addSectionHeader(body, "配置项", y + GAP);
+            for (Map.Entry<String, Object> entry : configValues.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof Integer) {
+                    y = addConfigIntField(body, key, (Integer) value, y);
+                } else if (value instanceof Boolean) {
+                    y = addConfigBoolField(body, key, (Boolean) value, y);
+                } else if (value instanceof Float) {
+                    y = addConfigFloatField(body, key, (Float) value, y);
+                } else if (value instanceof String) {
+                    y = addConfigStringField(body, key, (String) value, y);
+                }
             }
         }
 
-        resize(WIDTH, pos);
+        body.setSize(layoutW, y);
+        return body;
     }
 
-    private void addInfo(String label, String value) {
-        RenderedTextBlock info = PixelScene.renderTextBlock(6);
-        info.text(label + ": " + value, WIDTH - MARGIN * 2);
-        info.setPos(MARGIN, pos);
-        add(info);
-        pos = (int) info.bottom() + GAP;
+    // ---- 行布局辅助 ----
+
+    private float addSectionHeader(Component body, String text, float y) {
+        RenderedTextBlock block = PixelScene.renderTextBlock(text, 7);
+        block.hardlight(SECTION_COLOR);
+        block.setPos(MARGIN, y);
+        body.add(block);
+        return block.bottom() + GAP;
     }
 
-    private void addEditableField(String label, String fieldName, Object currentValue, Class<?> type) {
-        try {
-            Field field = findField(item.getClass(), fieldName);
-            if (field != null) {
-                editableFields.put(fieldName, field);
-                addFieldButton(label, fieldName, currentValue, type);
-            }
-        } catch (Exception e) {
-            // 字段不存在，跳过
-        }
+    private float addInfoRow(Component body, String label, String value, float y) {
+        RenderedTextBlock block = PixelScene.renderTextBlock(label + ":  " + value, 6);
+        block.maxWidth(layoutW - MARGIN * 2);
+        block.setPos(MARGIN, y);
+        body.add(block);
+        return block.bottom() + GAP;
     }
 
-    private void addEditableFieldSafe(String label, String fieldName, Class<?> type) {
-        try {
-            Field field = findField(item.getClass(), fieldName);
-            if (field != null) {
-                field.setAccessible(true);
-                Object currentValue = field.get(item);
-                editableFields.put(fieldName, field);
-                addFieldButton(label, fieldName, currentValue, type);
-            }
-        } catch (Exception e) {
-            // 字段不存在，跳过
-        }
+    @FunctionalInterface
+    private interface EditAction {
+        void edit(RedButton button);
     }
 
-    private void addConfigField(String key, Integer value) {
-        addFieldButton(key, "config." + key, value, Integer.class);
+    @FunctionalInterface
+    private interface BoolAction {
+        void apply(boolean value);
     }
 
-    private void addConfigField(String key, Boolean value) {
-        addFieldButton(key, "config." + key, value, Boolean.class);
-    }
+    /**
+     * 标签 + 编辑按钮的两栏行：左侧约 45% 显示标签，右侧约 55% 显示按钮。
+     * 这样长 label 不会把按钮挤掉，按钮也保有足够触摸面积。
+     */
+    private float addEditButtonRow(Component body, String label, String value, float y, EditAction edit) {
+        int colW = layoutW - MARGIN * 2;
+        int labelW = (int) Math.floor(colW * 0.45f);
+        int btnW = colW - labelW - GAP;
 
-    private void addConfigField(String key, Float value) {
-        addFieldButton(key, "config." + key, value, Float.class);
-    }
+        RenderedTextBlock lb = PixelScene.renderTextBlock(label, 6);
+        lb.maxWidth(labelW);
+        body.add(lb);
 
-    private void addConfigField(String key, String value) {
-        addFieldButton(key, "config." + key, value, String.class);
-    }
-
-    private void addFieldButton(String label, String fieldName, Object currentValue, Class<?> type) {
-        String buttonText = label + ": " + currentValue;
-        RedButton btn = new RedButton(buttonText) {
+        final RedButton[] holder = new RedButton[1];
+        RedButton btn = new RedButton(value, 6) {
             @Override
             protected void onClick() {
-                editField(fieldName, currentValue, type);
+                edit.edit(holder[0]);
             }
         };
-        btn.setRect(MARGIN, pos, WIDTH - MARGIN * 2, BTN_HEIGHT);
-        add(btn);
-        pos += BTN_HEIGHT + GAP;
+        holder[0] = btn;
+        btn.setRect(MARGIN + labelW + GAP, y, btnW, BTN_HEIGHT);
+        body.add(btn);
+
+        // 标签相对按钮垂直居中
+        float lbY = y + (BTN_HEIGHT - lb.height()) / 2f;
+        lb.setPos(MARGIN, lbY);
+
+        return btn.bottom() + GAP;
     }
 
-    private void editField(String fieldName, Object currentValue, Class<?> type) {
-        if (fieldName.startsWith("config.")) {
-            // 处理配置字段
-            String configKey = fieldName.substring(7);
-            editConfigField(configKey, currentValue, type);
-        } else {
-            // 处理普通字段
-            Field field = editableFields.get(fieldName);
-            if (field != null) {
-                editRegularField(field, currentValue, type);
+    private float addCheckBoxRow(Component body, String label, boolean initial, float y, BoolAction onChange) {
+        int colW = layoutW - MARGIN * 2;
+        CheckBox cb = new CheckBox(label) {
+            @Override
+            protected void onClick() {
+                super.onClick();
+                onChange.apply(checked());
             }
+        };
+        cb.checked(initial);
+        cb.setRect(MARGIN, y, colW, ROW_HEIGHT);
+        body.add(cb);
+        return cb.bottom() + GAP;
+    }
+
+    // ---- 字段适配 ----
+
+    private float addIntField(Component body, String label, String fieldName, int currentValue, float y) {
+        Field field = findField(item.getClass(), fieldName);
+        if (field == null) {
+            return y;
+        }
+        return addEditButtonRow(body, label, String.valueOf(currentValue), y,
+                btn -> editIntField(field, btn, label));
+    }
+
+    private float addIntFieldSafe(Component body, String label, String fieldName, float y) {
+        Field field = findField(item.getClass(), fieldName);
+        if (field == null) {
+            return y;
+        }
+        try {
+            field.setAccessible(true);
+            Object cur = field.get(item);
+            return addEditButtonRow(body, label, String.valueOf(cur), y,
+                    btn -> editIntField(field, btn, label));
+        } catch (Exception e) {
+            return y;
         }
     }
 
-    private void editRegularField(Field field, Object currentValue, Class<?> type) {
-        if (type == Integer.class) {
-            GameScene.show(new WndTextInput(
-                    "编辑 " + field.getName(),
-                    "当前值: " + currentValue,
-                    String.valueOf(currentValue),
-                    10,
-                    false,
-                    "确定",
-                    "取消"
-            ) {
-                @Override
-                public void onSelect(boolean positive, String text) {
-                    if (positive) {
-                        try {
-                            int value = Integer.parseInt(text);
-                            field.setAccessible(true);
-                            field.set(item, value);
-                            GLog.p("已将 " + field.getName() + " 设置为 " + value);
-                            hide();
-                            // 重新打开窗口以显示更新后的值
-                            GameScene.show(new WndItemEditor(item));
-                        } catch (Exception e) {
-                            GLog.w("设置失败: " + e.getMessage());
-                        }
-                    }
-                }
-            });
-        } else if (type == Boolean.class) {
-            boolean newValue = !((Boolean) currentValue);
+    private float addFloatField(Component body, String label, String fieldName, float currentValue, float y) {
+        Field field = findField(item.getClass(), fieldName);
+        if (field == null) {
+            return y;
+        }
+        return addEditButtonRow(body, label, String.valueOf(currentValue), y,
+                btn -> editFloatField(field, btn, label));
+    }
+
+    private float addBooleanField(Component body, String label, String fieldName, boolean currentValue, float y) {
+        Field field = findField(item.getClass(), fieldName);
+        if (field == null) {
+            return y;
+        }
+        return addCheckBoxRow(body, label, currentValue, y, val -> {
             try {
                 field.setAccessible(true);
-                field.set(item, newValue);
-                GLog.p("已将 " + field.getName() + " 设置为 " + newValue);
-                hide();
-                GameScene.show(new WndItemEditor(item));
+                field.set(item, val);
+                GLog.p("已将 " + label + " 设置为 " + (val ? "是" : "否"));
             } catch (Exception e) {
                 GLog.w("设置失败: " + e.getMessage());
             }
-        } else if (type == Float.class) {
-            GameScene.show(new WndTextInput(
-                    "编辑 " + field.getName(),
-                    "当前值: " + currentValue,
-                    String.valueOf(currentValue),
-                    20,
-                    false,
-                    "确定",
-                    "取消"
-            ) {
-                @Override
-                public void onSelect(boolean positive, String text) {
-                    if (positive) {
-                        try {
-                            float value = Float.parseFloat(text);
-                            field.setAccessible(true);
-                            field.set(item, value);
-                            GLog.p("已将 " + field.getName() + " 设置为 " + value);
-                            hide();
-                            GameScene.show(new WndItemEditor(item));
-                        } catch (Exception e) {
-                            GLog.w("设置失败: " + e.getMessage());
-                        }
-                    }
-                }
-            });
-        } else if (type == String.class) {
-            GameScene.show(new WndTextInput(
-                    "编辑 " + field.getName(),
-                    "当前值: " + currentValue,
-                    String.valueOf(currentValue),
-                    50,
-                    false,
-                    "确定",
-                    "取消"
-            ) {
-                @Override
-                public void onSelect(boolean positive, String text) {
-                    if (positive) {
-                        try {
-                            field.setAccessible(true);
-                            field.set(item, text);
-                            GLog.p("已将 " + field.getName() + " 设置为 " + text);
-                            hide();
-                            GameScene.show(new WndItemEditor(item));
-                        } catch (Exception e) {
-                            GLog.w("设置失败: " + e.getMessage());
-                        }
-                    }
-                }
-            });
-        }
+        });
     }
 
-    private void editConfigField(String configKey, Object currentValue, Class<?> type) {
-        // 尝试调用 setConfig 方法
+    private float addBooleanFieldSafe(Component body, String label, String fieldName, float y) {
+        Field field = findField(item.getClass(), fieldName);
+        if (field == null) {
+            return y;
+        }
         try {
-            Method setConfig = item.getClass().getMethod("setConfig", String.class, Object.class);
-            if (type == Integer.class) {
-                GameScene.show(new WndTextInput(
-                        "编辑 " + configKey,
-                        "当前值: " + currentValue,
-                        String.valueOf(currentValue),
-                        10,
-                        false,
-                        "确定",
-                        "取消"
-                ) {
-                    @Override
-                    public void onSelect(boolean positive, String text) {
-                        if (positive) {
-                            try {
-                                int value = Integer.parseInt(text);
-                                setConfig.invoke(item, configKey, value);
-                                GLog.p("已将 " + configKey + " 设置为 " + value);
-                                hide();
-                                GameScene.show(new WndItemEditor(item));
-                            } catch (Exception e) {
-                                GLog.w("设置失败: " + e.getMessage());
-                            }
-                        }
-                    }
-                });
-            } else if (type == Boolean.class) {
-                boolean newValue = !((Boolean) currentValue);
+            field.setAccessible(true);
+            Object cur = field.get(item);
+            boolean on = cur instanceof Boolean ? (Boolean) cur : false;
+            return addCheckBoxRow(body, label, on, y, val -> {
                 try {
-                    setConfig.invoke(item, configKey, newValue);
-                    GLog.p("已将 " + configKey + " 设置为 " + newValue);
-                    hide();
-                    GameScene.show(new WndItemEditor(item));
+                    field.setAccessible(true);
+                    field.set(item, val);
+                    GLog.p("已将 " + label + " 设置为 " + (val ? "是" : "否"));
                 } catch (Exception e) {
                     GLog.w("设置失败: " + e.getMessage());
                 }
-            } else if (type == Float.class) {
-                GameScene.show(new WndTextInput(
-                        "编辑 " + configKey,
-                        "当前值: " + currentValue,
-                        String.valueOf(currentValue),
-                        20,
-                        false,
-                        "确定",
-                        "取消"
-                ) {
-                    @Override
-                    public void onSelect(boolean positive, String text) {
-                        if (positive) {
-                            try {
-                                float value = Float.parseFloat(text);
-                                setConfig.invoke(item, configKey, value);
-                                GLog.p("已将 " + configKey + " 设置为 " + value);
-                                hide();
-                                GameScene.show(new WndItemEditor(item));
-                            } catch (Exception e) {
-                                GLog.w("设置失败: " + e.getMessage());
-                            }
-                        }
-                    }
-                });
-            } else if (type == String.class) {
-                GameScene.show(new WndTextInput(
-                        "编辑 " + configKey,
-                        "当前值: " + currentValue,
-                        String.valueOf(currentValue),
-                        50,
-                        false,
-                        "确定",
-                        "取消"
-                ) {
-                    @Override
-                    public void onSelect(boolean positive, String text) {
-                        if (positive) {
-                            try {
-                                setConfig.invoke(item, configKey, text);
-                                GLog.p("已将 " + configKey + " 设置为 " + text);
-                                hide();
-                                GameScene.show(new WndItemEditor(item));
-                            } catch (Exception e) {
-                                GLog.w("设置失败: " + e.getMessage());
-                            }
-                        }
-                    }
-                });
-            }
+            });
         } catch (Exception e) {
-            GLog.w("该物品不支持 setConfig 方法");
+            return y;
         }
     }
 
-    private void addSTRReqOverrideButton(Weapon weapon) {
-        // 尝试查找或创建 strReqOverride 字段
-        Field overrideField = findField(weapon.getClass(), "strReqOverride");
-        int currentSTRReq = weapon.STRReq();
-        
-        String buttonText = "力量需求覆盖: ";
-        if (overrideField != null) {
-            try {
-                overrideField.setAccessible(true);
-                Object overrideValue = overrideField.get(weapon);
-                if (overrideValue != null) {
-                    buttonText += overrideValue + " (覆盖)";
-                } else {
-                    buttonText += currentSTRReq + " (默认)";
-                }
-            } catch (Exception e) {
-                buttonText += currentSTRReq;
-            }
-        } else {
-            buttonText += currentSTRReq + " (点击设置覆盖)";
-        }
-        
-        RedButton btn = new RedButton(buttonText) {
-            @Override
-            protected void onClick() {
-                editSTRReqOverride(weapon, overrideField, currentSTRReq);
-            }
-        };
-        btn.setRect(MARGIN, pos, WIDTH - MARGIN * 2, BTN_HEIGHT);
-        add(btn);
-        pos += BTN_HEIGHT + GAP;
+    private float addConfigIntField(Component body, String key, int currentValue, float y) {
+        return addEditButtonRow(body, key, String.valueOf(currentValue), y,
+                btn -> editConfigInt(key, btn));
     }
 
-    private void editSTRReqOverride(Weapon weapon, Field overrideField, int currentValue) {
-        // 尝试使用配置系统或直接添加字段
+    private float addConfigBoolField(Component body, String key, boolean currentValue, float y) {
+        return addCheckBoxRow(body, key, currentValue, y,
+                val -> setConfig(key, val, "已将 " + key + " 设置为 " + (val ? "是" : "否")));
+    }
+
+    private float addConfigFloatField(Component body, String key, float currentValue, float y) {
+        return addEditButtonRow(body, key, String.valueOf(currentValue), y,
+                btn -> editConfigFloat(key, btn));
+    }
+
+    private float addConfigStringField(Component body, String key, String currentValue, float y) {
+        return addEditButtonRow(body, key, currentValue, y,
+                btn -> editConfigString(key, btn));
+    }
+
+    // ---- 输入对话 ----
+
+    private void editIntField(Field field, RedButton btn, String label) {
+        Object cur;
         try {
-            // 先尝试使用配置系统
-            Method setConfig = weapon.getClass().getMethod("setConfig", String.class, Object.class);
-            Method getConfig = weapon.getClass().getMethod("getConfig");
-            Object config = getConfig.invoke(weapon);
-            
-            int currentOverride = currentValue;
-            if (config instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> configMap = (Map<String, Object>) config;
-                if (configMap.containsKey("strReqOverride")) {
-                    currentOverride = ((Number) configMap.get("strReqOverride")).intValue();
+            field.setAccessible(true);
+            cur = field.get(item);
+        } catch (Exception e) {
+            cur = 0;
+        }
+        final Object curRef = cur;
+        GameScene.show(new WndTextInput("编辑 " + label, "当前值: " + curRef, String.valueOf(curRef),
+                10, false, "确定", "取消") {
+            @Override
+            public void onSelect(boolean positive, String text) {
+                if (!positive) {
+                    return;
+                }
+                try {
+                    int v = Integer.parseInt(text);
+                    field.setAccessible(true);
+                    field.set(item, v);
+                    btn.text(String.valueOf(v));
+                    GLog.p("已将 " + label + " 设置为 " + v);
+                } catch (Exception e) {
+                    GLog.w("设置失败: " + e.getMessage());
                 }
             }
-            
-            GameScene.show(new WndTextInput(
-                    "编辑力量需求覆盖",
-                    "当前值: " + currentOverride + "\n(设置为 -1 使用默认计算值)",
-                    String.valueOf(currentOverride),
-                    10,
-                    false,
-                    "确定",
-                    "取消"
-            ) {
-                @Override
-                public void onSelect(boolean positive, String text) {
-                    if (positive) {
-                        try {
-                            int value = Integer.parseInt(text);
-                            setConfig.invoke(weapon, "strReqOverride", value == -1 ? null : value);
-                            GLog.p("已将力量需求覆盖设置为 " + (value == -1 ? "默认" : value));
-                            hide();
-                            GameScene.show(new WndItemEditor(weapon));
-                        } catch (Exception e) {
-                            GLog.w("设置失败: " + e.getMessage());
-                        }
-                    }
-                }
-            });
-            return;
+        });
+    }
+
+    private void editFloatField(Field field, RedButton btn, String label) {
+        Object cur;
+        try {
+            field.setAccessible(true);
+            cur = field.get(item);
         } catch (Exception e) {
-            // 配置系统不可用，尝试直接修改字段
+            cur = 0f;
         }
-        
-        // 如果配置系统不可用，尝试直接修改字段（需要字段已存在）
-        if (overrideField != null) {
-            GameScene.show(new WndTextInput(
-                    "编辑力量需求覆盖",
-                    "当前值: " + currentValue + "\n(设置为 -1 使用默认计算值)",
-                    String.valueOf(currentValue),
-                    10,
-                    false,
-                    "确定",
-                    "取消"
-            ) {
-                @Override
-                public void onSelect(boolean positive, String text) {
-                    if (positive) {
-                        try {
-                            int value = Integer.parseInt(text);
-                            overrideField.setAccessible(true);
-                            overrideField.set(weapon, value == -1 ? null : value);
-                            GLog.p("已将力量需求覆盖设置为 " + (value == -1 ? "默认" : value));
-                            hide();
-                            GameScene.show(new WndItemEditor(weapon));
-                        } catch (Exception e) {
-                            GLog.w("设置失败: " + e.getMessage());
-                        }
-                    }
+        final Object curRef = cur;
+        GameScene.show(new WndTextInput("编辑 " + label, "当前值: " + curRef, String.valueOf(curRef),
+                20, false, "确定", "取消") {
+            @Override
+            public void onSelect(boolean positive, String text) {
+                if (!positive) {
+                    return;
                 }
-            });
-        } else {
-            // 如果字段不存在，提示用户修改 tier 来间接影响 STRReq
-            GLog.w("该武器类型不支持直接覆盖力量需求。请通过修改 Tier 来间接影响力量需求。");
+                try {
+                    float v = Float.parseFloat(text);
+                    field.setAccessible(true);
+                    field.set(item, v);
+                    btn.text(String.valueOf(v));
+                    GLog.p("已将 " + label + " 设置为 " + v);
+                } catch (Exception e) {
+                    GLog.w("设置失败: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void editConfigInt(String key, RedButton btn) {
+        Object cur = configValues.get(key);
+        GameScene.show(new WndTextInput("编辑 " + key, "当前值: " + cur, String.valueOf(cur),
+                10, false, "确定", "取消") {
+            @Override
+            public void onSelect(boolean positive, String text) {
+                if (!positive) {
+                    return;
+                }
+                try {
+                    int v = Integer.parseInt(text);
+                    setConfig(key, v, "已将 " + key + " 设置为 " + v);
+                    btn.text(String.valueOf(v));
+                } catch (Exception e) {
+                    GLog.w("设置失败: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void editConfigFloat(String key, RedButton btn) {
+        Object cur = configValues.get(key);
+        GameScene.show(new WndTextInput("编辑 " + key, "当前值: " + cur, String.valueOf(cur),
+                20, false, "确定", "取消") {
+            @Override
+            public void onSelect(boolean positive, String text) {
+                if (!positive) {
+                    return;
+                }
+                try {
+                    float v = Float.parseFloat(text);
+                    setConfig(key, v, "已将 " + key + " 设置为 " + v);
+                    btn.text(String.valueOf(v));
+                } catch (Exception e) {
+                    GLog.w("设置失败: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void editConfigString(String key, RedButton btn) {
+        Object cur = configValues.get(key);
+        GameScene.show(new WndTextInput("编辑 " + key, "当前值: " + cur, String.valueOf(cur),
+                50, false, "确定", "取消") {
+            @Override
+            public void onSelect(boolean positive, String text) {
+                if (!positive) {
+                    return;
+                }
+                setConfig(key, text, "已将 " + key + " 设置为 " + text);
+                btn.text(text);
+            }
+        });
+    }
+
+    private void setConfig(String key, Object value, String successMsg) {
+        try {
+            Method setConfig = item.getClass().getMethod("setConfig", String.class, Object.class);
+            setConfig.invoke(item, key, value);
+            configValues.put(key, value);
+            GLog.p(successMsg);
+        } catch (NoSuchMethodException e) {
+            GLog.w("该物品不支持 setConfig 方法");
+        } catch (Exception e) {
+            GLog.w("设置失败: " + e.getMessage());
         }
     }
 
-    private Field findField(Class<?> clazz, String fieldName) {
+    private static Field findField(Class<?> clazz, String fieldName) {
         while (clazz != null) {
             try {
-                Field field = clazz.getDeclaredField(fieldName);
-                return field;
+                return clazz.getDeclaredField(fieldName);
             } catch (NoSuchFieldException e) {
                 clazz = clazz.getSuperclass();
             }
         }
         return null;
     }
-}
 
+    /** 滚动条默认会吞掉指针事件，下方的按钮/CheckBox 因此点不到；让事件继续向下传递。 */
+    private static class InteractiveScrollPane extends ScrollPane {
+        InteractiveScrollPane(Component content) {
+            super(content);
+            if (controller != null) {
+                controller.blockLevel = PointerArea.NEVER_BLOCK;
+            }
+        }
+    }
+}
