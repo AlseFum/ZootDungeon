@@ -45,6 +45,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.items.cheat.CellEntityPlacer;
+import com.zootdungeon.items.cheat.MinePlacer;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.cheat.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
@@ -164,6 +165,7 @@ public class DebugSupply extends Supply {
 
         List<Supplier<Item>> cellEntities = new ArrayList<>();
         cellEntities.add(() -> create(CellEntityPlacer.class, 1));
+        cellEntities.add(() -> create(MinePlacer.class, 1));
         categories.put(CAT_CELL_ENTITIES, cellEntities);
 
         List<Supplier<Item>> buffTests = new ArrayList<>();
