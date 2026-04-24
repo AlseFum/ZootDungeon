@@ -1,0 +1,28 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+// buildSrc 是一个独立的小构建，和主工程无关；这里跟随根工程使用 Java 21。
+// 主构建里用 appJavaCompatibility 管版本，但那个 ext 在 buildSrc 不可见，所以显式写。
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JSON 解析。buildSrc 独立依赖，不会污染 core 的运行时 classpath。
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+gradlePlugin {
+    plugins {
+        atlasCodegen {
+            id = 'com.zootdungeon.atlas-codegen'
+            implementationClass = 'com.zootdungeon.codegen.AtlasCodegenPlugin'
+        }
+    }
+}

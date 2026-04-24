@@ -5,6 +5,8 @@ import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
@@ -16,6 +18,7 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.MobSprite;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.ui.BossHealthBar;
+import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
@@ -33,6 +36,7 @@ public class SkullShatterer extends Mob {
 
     private final SkullShattererWeapon weapon = new SkullShattererWeapon();
     private float speechCooldown = 0f;
+    private boolean hasSpokenNotice = false;
 
     {
         spriteClass = Sprite.class;
@@ -49,7 +53,11 @@ public class SkullShatterer extends Mob {
 
     @Override
     public int damageRoll() {
-        return weapon.damageRoll(this);
+        int base = weapon.damageRoll(this);
+        if (buff(RampageBuff.class) != null) {
+            base = (int) (base * 1.5f);
+        }
+        return base;
     }
 
     @Override
@@ -60,6 +68,16 @@ public class SkullShatterer extends Mob {
     @Override
     public int drRoll() {
         return super.drRoll() + Random.NormalIntRange(0, 3);
+    }
+
+    @Override
+    public void damage(int dmg, Object src) {
+        super.damage(dmg, src);
+        if (this.isAlive() && HP <= HT / 2) {
+            if (buff(RampageBuff.class) == null) {
+                Buff.affect(this, RampageBuff.class);
+            }
+        }
     }
 
     @Override
@@ -75,7 +93,10 @@ public class SkullShatterer extends Mob {
     @Override
     public void notice() {
         super.notice();
-        sayOnce(Messages.get(this, "notice"), true);
+        if (!hasSpokenNotice) {
+            hasSpokenNotice = true;
+            sayOnce(Messages.get(this, "notice"), true);
+        }
         if (!BossHealthBar.isAssigned()) {
             BossHealthBar.assignBoss(this);
             Dungeon.level.seal();
@@ -105,7 +126,7 @@ public class SkullShatterer extends Mob {
 
     public void onZapComplete(int cell) {
         sayOnce(Messages.get(this, "grenade"), false);
-        weapon.doGrenadeAt(this, cell);
+        weapon.plantGrenadeAt(this, cell);
         weapon.clearGrenadeState();
         spend(TICK);
         next();
@@ -145,18 +166,18 @@ public class SkullShatterer extends Mob {
             }
 
             if (HP > 0 && HT > 0 && HP <= HT / 3) {
-                sayOnce("别想逃。", false);
+                sayOnce(Messages.get(this, "escape"), false);
             }
 
             // 远程模式、冷却就绪、身边无友军、且目标不在邻格：榴弹（有动画则等 zap 回调）
             if (weapon.canFireRanged() && !hasAllyInNeighbour8() && !Dungeon.level.adjacent(pos, enemy.pos)) {
-                sayOnce("锁定。", false);
+                sayOnce(Messages.get(this, "lock"), false);
                 Invisibility.dispel(SkullShatterer.this);
                 if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
                     sprite.zap(enemy.pos);
                     return false;
                 }
-                weapon.doGrenadeAt(SkullShatterer.this, enemy.pos);
+                weapon.plantGrenadeAt(SkullShatterer.this, enemy.pos);
                 weapon.clearGrenadeState();
                 spend(TICK);
                 return true;
@@ -206,12 +227,40 @@ public class SkullShatterer extends Mob {
     private void sayOnce(String line, boolean important) {
         if (line == null || line.isEmpty()) return;
         if (!important && speechCooldown > 0f) return;
-        // cooldown avoids spamming when boss is repeatedly acting/triggering.
         speechCooldown = important ? 4f : 2f;
         if (sprite != null) {
             sprite.showStatus(CharSprite.NEUTRAL, line);
         }
-        // Also log it so players on small screens don't miss it.
         GLog.n(Messages.format("[碎骨] %s", line));
+    }
+
+    /** 低血量狂暴Buff：HP低于50%时激活，伤害提升50%，永久持续（死亡时移除）。 */
+    public static class RampageBuff extends FlavourBuff {
+        {
+            type = buffType.NEGATIVE;
+            announced = true;
+        }
+
+        @Override
+        public boolean act() {
+            // permanent buff: do not detach automatically
+            spend(TICK);
+            return true;
+        }
+
+        @Override
+        public int icon() {
+            return BuffIndicator.RAGE;
+        }
+
+        @Override
+        public float iconFadePercent() {
+            return 0;
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(this, "desc");
+        }
     }
 }

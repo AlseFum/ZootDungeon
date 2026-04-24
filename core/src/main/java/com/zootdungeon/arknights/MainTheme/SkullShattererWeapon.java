@@ -8,12 +8,15 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.DefenseDown;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.buffs.Vulnerable;
+import com.zootdungeon.actors.blobs.Blob;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.effects.BlobEmitter;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
@@ -39,7 +42,6 @@ import java.util.Set;
 public class SkullShattererWeapon extends MeleeWeapon {
 
     static {
-        // gunweapon.png 每行 14 格，第二行第10列 = index 1*14+9 = 23
         SpriteRegistry.texture("sheet.cola.gunweapon", "cola/gunweapon.png")
                 .grid(16, 16)
                 .span(23).label("shatteredweapon");
@@ -76,8 +78,26 @@ public class SkullShattererWeapon extends MeleeWeapon {
         grenadeCooldown = GRENADE_COOLDOWN_TURNS;
     }
 
-    public void doGrenadeAt(Char owner, int cell) {
-        PathFinder.buildDistanceMap(cell, BArray.not(Dungeon.level.solid, null), 2);
+    /**
+     * Plants a charged grenade at the target cell. After 1 turn it detonates.
+     * @param owner The char who owns/controls the weapon.
+     * @param cell  The center cell for the 2x2 blast.
+     * @return The planted blob, or null if failed.
+     */
+    public Blob plantGrenadeAt(Char owner, int cell) {
+        if (Dungeon.level == null) return null;
+        int sd = Dungeon.scalingDepth();
+        int dmg = Random.NormalIntRange(6 + sd, 11 + sd + sd / 2);
+        // 2x2 area: seed center and one adjacent cell so detonation hits 2x2
+        SkullShattererWeapon.GrenadeWarningBlob.plant(Dungeon.level, cell, dmg, owner);
+        return Dungeon.level.blobs.get(GrenadeWarningBlob.class);
+    }
+
+    /**
+     * Immediate detonation helper (used by player weapon).
+     */
+    public void doGrenadeAt(Level level, Char owner, int cell) {
+        PathFinder.buildDistanceMap(cell, BArray.not(level.solid, null), 1);
         int sd = Dungeon.scalingDepth();
         int dmg = Random.NormalIntRange(6 + sd, 11 + sd + sd / 2);
         for (Char ch : Select.chars().all()
@@ -241,16 +261,6 @@ public class SkullShattererWeapon extends MeleeWeapon {
         public float iconFadePercent() {
             return Math.max(0, (DURATION - visualcooldown()) / DURATION);
         }
-
-        @Override
-        public String name() {
-            return "碎甲";
-        }
-
-        @Override
-        public String desc() {
-            return "目标陷入碎甲状态：更容易受到伤害，且护甲骰减半。";
-        }
     }
 
     /** 瞄准后挂上，持续 1 回合，结束时自动发射榴弹。需比英雄先行动，否则同时间下英雄会先 ready() 导致卡顿。 */
@@ -277,7 +287,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
                 SkullShattererWeapon sw = weaponOf(h);
                 if (sw != null) {
                     Sample.INSTANCE.play(Assets.Sounds.BLAST);
-                    sw.doGrenadeAt(h, targetCell);
+                    sw.plantGrenadeAt(h, targetCell);
                     sw.clearGrenadeState();
                     Item.updateQuickslot();
                     h.spend(Actor.TICK);
@@ -351,5 +361,95 @@ public class SkullShattererWeapon extends MeleeWeapon {
     public boolean doUnequip(Hero hero, boolean collect, boolean single) {
         Buff.detach(hero, GrenadeCooldownBuff.class);
         return super.doUnequip(hero, collect, single);
+    }
+
+    /**
+     * 榴弹蓄力警告 Blob：
+     * 种植时 amount=2（存活 2 个 act 回合），
+     * 第 2 个回合结束时在中心格触发 2x2 范围爆炸，然后自动清除。
+     */
+    public static class GrenadeWarningBlob extends Blob {
+
+        private int storedDamage;
+        private int grenadeOwnerId = -1;
+
+        public static final int LIFETIME = 2;
+
+        public static void plant(Level level, int cell, int damage, Char owner) {
+            GrenadeWarningBlob blob = (GrenadeWarningBlob) level.blobs.get(GrenadeWarningBlob.class);
+            if (blob == null) {
+                blob = new GrenadeWarningBlob();
+                level.blobs.put(GrenadeWarningBlob.class, blob);
+            }
+            blob.storedDamage = damage;
+            blob.grenadeOwnerId = owner.id();
+            blob.seed(level, cell, LIFETIME);
+            if (blob.cur == null) {
+                blob.cur = new int[level.length()];
+                blob.off = new int[level.length()];
+            }
+            Actor.add(blob);
+
+            if (level == Dungeon.level && level.heroFOV[cell]) {
+                CellEmitter.get(cell).burst(BlastParticle.FACTORY, 6);
+            }
+        }
+
+        @Override
+        protected void evolve() {
+            int cell;
+            for (int i = area.left - 1; i <= area.right; i++) {
+                for (int j = area.top - 1; j <= area.bottom; j++) {
+                    cell = i + j * Dungeon.level.width();
+                    if (cur[cell] > 0) {
+                        off[cell] = cur[cell] - 1;
+                        volume += off[cell];
+                        if (off[cell] <= 0) {
+                            detonate(i + j * Dungeon.level.width());
+                        }
+                    }
+                }
+            }
+        }
+
+        private void detonate(int centerCell) {
+            Char owner = (Char) Actor.findById(grenadeOwnerId);
+            if (owner == null) owner = Dungeon.hero;
+
+            int width = Dungeon.level.width();
+            ArrayList<Integer> affectedCells = new ArrayList<>();
+            affectedCells.add(centerCell);
+            if (centerCell % width > 0) affectedCells.add(centerCell - 1);
+            if (centerCell % width < width - 1) affectedCells.add(centerCell + 1);
+            if (centerCell >= width) affectedCells.add(centerCell - width);
+            if (centerCell < Dungeon.level.length() - width) affectedCells.add(centerCell + width);
+
+            for (int cell : affectedCells) {
+                if (cell < 0 || cell >= Dungeon.level.length()) continue;
+                if (Dungeon.level.solid[cell]) continue;
+
+                Char ch = Actor.findChar(cell);
+                if (ch != null && (owner == null || ch != owner)) {
+                    int dmg = storedDamage - ch.drRoll();
+                    if (dmg > 0) ch.damage(dmg, owner);
+                    Buff.affect(ch, ShatterDebuff.class, ShatterDebuff.DURATION);
+                }
+            }
+
+            if (Dungeon.level.heroFOV[centerCell]) {
+                CellEmitter.center(centerCell).burst(BlastParticle.FACTORY, 12);
+            }
+        }
+
+        @Override
+        public void use(BlobEmitter emitter) {
+            super.use(emitter);
+            emitter.pour(BlastParticle.FACTORY, 0.08f);
+        }
+
+        @Override
+        public String tileDesc() {
+            return "";
+        }
     }
 }
