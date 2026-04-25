@@ -419,6 +419,32 @@ public class WndGeneral extends Window {
 					x += w + GAP;
 				}
 				bodyY = maxBottom + GAP;
+			} else if (seg instanceof InputSeg) {
+				InputSeg inp = (InputSeg) seg;
+				RedButton btn = new RedButton(inp.label) {
+					@Override
+					protected void onClick() {
+						GameScene.show(new WndTextInput(
+								inp.label,
+								null,
+								inp.initialValue,
+								inp.maxLength,
+								false,
+								"确定",
+								"取消") {
+							@Override
+							public void onSelect(boolean positive, String text) {
+								if (positive && inp.onInput != null) {
+									inp.onInput.accept(text.trim());
+								}
+							}
+						});
+					}
+				};
+				btn.setRect(MARGIN, bodyY, colW, BTN_HEIGHT);
+				body.add(btn);
+				bodyY = btn.bottom() + GAP;
+				maxRight = Math.max(maxRight, btn.right());
 			}
 		}
 
@@ -573,6 +599,20 @@ public class WndGeneral extends Window {
 		}
 	}
 
+	public static class InputSeg implements PaneSegment {
+		public final String label;
+		public final String initialValue;
+		public final int maxLength;
+		public final Consumer<String> onInput;
+
+		public InputSeg(String label, String initialValue, int maxLength, Consumer<String> onInput) {
+			this.label = label;
+			this.initialValue = initialValue;
+			this.maxLength = maxLength;
+			this.onInput = onInput;
+		}
+	}
+
 	public static class HCell {
 		public final boolean button;
 		public final String text;
@@ -645,6 +685,18 @@ public class WndGeneral extends Window {
 		public PaneBuilder button(String text, Runnable onClick) {
 			this.buttonText = text;
 			this.onButton = onClick;
+			return this;
+		}
+
+		/**
+		 * 点击后弹出输入窗口（{@link WndTextInput}）。
+		 * @param label      按钮文字
+		 * @param initialVal 输入框初始值
+		 * @param maxLen     最大字符数
+		 * @param onInput    确认后回调；参数为输入文本（已 trim）
+		 */
+		public PaneBuilder inputRow(String label, String initialVal, int maxLen, Consumer<String> onInput) {
+			segments.add(new InputSeg(label, initialVal, maxLen, onInput));
 			return this;
 		}
 	}

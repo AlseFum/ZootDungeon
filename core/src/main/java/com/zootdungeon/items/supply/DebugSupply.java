@@ -58,7 +58,7 @@ import com.zootdungeon.items.cheat.ThrowingWeaponBox;
 import com.zootdungeon.items.cheat.WandBox;
 import com.zootdungeon.items.cheat.BombBox;
 import com.zootdungeon.items.cheat.StoneOfDungeonTravel;
-import com.zootdungeon.items.cheat.StoneOfLevelSelect;
+import com.zootdungeon.items.cheat.LevelConsole;
 import com.zootdungeon.items.TengusMask;
 import com.zootdungeon.items.KingsCrown;
 
@@ -97,9 +97,7 @@ public class DebugSupply extends Supply {
         desc = Messages.get(DebugSupply.class, "desc");
 
 
-        List<Supplier<Item>> stones = new ArrayList<>();
-        stones.add(() -> create(StoneOfLevelSelect.class, 50));
-        categories.put(CAT_STONES, stones);
+        categories.put(CAT_STONES, List.of());
 
         List<Supplier<Item>> standardSupply = new ArrayList<>();
         standardSupply.add(() -> create(RhodesStandardWeaponSupply.class, 1));
@@ -110,6 +108,7 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(ItemRemover.class));
         cheat.add(() -> create(ItemEditor.class, 1));
         cheat.add(() -> create(StoneOfDungeonTravel.class, 1));
+        cheat.add(() -> create(LevelConsole.class, 1));
         cheat.add(() -> create(Panacea.class, 1));
         cheat.add(() -> create(Codex.class, 1));
         cheat.add(() -> create(RedStone.class, 1));

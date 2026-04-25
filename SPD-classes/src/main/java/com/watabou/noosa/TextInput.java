@@ -195,6 +195,14 @@ public class TextInput extends Component {
 		textField.setCursorPosition(cursorIdx + contents.length());
 	}
 
+	/** 重新请求键盘焦点并弹出虚拟键盘。用于外部点击触发聚焦（如 InteractiveScrollPane NEVER_BLOCK 场景）。 */
+	public void requestFocus() {
+		if (textField != null && stage != null) {
+			stage.setKeyboardFocus(textField);
+			Game.platform.setOnscreenKeyboardVisible(true);
+		}
+	}
+
 	@Override
 	protected void layout() {
 		super.layout();

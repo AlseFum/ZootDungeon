@@ -63,8 +63,6 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.SparseArray;
-import com.zootdungeon.levels.LevelGraph;
-import com.zootdungeon.levels.LevelGraph.LevelNode;
 
 public class Dungeon {
 
@@ -236,12 +234,8 @@ public class Dungeon {
         depth = 1;
         branch = 0;
         generatedLevels.clear();
-        // initialize graph-based view of the dungeon layout
-        LevelGraph.reset();
-        LevelGraph.initMainPath(LevelGraph.DEFAULT_MAIN_MAX_DEPTH);
-        LevelGraph.markGenerated(depth, branch);
-        LevelNode startNode = LevelGraph.forDepthBranch(depth, branch);
-        currentLevelId = startNode != null ? startNode.id : null;
+        generatedLevels.add(depth + 1000 * branch);
+        currentLevelId = depth + "_" + branch;
 
         gold = 0;
         energy = 0;
@@ -294,8 +288,6 @@ public class Dungeon {
             if (!generatedLevels.contains(legacyCode)) {
                 generatedLevels.add(legacyCode);
             }
-            // keep graph in sync
-            LevelGraph.markGenerated(depth, branch);
 
             if (depth > Statistics.deepestFloor && branch == 0) {
                 Statistics.deepestFloor = depth;
@@ -311,20 +303,6 @@ public class Dungeon {
         Statistics.qualifiedForBossRemainsBadge = false;
 
         level.create();
-
-        // If this is a special side-level, wire its regular exit back to
-        // the parent floor recorded in the level graph node.
-        LevelNode node = LevelGraph.forDepthBranch(depth, branch);
-        if (node != null && node.special) {
-            LevelTransition exit = level.getTransition(LevelTransition.Type.REGULAR_EXIT);
-            if (exit != null) {
-                if (node.parentDepth != 0 || node.parentBranch != 0) {
-                    exit.destDepth = node.parentDepth;
-                    exit.destBranch = node.parentBranch;
-                    exit.destType = LevelTransition.Type.REGULAR_ENTRANCE;
-                }
-            }
-        }
 
         if (branch == 0) {
             Statistics.qualifiedForNoKilling = !bossLevel();
@@ -414,10 +392,7 @@ public class Dungeon {
         Dungeon.level = level;
         hero.pos = pos;
 
-        // keep graph-based metadata in sync with engine-level depth/branch
-        LevelGraph.markGenerated(depth, branch);
-        LevelNode node = LevelGraph.forDepthBranch(depth, branch);
-        currentLevelId = node != null ? node.id : null;
+        currentLevelId = depth + "_" + branch;
 
         if (hero.buff(AscensionChallenge.class) != null) {
             hero.buff(AscensionChallenge.class).onLevelSwitch();
@@ -774,17 +749,11 @@ public class Dungeon {
         depth = bundle.getInt(DEPTH);
         branch = bundle.getInt(BRANCH);
 
-        // rebuild graph-based view from legacy data
-        LevelGraph.reset();
-        LevelGraph.initMainPath(LevelGraph.DEFAULT_MAIN_MAX_DEPTH);
-        LevelGraph.initFromGeneratedCodes(generatedLevels);
-
         String savedId = bundle.getString(CURRENT_LEVEL_ID);
         if (savedId != null && !savedId.isEmpty()) {
             currentLevelId = savedId;
         } else {
-            LevelNode node = LevelGraph.forDepthBranch(depth, branch);
-            currentLevelId = node != null ? node.id : null;
+            currentLevelId = depth + "_" + branch;
         }
 
         gold = bundle.getInt(GOLD);

@@ -116,13 +116,6 @@ public class RedStone extends Item {
                         GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
                     }
             ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_CLAIRVOYANCE),
-                    "选层符文石：在已生成楼层间跳转",
-                    () -> {
-                        selectedStone = StoneOfLevelSelect.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
                     new ItemSprite(ItemSpriteSheet.STONE_SLEEP),
                     "沉睡符文石：使目标陷入沉睡",
                     () -> {
