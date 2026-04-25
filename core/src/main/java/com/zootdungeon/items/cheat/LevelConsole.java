@@ -1,38 +1,34 @@
 package com.zootdungeon.items.cheat;
 
+import java.io.IOException;
+
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.GamesInProgress;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
-import com.zootdungeon.actors.buffs.Buff;
-import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.features.LevelTransition;
-import com.zootdungeon.messages.Messages;
+import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.scenes.InterlevelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.SpriteRegistry;
-import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndGeneral;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
 //Not finished
 public class LevelConsole extends Item {
 
     static {
-        SpriteRegistry.texture("sheet.cola.skullshatter", "cola/skullshatter.png")
-                .grid(16, 16)
-                .label("skull_shatter");
+        SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
+                .setXY("debug_bag", 0, 0, 32, 32);
     }
 
     {
-        image = SpriteRegistry.byLabel("skull_shatter");
-        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
+        image = SpriteRegistry.byLabel("debug_bag");
         stackable = false;
         unique = true;
         defaultAction = AC_OPEN;
@@ -68,16 +64,27 @@ public class LevelConsole extends Item {
     }
 
     private void openConsole() {
-        if (!Dungeon.interfloorTeleportAllowed()) {
-            GLog.w(Messages.get(ScrollOfTeleportation.class, "no_tele"));
-            return;
-        }
+        //This is cheat tool, so we don't need to check
 
         inputDepth = Dungeon.depth;
         inputBranch = Dungeon.branch;
 
         WndGeneral.make()
             .title("关卡控制台")
+            .tab("快速旅行", pane -> {
+                pane.line("当前楼层: depth=" + Dungeon.depth + ", branch=" + Dungeon.branch);
+                pane.line("");
+                pane.hrow(r -> {
+                    r.button("↑1", () -> quickTravel(1));
+                    r.button("↑5", () -> quickTravel(5));
+                });
+                pane.hrow(r -> {
+                    r.button("↓1", () -> quickTravel(-1));
+                    r.button("↓5", () -> quickTravel(-5));
+                });
+                pane.line("");
+                pane.line("提示: 只在已生成的关卡间跳转");
+            })
             .tab("已生成关卡", pane -> {
                 int size = Dungeon.generatedLevels.size();
                 if (size == 0) {
@@ -96,10 +103,10 @@ public class LevelConsole extends Item {
             .tab("自定义生成", pane -> {
                 pane.line("填写 depth / branch，选择关卡类型后点击\"前往\"：");
 
-                pane.inputRow("depth:", String.valueOf(inputDepth), 5, text -> {
+                pane.inputRow("depth:"+String.valueOf(inputDepth), String.valueOf(inputDepth), 5, text -> {
                     try { inputDepth = Integer.parseInt(text.trim()); } catch (NumberFormatException ignored) {}
                 });
-                pane.inputRow("branch:", String.valueOf(inputBranch), 5, text -> {
+                pane.inputRow("branch:"+String.valueOf(inputBranch), String.valueOf(inputBranch), 5, text -> {
                     try { inputBranch = Integer.parseInt(text.trim()); } catch (NumberFormatException ignored) {}
                 });
 
@@ -115,18 +122,61 @@ public class LevelConsole extends Item {
     }
 
     private void teleportTo(int depth, int branch, Class<? extends Level> levelClass) {
-        Buff.affect(Dungeon.hero, Invisibility.class, 2f);
-        Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+        System.out.println("teleportTo: depth=" + depth + ", branch=" + branch);
 
-        Dungeon.depth = depth;
-        Dungeon.branch = branch;
+        // For branch != 0, pre-generate and save the level
+        // (InterlevelScene doesn't handle non-zero branch level generation)
+        if (branch != 0) {
+            if (!Dungeon.levelHasBeenGenerated(depth, branch)) {
+                Level newLevel;
+                if (levelClass != null) {
+                    try {
+                        newLevel = levelClass.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) {
+                        newLevel = Theme.createLevel(depth, branch);
+                    }
+                } else {
+                    newLevel = Theme.createLevel(depth, branch);
+                }
 
+                int code = depth + 1000 * branch;
+                if (!Dungeon.generatedLevels.contains(code)) {
+                    Dungeon.generatedLevels.add(code);
+                }
+                newLevel.create();
+
+                // Save the new level to slot before RETURN mode loads it
+                try {
+                    Dungeon.depth = depth;
+                    Dungeon.branch = branch;
+                    Dungeon.level = newLevel;
+                    Dungeon.saveLevel(GamesInProgress.curSlot);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        Level.beforeTransition();
         InterlevelScene.mode = InterlevelScene.Mode.RETURN;
         InterlevelScene.returnDepth = depth;
         InterlevelScene.returnBranch = branch;
         InterlevelScene.returnPos = -1;
-
         Game.switchScene(InterlevelScene.class);
+    }
+
+    /** Quick travel up/down by delta floors, staying in same branch */
+    private void quickTravel(int delta) {
+        int targetDepth = Dungeon.depth + delta;
+        if (targetDepth < 1) {
+            targetDepth = 1;
+        }
+        if (targetDepth > 40) {
+            targetDepth = 40;
+        }
+        if (targetDepth != Dungeon.depth) {
+            teleportTo(targetDepth, Dungeon.branch, null);
+        }
     }
 
     @Override

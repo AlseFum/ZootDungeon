@@ -28,7 +28,7 @@ public class DebugBag extends Bag {
             || item instanceof WandBox
             || item instanceof BombBox
             || item instanceof ItemEditor
-            || item instanceof StoneOfDungeonTravel
+            || item instanceof LevelConsole
             ; 
     }
 

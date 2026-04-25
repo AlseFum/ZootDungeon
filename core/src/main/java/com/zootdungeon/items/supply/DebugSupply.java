@@ -57,7 +57,6 @@ import com.zootdungeon.items.cheat.EventBusProbe;
 import com.zootdungeon.items.cheat.ThrowingWeaponBox;
 import com.zootdungeon.items.cheat.WandBox;
 import com.zootdungeon.items.cheat.BombBox;
-import com.zootdungeon.items.cheat.StoneOfDungeonTravel;
 import com.zootdungeon.items.cheat.LevelConsole;
 import com.zootdungeon.items.TengusMask;
 import com.zootdungeon.items.KingsCrown;
@@ -107,7 +106,6 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(DivineAnkh.class, 1));
         cheat.add(() -> create(ItemRemover.class));
         cheat.add(() -> create(ItemEditor.class, 1));
-        cheat.add(() -> create(StoneOfDungeonTravel.class, 1));
         cheat.add(() -> create(LevelConsole.class, 1));
         cheat.add(() -> create(Panacea.class, 1));
         cheat.add(() -> create(Codex.class, 1));
