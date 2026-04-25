@@ -1,13 +1,29 @@
 plugins {
     id 'java-library'
-    // buildSrc 里定义的资源 JSON 读取/打印插件。当前只读取并打印，不生成文件。
+    id 'org.jetbrains.kotlin.jvm'
     id 'com.zootdungeon.atlas-codegen'
 }
 
-// [compileJava, compileTestJava]*.options*.encoding = 'GBK'
-java{
+java {
     sourceCompatibility = appJavaCompatibility
     targetCompatibility = appJavaCompatibility
+    sourceSets {
+        main {
+            kotlin {
+                srcDir 'src/main/kotlin'
+            }
+            java {
+                srcDir 'src/main/java'
+            }
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjvm-default=all")
+    }
 }
 
 atlasCodegen {
@@ -27,4 +43,8 @@ dependencies {
     
     // Lua scripting support
     implementation 'org.luaj:luaj-jse:3.0.1'
+    
+    // Kotlin
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:2.0.21')
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
 }

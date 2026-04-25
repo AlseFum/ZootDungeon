@@ -221,6 +221,20 @@ public class LevelGraph {
     }
 
     /**
+     * Creates a new standalone level node with a specified depth.
+     * The node is not part of the main path and must be manually navigated.
+     */
+    public static LevelNode createStandaloneNode(int depth) {
+        ensureMainPath();
+        String id = "standalone:" + nodes.size();
+        int branch = nextSpecialBranch++;
+        LevelNode node = new LevelNode(id, depth, branch);
+        node.special = true;
+        nodes.put(id, node);
+        return node;
+    }
+
+    /**
      * Returns all nodes which have been generated at least once.
      * The iteration order is stable across a run.
      */
