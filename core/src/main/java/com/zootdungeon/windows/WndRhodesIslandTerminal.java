@@ -60,6 +60,7 @@ public class WndRhodesIslandTerminal extends Window {
 	private RedButton btnExit;
 	private ScrollPane contentPane;
 	private TabType currentTab = TabType.ACTIVE;
+	private transient boolean relayoutInProgress = false;
 
 	private enum TabType {
 		ACTIVE, PASSIVE, PLUGINS
@@ -69,7 +70,9 @@ public class WndRhodesIslandTerminal extends Window {
 	public void offset(int xOffset, int yOffset) {
 		super.offset(xOffset, yOffset);
 		// GameScene.show() 可能会给新窗口继承 offset；带 ScrollPane 的窗口需要在 offset 后刷新布局
-		relayout();
+		if (!relayoutInProgress) {
+			relayout();
+		}
 	}
 
 	@Override
@@ -151,49 +154,55 @@ public class WndRhodesIslandTerminal extends Window {
 	}
 
 	private void relayout() {
-		syncLayoutWidth();
-		float y = MARGIN;
-		float titleW = layoutWidth - BTN_EXIT_W - GAP;
-		title.setRect(0, y, titleW, 0);
-		btnExit.setRect(titleW + GAP, y, BTN_EXIT_W, TAB_BTN_H);
-		y = Math.max(title.bottom(), btnExit.bottom()) + GAP;
+		if (relayoutInProgress) return;
+		relayoutInProgress = true;
+		try {
+			syncLayoutWidth();
+			float y = MARGIN;
+			float titleW = layoutWidth - BTN_EXIT_W - GAP;
+			title.setRect(0, y, titleW, 0);
+			btnExit.setRect(titleW + GAP, y, BTN_EXIT_W, TAB_BTN_H);
+			y = Math.max(title.bottom(), btnExit.bottom()) + GAP;
 
-		if (layoutWidth >= 155) {
-			float firstW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
-			float secondW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
-			float thirdW = layoutWidth - firstW - secondW - GAP * 2;
-			tabActiveBtn.setRect(0, y, firstW, TAB_BTN_H);
-			tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, secondW, TAB_BTN_H);
-			tabPluginBtn.setRect(tabPassiveBtn.right() + GAP, y, thirdW, TAB_BTN_H);
-			y = tabActiveBtn.bottom() + GAP;
-		} else {
-			float half = (layoutWidth - GAP) / 2f;
-			tabActiveBtn.setRect(0, y, half, TAB_BTN_H);
-			tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, layoutWidth - half - GAP, TAB_BTN_H);
-			y = tabActiveBtn.bottom() + GAP;
-			tabPluginBtn.setRect(0, y, layoutWidth, TAB_BTN_H);
-			y = tabPluginBtn.bottom() + GAP;
-		}
+			if (layoutWidth >= 155) {
+				float firstW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
+				float secondW = (float) Math.floor(layoutWidth * 0.333f) - GAP;
+				float thirdW = layoutWidth - firstW - secondW - GAP * 2;
+				tabActiveBtn.setRect(0, y, firstW, TAB_BTN_H);
+				tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, secondW, TAB_BTN_H);
+				tabPluginBtn.setRect(tabPassiveBtn.right() + GAP, y, thirdW, TAB_BTN_H);
+				y = tabActiveBtn.bottom() + GAP;
+			} else {
+				float half = (layoutWidth - GAP) / 2f;
+				tabActiveBtn.setRect(0, y, half, TAB_BTN_H);
+				tabPassiveBtn.setRect(tabActiveBtn.right() + GAP, y, layoutWidth - half - GAP, TAB_BTN_H);
+				y = tabActiveBtn.bottom() + GAP;
+				tabPluginBtn.setRect(0, y, layoutWidth, TAB_BTN_H);
+				y = tabPluginBtn.bottom() + GAP;
+			}
 
-		int viewH = getAvailableViewHeight(y);
-		if (contentPane != null) {
-			// clamp window height to screen, then clamp content height accordingly
+			int viewH = getAvailableViewHeight(y);
+			if (contentPane != null) {
+				// clamp window height to screen, then clamp content height accordingly
+				int maxWindowHeight = maxInnerHeight();
+				int finalH = (int) (y + viewH + MARGIN);
+				if (finalH > maxWindowHeight) {
+					finalH = maxWindowHeight;
+				}
+				viewH = Math.max(0, finalH - (int) y - MARGIN);
+				contentPane.setRect(0, y, layoutWidth, viewH);
+				resize(layoutWidth, finalH);
+				boundOffsetWithMargin(SCREEN_EDGE_MARGIN);
+				return;
+			}
 			int maxWindowHeight = maxInnerHeight();
 			int finalH = (int) (y + viewH + MARGIN);
-			if (finalH > maxWindowHeight) {
-				finalH = maxWindowHeight;
-			}
-			viewH = Math.max(0, finalH - (int) y - MARGIN);
-			contentPane.setRect(0, y, layoutWidth, viewH);
+			if (finalH > maxWindowHeight) finalH = maxWindowHeight;
 			resize(layoutWidth, finalH);
 			boundOffsetWithMargin(SCREEN_EDGE_MARGIN);
-			return;
+		} finally {
+			relayoutInProgress = false;
 		}
-		int maxWindowHeight = maxInnerHeight();
-		int finalH = (int) (y + viewH + MARGIN);
-		if (finalH > maxWindowHeight) finalH = maxWindowHeight;
-		resize(layoutWidth, finalH);
-		boundOffsetWithMargin(SCREEN_EDGE_MARGIN);
 	}
 
 	private int getAvailableViewHeight(float contentTop) {
