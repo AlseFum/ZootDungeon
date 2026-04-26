@@ -41,10 +41,13 @@ import java.util.List;
 public class WndLuaScript extends Window {
 
 	private static final int WIDTH = 200;
-	private static final int W_LAND_EXTRA = 280;
+	private static final int W_LAND = 360;
+	private static final int W_LAND_WIDE = 480;
 	private static final int MARGIN = 1;
 	private static final int BUTTON_HEIGHT = 16;
-	private static final int INPUT_HEIGHT = 100; // 多行输入高度
+	private static final int INPUT_HEIGHT_PORT = 100;
+	private static final int INPUT_HEIGHT_LAND = 80;
+	private static final int INPUT_HEIGHT_WIDE = 60;
 
 	protected TextInput textBox;
 	protected RenderedTextBlock resultText;
@@ -58,18 +61,20 @@ public class WndLuaScript extends Window {
 	public WndLuaScript() {
 		super();
 
+		final boolean landscape = PixelScene.landscape();
+		final int width;
+		if (landscape) {
+			float aspectRatio = PixelScene.uiCamera.width / PixelScene.uiCamera.height;
+			width = aspectRatio > 1.2f ? W_LAND_WIDE : W_LAND;
+		} else {
+			width = WIDTH;
+		}
+
 		//need to offset to give space for the soft keyboard
-		if (PixelScene.landscape()) {
+		if (landscape) {
 			offset(0, -45);
 		} else {
 			offset(0, -60);
-		}
-
-		final int width;
-		if (PixelScene.landscape()) {
-			width = W_LAND_EXTRA;
-		} else {
-			width = WIDTH;
 		}
 
 		float pos = 2;
@@ -117,10 +122,11 @@ public class WndLuaScript extends Window {
 		};
 		textBox.setMaxLength(2048); // 允许较长的脚本
 
+		final int inputHeight = landscape ? (width >= W_LAND_WIDE ? INPUT_HEIGHT_WIDE : INPUT_HEIGHT_LAND) : INPUT_HEIGHT_PORT;
 		float textBoxWidth = width - 3 * MARGIN - BUTTON_HEIGHT;
 
 		add(textBox);
-		textBox.setRect(MARGIN, pos, textBoxWidth, INPUT_HEIGHT);
+		textBox.setRect(MARGIN, pos, textBoxWidth, inputHeight);
 
 		// 复制按钮
 		btnCopy = new RedButton(""){
@@ -240,7 +246,7 @@ public class WndLuaScript extends Window {
 		btnSave.setRect(textBoxWidth + 2*MARGIN, btnClear.bottom() + MARGIN, BUTTON_HEIGHT, BUTTON_HEIGHT);
 		btnLoad.setRect(textBoxWidth + 2*MARGIN, btnSave.bottom() + MARGIN, BUTTON_HEIGHT, BUTTON_HEIGHT);
 
-		pos += INPUT_HEIGHT + MARGIN;
+		pos += inputHeight + MARGIN;
 
 		// 执行按钮
 		final RedButton executeBtn = new RedButton("执行") {
@@ -277,7 +283,7 @@ public class WndLuaScript extends Window {
 		//need to resize first before laying out the text box, as it depends on the window's camera
 		resize(width, (int) pos);
 
-		textBox.setRect(MARGIN, textBox.top(), textBoxWidth, INPUT_HEIGHT);
+		textBox.setRect(MARGIN, textBox.top(), textBoxWidth, inputHeight);
 
 		PointerEvent.clearKeyboardThisPress = false;
 	}
