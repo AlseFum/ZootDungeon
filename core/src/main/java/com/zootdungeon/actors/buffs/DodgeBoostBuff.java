@@ -8,7 +8,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 
 /**
- * 闪避率提升 Buff：由装备时的武器（如 RhodesDodgeGauntlet）在 activate 中附着。
+ * 闪避率提升 Buff：由装备时的武器（如 {@link com.zootdungeon.arknights.misc.RhodesGauntlet} 在 activate 中附着。
  * <p>
  * {@link com.zootdungeon.actors.hero.Hero#defenseSkill} 会查询本 Buff 并把
  * {@link #multiplier()} 的返回值乘到英雄的闪避计算上。

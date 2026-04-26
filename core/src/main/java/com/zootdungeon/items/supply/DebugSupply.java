@@ -16,13 +16,7 @@ import com.zootdungeon.items.weapon.chakram.Chakram;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
 import com.zootdungeon.arknights.misc.DeployablewCrossBow;
 import com.zootdungeon.arknights.misc.NearRangeCrossBow;
-import com.zootdungeon.arknights.misc.RhodesArmorPierceGauntlet;
-import com.zootdungeon.arknights.misc.RhodesChargeGauntlet;
-import com.zootdungeon.arknights.misc.RhodesCritGauntlet;
-import com.zootdungeon.arknights.misc.RhodesDefBreakerGauntlet;
-import com.zootdungeon.arknights.misc.RhodesDodgeGauntlet;
-import com.zootdungeon.arknights.misc.RhodesKnockbackGauntlet;
-import com.zootdungeon.arknights.misc.RhodesLockOnGauntlet;
+import com.zootdungeon.arknights.misc.RhodesGauntlet;
 import com.zootdungeon.arknights.RhodesStandardWeapons.RhodesStandardWeaponSupply;
 import com.zootdungeon.arknights.MainTheme.SkullShattererWeapon;
 import com.zootdungeon.arknights.firearms.BlackSteelGun;
@@ -151,13 +145,8 @@ public class DebugSupply extends Supply {
         categories.put(CAT_WEAPONS, weapons);
 
         List<Supplier<Item>> rhodesGauntlets = new ArrayList<>();
-        rhodesGauntlets.add(() -> create(RhodesLockOnGauntlet.class, 1));
-        rhodesGauntlets.add(() -> create(RhodesArmorPierceGauntlet.class, 1));
-        rhodesGauntlets.add(() -> create(RhodesDodgeGauntlet.class, 1));
-        rhodesGauntlets.add(() -> create(RhodesKnockbackGauntlet.class, 1));
-        rhodesGauntlets.add(() -> create(RhodesCritGauntlet.class, 1));
-        rhodesGauntlets.add(() -> create(RhodesChargeGauntlet.class, 1));
-        rhodesGauntlets.add(() -> create(RhodesDefBreakerGauntlet.class, 1));
+        // Create a default gauntlet with Armor Pierce enabled (default)
+        rhodesGauntlets.add(() -> createRhodesGauntlet());
         categories.put(CAT_RHODES_GAUNTLETS, rhodesGauntlets);
 
         List<Supplier<Item>> cellEntities = new ArrayList<>();
@@ -187,6 +176,10 @@ public class DebugSupply extends Supply {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static RhodesGauntlet createRhodesGauntlet() {
+        return new RhodesGauntlet();
     }
 
     private static FirearmMagazine createCPistolMagazine() {
