@@ -252,6 +252,7 @@ public class ItemSprite extends MovieClip {
 			}
 				return;
 			}
+			return;
 		}
 		
 		// Fallback to static ItemSpriteSheet
