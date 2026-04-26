@@ -22,10 +22,10 @@ import com.watabou.noosa.Game;
 //Not finished
 public class LevelConsole extends Item {
 
-    static {
-        SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-                .setXY("debug_bag", 0, 0, 32, 32);
-    }
+    // static {
+    //     SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
+    //             .setXY("debug_bag", 0, 0, 32, 32);
+    // }
 
     {
         image = SpriteRegistry.byLabel("debug_bag");

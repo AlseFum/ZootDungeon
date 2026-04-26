@@ -34,10 +34,10 @@ public class EventBusProbe extends Item {
 
     private static int nextProbeSerial = 1;
 
-    static {
-        SpriteRegistry.texture("sheet.cola.event_bus_probe", "cola/debug_bag.png")
-                .setXY("event_bus_probe", 0, 0, 32, 32);
-    }
+    // static {
+    //     SpriteRegistry.texture("sheet.cola.event_bus_probe", "cola/debug_bag.png")
+    //             .setXY("event_bus_probe", 0, 0, 32, 32);
+    // }
 
     {
         image = SpriteRegistry.byLabel("event_bus_probe");

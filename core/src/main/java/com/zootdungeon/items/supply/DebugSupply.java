@@ -62,25 +62,22 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class DebugSupply extends Supply {
-    static {
-        SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-                    .setXY("debug_bag", 0, 0, 32, 32);
-    }
+    // static {
+    //     SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
+    //                 .setXY("debug_bag", 0, 0, 32, 32);
+    // }
     {
         
         image = SpriteRegistry.byLabel("debug_bag");
     }
 
     // private static final String CAT_POTIONS = "cat_potions";
-    private static final String CAT_STONES = "cat_stones";
     private static final String CAT_STANDARD_SUPPLY = "cat_standard_supply";
     private static final String CAT_CHEAT = "cat_cheat";
     private static final String CAT_WEAPONS = "cat_weapons";
     private static final String CAT_FIREARMS = "cat_firearms";
     private static final String CAT_PLUGINS = "cat_plugins";
-    private static final String CAT_RHODES_GAUNTLETS = "cat_rhodes_gauntlets";
-    private static final String CAT_CELL_ENTITIES = "cat_cell_entities";
-    private static final String CAT_BUFF_TESTS = "cat_buff_tests";
+    private static final String CAT_TESTS = "cat_tests";
 
     private final Map<String, List<Supplier<Item>>> categories = new LinkedHashMap<>();
 
@@ -89,8 +86,6 @@ public class DebugSupply extends Supply {
         name = Messages.get(DebugSupply.class, "name");
         desc = Messages.get(DebugSupply.class, "desc");
 
-
-        categories.put(CAT_STONES, List.of());
 
         List<Supplier<Item>> standardSupply = new ArrayList<>();
         standardSupply.add(() -> create(RhodesStandardWeaponSupply.class, 1));
@@ -104,7 +99,6 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(Panacea.class, 1));
         cheat.add(() -> create(Codex.class, 1));
         cheat.add(() -> create(RedStone.class, 1));
-        cheat.add(() -> create(EventBusProbe.class, 1));
         cheat.add(() -> create(ThrowingWeaponBox.class, 1));
         cheat.add(() -> create(WandBox.class, 1));
         cheat.add(() -> create(BombBox.class, 1));
@@ -142,21 +136,15 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(Chakram.class, 1));
         weapons.add(() -> create(NearRangeCrossBow.class, 1));
         weapons.add(() -> create(DeployablewCrossBow.class, 1));
+        weapons.add(() -> createRhodesGauntlet());
         categories.put(CAT_WEAPONS, weapons);
 
-        List<Supplier<Item>> rhodesGauntlets = new ArrayList<>();
-        // Create a default gauntlet with Armor Pierce enabled (default)
-        rhodesGauntlets.add(() -> createRhodesGauntlet());
-        categories.put(CAT_RHODES_GAUNTLETS, rhodesGauntlets);
-
-        List<Supplier<Item>> cellEntities = new ArrayList<>();
-        cellEntities.add(() -> create(CellEntityPlacer.class, 1));
-        cellEntities.add(() -> create(MinePlacer.class, 1));
-        categories.put(CAT_CELL_ENTITIES, cellEntities);
-
-        List<Supplier<Item>> buffTests = new ArrayList<>();
-        buffTests.add(() -> create(StackingBuffTester.class, 1));
-        categories.put(CAT_BUFF_TESTS, buffTests);
+        List<Supplier<Item>> tests = new ArrayList<>();
+        tests.add(() -> create(CellEntityPlacer.class, 1));
+        tests.add(() -> create(MinePlacer.class, 1));
+        tests.add(() -> create(StackingBuffTester.class, 1));
+        tests.add(() -> create(EventBusProbe.class, 1));
+        categories.put(CAT_TESTS, tests);
 
         // Firearms: one tab, 4 rows x 3 columns (type rows, A/B/C columns)
         categories.put(CAT_FIREARMS, List.of()); // placeholder; rendered by a custom pane

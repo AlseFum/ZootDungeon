@@ -347,8 +347,8 @@ public final class HeroClassSheet {
 
         PotionBandolier potionBandolier = new PotionBandolier();
         potionBandolier.identify().collect();
-
-        new DebugSupply().identify().collect();
         new DebugBag().identify().collect();
+        new DebugSupply().identify().collect();
+        
     }
 };
