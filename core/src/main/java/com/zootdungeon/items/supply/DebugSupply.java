@@ -38,6 +38,7 @@ import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndGeneral;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.items.cheat.CellEntityPlacer;
 import com.zootdungeon.items.cheat.MinePlacer;
 import com.zootdungeon.items.cheat.Codex;
@@ -208,6 +209,8 @@ public class DebugSupply extends Supply {
                 b.tab(Messages.get(DebugSupply.class, key), p -> fillCheatTab(p, hero));
             } else if (CAT_FIREARMS.equals(key)) {
                 b.tab(Messages.get(DebugSupply.class, key), p -> fillFirearmsTab(p, hero));
+            } else if (CAT_TESTS.equals(key)) {
+                b.tab(Messages.get(DebugSupply.class, key), p -> fillTestTab(p, hero));
             } else {
                 b.tab(Messages.get(DebugSupply.class, key), p -> fillItemTab(p, hero, key));
             }
@@ -247,6 +250,52 @@ public class DebugSupply extends Supply {
         p.option(Messages.get(DebugSupply.class, "grant_all_cheat"), () -> grantAllInCategory(hero, CAT_CHEAT));
         p.line(Messages.get(DebugSupply.class, "cheat_items_line"));
         appendItemOptions(p, hero, CAT_CHEAT);
+    }
+
+    private void fillTestTab(WndGeneral.PaneBuilder p, Hero hero) {
+        p.option("UI Test", () -> UI_Test.show("UI Test", "This is a test window"));
+        p.option("WndGeneral 部件演示", () -> {
+            WndGeneral.make()
+                    .title("WndGeneral 部件测试")
+                    .tab("行与开关", bp -> {
+                        bp.line("===== 文本行 =====");
+                        bp.line("普通文本行");
+                        bp.row("带标签的值行", "当前值: 42");
+                        bp.line("===== 开关（不自动关闭窗口）=====");
+                        bp.switchRow("调试模式", false, on -> GLog.p("调试模式: " + on));
+                        bp.switchRow("简化界面", true, on -> GLog.p("简化界面: " + on));
+                    })
+                    .tab("按钮与选项", bp -> {
+                        bp.line("===== 选项（点击后关闭）=====");
+                        bp.option("选项 A（关闭）", () -> GLog.p("点击了选项 A"));
+                        bp.option("选项 B（关闭）", () -> GLog.p("点击了选项 B"));
+                        bp.line("===== 底部按钮 =====");
+                        bp.button("确定", () -> GLog.p("点击了确定按钮"));
+                    })
+                    .tab("横向布局", bp -> {
+                        bp.line("===== 横向单元格 =====");
+                        bp.hrow(r -> r.line("标签").line("值"));
+                        bp.hrow(r -> r.line("A").line("B").line("C"));
+                        bp.hrow(r -> r.button("左", () -> GLog.p("左"))
+                                .button("中", () -> GLog.p("中"))
+                                .button("右", () -> GLog.p("右")));
+                    })
+                    .tab("输入框", bp -> {
+                        bp.line("===== 输入框（弹出 WndTextInput）=====");
+                        bp.inputRow("输入名字", "默认", 20, t -> GLog.p("名字: " + t));
+                        bp.inputRow("输入数值", "100", 10, t -> GLog.p("数值: " + t));
+                        bp.line("点击按钮后会弹出文本输入窗口");
+                    })
+                    .tab("长内容滚动", bp -> {
+                        bp.line("===== 滚动测试 =====");
+                        for (int i = 0; i < 30; i++) {
+                            bp.line("第 " + i + " 行，用于测试垂直滚动区域");
+                        }
+                    })
+                    
+                    .show();
+        });
+        appendItemOptions(p, hero, CAT_TESTS);
     }
 
     private void appendItemOptions(WndGeneral.PaneBuilder p, Hero hero, String categoryKey) {
