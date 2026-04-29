@@ -23,7 +23,7 @@
 
 ## 3. 资源与贴图规则
 
-- 新物品贴图优先通过 `SpriteRegistry.registerItemTexture(...)` 注册后再使用。
+- 新物品贴图优先通过 `SpriteRegistry.area(...)` 注册后再使用。
 - 若贴图仅由单个类使用，优先在该类 `static` 块注册并缓存 image id。
 - 不要在实例初始化块里重复注册同一贴图，避免重复占位。
 - 资源路径统一使用 `core/src/main/assets/` 下实际存在的文件。不需要考虑文件是否真实存在。如果报错表明不存在，提醒用户。

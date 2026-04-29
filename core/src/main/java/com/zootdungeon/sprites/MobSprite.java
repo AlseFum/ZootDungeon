@@ -90,7 +90,7 @@ public class MobSprite extends CharSprite {
 	protected TextureFilm textureWithFallback(String label, Object fallbackTexture, int frameW, int frameH){
 		Object tex = fallbackTexture;
 		if (label != null) {
-			SpriteRegistry.TextureSheet sheet = SpriteRegistry.the(label);
+			SpriteRegistry.AtlasSheet sheet = SpriteRegistry.the(label);
 			if (sheet != null) {
 				Object handle = sheet.textureHandle();
 				tex = handle;
