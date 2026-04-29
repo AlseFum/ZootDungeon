@@ -9,6 +9,7 @@ import com.zootdungeon.levels.entities.CellEntity;
 import com.zootdungeon.levels.entities.mines.ContactMine;
 import com.zootdungeon.levels.entities.mines.CrossMine;
 import com.zootdungeon.levels.entities.mines.Mine;
+import com.zootdungeon.levels.entities.mines.PatternMine;
 import com.zootdungeon.levels.entities.mines.ProximityMine;
 import com.zootdungeon.levels.entities.mines.RemoteMine;
 import com.zootdungeon.messages.Messages;
@@ -36,6 +37,7 @@ import com.zootdungeon.utils.GLog;
  */
 public class MinePlacer extends Item {
 
+    public static final String AC_PLACE_PATTERN = "PLACE_PATTERN";
     public static final String AC_PLACE_CONTACT = "PLACE_CONTACT";
     public static final String AC_PLACE_PROXIMITY = "PLACE_PROXIMITY";
     public static final String AC_PLACE_CROSS = "PLACE_CROSS";
@@ -52,6 +54,7 @@ public class MinePlacer extends Item {
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
+        actions.add(AC_PLACE_PATTERN);
         actions.add(AC_PLACE_CONTACT);
         actions.add(AC_PLACE_PROXIMITY);
         actions.add(AC_PLACE_CROSS);
@@ -63,7 +66,9 @@ public class MinePlacer extends Item {
     @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
-        if (action.equals(AC_PLACE_CONTACT)) {
+        if (action.equals(AC_PLACE_PATTERN)) {
+            GameScene.selectCell(placePattern);
+        } else if (action.equals(AC_PLACE_CONTACT)) {
             GameScene.selectCell(placeContact);
         } else if (action.equals(AC_PLACE_PROXIMITY)) {
             GameScene.selectCell(placeProximity);
@@ -78,6 +83,9 @@ public class MinePlacer extends Item {
 
     @Override
     public String actionName(String action, Hero hero) {
+        if (action.equals(AC_PLACE_PATTERN)) {
+            return Messages.get(this, "ac_place_pattern");
+        }
         if (action.equals(AC_PLACE_CONTACT)) {
             return Messages.get(this, "ac_place_contact");
         }
@@ -118,6 +126,8 @@ public class MinePlacer extends Item {
 
     // ==== CellSelector.Listeners ====
 
+    private final CellSelector.Listener placePattern = placeListener(
+            PatternMine::new, "prompt_place_pattern");
     private final CellSelector.Listener placeContact = placeListener(
             ContactMine::new, "prompt_place_contact");
     private final CellSelector.Listener placeProximity = placeListener(

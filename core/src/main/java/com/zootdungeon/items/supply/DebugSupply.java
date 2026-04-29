@@ -40,11 +40,11 @@ import com.zootdungeon.sprites.SpriteRegistry;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.items.cheat.CellEntityPlacer;
+import com.zootdungeon.items.cheat.EnemyPlacer;
 import com.zootdungeon.items.cheat.MinePlacer;
 import com.zootdungeon.items.cheat.Codex;
 import com.zootdungeon.items.cheat.DivineAnkh;
 import com.zootdungeon.items.cheat.ItemRemover;
-import com.zootdungeon.items.cheat.StackingBuffTester;
 import com.zootdungeon.items.cheat.ItemEditor;
 import com.zootdungeon.items.cheat.Panacea;
 import com.zootdungeon.items.cheat.RedStone;
@@ -105,6 +105,8 @@ public class DebugSupply extends Supply {
         cheat.add(() -> create(BombBox.class, 1));
         cheat.add(() -> create(TengusMask.class, 1));
         cheat.add(() -> create(KingsCrown.class, 1));
+        cheat.add(() -> create(MinePlacer.class, 1));
+        cheat.add(() -> create(EnemyPlacer.class, 1));
         categories.put(CAT_CHEAT, cheat);
 
         List<Supplier<Item>> plugins = new ArrayList<>();
@@ -142,8 +144,6 @@ public class DebugSupply extends Supply {
 
         List<Supplier<Item>> tests = new ArrayList<>();
         tests.add(() -> create(CellEntityPlacer.class, 1));
-        tests.add(() -> create(MinePlacer.class, 1));
-        tests.add(() -> create(StackingBuffTester.class, 1));
         tests.add(() -> create(EventBusProbe.class, 1));
         categories.put(CAT_TESTS, tests);
 
