@@ -261,7 +261,6 @@ public class DebugSupply extends Supply {
     }
 
     private void fillTestTab(WndGeneral.PaneBuilder p, Hero hero) {
-        p.option("UI Test", () -> UI_Test.show("UI Test", "This is a test window"));
         p.option("WndGeneral 部件演示", () -> {
             WndGeneral.make()
                     .title("WndGeneral 部件测试")
