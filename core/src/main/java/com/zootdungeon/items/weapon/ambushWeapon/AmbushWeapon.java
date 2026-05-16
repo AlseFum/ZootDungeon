@@ -39,9 +39,6 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
-import com.watabou.utils.PathFinder;
 public class AmbushWeapon extends MeleeWeapon{
 
     {
@@ -56,8 +53,8 @@ public class AmbushWeapon extends MeleeWeapon{
 
     @Override
     public int max(int lvl) {
-        return  4*(tier+1) +    //8 base, down from 10
-                lvl*(tier+1);   //scaling unchanged
+        return  4*(tier+1) +
+                lvl*(tier+1);
     }
     public float ambushRate=0.5f;
     @Override

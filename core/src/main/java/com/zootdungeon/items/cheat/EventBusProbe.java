@@ -3,7 +3,7 @@ package com.zootdungeon.items.cheat;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.EventBus;
 import com.zootdungeon.windows.WndGeneral;
 import com.watabou.utils.Bundle;
@@ -35,12 +35,12 @@ public class EventBusProbe extends Item {
     private static int nextProbeSerial = 1;
 
     static {
-        SpriteRegistry.texture("sheet.cola.event_bus_probe", "cola/debug_bag.png")
-                .setXY("event_bus_probe", 0, 0, 32, 32);
+        TextureRegistry.texture("sheet.cola.event_bus_probe", "cola/debug_bag.png")
+                .setArea("event_bus_probe", 0, 0, 32, 32);
     }
 
     {
-        image = SpriteRegistry.byLabel("event_bus_probe");
+        image = TextureRegistry.idByLabel("event_bus_probe");
         defaultAction = AC_OPEN;
         unique = true;
     }

@@ -51,13 +51,13 @@ public class HeroSprite extends CharSprite {
 
 	static {
 		// Register ReservedOp texture label
-		SpriteRegistry.texture("hero.ReservedOp", "cola/guard.png");
+		TextureRegistry.texture("hero.ReservedOp", "cola/guard.png");
 	}
 
 	private static Object heroTextureHandle(HeroClass cls){
 		String label = "hero." + cls.name();
-		SpriteRegistry.texture(label, cls.spritesheet());
-		Object handle = SpriteRegistry.the(label).textureHandle();
+		TextureRegistry.texture(label, cls.spritesheet());
+		Object handle = TextureRegistry.the(label).textureHandle();
 		return handle instanceof String ? Assets.getTexture((String) handle) : handle;
 	}
 
@@ -86,7 +86,7 @@ public class HeroSprite extends CharSprite {
 			TextureFilm film = new TextureFilm(texture, 22, 23);
 
 			idle = new Animation(5, true);
-			idle.frames(film, 0, 1, 0, 2);
+			idle.frames(film, 0, 0, 0, 1);
 
 			run = new Animation(15, true);
 			run.frames(film, 2, 3, 4, 5, 6, 7);

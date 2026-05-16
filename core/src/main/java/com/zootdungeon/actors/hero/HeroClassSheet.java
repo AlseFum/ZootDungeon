@@ -25,13 +25,7 @@ import com.zootdungeon.actors.hero.abilities.warrior.Endure;
 import com.zootdungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.zootdungeon.actors.hero.abilities.warrior.Shockwave;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
-import com.zootdungeon.arknights.TerminalPlugin;
-import com.zootdungeon.arknights.plugins.ReachBoostPlugin;
-import com.zootdungeon.arknights.plugins.NextAttackDamageBoostPlugin;
-import com.zootdungeon.arknights.plugins.NextAttackCostRefundPlugin;
-import com.zootdungeon.arknights.plugins.DefenseBoostPlugin;
-import com.zootdungeon.arknights.plugins.PullEnemyPlugin;
-import com.zootdungeon.arknights.plugins.MetabolismOverclockPlugin;
+import com.zootdungeon.arknights.RhodesStandardWeapons.RhodesStandardWeaponSupply;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.armor.ClothArmor;
@@ -250,7 +244,7 @@ public final class HeroClassSheet {
     public static final HeroClass ReservedOp=registerStandardClass("reservedOp")
             .spritesheet("cola/guard.png")
             .spriteCellSize(22, 23)
-            .splashArt(Assets.Splashes.WARRIOR)
+            .splashArt("cola/guard_splashart.png")
             .classTalentsTier1(
                 Talent.RESERVED_OP_APPRAISAL,
                 Talent.RESERVED_OP_FIELD_RATION,
@@ -265,26 +259,7 @@ public final class HeroClassSheet {
                 Talent.RESERVED_OP_PLUGIN_GRANT
             )
             .initializer(hero -> {
-                // 基础武器
-                (hero.belongings.weapon = new Dagger()).identify();
-
-                // 隐身斗篷
-                CloakOfShadows cloak = new CloakOfShadows();
-                (hero.belongings.artifact = cloak).identify();
-                hero.belongings.artifact.activate(hero);
-
-                // 投掷飞刀
-                ThrowingKnife knives = new ThrowingKnife();
-                knives.quantity(3).collect();
-
-                // 快捷栏
-                Dungeon.quickslot.setSlot(0, cloak);
-                Dungeon.quickslot.setSlot(1, knives);
-
-                // 自动识别
-                new ScrollOfMagicMapping().identify();
-                new PotionOfInvisibility().identify();
-
+                (new RhodesStandardWeaponSupply()).identify().collect();
                 RhodesIslandTerminal terminal = new RhodesIslandTerminal();
                 terminal.identify().collect();
                 Dungeon.quickslot.setSlot(2, terminal);
@@ -347,8 +322,8 @@ public final class HeroClassSheet {
 
         PotionBandolier potionBandolier = new PotionBandolier();
         potionBandolier.identify().collect();
-
-        new DebugSupply().identify().collect();
         new DebugBag().identify().collect();
+        new DebugSupply().identify().collect();
+        
     }
 };

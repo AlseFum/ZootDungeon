@@ -13,7 +13,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
@@ -35,11 +35,11 @@ public class NearRangeCrossBow extends Weapon {
 
 	private int targetPos;
 	static {
-		SpriteRegistry.texture("mod:proximitylinebow", "cola/province_bow.png")
-				.setXY("province_bow", 0, 0,32,32);
+		TextureRegistry.texture("mod:proximitylinebow", "cola/province_bow.png")
+				.setArea("province_bow", 0, 0,32,32);
 	}
 	{
-		image = SpriteRegistry.byLabel("province_bow");
+		image = TextureRegistry.idByLabel("province_bow");
 		defaultAction = AC_SHOOT;
 		usesTargeting = true;
 

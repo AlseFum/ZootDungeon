@@ -16,7 +16,7 @@ import com.zootdungeon.items.keys.SkeletonKey;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BossHealthBar;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
@@ -30,8 +30,8 @@ import com.watabou.utils.Random;
 public class SkullShatterer extends Mob {
 
     static {
-        // SpriteRegistry no longer manages mob textures.
-        SpriteRegistry.texture("mod:skull_shatterer", "cola/skullshatter.png");
+        // TextureRegistry no longer manages mob textures.
+        TextureRegistry.texture("mod:skull_shatterer", "cola/skullshatter.png");
     }
 
     private final SkullShattererWeapon weapon = new SkullShattererWeapon();

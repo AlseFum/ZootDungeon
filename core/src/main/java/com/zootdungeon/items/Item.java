@@ -13,7 +13,6 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.bags.Bag;
-import com.zootdungeon.items.food.CustomFood;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;
 import com.zootdungeon.items.weapon.missiles.darts.TippedDart;
@@ -391,9 +390,6 @@ public class Item implements Bundlable, Pred {
     }
 
     public boolean isSimilar(Item item) {
-        if (this instanceof CustomFood && item instanceof CustomFood) {
-            return ((CustomFood) this).id.equals(((CustomFood) item).id);
-        }
         return getClass() == item.getClass();
     }
 

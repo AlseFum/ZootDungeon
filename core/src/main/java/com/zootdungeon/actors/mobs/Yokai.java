@@ -33,7 +33,7 @@ import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.Assets;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 public class Yokai extends Mob {
 
 	static {
-		SpriteRegistry.texture("mod:yokai", "cola/yokai.png");
+		TextureRegistry.texture("mod:yokai", "cola/yokai.png");
 	}
 
 	{
@@ -62,7 +62,7 @@ public class Yokai extends Mob {
 	}
 
 	static {
-		SpriteRegistry.texture("mod:yokai", "cola/yokai.png");
+		TextureRegistry.texture("mod:yokai", "cola/yokai.png");
 	}
 
 	private static final float SPLIT_DELAY	= 1f;
@@ -164,7 +164,7 @@ public class Yokai extends Mob {
 		public YokaiSprite() {
 			super();
 
-			boolean hasMod = SpriteRegistry.the("mod:yokai") != null;
+			boolean hasMod = TextureRegistry.the("mod:yokai") != null;
 			TextureFilm frames = hasMod
 					? textureWithFallback("mod:yokai", Assets.Sprites.SWARM, 32, 32)
 					: textureWithFallback(null, Assets.Sprites.SWARM, 16, 16);

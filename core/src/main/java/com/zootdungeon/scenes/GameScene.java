@@ -94,7 +94,6 @@ import com.zootdungeon.ui.AttackIndicator;
 import com.zootdungeon.ui.Banner;
 import com.zootdungeon.ui.BossHealthBar;
 import com.zootdungeon.ui.CharHealthIndicator;
-import com.zootdungeon.ui.ConsoleButton;
 import com.zootdungeon.ui.GameLog;
 import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.InventoryPane;
@@ -119,7 +118,6 @@ import com.zootdungeon.windows.WndInfoItem;
 import com.zootdungeon.windows.WndInfoMob;
 import com.zootdungeon.windows.WndInfoPlant;
 import com.zootdungeon.windows.WndInfoTrap;
-import com.zootdungeon.windows.WndConsole;
 import com.zootdungeon.windows.WndKeyBindings;
 import com.zootdungeon.windows.WndMessage;
 import com.zootdungeon.windows.WndOptions;
@@ -146,7 +144,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Point;
-import com.watabou.utils.Signal;
+import com.watabou.utils.RectF;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
@@ -211,7 +209,6 @@ public class GameScene extends PixelScene {
 	private LootIndicator loot;
 	private ActionIndicator action;
 	private ResumeIndicator resume;
-	private ConsoleButton consoleBtn;
 	private BitmapText actorDebugText;
 
 	{
@@ -418,13 +415,6 @@ public class GameScene extends PixelScene {
 		log.camera = uiCamera;
 		log.newLine();
 		add( log );
-
-        // dev console button (toggled via settings)
-        consoleBtn = new ConsoleButton();
-        consoleBtn.camera = uiCamera;
-        consoleBtn.setRect(uiCamera.width-18, 2, 16, 16);
-        consoleBtn.visible = consoleBtn.active = CDSettings.devConsole();
-        add(consoleBtn);
 
 		actorDebugText = new BitmapText(PixelScene.pixelFont);
 		actorDebugText.camera = uiCamera;
@@ -658,21 +648,6 @@ public class GameScene extends PixelScene {
 		if (!invVisible) toggleInvPane();
 		fadeIn();
 
-		// key listener for opening console (press `)
-		if (consoleListener == null){
-			consoleListener = new Signal.Listener<KeyEvent>(){
-				@Override
-				public boolean onSignal(KeyEvent keyEvent){
-					if (keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == CDKeyBinding.CONSOLE && !showingWindow()){
-						show(new WndConsole());
-						return true;
-					}
-					return false;
-				}
-			};
-			KeyEvent.addKeyListener(consoleListener);
-		}
-
 		//re-show WndResurrect if needed
 		if (!Dungeon.hero.isAlive()){
 			//check if hero has an unblessed ankh
@@ -711,12 +686,6 @@ public class GameScene extends PixelScene {
 		scene = null;
 		Badges.saveGlobal();
 		Journal.saveGlobal();
-		
-		// remove console key listener
-		if (consoleListener != null){
-			KeyEvent.removeKeyListener(consoleListener);
-			consoleListener = null;
-		}
 		super.destroy();
 	}
 	
@@ -770,7 +739,6 @@ public class GameScene extends PixelScene {
 	public static boolean updateTags = false;
 
 	private static float waterOfs = 0;
-    private Signal.Listener<KeyEvent> consoleListener;
 	
 	@Override
 	public synchronized void update() {
@@ -1293,11 +1261,6 @@ public class GameScene extends PixelScene {
 	
 	public static void updateKeyDisplay(){
 		if (scene != null && scene.menu != null) scene.menu.updateKeys();
-        if (scene != null && scene.consoleBtn != null){
-            scene.consoleBtn.visible = scene.consoleBtn.active = CDSettings.devConsole();
-            // keep at top-right
-            scene.consoleBtn.setRect(uiCamera.width-18, 2, 16, 16);
-        }
 	}
 
 	public static void showlevelUpStars(){

@@ -23,7 +23,7 @@ package com.zootdungeon.arknights;
 
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.AtomBundle;
 import com.watabou.noosa.ui.Component;
 
@@ -41,13 +41,13 @@ public class TerminalPlugin extends Item {
 
 	static {
 		// 使用与终端相同的贴图作为占位，可后续替换为 cola/terminal_plugin.png
-		SpriteRegistry.texture("sheet.cola.mod_unlock_token", "cola/mod_unlock_token.png")
+		TextureRegistry.texture("sheet.cola.mod_unlock_token", "cola/mod_unlock_token.png")
 				.grid(32, 32)
 				.label("mod_unlock_token");
 	}
 
 	{
-		image = SpriteRegistry.byLabel("mod_unlock_token");
+		image = TextureRegistry.idByLabel("mod_unlock_token");
 		levelKnown = true;
 	}
 

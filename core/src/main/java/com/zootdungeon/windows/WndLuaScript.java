@@ -22,86 +22,80 @@
 package com.zootdungeon.windows;
 
 import com.badlogic.gdx.Gdx;
-import com.zootdungeon.ui.Chrome;
+import com.zootdungeon.messages.Messages;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
+import com.zootdungeon.ui.Chrome;
 import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
+import com.zootdungeon.ui.StyledButton;
 import com.zootdungeon.ui.Window;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.utils.LuaScriptManager;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.TextInput;
+import com.watabou.noosa.ui.Component;
 import org.luaj.vm2.LuaValue;
-import com.zootdungeon.scenes.GameScene;
 import com.watabou.utils.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WndLuaScript extends Window {
 
-	private static final int WIDTH = 200;
-	private static final int W_LAND_EXTRA = 280;
-	private static final int MARGIN = 1;
-	private static final int BUTTON_HEIGHT = 16;
-	private static final int INPUT_HEIGHT = 100; // 多行输入高度
+	private static final int W_PORT      = 200;
+	private static final int W_LAND      = 340;
+	private static final int W_LAND_WIDE = 440;
 
-	protected TextInput textBox;
-	protected RenderedTextBlock resultText;
+	private static final int MARGIN    = 2;
+	private static final int BTN_H     = 16;
+	private static final int INPUT_H_P = 110;
+	private static final int INPUT_H_L = 80;
 
-	protected RedButton btnCopy;
-	protected RedButton btnPaste;
-	protected RedButton btnClear;
-	protected RedButton btnSave;
-	protected RedButton btnLoad;
+	private TextInput textBox;
+	private RenderedTextBlock resultText;
+	private RedButton btnCopy;
+	private RedButton btnPaste;
+	private RedButton btnClear;
+	private RedButton btnSave;
+	private RedButton btnHelp;
+
+	private String currentScriptName = null;
 
 	public WndLuaScript() {
 		super();
 
-		//need to offset to give space for the soft keyboard
-		if (PixelScene.landscape()) {
-			offset(0, -45);
-		} else {
-			offset(0, -60);
-		}
+		boolean landscape = PixelScene.landscape();
+		float aspect = PixelScene.uiCamera.width / PixelScene.uiCamera.height;
+		int w = landscape ? (aspect > 1.2f ? W_LAND_WIDE : W_LAND) : W_PORT;
 
-		final int width;
-		if (PixelScene.landscape()) {
-			width = W_LAND_EXTRA;
-		} else {
-			width = WIDTH;
-		}
+		if (landscape) offset(0, -45);
+		else offset(0, -60);
 
-		float pos = 2;
+		float pos = MARGIN;
+		int colR = 46;
+		int inputH = landscape ? INPUT_H_L : INPUT_H_P;
+		float leftW = w - colR - 2 * MARGIN;
 
-		// 标题
-		final RenderedTextBlock txtTitle = PixelScene.renderTextBlock("Lua脚本执行器", 9);
-		txtTitle.maxWidth(width);
-		txtTitle.hardlight(Window.TITLE_COLOR);
-		txtTitle.setPos((width - txtTitle.width()) / 2, 2);
-		add(txtTitle);
+		// Title
+		RenderedTextBlock title = PixelScene.renderTextBlock(msg("title"), 9);
+		title.maxWidth(w);
+		title.hardlight(TITLE_COLOR);
+		title.setPos((w - title.width()) / 2f, pos);
+		add(title);
+		pos = title.bottom() + MARGIN;
 
-		pos = txtTitle.bottom() + 4 * MARGIN;
-
-		// 说明文字
-		final RenderedTextBlock txtBody = PixelScene.renderTextBlock("输入Lua脚本代码，点击执行按钮运行", 6);
-		txtBody.maxWidth(width);
-		txtBody.setPos(0, pos);
-		add(txtBody);
-
-		pos = txtBody.bottom() + 2 * MARGIN;
-
-		// 文本输入框（多行）
-		int textSize = (int)PixelScene.uiCamera.zoom * 6;
-		textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), true, textSize){
+		// Text input (left side)
+		textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), true, (int)(PixelScene.uiCamera.zoom * 6)) {
 			@Override
 			public void onChanged() {
 				super.onChanged();
-				if (btnCopy != null) btnCopy.enable(!getText().isEmpty());
-				if (btnClear != null) btnClear.enable(!getText().isEmpty());
-				if (btnSave != null) btnSave.enable(!getText().isEmpty());
+				boolean has = !getText().isEmpty();
+				if (btnCopy != null) btnCopy.enable(has);
+				if (btnClear != null) btnClear.enable(has);
+				if (btnSave != null) btnSave.enable(has);
 			}
-
 			@Override
 			public void onClipBoardUpdate() {
 				super.onClipBoardUpdate();
@@ -109,216 +103,171 @@ public class WndLuaScript extends Window {
 					try {
 						btnPaste.enable(Gdx.app.getClipboard().hasContents());
 					} catch (Exception e) {
-						// 剪贴板访问失败时禁用粘贴按钮
 						btnPaste.enable(false);
 					}
 				}
 			}
 		};
-		textBox.setMaxLength(2048); // 允许较长的脚本
-
-		float textBoxWidth = width - 3 * MARGIN - BUTTON_HEIGHT;
-
+		textBox.setMaxLength(2048);
+		textBox.setText("");
 		add(textBox);
-		textBox.setRect(MARGIN, pos, textBoxWidth, INPUT_HEIGHT);
+		textBox.setRect(MARGIN, pos, leftW, inputH);
 
-		// 复制按钮
-		btnCopy = new RedButton(""){
-			@Override
-			protected void onPointerDown() {
-				super.onPointerDown();
-				PointerEvent.clearKeyboardThisPress = false;
-			}
+		// Right column: icon buttons
+		float rx = MARGIN + leftW + MARGIN;
 
-			@Override
-			protected void onPointerUp() {
-				super.onPointerUp();
-				PointerEvent.clearKeyboardThisPress = false;
-			}
+		btnHelp = makeIconBtn(Icons.INFO, this::showHelp);
+		add(btnHelp);
+		btnHelp.setRect(rx, pos, BTN_H, BTN_H);
 
-			@Override
-			protected void onClick() {
-				super.onClick();
-				textBox.copyToClipboard();
-			}
-		};
-		btnCopy.icon(Icons.COPY.get());
+		btnCopy = makeIconBtn(Icons.COPY, () -> textBox.copyToClipboard());
 		btnCopy.enable(false);
 		add(btnCopy);
+		btnCopy.setRect(rx, btnHelp.bottom() + MARGIN, BTN_H, BTN_H);
 
-		// 粘贴按钮
-		btnPaste = new RedButton(""){
-			@Override
-			protected void onPointerDown() {
-				super.onPointerDown();
-				PointerEvent.clearKeyboardThisPress = false;
-			}
-
-			@Override
-			protected void onPointerUp() {
-				super.onPointerUp();
-				PointerEvent.clearKeyboardThisPress = false;
-			}
-
-			@Override
-			protected void onClick() {
-				super.onClick();
-				try {
-					if (Gdx.app.getClipboard().hasContents()) {
-						textBox.pasteFromClipboard();
-					} else {
-						enable(false);
-					}
-				} catch (Exception e) {
-					// 剪贴板访问失败
-					enable(false);
-				}
-			}
-		};
-		btnPaste.icon(Icons.PASTE.get());
+		btnPaste = makeIconBtn(Icons.PASTE, () -> {
+			try {
+				if (Gdx.app.getClipboard().hasContents()) textBox.pasteFromClipboard();
+			} catch (Exception ignored) {}
+		});
 		try {
 			btnPaste.enable(Gdx.app.getClipboard().hasContents());
 		} catch (Exception e) {
-			// 剪贴板访问失败时禁用粘贴按钮
 			btnPaste.enable(false);
 		}
 		add(btnPaste);
+		btnPaste.setRect(rx, btnCopy.bottom() + MARGIN, BTN_H, BTN_H);
 
-		// 清空按钮
-		btnClear = new RedButton(""){
-			@Override
-			protected void onPointerDown() {
-				super.onPointerDown();
-				PointerEvent.clearKeyboardThisPress = false;
+		btnClear = makeIconBtn(Icons.CLOSE, () -> {
+			textBox.setText("");
+			if (resultText != null) {
+				resultText.text("");
+				resultText.visible = false;
 			}
-
-			@Override
-			protected void onPointerUp() {
-				super.onPointerUp();
-				PointerEvent.clearKeyboardThisPress = false;
-			}
-
-			@Override
-			protected void onClick() {
-				super.onClick();
-				textBox.setText("");
-				if (resultText != null) {
-					resultText.text("");
-					resultText.visible = false;
-				}
-			}
-		};
-		btnClear.icon(Icons.CLOSE.get());
+			currentScriptName = null;
+		});
 		btnClear.enable(false);
 		add(btnClear);
+		btnClear.setRect(rx, btnPaste.bottom() + MARGIN, BTN_H, BTN_H);
 
-		btnCopy.setRect(textBoxWidth + 2*MARGIN, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
-		btnPaste.setRect(textBoxWidth + 2*MARGIN, btnCopy.bottom() + MARGIN, BUTTON_HEIGHT, BUTTON_HEIGHT);
-		btnClear.setRect(textBoxWidth + 2*MARGIN, btnPaste.bottom() + MARGIN, BUTTON_HEIGHT, BUTTON_HEIGHT);
-		
-		// 保存按钮
-		btnSave = new RedButton(""){
-			@Override
-			protected void onClick() {
-				saveScript();
-			}
-		};
-		btnSave.icon(Icons.get(Icons.DISPLAY));
+		btnSave = makeIconBtn(Icons.DISPLAY, this::saveScript);
 		btnSave.enable(false);
 		add(btnSave);
-		
-		// 加载按钮
-		btnLoad = new RedButton(""){
-			@Override
-			protected void onClick() {
-				showScriptList();
-			}
-		};
-		btnLoad.icon(Icons.get(Icons.INFO));
-		add(btnLoad);
-		
-		btnSave.setRect(textBoxWidth + 2*MARGIN, btnClear.bottom() + MARGIN, BUTTON_HEIGHT, BUTTON_HEIGHT);
-		btnLoad.setRect(textBoxWidth + 2*MARGIN, btnSave.bottom() + MARGIN, BUTTON_HEIGHT, BUTTON_HEIGHT);
+		btnSave.setRect(rx, btnClear.bottom() + MARGIN, BTN_H, BTN_H);
 
-		pos += INPUT_HEIGHT + MARGIN;
+		pos += inputH + MARGIN;
 
-		// 执行按钮
-		final RedButton executeBtn = new RedButton("执行") {
+		// Run / Close buttons
+		RedButton runBtn = new RedButton(msg("run")) {
 			@Override
 			protected void onClick() {
 				executeScript();
 			}
 		};
-		executeBtn.icon(Icons.get(Icons.ENTER));
-		executeBtn.setRect(MARGIN, pos, (textBoxWidth - MARGIN) / 2, BUTTON_HEIGHT);
-		add(executeBtn);
+		runBtn.setRect(MARGIN, pos, (leftW - MARGIN) / 2, BTN_H);
+		add(runBtn);
 
-		// 关闭按钮
-		final RedButton closeBtn = new RedButton("关闭") {
+		StyledButton closeBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, msg("close"), 9) {
 			@Override
 			protected void onClick() {
 				hide();
 			}
 		};
-		closeBtn.setRect(executeBtn.right() + MARGIN, pos, (textBoxWidth - MARGIN) / 2, BUTTON_HEIGHT);
+		closeBtn.setRect(runBtn.right() + MARGIN, pos, (leftW - MARGIN) / 2, BTN_H);
 		add(closeBtn);
+		pos += BTN_H + MARGIN;
 
-		pos += BUTTON_HEIGHT + MARGIN;
-
-		// 结果显示区域
+		// Result display
 		resultText = PixelScene.renderTextBlock("", 6);
-		resultText.maxWidth(width - 2 * MARGIN);
+		resultText.maxWidth(w - 2 * MARGIN);
 		resultText.setPos(MARGIN, pos);
 		resultText.visible = false;
 		add(resultText);
+		pos += 24;
 
-		pos += 20; // 为结果预留空间
+		// Quick reference button
+		RedButton refBtn = new RedButton(msg("ref_toggle"), 9) {
+			@Override
+			protected void onClick() {
+				showQuickRef();
+			}
+		};
+		refBtn.setRect(MARGIN, pos, w - 2 * MARGIN, BTN_H);
+		add(refBtn);
+		pos += BTN_H + MARGIN;
 
-		//need to resize first before laying out the text box, as it depends on the window's camera
-		resize(width, (int) pos);
+		// Saved scripts list
+		List<ScriptEntry> saved = loadSavedScripts();
+		if (!saved.isEmpty()) {
+			RenderedTextBlock listTitle = PixelScene.renderTextBlock(msg("saved"), 6);
+			listTitle.hardlight(0xAAAAAA);
+			listTitle.setPos(MARGIN, pos);
+			add(listTitle);
+			pos = listTitle.bottom() + MARGIN;
 
-		textBox.setRect(MARGIN, textBox.top(), textBoxWidth, INPUT_HEIGHT);
+			for (ScriptEntry e : saved) {
+				ScriptRow row = new ScriptRow(e.name, e.code, pos, w - 2 * MARGIN);
+				add(row);
+				pos = row.bottom() + MARGIN;
+			}
+		}
 
+		resize(w, (int)pos);
+		textBox.setRect(MARGIN, textBox.top(), leftW, inputH);
 		PointerEvent.clearKeyboardThisPress = false;
 	}
 
+	private RedButton makeIconBtn(Icons type, Runnable action) {
+		RedButton btn = new RedButton("") {
+			@Override
+			protected void onPointerDown() {
+				super.onPointerDown();
+				PointerEvent.clearKeyboardThisPress = false;
+			}
+			@Override
+			protected void onPointerUp() {
+				super.onPointerUp();
+				PointerEvent.clearKeyboardThisPress = false;
+			}
+			@Override
+			protected void onClick() {
+				super.onClick();
+				action.run();
+			}
+		};
+		btn.icon(type.get());
+		return btn;
+	}
+
+	// ── Execute ──────────────────────────────────────────────────────────────
 	private void executeScript() {
 		String script = textBox.getText().trim();
 		if (script.isEmpty()) {
-			showResult("错误：脚本为空", 0xFF4444); // 红色表示错误
+			showResult(msg("err_empty"), 0xFF4444);
 			return;
 		}
-
 		try {
 			LuaScriptManager lua = LuaScriptManager.getInstance();
-			LuaValue result = lua.loadString("temp_script_" + System.currentTimeMillis(), script);
-			
+			LuaValue result = lua.loadString("tmp_" + System.currentTimeMillis(), script);
 			if (result.isnil()) {
-				showResult("执行完成（无返回值）", Window.TITLE_COLOR);
+				showResult(msg("ok_no_result"), TITLE_COLOR);
 			} else {
-				String resultStr = formatLuaValue(result);
-				showResult("结果: " + resultStr, Window.TITLE_COLOR);
+				showResult(msg("ok_result") + " " + formatLuaValue(result), TITLE_COLOR);
 			}
 		} catch (Exception e) {
-			showResult("错误: " + e.getMessage(), 0xFF4444); // 红色表示错误
-			GLog.w("Lua脚本执行错误: " + e.getMessage());
+			showResult(msg("err_exec") + ": " + e.getMessage(), 0xFF4444);
+			GLog.w("[Lua] " + e.getMessage());
 		}
 	}
 
-	private String formatLuaValue(LuaValue value) {
-		if (value.isnil()) {
-			return "nil";
-		} else if (value.isboolean()) {
-			return String.valueOf(value.toboolean());
-		} else if (value.isint()) {
-			return String.valueOf(value.toint());
-		} else if (value.isnumber()) {
-			return String.valueOf(value.todouble());
-		} else if (value.isstring()) {
-			return "\"" + value.tojstring() + "\"";
-		} else {
-			return value.toString();
-		}
+	private String formatLuaValue(LuaValue v) {
+		if (v.isnil())     return "nil";
+		if (v.isboolean()) return String.valueOf(v.toboolean());
+		if (v.isint())    return String.valueOf(v.toint());
+		if (v.isnumber())  return String.valueOf(v.todouble());
+		if (v.isstring())  return "\"" + v.tojstring() + "\"";
+		if (v.istable())   return "{ ... }";
+		return v.toString();
 	}
 
 	private void showResult(String text, int color) {
@@ -329,161 +278,215 @@ public class WndLuaScript extends Window {
 		}
 	}
 
-	@Override
-	public void offset(int xOffset, int yOffset) {
-		super.offset(xOffset, yOffset);
-		if (textBox != null){
-			textBox.setRect(textBox.left(), textBox.top(), textBox.width(), textBox.height());
-		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		//Do nothing, prevents accidentally losing writing
-	}
-	
+	// ── Save / Load ──────────────────────────────────────────────────────────
 	private void saveScript() {
 		String script = textBox.getText().trim();
 		if (script.isEmpty()) {
-			showResult("错误：脚本为空，无法保存", 0xFF4444);
+			showResult(msg("err_empty"), 0xFF4444);
 			return;
 		}
-		
-		// 显示输入脚本名称的窗口
-		GameScene.show(new WndTextInput("保存脚本", "输入脚本名称：", "script_" + System.currentTimeMillis(), 50, false, "保存", "取消") {
+		GameScene.show(new WndTextInput(
+				msg("save_title"),
+				msg("save_prompt"),
+				currentScriptName != null ? currentScriptName : "script_" + System.currentTimeMillis(),
+				50, false,
+				msg("save_confirm"),
+				msg("cancel")
+		) {
 			@Override
 			public void onSelect(boolean positive, String text) {
 				if (positive && text != null && !text.trim().isEmpty()) {
-					String scriptName = text.trim();
-					if (saveScriptToFile(scriptName, script)) {
-						showResult("脚本已保存: " + scriptName, Window.TITLE_COLOR);
+					String name = text.trim();
+					if (doSaveScript(name, script)) {
+						currentScriptName = name;
+						WndLuaScript.this.showResult(msg("saved_ok") + ": " + name, TITLE_COLOR);
 					} else {
-						showResult("保存失败", 0xFF4444);
+						WndLuaScript.this.showResult(msg("save_fail"), 0xFF4444);
 					}
 				}
 			}
 		});
 	}
-	
-	private boolean saveScriptToFile(String name, String content) {
+
+	private boolean doSaveScript(String name, String code) {
 		try {
-			// 从全局数据中获取脚本
-			Bundle globalData = com.zootdungeon.SaveManager.loadGlobal();
-			if (globalData == null) {
-				globalData = new Bundle();
-			}
-			
-			// 获取或创建脚本Bundle
-			Bundle scriptsBundle = globalData.getBundle("lua_scripts");
-			if (scriptsBundle == null || scriptsBundle.isNull()) {
-				scriptsBundle = new Bundle();
-			}
-			
-			// 保存脚本内容
-			scriptsBundle.put(name, content);
-			
-			// 更新脚本名称列表
-			ArrayList<String> scriptNames = new ArrayList<>();
-			if (globalData.contains("lua_script_names")) {
-				String[] existing = globalData.getStringArray("lua_script_names");
-				if (existing != null) {
-					for (String n : existing) {
-						if (!n.equals(name)) {
-							scriptNames.add(n);
-						}
-					}
+			Bundle global = com.zootdungeon.SaveManager.loadGlobal();
+			if (global == null) global = new Bundle();
+
+			Bundle scripts = global.getBundle("lua_scripts");
+			if (scripts == null || scripts.isNull()) scripts = new Bundle();
+			scripts.put(name, code);
+
+			ArrayList<String> names = new ArrayList<>();
+			if (global.contains("lua_script_names")) {
+				for (String n : global.getStringArray("lua_script_names")) {
+					if (!n.equals(name)) names.add(n);
 				}
 			}
-			if (!scriptNames.contains(name)) {
-				scriptNames.add(name);
-			}
-			globalData.put("lua_script_names", scriptNames.toArray(new String[0]));
-			
-			// 保存回全局数据
-			globalData.put("lua_scripts", scriptsBundle);
-			com.zootdungeon.SaveManager.saveGlobal(globalData);
-			
+			names.add(name);
+			global.put("lua_script_names", names.toArray(new String[0]));
+			global.put("lua_scripts", scripts);
+			com.zootdungeon.SaveManager.saveGlobal(global);
 			return true;
 		} catch (Exception e) {
-			GLog.w("Failed to save script: " + e.getMessage());
+			GLog.w("[Lua] save failed: " + e.getMessage());
 			return false;
 		}
 	}
-	
-	private void showScriptList() {
-		List<String> scripts = getSavedScripts();
-		if (scripts.isEmpty()) {
-			showResult("没有保存的脚本", 0xFF4444);
-			return;
+
+	private void deleteScript(String name) {
+		try {
+			Bundle global = com.zootdungeon.SaveManager.loadGlobal();
+			if (global == null) return;
+
+			Bundle scripts = global.getBundle("lua_scripts");
+			if (scripts != null && !scripts.isNull()) {
+				scripts.remove(name);
+				global.put("lua_scripts", scripts);
+			}
+
+			ArrayList<String> names = new ArrayList<>();
+			if (global.contains("lua_script_names")) {
+				for (String n : global.getStringArray("lua_script_names")) {
+					if (!n.equals(name)) names.add(n);
+				}
+			}
+			global.put("lua_script_names", names.toArray(new String[0]));
+			com.zootdungeon.SaveManager.saveGlobal(global);
+
+			if (currentScriptName != null && currentScriptName.equals(name)) {
+				currentScriptName = null;
+			}
+			showResult(msg("deleted") + ": " + name, 0xAAAAAA);
+		} catch (Exception e) {
+			GLog.w("[Lua] delete failed: " + e.getMessage());
 		}
-		
-		// 创建脚本列表窗口
-		Window listWindow = new Window();
-		
-		int width = 150;
-		float pos = 2;
-		
-		RenderedTextBlock title = PixelScene.renderTextBlock("选择脚本", 9);
-		title.maxWidth(width);
-		title.hardlight(Window.TITLE_COLOR);
-		title.setPos((width - title.width()) / 2, pos);
-		listWindow.add(title);
-		
-		pos = title.bottom() + 4;
-		
-		// 添加脚本按钮
-		for (final String scriptName : scripts) {
-			RedButton btn = new RedButton(scriptName) {
+	}
+
+	private List<ScriptEntry> loadSavedScripts() {
+		List<ScriptEntry> result = new ArrayList<>();
+		try {
+			Bundle global = com.zootdungeon.SaveManager.loadGlobal();
+			if (global == null || !global.contains("lua_script_names")) return result;
+			String[] names = global.getStringArray("lua_script_names");
+			if (names == null) return result;
+			Bundle scripts = global.getBundle("lua_scripts");
+			for (String name : names) {
+				if (scripts != null && scripts.contains(name)) {
+					result.add(new ScriptEntry(name, scripts.getString(name)));
+				}
+			}
+		} catch (Exception ignored) {}
+		return result;
+	}
+
+	// ── Help windows ────────────────────────────────────────────────────────
+	private void showHelp() {
+		String body = msg("help_intro") + "\n\n"
+				+ msg("help_globals") + "\n"
+				+ "  log(msg)\n"
+				+ "  random(min, max) / randomFloat()\n"
+				+ "  Dungeon.depth / .gold / .hero / .level\n"
+				+ "  Dungeon:drop(\"upgrade\", cell)\n"
+				+ "  hero:HP() / :heal(n) / :teleport(cell)\n"
+				+ "  hero:pos() / :level() / :damage(n)\n"
+				+ "  level:isPassable(cell) / :isValid(cell)\n"
+				+ "\n" + msg("help_java") + "\n"
+				+ "  Java.getClass(\"ClassName\")\n"
+				+ "  Java.callStatic(\"Class\", \"method\", args)\n"
+				+ "  obj:call(\"method\", args...)\n"
+				+ "\n" + msg("help_hint");
+		GameScene.show(new WndOptions(
+				Icons.INFO.get(),
+				msg("help_title"),
+				body,
+				msg("got_it")
+		));
+	}
+
+	private void showQuickRef() {
+		GameScene.show(new WndOptions(
+				Icons.INFO.get(),
+				msg("ref_title"),
+				msg("ref_body"),
+				"OK"
+		));
+	}
+
+	// ── Script row ────────────────────────────────────────────────────────
+	private class ScriptRow extends Component {
+		private final String name;
+		private final String code;
+		private final float rowW;
+		private RenderedTextBlock label;
+		private RedButton loadBtn;
+		private RedButton delBtn;
+
+		ScriptRow(String name, String code, float y, float w) {
+			this.name = name;
+			this.code = code;
+			this.rowW = w;
+			setRect(0, y, w, BTN_H + MARGIN);
+		}
+
+		@Override
+		protected void createChildren() {
+			label = PixelScene.renderTextBlock(name, 6);
+			label.maxWidth((int)(rowW - BTN_H * 2 - MARGIN * 2));
+			label.setPos(0, (height() - label.height()) / 2f);
+			add(label);
+
+			loadBtn = new RedButton("", 9) {
 				@Override
 				protected void onClick() {
-					hide();
-					loadScript(scriptName);
+					textBox.setText(code);
+					currentScriptName = name;
+					WndLuaScript.this.showResult(msg("loaded") + ": " + name, TITLE_COLOR);
 				}
 			};
-			btn.setRect(2, pos, width - 4, BUTTON_HEIGHT);
-			listWindow.add(btn);
-			pos += BUTTON_HEIGHT + 2;
-		}
-		
-		listWindow.resize(width, (int)pos + 2);
-		GameScene.show(listWindow);
-	}
-	
-	private List<String> getSavedScripts() {
-		List<String> scripts = new ArrayList<>();
-		try {
-			Bundle globalData = com.zootdungeon.SaveManager.loadGlobal();
-			if (globalData != null && globalData.contains("lua_script_names")) {
-				String[] scriptNames = globalData.getStringArray("lua_script_names");
-				if (scriptNames != null) {
-					for (String name : scriptNames) {
-						scripts.add(name);
-					}
+			loadBtn.icon(Icons.ENTER.get());
+			add(loadBtn);
+
+			delBtn = new RedButton("", 9) {
+				@Override
+				protected void onClick() {
+					deleteScript(name);
+					GameScene.show(new WndLuaScript());
 				}
-			}
-		} catch (Exception e) {
-			GLog.w("Failed to list scripts: " + e.getMessage());
+			};
+			delBtn.icon(Icons.CLOSE.get());
+			add(delBtn);
 		}
-		return scripts;
+
+		@Override
+		protected void layout() {
+			label.setPos(0, (height() - label.height()) / 2f);
+			loadBtn.setRect(rowW - BTN_H * 2 - MARGIN, 0, BTN_H, BTN_H);
+			delBtn.setRect(rowW - BTN_H, 0, BTN_H, BTN_H);
+		}
 	}
-	
-	private void loadScript(String name) {
-		try {
-			Bundle globalData = com.zootdungeon.SaveManager.loadGlobal();
-			if (globalData != null) {
-				Bundle scriptsBundle = globalData.getBundle("lua_scripts");
-				if (scriptsBundle != null && scriptsBundle.contains(name)) {
-					String content = scriptsBundle.getString(name);
-					textBox.setText(content);
-					showResult("已加载脚本: " + name, Window.TITLE_COLOR);
-					return;
-				}
-			}
-			showResult("脚本不存在: " + name, 0xFF4444);
-		} catch (Exception e) {
-			showResult("加载失败: " + e.getMessage(), 0xFF4444);
-			GLog.w("Failed to load script: " + e.getMessage());
+
+	private static class ScriptEntry {
+		final String name;
+		final String code;
+		ScriptEntry(String name, String code) { this.name = name; this.code = code; }
+	}
+
+	// ── Messages ──────────────────────────────────────────────────────────
+	private String msg(String key) {
+		return Messages.get("arknights.luascript." + key);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// Prevent accidental loss of writing
+	}
+
+	@Override
+	public void offset(int xOff, int yOff) {
+		super.offset(xOff, yOff);
+		if (textBox != null) {
+			textBox.setRect(textBox.left(), textBox.top(), textBox.width(), textBox.height());
 		}
 	}
 }
-

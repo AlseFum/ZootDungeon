@@ -27,7 +27,7 @@ import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.messages.Messages;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -65,7 +65,7 @@ public class GitanoCard extends Item {
 	private static final ArrayList<BuffInfo> FORTUNE_BUFFS = new ArrayList<>();
 
 	static {
-		SpriteRegistry.texture("sheet.cola.gitano_card", "cola/gitano_card.png")
+		TextureRegistry.texture("sheet.cola.gitano_card", "cola/gitano_card.png")
 				.grid(32, 32)
 				.label("gitano_card");
 
@@ -80,7 +80,7 @@ public class GitanoCard extends Item {
 	}
 
 	{
-		image = SpriteRegistry.byLabel("gitano_card");
+		image = TextureRegistry.idByLabel("gitano_card");
 		stackable = true;
 		defaultAction = AC_DRAW;
 	}

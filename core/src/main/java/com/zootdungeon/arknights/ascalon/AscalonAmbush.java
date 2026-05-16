@@ -6,18 +6,18 @@ import com.zootdungeon.actors.blobs.SmokeScreen;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 
 public class AscalonAmbush extends AmbushWeapon {
     
     static {
-        SpriteRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
+        TextureRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
                 .grid(64, 64)
                 .setXY("ascalon_ambush", 0, 0);
     }
     
     {
-        image = SpriteRegistry.byLabel("ascalon_ambush");
+        image = TextureRegistry.idByLabel("ascalon_ambush");
         tier = 0;
         bones = false;
         ambushRate=1.2f;

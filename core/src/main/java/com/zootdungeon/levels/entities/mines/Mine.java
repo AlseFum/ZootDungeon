@@ -26,6 +26,15 @@ import com.zootdungeon.levels.entities.CellEntity;
  */
 public abstract class Mine extends CellEntity {
 
+    public Mine(){
+        try {
+            this.sprite = spriteClass().getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+        this.sprite.link(this);
+        this.sprite.place(pos);
+    }
     /** 已经被引爆（避免连锁/并发导致的重复结算）。持久化以便存读档时保持一致。 */
     protected boolean detonated = false;
 

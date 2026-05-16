@@ -84,13 +84,13 @@ public class MobSprite extends CharSprite {
 	}
 
 	/**
-	 * Helper for dynamic sprites: treats {@code label} as a SpriteRegistry texture label.
+	 * Helper for dynamic sprites: treats {@code label} as a TextureRegistry texture label.
 	 * If not registered, uses {@code fallbackTexture}.
 	 */
 	protected TextureFilm textureWithFallback(String label, Object fallbackTexture, int frameW, int frameH){
 		Object tex = fallbackTexture;
 		if (label != null) {
-			SpriteRegistry.TextureSheet sheet = SpriteRegistry.the(label);
+			TextureRegistry.TextureHandler sheet = TextureRegistry.the(label);
 			if (sheet != null) {
 				Object handle = sheet.textureHandle();
 				tex = handle;

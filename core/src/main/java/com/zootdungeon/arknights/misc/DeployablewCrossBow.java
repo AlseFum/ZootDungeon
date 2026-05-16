@@ -19,7 +19,7 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.MissileSprite;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
@@ -48,11 +48,11 @@ public class DeployablewCrossBow extends Weapon {
 	private int targetPos;
 
 	static {
-		SpriteRegistry.texture("mod:deployedlineblade", "cola/redknife.png").grid(32, 32).label("deployed_line_blade");
+		TextureRegistry.texture("mod:deployedlineblade", "cola/redknife.png").grid(32, 32).label("deployed_line_blade");
 	}
 
 	{
-		image = SpriteRegistry.byLabel("deployed_line_blade");
+		image = TextureRegistry.idByLabel("deployed_line_blade");
 		defaultAction = AC_SHOOT;
 		usesTargeting = true;
 		DLY = 1f;

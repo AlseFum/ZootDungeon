@@ -16,7 +16,7 @@ import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GhostSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Random;
 
@@ -25,10 +25,10 @@ public class PhantomKnife extends AmbushWeapon {
 	private static final int PHANTOM_KNIFE_IMAGE;
 
 	static {
-		SpriteRegistry.texture("sheet.cola.phantom_knife", "cola/phantom_knife.png")
+		TextureRegistry.texture("sheet.cola.phantom_knife", "cola/phantom_knife.png")
 				.grid(64, 64)
 				.label("phantom_knife");
-		PHANTOM_KNIFE_IMAGE = SpriteRegistry.byLabel("phantom_knife");
+		PHANTOM_KNIFE_IMAGE = TextureRegistry.idByLabel("phantom_knife");
 	}
 
 	private static final String CHARGE = "charge";

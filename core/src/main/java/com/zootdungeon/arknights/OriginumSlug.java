@@ -13,7 +13,7 @@ import com.watabou.utils.Random;
 public class OriginumSlug extends Mob {
 
 	static {
-		// SpriteRegistry no longer manages mob textures.
+		// TextureRegistry no longer manages mob textures.
 	}
 
 	{
@@ -48,6 +48,7 @@ public class OriginumSlug extends Mob {
 			super();
 			Object texHandle = Assets.getTexture("cola/originum_slug.png");
 			texture(texHandle);
+			scale.set(0.7f);
 			SmartTexture tex = TextureCache.get(texHandle);
 			int fw = 32, fh = 32;
 			if (tex.width / fw == 0 || tex.height / fh == 0) {

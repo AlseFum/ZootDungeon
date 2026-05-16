@@ -4,15 +4,15 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Random;
 
 public class Rebellist extends Mob {
 
 	static {
-		// SpriteRegistry no longer manages mob textures.
-		SpriteRegistry.texture("mod:rebellist", "cola/rebellist.png");
+		// TextureRegistry no longer manages mob textures.
+		TextureRegistry.texture("mod:rebellist", "cola/rebellist.png");
 	}
 
 	{
@@ -47,7 +47,7 @@ public class Rebellist extends Mob {
 		public RebellistSprite() {
 			super();
 			scale.set(0.7f);
-			boolean hasMod = SpriteRegistry.the("mod:rebellist") != null;
+			boolean hasMod = TextureRegistry.the("mod:rebellist") != null;
 			TextureFilm frames = hasMod
 					? textureWithFallback("mod:rebellist", Assets.Sprites.RAT, 32, 32)
 					: textureWithFallback(null, Assets.Sprites.RAT, 16, 15);

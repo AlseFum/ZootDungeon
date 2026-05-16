@@ -806,8 +806,8 @@ public class ItemSpriteSheet {
 
 		public static TextureFilm film;
 		static {
-			SpriteRegistry.texture("ui.item_icons", Assets.Sprites.ITEM_ICONS);
-			Object handle = SpriteRegistry.the("ui.item_icons").textureHandle();
+			TextureRegistry.texture("ui.item_icons", Assets.Sprites.ITEM_ICONS);
+			Object handle = TextureRegistry.the("ui.item_icons").textureHandle();
 			film = new TextureFilm(handle instanceof String ? Assets.getTexture((String) handle) : handle, SIZE, SIZE);
 		}
 

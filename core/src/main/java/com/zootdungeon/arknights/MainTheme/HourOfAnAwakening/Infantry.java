@@ -3,22 +3,21 @@ package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.Assets;
-import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.potions.PotionOfStrength;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Random;
 
 public class Infantry extends Mob {
 
     static {
-        // SpriteRegistry no longer manages mob textures.
-        SpriteRegistry.texture("mod:infantry", "cola/Infantry.png");
+        // TextureRegistry no longer manages mob textures.
+        TextureRegistry.texture("mod:infantry", "cola/Infantry.png");
         LootRegistry.register("mob:infantry:loot",
                 new LootRegistry.LootTable()
                         .pool(new LootRegistry.LootPool()
@@ -28,7 +27,7 @@ public class Infantry extends Mob {
                                 .add(new LootRegistry.ItemEntry(1, PotionOfStrength.class))
                                 .add(new LootRegistry.ItemEntry(1, ScrollOfUpgrade.class))
                                 .add(new LootRegistry.ItemEntry(2, PotionOfHealing.class))
-                                .add(new LootRegistry.CategoryEntry(1, Generator.Category.SEED))));
+                                .add(new LootRegistry.CategoryPoolEntry(1, LootRegistry.SEED()))));
     }
 
     {
@@ -63,7 +62,7 @@ public class Infantry extends Mob {
         public InfantrySprite() {
             super();
             scale.set(0.7f);
-            boolean hasMod = SpriteRegistry.the("mod:infantry") != null;
+            boolean hasMod = TextureRegistry.the("mod:infantry") != null;
             TextureFilm frames = hasMod
                     ? textureWithFallback("mod:infantry", Assets.Sprites.RAT, 32, 32)
                     : textureWithFallback(null, Assets.Sprites.RAT, 16, 15);

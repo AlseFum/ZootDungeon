@@ -12,7 +12,6 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
-import com.zootdungeon.sprites.SpriteRegistry.ImageMapping;
 import com.zootdungeon.tiles.DungeonTilemap;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -223,26 +222,26 @@ public class ItemSprite extends MovieClip {
 
 	public void frame(int image) {
 		if (image >= 1024) {
-			ImageMapping map = null;
-			SpriteRegistry.TextureSheet sheet = null;
-			for (SpriteRegistry.TextureSheet s : SpriteRegistry.itemSheets) {
+			TextureRegistry.TextureArea map = null;
+			TextureRegistry.TextureHandler sheet = null;
+			for (TextureRegistry.TextureHandler s : TextureRegistry.itemSheets) {
 				if (s.id_start <= image && image <= s.id_start + s.id_size) {
 					s.load();
 					sheet = s;
 					break;
 				}
 			}
-			map = sheet != null ? sheet.get(image) : null;
+			map = sheet != null ? sheet.getArea(image) : null;
 			if (map != null) {
-				texture = map.texture;
-				frame(map.rect);
-				float _height = map.height;
+				texture = map.texture();
+				frame(map.rect());
+				float _height = map.height();
 				if (_height < 8f) {
 					perspectiveRaise = (5 + 8 - _height) / 16f;
 				}
 			// Correct scaling and origin
-			if (map.size != 16) {
-				float scaleFactor = 16f / Math.max(map.size, 1);
+			if (map.size() != 16) {
+				float scaleFactor = 16f / Math.max(map.size(), 1);
 				scale.set(scaleFactor);
 				// Origin stays at top-left (0, 0) like the default 16x16 sprites
 				origin.set(0, 0);
@@ -252,6 +251,7 @@ public class ItemSprite extends MovieClip {
 			}
 				return;
 			}
+			return;
 		}
 		
 		// Fallback to static ItemSpriteSheet

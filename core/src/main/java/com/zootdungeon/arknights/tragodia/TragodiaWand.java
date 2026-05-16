@@ -14,7 +14,7 @@ import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.mechanics.Ballistica;
@@ -34,13 +34,13 @@ public class TragodiaWand extends Wand {
     private int charge = 0;
     private int chargeCap = 10;
     static {
-		SpriteRegistry.texture("sheet.cola.tragodia_wand", "cola/tragodia_wand.png")
+		TextureRegistry.texture("sheet.cola.tragodia_wand", "cola/tragodia_wand.png")
 				.grid(64, 64)
 				.label("tragodia_wand");
 	}
 
     {
-        image = SpriteRegistry.byLabel("tragodia_wand");
+        image = TextureRegistry.idByLabel("tragodia_wand");
 
         collisionProperties = Ballistica.MAGIC_BOLT;
     }

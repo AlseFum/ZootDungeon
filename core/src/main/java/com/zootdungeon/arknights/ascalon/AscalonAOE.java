@@ -6,26 +6,30 @@ import com.zootdungeon.actors.blobs.Blob;
 import com.zootdungeon.actors.blobs.SmokeScreen;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
+import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BuffIndicator;
+import com.zootdungeon.utils.GLog;
 import com.zootdungeon.utils.Select;
+import com.watabou.utils.PathFinder;
 
 public class AscalonAOE extends MeleeWeapon {
     
     static {
-        // setXY(label, gx, gy) 按网格格索引；要 64×64 一帧需先 grid(64,64) 再 setXY(label,0,0)。
-        SpriteRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
-                .grid(64, 64)
-                .setXY("ascalon_aoe", 0, 0);
+        // setArea(label, gx, gy) 按网格格索引；要 64×64 一帧需先 grid(64,64) 再 setArea(label,0,0)。
+        TextureRegistry.texture("sheet.cola.ascalon_weapon", "cola/ascalon_weapon.png")
+                .setArea("ascalon_aoe", 0, 0, 64, 64);
     }
     
     {
-        image = SpriteRegistry.byLabel("ascalon_aoe");
-        tier = 0;
+        image = TextureRegistry.idByLabel("ascalon_aoe");
+        tier = 1;
         bones = false;
-        RCH=3;
+        RCH = 3;
+        usesTargeting = false;
     }
     
     private static final int AOE_RADIUS = 3; // 范围半径
@@ -33,14 +37,13 @@ public class AscalonAOE extends MeleeWeapon {
     private static final float EVASION_BONUS = 1.5f; // 闪避加成（50%）
     
     @Override
-    public String name(){
-        return "“复仇者”";
+    public String name() {
+        return Messages.get(this, "name");
     }
 
     @Override
-    public String desc(){
-        return "在阿斯卡纶第一次为军事委员会完成任务后，由特雷西斯亲手赠送，特蕾西娅为她安装的第一把武器。\n\n" +
-               "这把武器的每次攻击都会对大范围内的敌人造成伤害并附加持续伤害效果。装备时提供50%的闪避加成。";
+    public String desc() {
+        return Messages.get(this, "desc");
     }
     
     @Override
@@ -66,30 +69,87 @@ public class AscalonAOE extends MeleeWeapon {
     @Override
     public int proc(Char attacker, Char defender, int damage) {
         damage = super.proc(attacker, defender, damage);
-        
-        // 每次攻击时触发范围伤害
-        if (attacker instanceof Hero && defender.isAlive()) {
-            Hero hero = (Hero) attacker;
-            boolean inFogPrimary = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
-                    || Blob.volumeAt(defender.pos, SmokeScreen.class) > 0;
-            AscalonWound.applyFrom(hero, defender, damage, inFogPrimary);
 
-            for (Char ch : Select.chars().all()
-                    .at(Select.placePathRing(defender.pos, Dungeon.level.passable, AOE_RADIUS))
-                    .except(Select.chars().of(hero))
-                    .except(Select.chars().of(defender))
-                    .except(Select.chars().ally())
-                    .that(Char::isAlive)
-                    .query()) {
-                int aoeDamage = Math.max(1, Math.round(damage * AOE_DAMAGE_MULT));
-                proc(hero, ch, aoeDamage);
-                boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
-                        || Blob.volumeAt(ch.pos, SmokeScreen.class) > 0;
-                AscalonWound.applyFrom(hero, ch, aoeDamage, inFog);
-            }
+        // Only apply AscalonWound for the primary target of a regular attack.
+        // AOE attacks are handled by duelistAbility which sets applyingAOEAbility=true,
+        // applies AscalonWound itself in the callback, and resets the flag.
+        if (attacker instanceof Hero && defender.isAlive() && !applyingAOEAbility) {
+            Hero hero = (Hero) attacker;
+            boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
+                    || Blob.volumeAt(defender.pos, SmokeScreen.class) > 0;
+            AscalonWound.applyFrom(hero, defender, damage, inFog);
         }
-        
+
         return damage;
+    }
+
+    @Override
+    protected void duelistAbility(Hero hero, Integer target) {
+        if (target == null) return;
+
+        // If target is the hero's own position, use all adjacent enemies
+        // Otherwise, build distance map from target cell
+        if (target != hero.pos) {
+            PathFinder.buildDistanceMap(target, Dungeon.level.passable, AOE_RADIUS);
+        }
+
+        java.util.Set<Char> targets = Select.chars().all()
+                .except(Select.chars().of(hero))
+                .except(Select.chars().ally())
+                .that(ch -> {
+                    // Must be alive and in hero's FOV
+                    if (!ch.isAlive() || !Dungeon.level.heroFOV[ch.pos]) return false;
+                    // If targeting own position: adjacent to hero
+                    if (target == hero.pos) {
+                        return Dungeon.level.adjacent(hero.pos, ch.pos);
+                    }
+                    // Otherwise: within AOE radius of target cell
+                    return ch.pos >= 0 && ch.pos < PathFinder.distance.length
+                            && PathFinder.distance[ch.pos] <= AOE_RADIUS
+                            && PathFinder.distance[ch.pos] > 0;
+                })
+                .query();
+
+        if (targets.isEmpty()) {
+            GLog.w(Messages.get(this, "ability_no_target"));
+            hero.belongings.abilityWeapon = null;
+            return;
+        }
+
+        beforeAbilityUsed(hero, null);
+        applyingAOEAbility = true;
+
+        final java.util.Set<Char> finalTargets = targets;
+        final int[] hitCount = {0};
+        for (Char enemy : finalTargets) {
+            hero.sprite.attack(enemy.pos, new com.watabou.utils.Callback() {
+                @Override
+                public void call() {
+                    hero.attack(enemy, 1f, 0f, Char.INFINITE_ACCURACY);
+
+                    // Apply AscalonWound to AOE targets using AOE damage.
+                    int aoeDamage = Math.max(1, Math.round(hero.damageRoll() * AOE_DAMAGE_MULT));
+                    boolean inFog = Blob.volumeAt(hero.pos, SmokeScreen.class) > 0
+                            || Blob.volumeAt(enemy.pos, SmokeScreen.class) > 0;
+                    AscalonWound.applyFrom(hero, enemy, aoeDamage, inFog);
+
+                    hitCount[0]++;
+                    if (hitCount[0] == finalTargets.size()) {
+                        applyingAOEAbility = false;
+                        Invisibility.dispel();
+                        hero.spendAndNext(hero.attackDelay());
+                        afterAbilityUsed(hero);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public String abilityInfo() {
+        int avgDmg = (min(0) + max(0)) / 2;
+        int aoeDmg = Math.max(1, Math.round(avgDmg * AOE_DAMAGE_MULT));
+        return Messages.get(this, "ability_desc", min(0), max(0), aoeDmg, AOE_RADIUS);
     }
     
     // 闪避加成 buff
@@ -112,5 +172,11 @@ public class AscalonAOE extends MeleeWeapon {
             return EVASION_BONUS;
         }
         return 1f;
+    }
+
+    // 防止在 AOE 技能攻击中重复触发 proc 内的 AscalonWound 逻辑
+    private static boolean applyingAOEAbility = false;
+    public static boolean isApplyingAOEAbility() {
+        return applyingAOEAbility;
     }
 }

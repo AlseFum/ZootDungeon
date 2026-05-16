@@ -34,7 +34,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Rect;
@@ -67,8 +67,8 @@ public class ItemSlot extends Button {
 	private static final String TXT_LEVEL	= "%+d";
 
 	private static Object itemIconsTextureHandle(){
-		SpriteRegistry.texture("ui.item_icons", Assets.Sprites.ITEM_ICONS);
-		Object handle = SpriteRegistry.the("ui.item_icons").textureHandle();
+		TextureRegistry.texture("ui.item_icons", Assets.Sprites.ITEM_ICONS);
+		Object handle = TextureRegistry.the("ui.item_icons").textureHandle();
 		return (handle instanceof String) ? Assets.getTexture((String) handle) : handle;
 	}
 

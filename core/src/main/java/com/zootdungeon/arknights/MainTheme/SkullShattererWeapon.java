@@ -20,7 +20,7 @@ import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.utils.Select;
@@ -42,7 +42,7 @@ import java.util.Set;
 public class SkullShattererWeapon extends MeleeWeapon {
 
     static {
-        SpriteRegistry.texture("sheet.cola.gunweapon", "cola/gunweapon.png")
+        TextureRegistry.texture("sheet.cola.gunweapon", "cola/gunweapon.png")
                 .grid(16, 16)
                 .span(23).label("shatteredweapon");
     }
@@ -50,7 +50,7 @@ public class SkullShattererWeapon extends MeleeWeapon {
     public enum Mode { MELEE, RANGED }
 
     {
-        image = SpriteRegistry.byLabel("shatteredweapon");
+        image = TextureRegistry.idByLabel("shatteredweapon");
         tier = 3;
         bones = false;
         usesTargeting = true;

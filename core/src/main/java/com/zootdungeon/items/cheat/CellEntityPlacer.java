@@ -10,7 +10,7 @@ import com.zootdungeon.levels.entities.DebugCellMarker;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 
 /**
@@ -26,7 +26,7 @@ public class CellEntityPlacer extends Item {
     public static final String AC_INSPECT = "INSPECT";
 
     {
-        image = SpriteRegistry.byLabel("debug_bag");
+        image = TextureRegistry.idByLabel("debug_bag");
         stackable = false;
         unique = true;
         defaultAction = AC_PLACE;

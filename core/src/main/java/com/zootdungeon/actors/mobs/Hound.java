@@ -25,14 +25,14 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.food.MysteryMeat;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Random;
 
 public class Hound extends Mob {
 
 	static {
-		SpriteRegistry.texture("mod:hound", "cola/hound.png");
+		TextureRegistry.texture("mod:hound", "cola/hound.png");
 	}
 
 	{
@@ -69,7 +69,7 @@ public class Hound extends Mob {
 		public HoundSprite() {
 			super();
 
-			boolean hasMod = SpriteRegistry.the("mod:hound") != null;
+			boolean hasMod = TextureRegistry.the("mod:hound") != null;
 			TextureFilm frames = hasMod
 					? textureWithFallback("mod:hound", Assets.Sprites.CRAB, 32, 32)
 					: textureWithFallback(null, Assets.Sprites.CRAB, 16, 16);

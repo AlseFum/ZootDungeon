@@ -21,7 +21,7 @@ import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.AtomBundle;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndRhodesIslandTerminal;
@@ -117,12 +117,12 @@ public class RhodesIslandTerminal extends Artifact {
 	public int runtimeActorId = -1;
 
 	static {
-		SpriteRegistry.texture("sheet.cola.command_terminal", "cola/command_terminal.png")
-				.setXY("rhodes_island_terminal", 0, 0, 32, 32);
+		TextureRegistry.texture("sheet.cola.command_terminal", "cola/command_terminal.png")
+				.setArea("rhodes_island_terminal", 0, 0, 32, 32);
 	}
 
 	{
-		image = SpriteRegistry.byLabel("rhodes_island_terminal");
+		image = TextureRegistry.idByLabel("rhodes_island_terminal");
 		defaultAction = AC_OPEN;
 	}
 

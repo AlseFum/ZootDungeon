@@ -2,17 +2,17 @@ package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bags.Bag;
-import com.zootdungeon.sprites.SpriteRegistry;
-import com.zootdungeon.items.supply.Supply;
+import com.zootdungeon.sprites.TextureRegistry;
+import com.zootdungeon.items.supply.DebugSupply;
 
 public class DebugBag extends Bag {
     static {
-        SpriteRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-                .setXY("debug_bag", 0, 0, 32, 32);
+        TextureRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
+                .setArea("debug_bag", 0, 0, 32, 32);
     }
     
     {
-        image = SpriteRegistry.byLabel("debug_bag");
+        image = TextureRegistry.idByLabel("debug_bag");
         unique = true;
     }
 
@@ -22,13 +22,13 @@ public class DebugBag extends Bag {
             || item instanceof RedStone
             || item instanceof Codex
             || item instanceof Panacea
-            || item instanceof Supply
+            || item instanceof DebugSupply
             || item instanceof ItemRemover
             || item instanceof ThrowingWeaponBox
             || item instanceof WandBox
             || item instanceof BombBox
             || item instanceof ItemEditor
-            || item instanceof StoneOfDungeonTravel
+            || item instanceof LevelConsole
             ; 
     }
 

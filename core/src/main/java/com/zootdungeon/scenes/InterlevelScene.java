@@ -736,7 +736,6 @@ public class InterlevelScene extends PixelScene {
 	private void restore() throws IOException {
 		
 		Mob.clearHeldAllies();
-		Generator.initializeItems();
 		GameLog.wipe();
 
 		Dungeon.loadGame( GamesInProgress.curSlot );

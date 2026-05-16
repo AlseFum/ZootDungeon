@@ -1,6 +1,6 @@
 package com.zootdungeon.levels.entities;
 
-import com.watabou.noosa.Image;
+import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.PointF;
 import com.zootdungeon.Dungeon;
@@ -10,7 +10,8 @@ import com.zootdungeon.tiles.DungeonTilemap;
 /**
  * {@link CellEntity} 的视觉基类。
  * <p>
- * 默认继承 {@link Image}，子类既可以通过
+ * 直接继承 {@link com.watabou.noosa.MovieClip}，具备帧动画能力。
+ * 子类既可以通过
  * {@code copy(spriteSheet.get(region))} 从图集切片，也可以自行
  * {@code texture("assets/...")} 加载独立贴图。
  * <p>
@@ -18,7 +19,7 @@ import com.zootdungeon.tiles.DungeonTilemap;
  * 为每个实体调用 {@link Class#newInstance()} 实例化对应 sprite，再调用 {@link #link(CellEntity)}
  * 以关联、{@link #place(int)} 以摆到世界坐标。
  */
-public class CellEntitySprite extends Image {
+public class CellEntitySprite extends MovieClip {
 
     protected CellEntity entity;
 

@@ -17,18 +17,18 @@ import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GhostSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 
 public class NecrassCard extends MissileWeapon {
 	static {
-		SpriteRegistry.texture("sheet.cola.necrass_card", "cola/necrass_card.png")
+		TextureRegistry.texture("sheet.cola.necrass_card", "cola/necrass_card.png")
 				.grid(32, 32)
 				.label("necrass_card");
 	}
 
 	{
-		image = SpriteRegistry.byLabel("necrass_card");
+		image = TextureRegistry.idByLabel("necrass_card");
 		hitSound = Assets.Sounds.HIT_SLASH;
 		hitSoundPitch = 1.2f;
 

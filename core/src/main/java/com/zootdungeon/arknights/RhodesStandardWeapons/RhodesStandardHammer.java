@@ -23,19 +23,17 @@ package com.zootdungeon.arknights.RhodesStandardWeapons;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 
-/** 罗德岛制式战锤：比 {@link RhodesStandardSword} 高一档 tier，偏慢、打击音效。 */
 public class RhodesStandardHammer extends MeleeWeapon {
 
 	static {
-		SpriteRegistry.texture("mod:rhodes_standard_hammer", "cola/rhodes_hammer.png")
-				.grid(32, 32)
-				.label("rhodes_standard_hammer");
+		TextureRegistry.texture("mod:rhodes_standard_hammer", "cola/rhodes_hammer.png")
+				.setArea("rhodes_standard_hammer", 0, 0, 32, 32);
 	}
 
 	{
-		image = SpriteRegistry.byLabel("rhodes_standard_hammer");
+		image = TextureRegistry.idByLabel("rhodes_standard_hammer");
 		hitSound = Assets.Sounds.HIT_CRUSH;
 		hitSoundPitch = 1.0f;
 		DLY = 1.25f;

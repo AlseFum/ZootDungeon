@@ -25,18 +25,17 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 
 public class RhodesStandardShield extends MeleeWeapon {
     
     static {
-        SpriteRegistry.texture("sheet.cola.rhodes_shield", "cola/rhodes_shield.png")
-                .grid(32, 32)
-                .label("rhodes_shield");
+        TextureRegistry.texture("sheet.cola.rhodes_shield", "cola/rhodes_shield.png")
+                .setArea("rhodes_shield", 0, 0, 32, 32);
     }
     
     {
-        image = SpriteRegistry.byLabel("rhodes_shield");
+        image = TextureRegistry.idByLabel("rhodes_shield");
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         

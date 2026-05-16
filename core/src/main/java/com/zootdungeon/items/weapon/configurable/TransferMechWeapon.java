@@ -19,7 +19,7 @@ import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.GhostSprite;
-import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.Image;
@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class TransferMechWeapon extends MeleeWeapon {
-    
+    static {
+        TextureRegistry.texture("cpd","cola/goldenglow_weapon.png").setArea("goldenglow_weapon",0,0,32,32);
+    }
     private static final String AC_RELEASE_MECH = "RELEASE_MECH";
     private static final String MECH_COUNT = "mechCount";
     private static final String AOE_RANGE = "aoeRange";
@@ -43,7 +45,7 @@ public class TransferMechWeapon extends MeleeWeapon {
     public int searchRange = 8;
     
     {
-        image = ItemSpriteSheet.WAND_WARDING;
+        image = TextureRegistry.idByLabel("goldenglow_weapon");
         tier = 0;
     }
 

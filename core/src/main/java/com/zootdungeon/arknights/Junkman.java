@@ -5,15 +5,15 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.sprites.MobSprite;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Random;
 
 public class Junkman extends Mob {
 
 	static {
-		// SpriteRegistry no longer manages mob textures.
-		SpriteRegistry.texture("mod:junkman", "cola/junkman.png");
+		// TextureRegistry no longer manages mob textures.
+		TextureRegistry.texture("mod:junkman", "cola/junkman.png");
 	}
 
 	{

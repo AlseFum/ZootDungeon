@@ -26,12 +26,8 @@ public final class HourOfAnAwakening {
         public ArrayList<Class<? extends Mob>> getMobRotation(int depth, int branch) {
             ArrayList<Class<? extends Mob>> mobs = new ArrayList<>();
             mobs.add(Infantry.class);
-            mobs.add(MobileShieldSoldier.class);
-            mobs.add(Rebellist.class);
             mobs.add(OriginumSlug.class);
-            mobs.add(Hound.class);
-            mobs.add(Yokai.class);
-            mobs.add(Junkman.class);
+            mobs.add(AgileOriginumSlug.class);
             return mobs;
         }
     };

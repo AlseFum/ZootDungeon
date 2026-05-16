@@ -35,7 +35,6 @@ import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.Window;
 import com.watabou.noosa.Game;
-import com.watabou.utils.DeviceCompat;
 
 import java.io.IOException;
 
@@ -61,18 +60,6 @@ public class WndGame extends Window {
 			}
 		});
 		curBtn.icon(Icons.get(Icons.PREFS));
-
-		// console (debug only)
-		if (DeviceCompat.isDebug()){
-			addButton( curBtn = new RedButton( "控制台" ) {
-				@Override
-				protected void onClick() {
-					hide();
-					GameScene.show(new WndConsole());
-				}
-			});
-			curBtn.icon(Icons.get(Icons.INFO));
-		}
 
 		// Lua脚本执行器
 		addButton( curBtn = new RedButton( "Lua脚本" ) {

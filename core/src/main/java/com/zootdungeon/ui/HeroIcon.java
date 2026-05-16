@@ -25,7 +25,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.RectF;
@@ -41,8 +41,8 @@ public class HeroIcon extends Image {
 
 	private static TextureFilm film(){
 		if (heroIconsFilm == null){
-			SpriteRegistry.texture("ui.hero_icons", Assets.Interfaces.HERO_ICONS);
-			Object handle = SpriteRegistry.the("ui.hero_icons").textureHandle();
+			TextureRegistry.texture("ui.hero_icons", Assets.Interfaces.HERO_ICONS);
+			Object handle = TextureRegistry.the("ui.hero_icons").textureHandle();
 			Object resolved = (handle instanceof String) ? Assets.getTexture((String) handle) : handle;
 			heroIconsTex = TextureCache.get(resolved);
 			heroIconsFilm = new TextureFilm(heroIconsTex, SIZE, SIZE);

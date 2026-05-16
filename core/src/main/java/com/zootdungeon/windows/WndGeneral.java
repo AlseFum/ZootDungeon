@@ -1,17 +1,14 @@
 package com.zootdungeon.windows;
 
-import com.zootdungeon.Assets;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
-import com.zootdungeon.ui.Button;
+import com.zootdungeon.ui.CheckBox;
 import com.zootdungeon.ui.RedButton;
 import com.zootdungeon.ui.RenderedTextBlock;
 import com.zootdungeon.ui.ScrollPane;
 import com.zootdungeon.ui.Window;
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.PointerArea;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -21,6 +18,8 @@ import java.util.function.Consumer;
 /**
  * <!-- TOC: Column segments + {@link Builder#hrow} | multi-tab {@link Builder#tab} -->
  * 通用表单窗口，便于开发时快速展示结构化信息。
+ *
+ * @see docs/skill/WndGeneral.md
  * <p>
  * 用法示例：
  * <pre>
@@ -240,46 +239,24 @@ public class WndGeneral extends Window {
 		int n = tabButtons.size();
 		if (n > 0) {
 			int maxFitOneRow = Math.max(1, (layoutWidth + GAP) / (TAB_BTN_MIN_W + GAP));
-			// 根据能放下的最小按钮数决定行数：1 / 2 / 3 行。
-			// 3 行在 tab 太多、两行也排不下时启用，避免按钮被挤成单字符宽度。
-			int rowCount;
-			if (n <= maxFitOneRow) {
-				rowCount = 1;
-			} else if (n <= 2 * maxFitOneRow) {
-				rowCount = 2;
-			} else {
-				rowCount = 3;
-			}
+			// 根据能放下的最小按钮数决定行数
+			int rowCount = (n + maxFitOneRow - 1) / maxFitOneRow;
 
-			if (rowCount == 1) {
-				float x = 0;
-				for (int i = 0; i < n; i++) {
-					RedButton btn = tabButtons.get(i);
-					float w = (i == n - 1)
-							? layoutWidth - x
-							: (float) Math.floor((layoutWidth - (n - 1) * GAP) / (float) n);
-					btn.setRect(x, y, w, TAB_BTN_H);
-					x = btn.right() + GAP;
+			// 动态分配每行的按钮数，尽量平均分配
+			int basePerRow = n / rowCount;
+			int extra = n % rowCount; // 前 extra 行多一个按钮
+
+			int start = 0;
+			for (int row = 0; row < rowCount; row++) {
+				int countInRow = basePerRow + (row < extra ? 1 : 0);
+				int end = start + countInRow;
+				y = layoutTabButtonRow(start, end, y);
+				if (row < rowCount - 1) {
+					y += GAP;
 				}
-				y = tabButtons.get(0).bottom() + GAP;
-			} else if (rowCount == 2) {
-				int row0 = (n + 1) / 2;
-				y = layoutTabButtonRow(0, row0, y);
-				y += GAP;
-				y = layoutTabButtonRow(row0, n, y);
-				y += GAP;
-			} else { // 3 行
-				// 尽量平均，前面的行最多多一个按钮。
-				int perRow = (n + 2) / 3;
-				int endRow0 = Math.min(perRow, n);
-				int endRow1 = Math.min(endRow0 + perRow, n);
-				y = layoutTabButtonRow(0, endRow0, y);
-				y += GAP;
-				y = layoutTabButtonRow(endRow0, endRow1, y);
-				y += GAP;
-				y = layoutTabButtonRow(endRow1, n, y);
-				y += GAP;
+				start = end;
 			}
+			y += GAP;
 		}
 
 		if (scrollPane != null) {
@@ -360,11 +337,18 @@ public class WndGeneral extends Window {
 				maxRight = Math.max(maxRight, block.right());
 			} else if (seg instanceof SwitchSeg) {
 				SwitchSeg ss = (SwitchSeg) seg;
-				SwitchRow sw = new SwitchRow(ss.label, ss.initialOn, ss.onChange);
-				sw.setRect(MARGIN, bodyY, colW, BTN_HEIGHT);
-				body.add(sw);
-				bodyY = sw.bottom() + GAP;
-				maxRight = Math.max(maxRight, sw.right());
+				CheckBox cb = new CheckBox(ss.label) {
+					@Override
+					protected void onClick() {
+						super.onClick();
+						if (ss.onChange != null) ss.onChange.accept(checked());
+					}
+				};
+				cb.checked(ss.initialOn);
+				cb.setRect(MARGIN, bodyY, colW, BTN_HEIGHT);
+				body.add(cb);
+				bodyY = cb.bottom() + GAP;
+				maxRight = Math.max(maxRight, cb.right());
 			} else if (seg instanceof OptionSeg) {
 				Option opt = ((OptionSeg) seg).option;
 				RedButton btn = new RedButton(opt.label) {
@@ -489,74 +473,6 @@ public class WndGeneral extends Window {
 			if (controller != null) {
 				controller.blockLevel = PointerArea.NEVER_BLOCK;
 			}
-		}
-	}
-
-	/** 仅用于本窗口的开关行：左侧标签，右侧滑轨 + 滑块。 */
-	private static class SwitchRow extends Button {
-
-		private static final int TRACK_W = 28;
-		private static final int TRACK_H = 10;
-		private static final int THUMB = 8;
-
-		private final RenderedTextBlock label;
-		private final ColorBlock track;
-		private final ColorBlock thumb;
-		private final Consumer<Boolean> onChange;
-		private boolean on;
-
-		SwitchRow(String labelText, boolean initialOn, Consumer<Boolean> onChange) {
-			this.on = initialOn;
-			this.onChange = onChange;
-			label = PixelScene.renderTextBlock(labelText != null ? labelText : "", 6);
-			add(label);
-			track = new ColorBlock(1, 1, 0xFF3a3a3a);
-			add(track);
-			thumb = new ColorBlock(THUMB, THUMB, 0xFFc8c8c8);
-			add(thumb);
-		}
-
-		void setOn(boolean value) {
-			if (on != value) {
-				on = value;
-				layout();
-				if (onChange != null) {
-					onChange.accept(on);
-				}
-			}
-		}
-
-		@Override
-		protected void layout() {
-			super.layout();
-
-			float h = height;
-			label.maxWidth(Math.max(1, (int) (width - TRACK_W - 6)));
-			label.setPos(x, y + (h - label.height()) / 2f);
-			PixelScene.align(label);
-
-			float trackX = x + width - TRACK_W - 1;
-			float trackY = y + (h - TRACK_H) / 2f;
-			track.size(TRACK_W, TRACK_H);
-			track.x = trackX;
-			track.y = trackY;
-
-			float thumbY = y + (h - THUMB) / 2f;
-			float thumbX = on ? (trackX + TRACK_W - THUMB - 1) : (trackX + 1);
-			thumb.x = thumbX;
-			thumb.y = thumbY;
-
-			track.resetColor();
-			thumb.resetColor();
-			if (on) {
-				track.hardlight(0.42f, 0.72f, 0.46f);
-			}
-		}
-
-		@Override
-		protected void onClick() {
-			Sample.INSTANCE.play(Assets.Sounds.CLICK);
-			setOn(!on);
 		}
 	}
 

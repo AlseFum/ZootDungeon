@@ -525,7 +525,7 @@ public abstract class Level implements Bundlable {
 
 	/**
 	 * Exposes the current tilemap key so that rendering code (e.g. DungeonTilemap)
-	 * can look up tileset information from SpriteRegistry.
+	 * can look up tileset information from TextureRegistry.
 	 */
 	public String tilemapKey() {
 		return tilemapKey;

@@ -1,5 +1,5 @@
 # SPD-classes 游戏引擎框架文档
-
+ImageMapping is deprecated
 ## 📋 概述
 
 **SPD-classes** 是一个基于 **LibGDX** 的2D游戏引擎框架，最初由 Oleg Dolya (watabou) 为 Pixel Dungeon 开发，后由 Evan Debenham 为 Shattered Pixel Dungeon 扩展。这个框架提供了完整的游戏开发基础设施，包括渲染、输入处理、音频、动画和数据持久化等功能。

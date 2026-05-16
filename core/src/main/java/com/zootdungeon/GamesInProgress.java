@@ -84,10 +84,13 @@ public class GamesInProgress {
 			try {
 				
 				Bundle bundle = SaveManager.loadGame(slot);
-
-				info = new Info();
+				if (bundle == null) {
+					info = null;
+				} else {
+					info = new Info();
 					info.slot = slot;
 					Dungeon.preview(info, bundle);
+				}
 
 			} catch (IOException e) {
 				info = null;

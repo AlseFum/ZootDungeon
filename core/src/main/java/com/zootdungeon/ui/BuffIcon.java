@@ -23,7 +23,7 @@ package com.zootdungeon.ui;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.buffs.Buff;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 
@@ -40,8 +40,8 @@ public class BuffIcon extends Image {
 	private static Object textureHandle(boolean large){
 		String label = large ? "ui.buffs_large" : "ui.buffs_small";
 		String fallback = large ? Assets.Interfaces.BUFFS_LARGE : Assets.Interfaces.BUFFS_SMALL;
-		SpriteRegistry.texture(label, fallback);
-		Object handle = SpriteRegistry.the(label).textureHandle();
+		TextureRegistry.texture(label, fallback);
+		Object handle = TextureRegistry.the(label).textureHandle();
 		return (handle instanceof String) ? Assets.getTexture((String) handle) : handle;
 	}
 

@@ -13,7 +13,7 @@ import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.sprites.SpriteRegistry;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
@@ -25,13 +25,12 @@ public class RhodesStandardBow extends MeleeWeapon {
     public static final String AC_SHOOT = "SHOOT";
 
     static {
-        SpriteRegistry.texture("mod:rhodes_standard_crossbow", "cola/rhodes_crossbow.png")
-                .grid(32, 32)
-                .label("rhodes_standard_crossbow");
+        TextureRegistry.texture("sheet.cola.rhodes_crossbow", "cola/rhodes_crossbow.png")
+                .setArea("rhodes_standard_crossbow", 0, 0, 32, 32);
     }
     
     {
-        image = SpriteRegistry.byLabel("rhodes_standard_crossbow");
+        image = TextureRegistry.idByLabel("rhodes_standard_crossbow");
         
         defaultAction = AC_SHOOT;
         usesTargeting = true;

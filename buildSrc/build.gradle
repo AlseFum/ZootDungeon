@@ -2,7 +2,6 @@ plugins {
     id 'java-gradle-plugin'
 }
 
-// buildSrc 是一个独立的小构建，和主工程无关；这里跟随根工程使用 Java 21。
 // 主构建里用 appJavaCompatibility 管版本，但那个 ext 在 buildSrc 不可见，所以显式写。
 java {
     sourceCompatibility = JavaVersion.VERSION_21

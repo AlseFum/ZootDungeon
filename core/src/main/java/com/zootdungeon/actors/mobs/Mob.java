@@ -60,7 +60,6 @@ import com.zootdungeon.items.weapon.enchantments.Lucky;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;
 import com.zootdungeon.items.LootRegistry;
-import com.zootdungeon.utils.AtomBundle;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Notes;
 import com.zootdungeon.levels.Level;
@@ -968,19 +967,19 @@ public abstract class Mob extends Char {
 	public Item createLoot() {
 		try {
 			if (lootTableId != null) {
-				AtomBundle ctx = new AtomBundle();
-				ctx.put("depth", Dungeon.depth);
-				ctx.put("pos", pos);
-				ctx.put("source", "MOB_KILL");
+				LootRegistry.LootArgs ctx = LootRegistry.LootArgs.create()
+						.depth(Dungeon.depth)
+						.pos(pos)
+						.source("MOB_KILL");
 				if (Dungeon.hero != null) {
 					int wealth = Ring.getBuffedBonus(Dungeon.hero, RingOfWealth.Wealth.class);
 					if (wealth > 0) {
-						ctx.put("bonusRollX", wealth * 40);
-						ctx.put("quantityBonusRate", wealth);
+						ctx.bonusRollX = wealth * 40;
+						ctx.quantityBonusRate = wealth;
 					}
 					Lucky.LuckProc luckProc = buff(Lucky.LuckProc.class);
 					if (luckProc != null) {
-						ctx.put("luck", Math.max(0, luckProc.ringLevel + 10));
+						ctx.luck = Math.max(0, luckProc.ringLevel + 10);
 					}
 				}
 				Item fromTable = LootRegistry.rollOne(lootTableId, ctx);

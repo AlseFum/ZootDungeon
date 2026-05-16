@@ -35,7 +35,7 @@ import com.watabou.noosa.ui.Component;
 public class WndInfoMob extends WndTitledMessage {
 
 	private static final int GAP = 2;
-	private static final int BTN_SIZE = 16;
+	private static final int BTN_SIZE = 8;
 
 	public WndInfoMob( Mob mob ) {
 		super( new MobTitle( mob ), mob.info() );
@@ -47,6 +47,8 @@ public class WndInfoMob extends WndTitledMessage {
 			}
 		};
 		allBuffsBtn.setRect( width - BTN_SIZE - GAP, GAP, BTN_SIZE, BTN_SIZE );
+		allBuffsBtn.icon().scale.set(0.5f);
+		allBuffsBtn.icon().originToCenter();
 		add( allBuffsBtn );
 		bringToFront( allBuffsBtn );
 	}
