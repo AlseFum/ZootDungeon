@@ -1,0 +1,20 @@
+{
+  "name": "zootdungeon-codegen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Macro expander/collapser for ZootDungeon source comments.",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "codegen": "codegen.mjs"
+  },
+  "scripts": {
+    "codegen": "node codegen.mjs",
+    "expand": "node codegen.mjs expand",
+    "collapse": "node codegen.mjs collapse",
+    "check:expanded": "node codegen.mjs check --expect=expanded",
+    "check:collapsed": "node codegen.mjs check --expect=collapsed"
+  }
+}

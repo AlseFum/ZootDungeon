@@ -45,6 +45,10 @@ public class FileUtils {
 	}
 	
 	public static FileHandle getFileHandle( String name ){
+		// external: 前缀表示写入到 basePath（如 Roaming 下的游戏目录）；无前缀用默认 defaultFileType + defaultPath
+		if (name.startsWith("external:")) {
+			return getFileHandle(Files.FileType.External, defaultPath, name.substring(9));
+		}
 		return getFileHandle( defaultFileType, defaultPath, name );
 	}
 	

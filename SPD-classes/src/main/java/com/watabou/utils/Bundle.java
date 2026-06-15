@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -298,10 +299,22 @@ public class Bundle {
 		ArrayList<Bundlable> list = new ArrayList<>();
 
 		try {
-			JSONArray array = data.getJSONArray( key );
-			for (int i=0; i < array.length(); i++) {
-				Bundlable O = new Bundle( array.getJSONObject( i ) ).get();
-				if (O != null) list.add( O );
+			// 检查键是否存在
+			if (!data.has(key)) {
+				return list;
+			}
+			
+			// 尝试获取JSONArray，如果失败则返回空列表
+			Object value = data.get(key);
+			if (value instanceof JSONArray) {
+				JSONArray array = (JSONArray) value;
+				for (int i=0; i < array.length(); i++) {
+					Bundlable O = new Bundle( array.getJSONObject( i ) ).get();
+					if (O != null) list.add( O );
+				}
+			} else {
+				// 如果不是JSONArray，记录警告但不抛出异常
+				System.out.println("[Bundle] Warning: Expected JSONArray for key '" + key + "' but got " + value.getClass().getSimpleName());
 			}
 		} catch (JSONException e) {
 			Game.reportException(e);
@@ -484,7 +497,7 @@ public class Bundle {
 	}
 
 	//useful to turn this off for save data debugging.
-	private static final boolean compressByDefault = true;
+	private static final boolean compressByDefault = false;
 
 	private static final int GZIP_BUFFER = 1024*4; //4 kb
 
@@ -506,8 +519,8 @@ public class Bundle {
 				stream = new GZIPInputStream( stream, GZIP_BUFFER );
 			}
 
-			//JSONTokenizer only has a string-based constructor on Android/iOS
-			BufferedReader reader = new BufferedReader( new InputStreamReader( stream ));
+			//JSONTokenizer only has a string-based constructor on Android/iOS. Use UTF-8 for JSON (e.g. sypnosis.json with non-ASCII paths).
+			BufferedReader reader = new BufferedReader( new InputStreamReader( stream, StandardCharsets.UTF_8 ));
 			StringBuilder jsonBuilder = new StringBuilder();
 
 			String line;

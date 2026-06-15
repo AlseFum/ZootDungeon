@@ -1,4 +1,5 @@
 buildscript {
+    ext.kotlin_version = '2.0.21'
     repositories {
         google()
         mavenCentral()
@@ -8,26 +9,27 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
 
     ext {
-        appName = 'Shattered Pixel Dungeon'
-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
+        appName = '可露希尔地牢'
+        appPackageName = 'com.zootdungeon'
 
-        appVersionCode = 833
-        appVersionName = '3.0.2'
+        appVersionCode = 1
+        appVersionName = '0.0.1'
 
-        appJavaCompatibility = JavaVersion.VERSION_1_8
+        appJavaCompatibility = JavaVersion.VERSION_21
 
         appAndroidCompileSDK = 34
         appAndroidMinSDK = 14
         appAndroidTargetSDK = 34
 
         gdxVersion = '1.12.1'
-        gdxControllersVersion = '2.2.4-SNAPSHOT'
+        gdxControllersVersion = '2.2.4'
         robovmVersion = '2.3.21'
     }
     version = appVersionName
@@ -35,7 +37,12 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url= 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 
+
 }
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+

@@ -25,6 +25,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.watabou.glwrap.Texture;
 import com.watabou.noosa.Game;
+import com.watabou.utils.FileUtils;
 
 import java.util.HashMap;
 
@@ -152,8 +153,14 @@ public class TextureCache {
 				return null;
 				
 			} else if (src instanceof String) {
-				
-				return new Pixmap(Gdx.files.internal((String)src));
+				String path = (String) src;
+				// 先试 default path（external，ResourceIndex 所在目录），再试 internal（assets）
+				com.badlogic.gdx.files.FileHandle fh = FileUtils.getFileHandle(path);
+				if (fh != null && fh.exists() && !fh.isDirectory() && fh.length() > 0) {
+					byte[] bytes = fh.readBytes();
+					return new Pixmap(bytes, 0, bytes.length);
+				}
+				return new Pixmap(Gdx.files.internal(path));
 				
 			} else if (src instanceof Pixmap) {
 				
