@@ -49,11 +49,6 @@ public class HeroSprite extends CharSprite {
 	private Animation fly;
 	private Animation read;
 
-	static {
-		// Register ReservedOp texture label
-		TextureRegistry.texture("hero.ReservedOp", "cola/guard.png");
-	}
-
 	private static Object heroTextureHandle(HeroClass cls){
 		String label = "hero." + cls.name();
 		TextureRegistry.texture(label, cls.spritesheet());
@@ -81,9 +76,11 @@ public class HeroSprite extends CharSprite {
 	}
 	
 	public void updateArmor() {
-		// Special handling for ReservedOp
-		if (Dungeon.hero.heroClass == HeroClass.ReservedOp) {
-			TextureFilm film = new TextureFilm(texture, 22, 23);
+		HeroClass cls = Dungeon.hero.heroClass;
+
+		// Custom-sized spritesheet (e.g. all reserved classes use 22x23)
+		if (cls.spriteCellWidth != FRAME_WIDTH || cls.spriteCellHeight != FRAME_HEIGHT) {
+			TextureFilm film = new TextureFilm(texture, cls.spriteCellWidth, cls.spriteCellHeight);
 
 			idle = new Animation(5, true);
 			idle.frames(film, 0, 0, 0, 1);
@@ -109,24 +106,24 @@ public class HeroSprite extends CharSprite {
 			read.frames(film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19);
 		} else {
 			TextureFilm film = new TextureFilm( tiers(), Dungeon.hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
-			
+
 			idle = new Animation( 1, true );
 			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
-			
+
 			run = new Animation( RUN_FRAMERATE, true );
 			run.frames( film, 2, 3, 4, 5, 6, 7 );
-			
+
 			die = new Animation( 20, false );
 			die.frames( film, 8, 9, 10, 11, 12, 11 );
-			
+
 			attack = new Animation( 15, false );
 			attack.frames( film, 13, 14, 15, 0 );
-			
+
 			zap = attack.clone();
-			
+
 			operate = new Animation( 8, false );
 			operate.frames( film, 16, 17, 16, 17 );
-			
+
 			fly = new Animation( 1, true );
 			fly.frames( film, 18 );
 
