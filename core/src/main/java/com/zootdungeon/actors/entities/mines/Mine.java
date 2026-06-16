@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.entities.mines;
+package com.zootdungeon.actors.entities.mines;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -7,10 +7,10 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.items.wands.WandEffects;
-import com.zootdungeon.levels.entities.CellEntity;
+import com.zootdungeon.actors.Entity;
 
 /**
- * 地雷族 {@link CellEntity} 的共同基类。
+ * 地雷族 {@link Entity} 的共同基类。
  *
  * <h3>约定</h3>
  * <ul>
@@ -25,7 +25,7 @@ import com.zootdungeon.levels.entities.CellEntity;
  *       {@link #despawn()}，子类只需实现 {@link #onDetonate()}。</li>
  * </ul>
  */
-public abstract class Mine extends CellEntity {
+public abstract class Mine extends Entity {
 
     public Mine(){
         try {

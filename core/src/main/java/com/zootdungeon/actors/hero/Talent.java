@@ -304,6 +304,54 @@ public class Talent implements Bundlable {
 	public static final Talent RESERVED_OP_COST_SURGE = new Talent(220, 2, "RESERVED_OP_COST_SURGE");
 	public static final Talent RESERVED_OP_COST_MASTERY = new Talent(221, 2, "RESERVED_OP_COST_MASTERY");
 
+	//RESERVED_GUARD T1 (copied from WARRIOR)
+	public static final Talent RESERVED_GUARD_HEARTY_MEAL = new Talent(0, 3, "RESERVED_GUARD_HEARTY_MEAL");
+	public static final Talent RESERVED_GUARD_VETERANS_INTUITION = new Talent(1, 3, "RESERVED_GUARD_VETERANS_INTUITION");
+	public static final Talent RESERVED_GUARD_PROVOKED_ANGER = new Talent(2, 2, "RESERVED_GUARD_PROVOKED_ANGER");
+	public static final Talent RESERVED_GUARD_IRON_WILL = new Talent(3, 2, "RESERVED_GUARD_IRON_WILL");
+	//RESERVED_GUARD T2
+	public static final Talent RESERVED_GUARD_IRON_STOMACH = new Talent(4, 2, "RESERVED_GUARD_IRON_STOMACH");
+	public static final Talent RESERVED_GUARD_LIQUID_WILLPOWER = new Talent(5, 2, "RESERVED_GUARD_LIQUID_WILLPOWER");
+	public static final Talent RESERVED_GUARD_RUNIC_TRANSFERENCE = new Talent(6, 2, "RESERVED_GUARD_RUNIC_TRANSFERENCE");
+	public static final Talent RESERVED_GUARD_LETHAL_MOMENTUM = new Talent(7, 2, "RESERVED_GUARD_LETHAL_MOMENTUM");
+	public static final Talent RESERVED_GUARD_IMPROVISED_PROJECTILES = new Talent(8, 2, "RESERVED_GUARD_IMPROVISED_PROJECTILES");
+
+	//RESERVED_CASTER T1 (copied from MAGE)
+	public static final Talent RESERVED_CASTER_EMPOWERING_MEAL = new Talent(32, 2, "RESERVED_CASTER_EMPOWERING_MEAL");
+	public static final Talent RESERVED_CASTER_SCHOLARS_INTUITION = new Talent(33, 2, "RESERVED_CASTER_SCHOLARS_INTUITION");
+	public static final Talent RESERVED_CASTER_LINGERING_MAGIC = new Talent(34, 2, "RESERVED_CASTER_LINGERING_MAGIC");
+	public static final Talent RESERVED_CASTER_BACKUP_BARRIER = new Talent(35, 2, "RESERVED_CASTER_BACKUP_BARRIER");
+	//RESERVED_CASTER T2
+	public static final Talent RESERVED_CASTER_ENERGIZING_MEAL = new Talent(36, 2, "RESERVED_CASTER_ENERGIZING_MEAL");
+	public static final Talent RESERVED_CASTER_INSCRIBED_POWER = new Talent(37, 2, "RESERVED_CASTER_INSCRIBED_POWER");
+	public static final Talent RESERVED_CASTER_WAND_PRESERVATION = new Talent(38, 2, "RESERVED_CASTER_WAND_PRESERVATION");
+	public static final Talent RESERVED_CASTER_ARCANE_VISION = new Talent(39, 2, "RESERVED_CASTER_ARCANE_VISION");
+	public static final Talent RESERVED_CASTER_SHIELD_BATTERY = new Talent(40, 2, "RESERVED_CASTER_SHIELD_BATTERY");
+
+	//RESERVED_SNIPER T1 (copied from HUNTRESS)
+	public static final Talent RESERVED_SNIPER_NATURES_BOUNTY = new Talent(96, 2, "RESERVED_SNIPER_NATURES_BOUNTY");
+	public static final Talent RESERVED_SNIPER_SURVIVALISTS_INTUITION = new Talent(97, 2, "RESERVED_SNIPER_SURVIVALISTS_INTUITION");
+	public static final Talent RESERVED_SNIPER_FOLLOWUP_STRIKE = new Talent(98, 2, "RESERVED_SNIPER_FOLLOWUP_STRIKE");
+	public static final Talent RESERVED_SNIPER_NATURES_AID = new Talent(99, 2, "RESERVED_SNIPER_NATURES_AID");
+	//RESERVED_SNIPER T2
+	public static final Talent RESERVED_SNIPER_INVIGORATING_MEAL = new Talent(100, 2, "RESERVED_SNIPER_INVIGORATING_MEAL");
+	public static final Talent RESERVED_SNIPER_LIQUID_NATURE = new Talent(101, 2, "RESERVED_SNIPER_LIQUID_NATURE");
+	public static final Talent RESERVED_SNIPER_REJUVENATING_STEPS = new Talent(102, 2, "RESERVED_SNIPER_REJUVENATING_STEPS");
+	public static final Talent RESERVED_SNIPER_HEIGHTENED_SENSES = new Talent(103, 2, "RESERVED_SNIPER_HEIGHTENED_SENSES");
+	public static final Talent RESERVED_SNIPER_DURABLE_PROJECTILES = new Talent(104, 2, "RESERVED_SNIPER_DURABLE_PROJECTILES");
+
+	//RESERVED_SPECIALIST T1 (copied from ROGUE)
+	public static final Talent RESERVED_SPECIALIST_CACHED_RATIONS = new Talent(64, 2, "RESERVED_SPECIALIST_CACHED_RATIONS");
+	public static final Talent RESERVED_SPECIALIST_THIEFS_INTUITION = new Talent(65, 2, "RESERVED_SPECIALIST_THIEFS_INTUITION");
+	public static final Talent RESERVED_SPECIALIST_SUCKER_PUNCH = new Talent(66, 2, "RESERVED_SPECIALIST_SUCKER_PUNCH");
+	public static final Talent RESERVED_SPECIALIST_PROTECTIVE_SHADOWS = new Talent(67, 2, "RESERVED_SPECIALIST_PROTECTIVE_SHADOWS");
+	//RESERVED_SPECIALIST T2
+	public static final Talent RESERVED_SPECIALIST_MYSTICAL_MEAL = new Talent(68, 2, "RESERVED_SPECIALIST_MYSTICAL_MEAL");
+	public static final Talent RESERVED_SPECIALIST_INSCRIBED_STEALTH = new Talent(69, 2, "RESERVED_SPECIALIST_INSCRIBED_STEALTH");
+	public static final Talent RESERVED_SPECIALIST_WIDE_SEARCH = new Talent(70, 2, "RESERVED_SPECIALIST_WIDE_SEARCH");
+	public static final Talent RESERVED_SPECIALIST_SILENT_STEPS = new Talent(71, 2, "RESERVED_SPECIALIST_SILENT_STEPS");
+	public static final Talent RESERVED_SPECIALIST_ROGUES_FORESIGHT = new Talent(72, 2, "RESERVED_SPECIALIST_ROGUES_FORESIGHT");
+
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
@@ -877,7 +925,11 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initSubclassTalents( Hero hero ){
-		if (hero.heroClass == HeroClassSheet.ReservedOp) {
+		if (hero.heroClass == HeroClassSheet.ReservedOp
+				|| hero.heroClass == HeroClassSheet.RESERVED_GUARD
+				|| hero.heroClass == HeroClassSheet.RESERVED_CASTER
+				|| hero.heroClass == HeroClassSheet.RESERVED_SNIPER
+				|| hero.heroClass == HeroClassSheet.RESERVED_SPECIALIST) {
 			return;
 		}
 		initSubclassTalents( hero.subClass, hero.talents );
@@ -930,7 +982,11 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initArmorTalents( Hero hero ){
-		if (hero.heroClass == HeroClassSheet.ReservedOp) {
+		if (hero.heroClass == HeroClassSheet.ReservedOp
+				|| hero.heroClass == HeroClassSheet.RESERVED_GUARD
+				|| hero.heroClass == HeroClassSheet.RESERVED_CASTER
+				|| hero.heroClass == HeroClassSheet.RESERVED_SNIPER
+				|| hero.heroClass == HeroClassSheet.RESERVED_SPECIALIST) {
 			return;
 		}
 		initArmorTalents( hero.armorAbility, hero.talents);

@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.entities.mines;
+package com.zootdungeon.actors.entities.mines;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,8 +25,8 @@ import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.effects.particles.SparkParticle;
 import com.watabou.noosa.particles.Emitter;
 import com.zootdungeon.levels.Level;
-import com.zootdungeon.levels.entities.CellEntity;
-import com.zootdungeon.levels.entities.CellEntitySprite;
+import com.zootdungeon.actors.Entity;
+import com.zootdungeon.actors.entities.CellEntitySprite;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.watabou.noosa.TextureFilm;
@@ -149,7 +149,7 @@ public class PatternMine extends Mine {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int cell = x + y * width;
-                CellEntity entity = Dungeon.level.cellEntityAt(cell);
+                Entity entity = Dungeon.level.cellEntityAt(cell);
                 if (entity instanceof PatternMine && entity != this) {
                     group.add((PatternMine) entity);
                 }

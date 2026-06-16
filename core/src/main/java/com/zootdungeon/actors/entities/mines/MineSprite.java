@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.entities.mines;
+package com.zootdungeon.actors.entities.mines;
 
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.tweeners.AlphaTweener;
@@ -29,7 +29,7 @@ import com.watabou.utils.PointF;
  * {@link #detonate()} 默认带屏幕震动，幅度由 {@link #shakeMagnitude()} 控制。
  * 若子类不希望震动（如感应雷的闪光效果），可覆盖返回 0。
  */
-public class MineSprite extends com.zootdungeon.levels.entities.CellEntitySprite implements com.watabou.noosa.MovieClip.Listener {
+public class MineSprite extends com.zootdungeon.actors.entities.CellEntitySprite implements com.watabou.noosa.MovieClip.Listener {
 
     // ===== 动画定义 =====
 

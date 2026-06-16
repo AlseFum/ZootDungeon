@@ -1,16 +1,17 @@
 /*
- * CellEntity 体系。
+ * Entity 体系。
  * 不打算扩展 {@link com.zootdungeon.actors.Char}：Char 的 ID、findChar、LOS 等机制
  * 都默认「一格一 Char 且阻挡移动」，若强行继承再做例外会扰动 Mob AI / 寻路的大量判定。
  * 这里选择直接扩展 {@link com.zootdungeon.actors.Actor}，与 Plant、Trap、Heap 一样由
  * {@link com.zootdungeon.levels.Level} 独立登记。
  */
-package com.zootdungeon.levels.entities;
+package com.zootdungeon.actors;
 
 import com.watabou.utils.Bundle;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.entities.CellEntitySprite;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -34,10 +35,10 @@ import com.zootdungeon.scenes.GameScene;
  *       <li>若该 Char 此刻正在飞行 → 额外调用 {@link #onFlyOver(Char)}。</li>
  *     </ul>
  *     两个回调默认为空，实际作用完全由子类决定（父类不假定任何「必须执行」的效果）。</li>
- *   <li>每个格子最多登记一个 {@link CellEntity}，后放置者会替换掉旧实体。</li>
+ *   <li>每个格子最多登记一个 {@link Entity}，后放置者会替换掉旧实体。</li>
  * </ul>
  */
-public abstract class CellEntity extends Actor {
+public abstract class Entity extends Actor {
 
     /** 所在格子的线性下标，与 {@link com.zootdungeon.plants.Plant#pos} 含义一致。 */
     public int pos;
@@ -106,7 +107,7 @@ public abstract class CellEntity extends Actor {
 
     /**
      * 返回用于渲染的 Sprite 类。返回 null 表示完全不可见。
-     * {@link GameScene#addCellEntitySprite(CellEntity)} 会据此实例化并挂到
+     * {@link GameScene#addCellEntitySprite(Entity)} 会据此实例化并挂到
      * 「地面之上、mob 之下」的专用渲染组。
      */
     public Class<? extends CellEntitySprite> spriteClass() {

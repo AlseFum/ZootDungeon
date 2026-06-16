@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.entities.mines;
+package com.zootdungeon.actors.entities.mines;
 
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -7,7 +7,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.items.wands.WandEffects;
-import com.zootdungeon.levels.entities.CellEntitySprite;
+import com.zootdungeon.actors.entities.CellEntitySprite;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;

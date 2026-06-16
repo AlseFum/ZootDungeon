@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.levels.entities.CellEntity;
-import com.zootdungeon.levels.entities.DebugCellMarker;
+import com.zootdungeon.actors.Entity;
+import com.zootdungeon.actors.entities.DebugCellMarker;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
@@ -14,7 +14,7 @@ import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 
 /**
- * 调试工具：在地图上放置 / 查询 / 移除 {@link CellEntity}。
+ * 调试工具：在地图上放置 / 查询 / 移除 {@link Entity}。
  * <p>
  * 默认动作 {@link #AC_PLACE}：点击一个格子后在上面放一个
  * {@link DebugCellMarker}，用于可视化地面实体的生命周期。
@@ -114,7 +114,7 @@ public class CellEntityPlacer extends Item {
             if (cell == null || cell < 0 || Dungeon.level == null) {
                 return;
             }
-            CellEntity entity = Dungeon.level.cellEntityAt(cell);
+            Entity entity = Dungeon.level.cellEntityAt(cell);
             if (entity == null) {
                 GLog.w(Messages.get(CellEntityPlacer.class, "no_entity"));
                 return;
@@ -136,7 +136,7 @@ public class CellEntityPlacer extends Item {
             if (cell == null || cell < 0 || Dungeon.level == null) {
                 return;
             }
-            CellEntity entity = Dungeon.level.cellEntityAt(cell);
+            Entity entity = Dungeon.level.cellEntityAt(cell);
             if (entity == null) {
                 GLog.i(Messages.get(CellEntityPlacer.class, "inspect_empty", cell));
                 return;

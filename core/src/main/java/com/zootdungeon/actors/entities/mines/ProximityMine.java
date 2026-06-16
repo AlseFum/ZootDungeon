@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.entities.mines;
+package com.zootdungeon.actors.entities.mines;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
-import com.zootdungeon.levels.entities.CellEntitySprite;
+import com.zootdungeon.actors.entities.CellEntitySprite;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 

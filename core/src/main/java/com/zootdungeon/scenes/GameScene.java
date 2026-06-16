@@ -302,7 +302,7 @@ public class GameScene extends PixelScene {
 		cellEntities = new Group();
 		add( cellEntities );
 		if (Dungeon.level.cellEntities != null) {
-			for (com.zootdungeon.levels.entities.CellEntity entity : Dungeon.level.cellEntities.valueList()) {
+			for (com.zootdungeon.actors.Entity entity : Dungeon.level.cellEntities.valueList()) {
 				addCellEntitySprite( entity );
 			}
 		}
@@ -964,11 +964,11 @@ public class GameScene extends PixelScene {
 
 	}
 
-	private void addCellEntitySpriteInternal( com.zootdungeon.levels.entities.CellEntity entity ) {
+	private void addCellEntitySpriteInternal( com.zootdungeon.actors.Entity entity ) {
 		if (entity == null || cellEntities == null) return;
-		Class<? extends com.zootdungeon.levels.entities.CellEntitySprite> clazz = entity.spriteClass();
+		Class<? extends com.zootdungeon.actors.entities.CellEntitySprite> clazz = entity.spriteClass();
 		if (clazz == null) return;
-		com.zootdungeon.levels.entities.CellEntitySprite sprite
+		com.zootdungeon.actors.entities.CellEntitySprite sprite
 				= com.watabou.utils.Reflection.newInstance(clazz);
 		if (sprite == null) return;
 		sprite.link(entity);
@@ -977,7 +977,7 @@ public class GameScene extends PixelScene {
 		entity.sprite = sprite;
 	}
 
-	private void removeCellEntitySpriteInternal( com.zootdungeon.levels.entities.CellEntity entity ) {
+	private void removeCellEntitySpriteInternal( com.zootdungeon.actors.Entity entity ) {
 		if (entity == null) return;
 		if (entity.sprite != null) {
 			entity.sprite.killAndErase();
@@ -1107,14 +1107,14 @@ public class GameScene extends PixelScene {
 	}
 
 	/** 由 {@link com.zootdungeon.levels.Level#addCellEntity} 触发；静默处理 scene 尚未就绪的情况。 */
-	public static void addCellEntitySprite( com.zootdungeon.levels.entities.CellEntity entity ) {
+	public static void addCellEntitySprite( com.zootdungeon.actors.Entity entity ) {
 		if (scene != null) {
 			scene.addCellEntitySpriteInternal( entity );
 		}
 	}
 
 	/** 由 {@link com.zootdungeon.levels.Level#removeCellEntity} 触发。 */
-	public static void removeCellEntitySprite( com.zootdungeon.levels.entities.CellEntity entity ) {
+	public static void removeCellEntitySprite( com.zootdungeon.actors.Entity entity ) {
 		if (scene != null) {
 			scene.removeCellEntitySpriteInternal( entity );
 		}

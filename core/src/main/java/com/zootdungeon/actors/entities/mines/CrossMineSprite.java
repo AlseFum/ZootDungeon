@@ -1,25 +1,27 @@
-package com.zootdungeon.levels.entities.mines;
+package com.zootdungeon.actors.entities.mines;
 
 import com.watabou.noosa.TextureFilm;
 
 /**
- * 遥控地雷的视觉。
+ * 十字地雷（连锁型）的视觉。
  * <p>
- * 遥控地雷强调"待命"感：放置后完全静态，引爆时橙色闪白，无屏幕震动。
+ * 十字地雷强调"连锁"感：放置时有旋转下落效果，待机时缓慢呼吸，
+ * 引爆时强烈白光 + 强力震动。
  */
-public class RemoteMineSprite extends MineSprite {
+public class CrossMineSprite extends MineSprite {
 
-    public RemoteMineSprite() {
+    public CrossMineSprite() {
         super();
         String tex = "cola/trashbin.png";
         texture(tex);
         TextureFilm film = new TextureFilm(tex, 16, 16);
 
+        // 缓慢待机呼吸
         idle = new Animation(1, true);
         idle.frames(film, 0);
 
         place = new Animation(4, false);
-        place.frames(film, 0, 1, 0, 2);
+        place.frames(film, 0, 1, 2, 3);
 
         disarm = new Animation(1, false);
         disarm.frames(film, 3);
@@ -27,21 +29,21 @@ public class RemoteMineSprite extends MineSprite {
         detonate = new Animation(1, false);
         detonate.frames(film, 3);
 
-        hardlight(0x60FFFF);
+        hardlight(0xFF9040);
     }
 
     @Override
     protected int baseColor() {
-        return 0x60FFFF;
+        return 0xFF9040;
     }
 
     @Override
     protected float shakeMagnitude() {
-        return 4f;
+        return 10f;
     }
 
     @Override
-    protected int detonateColor() {
-        return 0xFF9040;
+    protected float detonateScaleTo() {
+        return 3.5f;
     }
 }

@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.levels.entities.CellEntity;
-import com.zootdungeon.levels.entities.mines.ContactMine;
-import com.zootdungeon.levels.entities.mines.CrossMine;
-import com.zootdungeon.levels.entities.mines.DoorMine;
-import com.zootdungeon.levels.entities.mines.Mine;
-import com.zootdungeon.levels.entities.mines.PatternMine;
-import com.zootdungeon.levels.entities.mines.ProximityMine;
-import com.zootdungeon.levels.entities.mines.RemoteMine;
+import com.zootdungeon.actors.Entity;
+import com.zootdungeon.actors.entities.mines.ContactMine;
+import com.zootdungeon.actors.entities.mines.CrossMine;
+import com.zootdungeon.actors.entities.mines.DoorMine;
+import com.zootdungeon.actors.entities.mines.Mine;
+import com.zootdungeon.actors.entities.mines.PatternMine;
+import com.zootdungeon.actors.entities.mines.ProximityMine;
+import com.zootdungeon.actors.entities.mines.RemoteMine;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
@@ -180,7 +180,7 @@ public class MinePlacer extends Item {
             if (cell == null || cell < 0 || Dungeon.level == null) {
                 return;
             }
-            CellEntity entity = Dungeon.level.cellEntityAt(cell);
+            Entity entity = Dungeon.level.cellEntityAt(cell);
             if (!(entity instanceof RemoteMine)) {
                 GLog.w(Messages.get(MinePlacer.class, "no_remote_mine"));
                 return;

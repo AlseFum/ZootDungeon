@@ -98,7 +98,7 @@ import com.zootdungeon.levels.features.Door;
 import com.zootdungeon.levels.features.HighGrass;
 import com.zootdungeon.levels.features.LevelTransition;
 import com.zootdungeon.levels.painters.Painter;
-import com.zootdungeon.levels.entities.CellEntity;
+import com.zootdungeon.actors.Entity;
 import com.zootdungeon.levels.traps.Trap;
 import com.zootdungeon.mechanics.ShadowCaster;
 import com.zootdungeon.messages.Messages;
@@ -190,7 +190,7 @@ public abstract class Level implements Bundlable {
 	 * 地面实体（Cell Entity）表。类似 {@link #plants} / {@link #traps}，但元素带自己的
 	 * {@link Actor} 调度。每格最多一个实体，后放置者会替换旧的。
 	 */
-	public SparseArray<CellEntity> cellEntities;
+	public SparseArray<Entity> cellEntities;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
 	
@@ -423,7 +423,7 @@ public abstract class Level implements Bundlable {
 		if (bundle.contains( CELL_ENTITIES )) {
 			collection = bundle.getCollection( CELL_ENTITIES );
 			for (Bundlable b : collection) {
-				CellEntity entity = (CellEntity) b;
+				Entity entity = (Entity) b;
 				cellEntities.put( entity.pos, entity );
 			}
 		}
@@ -1089,15 +1089,15 @@ public abstract class Level implements Bundlable {
 	/**
 	 * 登记一个地面实体到指定格子。
 	 * <p>
-	 * 若该格子已有其他 {@link CellEntity}，旧实体会被 {@link #removeCellEntity(CellEntity)} 掉再放新实体。
+	 * 若该格子已有其他 {@link Entity}，旧实体会被 {@link #removeCellEntity(Entity)} 掉再放新实体。
 	 * 同时把新实体加入 {@link Actor} 调度并通知场景添加 sprite。
 	 *
 	 * @return 传入的 entity 本身，便于链式调用。
 	 */
-	public CellEntity addCellEntity( CellEntity entity, int pos ) {
+	public Entity addCellEntity( Entity entity, int pos ) {
 		if (entity == null) return null;
 
-		CellEntity existing = cellEntities.get( pos );
+		Entity existing = cellEntities.get( pos );
 		if (existing != null && existing != entity) {
 			removeCellEntity( existing );
 		}
@@ -1113,11 +1113,11 @@ public abstract class Level implements Bundlable {
 	}
 
 	/** 从关卡上摘下指定实体（若它确实登记在此关卡）。 */
-	public void removeCellEntity( CellEntity entity ) {
+	public void removeCellEntity( Entity entity ) {
 		if (entity == null) return;
 
 		// 常规路径：entity.pos 与登记 key 一致
-		CellEntity stored = cellEntities.get( entity.pos );
+		Entity stored = cellEntities.get( entity.pos );
 		if (stored == entity) {
 			cellEntities.remove( entity.pos );
 		} else {
@@ -1140,7 +1140,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	/** 查询某格子当前登记的地面实体。 */
-	public CellEntity cellEntityAt( int pos ) {
+	public Entity cellEntityAt( int pos ) {
 		return cellEntities.get( pos );
 	}
 
@@ -1268,10 +1268,10 @@ public abstract class Level implements Bundlable {
 			((Piranha) ch).dieOnLand();
 		}
 
-		// CellEntity 触发：飞行 / 非飞行单位都会调用 onStep；飞行单位另外调用 onFlyOver。
+		// Entity 触发：飞行 / 非飞行单位都会调用 onStep；飞行单位另外调用 onFlyOver。
 		// 放在最后，确保水、草、陷阱等地块效果已经先处理过。
 		if (ch.isAlive()) {
-			CellEntity entity = cellEntities.get( ch.pos );
+			Entity entity = cellEntities.get( ch.pos );
 			if (entity != null) {
 				entity.onStep( ch );
 				if (ch.flying) {

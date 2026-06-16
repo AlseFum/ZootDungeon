@@ -33,7 +33,6 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
-import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.IconButton;
 import com.zootdungeon.ui.Icons;
 import com.zootdungeon.ui.RenderedTextBlock;
@@ -169,41 +168,7 @@ public class WndHeroInfo extends WndTabbed {
 				add(info[i]);
 			}
 
-			if (cls.equals(HeroClass.WARRIOR)) {
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SEAL),
-							new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else if (cls.equals(HeroClass.MAGE)) {
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.MAGES_STAFF),
-							new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else if (cls.equals(HeroClass.ROGUE)) {
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.ARTIFACT_CLOAK),
-							Icons.get(Icons.STAIRS),
-							new ItemSprite(ItemSpriteSheet.DAGGER),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else if (cls.equals(HeroClass.HUNTRESS)) {
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
-							Icons.GRASS.get(),
-							new ItemSprite(ItemSpriteSheet.GLOVES),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else if (cls.equals(HeroClass.DUELIST)) {
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.RAPIER),
-							new ItemSprite(ItemSpriteSheet.WAR_HAMMER),
-							new ItemSprite(ItemSpriteSheet.THROWING_SPIKE),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else if (cls.equals(HeroClass.CLERIC)) {
-					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME),
-							Icons.TALENT.get(),
-							new ItemSprite(ItemSpriteSheet.CUDGEL),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
-			} else if (cls.equals(HeroClass.ReservedOp)) {
-					icons = new Image[]{ new ItemSprite(TextureRegistry.idByLabel("rhodes_island_terminal"))
-							// new ItemSprite(TextureRegistry.idByLabel("cloak_of_shadows")),
-							// new ItemSprite(TextureRegistry.idByLabel("dagger")),
-							// new ItemSprite(TextureRegistry.idByLabel("scroll_isaz"))
-							};
-			} 
+			icons = cls.icons();
 			for (Image im : icons) {
 				add(im);
 			}

@@ -1,14 +1,15 @@
-package com.zootdungeon.levels.entities;
+package com.zootdungeon.actors.entities;
 
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.PointF;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.Entity;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.tiles.DungeonTilemap;
 
 /**
- * {@link CellEntity} 的视觉基类。
+ * {@link Entity} 的视觉基类。
  * <p>
  * 直接继承 {@link com.watabou.noosa.MovieClip}，具备帧动画能力。
  * 子类既可以通过
@@ -16,12 +17,12 @@ import com.zootdungeon.tiles.DungeonTilemap;
  * {@code texture("assets/...")} 加载独立贴图。
  * <p>
  * 渲染流程：GameScene 在启动时遍历 {@link com.zootdungeon.levels.Level#cellEntities}，
- * 为每个实体调用 {@link Class#newInstance()} 实例化对应 sprite，再调用 {@link #link(CellEntity)}
+ * 为每个实体调用 {@link Class#newInstance()} 实例化对应 sprite，再调用 {@link #link(Entity)}
  * 以关联、{@link #place(int)} 以摆到世界坐标。
  */
 public class CellEntitySprite extends MovieClip {
 
-    protected CellEntity entity;
+    protected Entity entity;
 
     /** 是否像 item sprite 一样轻微抬高像素（避免与底层地面完全贴合）。子类可覆盖。 */
     protected float perspectiveRaise = 5 / 16f;
@@ -30,8 +31,8 @@ public class CellEntitySprite extends MovieClip {
         super();
     }
 
-    /** 绑定数据实体。Sprite 在被 GameScene 管理期间只绑定一个 {@link CellEntity}。 */
-    public void link(CellEntity e) {
+    /** 绑定数据实体。Sprite 在被 GameScene 管理期间只绑定一个 {@link Entity}。 */
+    public void link(Entity e) {
         this.entity = e;
         place(e.pos);
         reset();
@@ -59,13 +60,13 @@ public class CellEntitySprite extends MovieClip {
         visible = true;
     }
 
-    /** 放一个淡入效果：新生成的 CellEntity 通常用这个。 */
+    /** 放一个淡入效果：新生成的 Entity 通常用这个。 */
     public void fadeIn() {
         alpha(0f);
         parent.add(new AlphaTweener(this, 1f, 0.4f));
     }
 
-    public CellEntity entity() {
+    public Entity entity() {
         return entity;
     }
 }

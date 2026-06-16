@@ -1,4 +1,4 @@
-package com.zootdungeon.levels.entities;
+package com.zootdungeon.actors.entities;
 
 /**
  * {@link DebugCellMarker} 的调试贴图。直接复用 {@code cola/trashbin.png}（16x16），

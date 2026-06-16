@@ -62,6 +62,10 @@ import com.zootdungeon.items.weapon.missiles.ThrowingKnife;
 import com.zootdungeon.items.weapon.missiles.ThrowingSpike;
 import com.zootdungeon.items.weapon.missiles.ThrowingStone;
 import com.zootdungeon.journal.Catalog;
+import com.zootdungeon.sprites.ItemSprite;
+import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.TextureRegistry;
+import com.zootdungeon.ui.Icons;
 
 public final class HeroClassSheet {
 
@@ -75,6 +79,11 @@ public final class HeroClassSheet {
             .abilities(new HeroicLeap(), new Shockwave(), new Endure())
             .masteryBadge(Badges.Badge.MASTERY_WARRIOR)
             .unlocked(true)
+            .icons(
+                new ItemSprite(ItemSpriteSheet.SEAL),
+                new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
             .initializer(hero -> {
 
                 // 基础武器
@@ -104,6 +113,11 @@ public final class HeroClassSheet {
             .abilities(new ElementalBlast(), new WildMagic(), new WarpBeacon())
             .masteryBadge(Badges.Badge.MASTERY_MAGE)
             .unlocked(() -> Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE))
+            .icons(
+                new ItemSprite(ItemSpriteSheet.MAGES_STAFF),
+                new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
             .initializer(hero -> {
 
                 // 法师法杖
@@ -127,6 +141,12 @@ public final class HeroClassSheet {
             .abilities(new SmokeBomb(), new DeathMark(), new ShadowClone())
             .masteryBadge(Badges.Badge.MASTERY_ROGUE)
             .unlocked(() -> Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE))
+            .icons(
+                new ItemSprite(ItemSpriteSheet.ARTIFACT_CLOAK),
+                Icons.get(Icons.STAIRS),
+                new ItemSprite(ItemSpriteSheet.DAGGER),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
             .initializer(hero -> {
 
                 // 基础武器
@@ -159,6 +179,12 @@ public final class HeroClassSheet {
             .abilities(new SpectralBlades(), new NaturesPower(), new SpiritHawk())
             .masteryBadge(Badges.Badge.MASTERY_HUNTRESS)
             .unlocked(() -> Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS))
+            .icons(
+                new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
+                Icons.GRASS.get(),
+                new ItemSprite(ItemSpriteSheet.GLOVES),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
             .initializer(hero -> {
 
                 // 基础武器
@@ -198,6 +224,12 @@ public final class HeroClassSheet {
                 }
                 return false;
             })
+            .icons(
+                new ItemSprite(ItemSpriteSheet.RAPIER),
+                new ItemSprite(ItemSpriteSheet.WAR_HAMMER),
+                new ItemSprite(ItemSpriteSheet.THROWING_SPIKE),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
             .initializer(hero -> {
                 // 基础武器
                 (hero.belongings.weapon = new Rapier()).identify();
@@ -224,6 +256,12 @@ public final class HeroClassSheet {
             .abilities(new AscendedForm(), new Trinity(), new PowerOfMany())
             .masteryBadge(Badges.Badge.MASTERY_CLERIC)
             .unlocked(() -> Badges.isUnlocked(Badges.Badge.UNLOCK_CLERIC))
+            .icons(
+                new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME),
+                Icons.TALENT.get(),
+                new ItemSprite(ItemSpriteSheet.CUDGEL),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
             .initializer(hero -> {
 
                 // 基础武器
@@ -258,6 +296,9 @@ public final class HeroClassSheet {
                 Talent.RESERVED_OP_COST_SURGE,
                 Talent.RESERVED_OP_COST_MASTERY
             )
+            .icons(
+                new ItemSprite(TextureRegistry.idByLabel("rhodes_island_terminal"))
+            )
             .initializer(hero -> {
                 // 开局给个 Melantha 剑：tier=1 cleave 武器，有 dmgBoostBase=3，能打能升。
                 // 配合 SkillRecord(SKILL_1) + 终端 cost=40，让玩家有事可做。
@@ -268,6 +309,166 @@ public final class HeroClassSheet {
                 terminal.setCost(40);
                 // 开局赠送 1 份技能档案
                 new SkillRecord(SkillSheet.SKILL_1).collect();
+            })
+            .register();
+
+    public static final HeroClass RESERVED_GUARD = registerStandardClass("reservedGuard")
+            .spritesheet("cola/guard.png")
+            .spriteCellSize(22, 23)
+            .splashArt("cola/guard_splashart.png")
+            .classTalentsTier1(
+                Talent.RESERVED_GUARD_HEARTY_MEAL,
+                Talent.RESERVED_GUARD_VETERANS_INTUITION,
+                Talent.RESERVED_GUARD_PROVOKED_ANGER,
+                Talent.RESERVED_GUARD_IRON_WILL
+            )
+            .classTalentsTier2(
+                Talent.RESERVED_GUARD_IRON_STOMACH,
+                Talent.RESERVED_GUARD_LIQUID_WILLPOWER,
+                Talent.RESERVED_GUARD_RUNIC_TRANSFERENCE,
+                Talent.RESERVED_GUARD_LETHAL_MOMENTUM,
+                Talent.RESERVED_GUARD_IMPROVISED_PROJECTILES
+            )
+            .icons(
+                new ItemSprite(ItemSpriteSheet.SEAL),
+                new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
+            .initializer(hero -> {
+                // 基础武器
+                (hero.belongings.weapon = new WornShortsword()).identify();
+
+                // 投掷石头
+                ThrowingStone stones = new ThrowingStone();
+                stones.quantity(3).collect();
+                Dungeon.quickslot.setSlot(0, stones);
+
+                // 自动识别
+                new PotionOfHealing().identify();
+                new ScrollOfRage().identify();
+            })
+            .register();
+
+    public static final HeroClass RESERVED_CASTER = registerStandardClass("reservedCaster")
+            .spritesheet("cola/guard.png")
+            .spriteCellSize(22, 23)
+            .splashArt("cola/guard_splashart.png")
+            .classTalentsTier1(
+                Talent.RESERVED_CASTER_EMPOWERING_MEAL,
+                Talent.RESERVED_CASTER_SCHOLARS_INTUITION,
+                Talent.RESERVED_CASTER_LINGERING_MAGIC,
+                Talent.RESERVED_CASTER_BACKUP_BARRIER
+            )
+            .classTalentsTier2(
+                Talent.RESERVED_CASTER_ENERGIZING_MEAL,
+                Talent.RESERVED_CASTER_INSCRIBED_POWER,
+                Talent.RESERVED_CASTER_WAND_PRESERVATION,
+                Talent.RESERVED_CASTER_ARCANE_VISION,
+                Talent.RESERVED_CASTER_SHIELD_BATTERY
+            )
+            .icons(
+                new ItemSprite(ItemSpriteSheet.MAGES_STAFF),
+                new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
+            .initializer(hero -> {
+                // 法师法杖
+                MagesStaff staff = new MagesStaff(new WandOfMagicMissile());
+                (hero.belongings.weapon = staff).identify();
+                hero.belongings.weapon.activate(hero);
+
+                // 快捷栏
+                Dungeon.quickslot.setSlot(0, staff);
+
+                // 自动识别
+                new ScrollOfUpgrade().identify();
+                new PotionOfLiquidFlame().identify();
+            })
+            .register();
+
+    public static final HeroClass RESERVED_SNIPER = registerStandardClass("reservedSniper")
+            .spritesheet("cola/guard.png")
+            .spriteCellSize(22, 23)
+            .splashArt("cola/guard_splashart.png")
+            .classTalentsTier1(
+                Talent.RESERVED_SNIPER_NATURES_BOUNTY,
+                Talent.RESERVED_SNIPER_SURVIVALISTS_INTUITION,
+                Talent.RESERVED_SNIPER_FOLLOWUP_STRIKE,
+                Talent.RESERVED_SNIPER_NATURES_AID
+            )
+            .classTalentsTier2(
+                Talent.RESERVED_SNIPER_INVIGORATING_MEAL,
+                Talent.RESERVED_SNIPER_LIQUID_NATURE,
+                Talent.RESERVED_SNIPER_REJUVENATING_STEPS,
+                Talent.RESERVED_SNIPER_HEIGHTENED_SENSES,
+                Talent.RESERVED_SNIPER_DURABLE_PROJECTILES
+            )
+            .icons(
+                new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
+                Icons.GRASS.get(),
+                new ItemSprite(ItemSpriteSheet.GLOVES),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
+            .initializer(hero -> {
+                // 基础武器
+                (hero.belongings.weapon = new Gloves()).identify();
+
+                // 灵魂弓
+                SpiritBow bow = new SpiritBow();
+                bow.identify().collect();
+
+                // 快捷栏
+                Dungeon.quickslot.setSlot(0, bow);
+
+                // 自动识别
+                new PotionOfMindVision().identify();
+                new ScrollOfLullaby().identify();
+            })
+            .register();
+
+    public static final HeroClass RESERVED_SPECIALIST = registerStandardClass("reservedSpecialist")
+            .spritesheet("cola/guard.png")
+            .spriteCellSize(22, 23)
+            .splashArt("cola/guard_splashart.png")
+            .classTalentsTier1(
+                Talent.RESERVED_SPECIALIST_CACHED_RATIONS,
+                Talent.RESERVED_SPECIALIST_THIEFS_INTUITION,
+                Talent.RESERVED_SPECIALIST_SUCKER_PUNCH,
+                Talent.RESERVED_SPECIALIST_PROTECTIVE_SHADOWS
+            )
+            .classTalentsTier2(
+                Talent.RESERVED_SPECIALIST_MYSTICAL_MEAL,
+                Talent.RESERVED_SPECIALIST_INSCRIBED_STEALTH,
+                Talent.RESERVED_SPECIALIST_WIDE_SEARCH,
+                Talent.RESERVED_SPECIALIST_SILENT_STEPS,
+                Talent.RESERVED_SPECIALIST_ROGUES_FORESIGHT
+            )
+            .icons(
+                new ItemSprite(ItemSpriteSheet.ARTIFACT_CLOAK),
+                Icons.get(Icons.STAIRS),
+                new ItemSprite(ItemSpriteSheet.DAGGER),
+                new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+            )
+            .initializer(hero -> {
+                // 基础武器
+                (hero.belongings.weapon = new Dagger()).identify();
+
+                // 隐身斗篷
+                CloakOfShadows cloak = new CloakOfShadows();
+                (hero.belongings.artifact = cloak).identify();
+                hero.belongings.artifact.activate(hero);
+
+                // 投掷飞刀
+                ThrowingKnife knives = new ThrowingKnife();
+                knives.quantity(3).collect();
+
+                // 快捷栏
+                Dungeon.quickslot.setSlot(0, cloak);
+                Dungeon.quickslot.setSlot(1, knives);
+
+                // 自动识别
+                new ScrollOfMagicMapping().identify();
+                new PotionOfInvisibility().identify();
             })
             .register();
 

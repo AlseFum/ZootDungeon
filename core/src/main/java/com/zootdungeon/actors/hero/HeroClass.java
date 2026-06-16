@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.zootdungeon.Badges;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -19,6 +20,10 @@ public class HeroClass implements Comparable<HeroClass>, Bundlable {
 	public static final HeroClass DUELIST = HeroClassSheet.valueOf("duelist");
 	public static final HeroClass CLERIC = HeroClassSheet.CLERIC;
     public static final HeroClass ReservedOp = HeroClassSheet.ReservedOp;
+    public static final HeroClass RESERVED_GUARD = HeroClassSheet.RESERVED_GUARD;
+    public static final HeroClass RESERVED_CASTER = HeroClassSheet.RESERVED_CASTER;
+    public static final HeroClass RESERVED_SNIPER = HeroClassSheet.RESERVED_SNIPER;
+    public static final HeroClass RESERVED_SPECIALIST = HeroClassSheet.RESERVED_SPECIALIST;
 	// public static final HeroClass HEAVY_SQUAD = HeroClassSheet.HEAVY_SQUAD;
 
 	// 职业属性
@@ -35,6 +40,7 @@ public class HeroClass implements Comparable<HeroClass>, Bundlable {
 	public Supplier<String> splashArtSupplier;
 	public Supplier<ArmorAbility[]> armorAbilitiesSupplier;
 	public Supplier<Badges.Badge> masteryBadgeSupplier;
+	public Supplier<Image[]> iconsSupplier = () -> new Image[0];
 	public Consumer<Hero> initializer=(hero)->{
 		hero.heroClass=this;
 	};
@@ -154,6 +160,10 @@ public class HeroClass implements Comparable<HeroClass>, Bundlable {
 
 	public String splashArt() {
 		return splashArtSupplier.get();
+	}
+
+	public Image[] icons() {
+		return iconsSupplier.get();
 	}
 
 	public boolean isUnlocked() {

@@ -9,6 +9,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.messages.Messages;
+import com.watabou.noosa.Image;
 import com.watabou.utils.DeviceCompat;
 
 /**
@@ -29,6 +30,7 @@ public class HeroClassBuilder {
     private Supplier<String> splashArt = () -> Assets.Splashes.WARRIOR;
     private Supplier<ArmorAbility[]> abilities = () -> new ArmorAbility[0];
     private Supplier<Badges.Badge> masteryBadge = () -> null;
+    private Supplier<Image[]> icons = () -> new Image[0];
     private Consumer<Hero> initializer;
     public ArrayList<Talent> classTalentsTier1 = new ArrayList<>();
     public ArrayList<Talent> classTalentsTier2 = new ArrayList<>();
@@ -136,6 +138,15 @@ public class HeroClassBuilder {
         return this;
     }
 
+    public HeroClassBuilder icons(Image... _icons) {
+        return icons(() -> _icons);
+    }
+
+    public HeroClassBuilder icons(Supplier<Image[]> _icons) {
+        this.icons = _icons;
+        return this;
+    }
+
     public HeroClassBuilder initializer(Consumer<Hero> _initializer) {
         this.initializer = (hero) -> {
             hero.heroClass = HeroClassSheet.registeredClasses.get(id);
@@ -179,6 +190,7 @@ public class HeroClassBuilder {
         heroClass.splashArtSupplier = splashArt;
         heroClass.armorAbilitiesSupplier = abilities;
         heroClass.masteryBadgeSupplier = masteryBadge;
+        heroClass.iconsSupplier = icons;
         heroClass.initializer = initializer;
         heroClass.classTalentsTier1 = classTalentsTier1;
         heroClass.classTalentsTier2 = classTalentsTier2;
