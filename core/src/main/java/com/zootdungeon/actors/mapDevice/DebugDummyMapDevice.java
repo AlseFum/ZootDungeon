@@ -1,4 +1,4 @@
-package com.zootdungeon.actors;
+package com.zootdungeon.actors.mapDevice;
 
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;

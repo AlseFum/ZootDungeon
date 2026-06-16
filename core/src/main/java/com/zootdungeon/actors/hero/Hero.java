@@ -10,7 +10,7 @@ import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
-import com.zootdungeon.actors.MapDevice;
+import com.zootdungeon.actors.mapDevice.MapDevice;
 import com.zootdungeon.actors.blobs.Blob;
 import com.zootdungeon.actors.blobs.SacrificialFire;
 import com.zootdungeon.actors.buffs.AdrenalineSurge;
