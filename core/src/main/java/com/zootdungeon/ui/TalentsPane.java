@@ -68,7 +68,6 @@ public class TalentsPane extends ScrollPane {
             }
             if (Dungeon.hero != null
                     && (Dungeon.hero.heroClass == HeroClass.ReservedOp
-                    || Dungeon.hero.heroClass == HeroClass.RESERVED_GUARD
                     || Dungeon.hero.heroClass == HeroClass.RESERVED_CASTER
                     || Dungeon.hero.heroClass == HeroClass.RESERVED_SNIPER
                     || Dungeon.hero.heroClass == HeroClass.RESERVED_SPECIALIST)) {

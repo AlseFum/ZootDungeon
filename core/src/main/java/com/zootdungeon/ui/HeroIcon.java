@@ -66,6 +66,9 @@ public class HeroIcon extends Image {
 	public static final int MONK        = 9;
 	public static final int PRIEST      = 10;
 	public static final int PALADIN     = 11;
+	public static final int OP_SHARP    = 12;
+	public static final int ACE         = 13;
+	public static final int BLAZE       = 14;
 
 	//abilities
 	public static final int HEROIC_LEAP     = 16;
@@ -128,6 +131,7 @@ public class HeroIcon extends Image {
 	public static final int SNIPERS_MARK    = 108;
 	public static final int WEAPON_SWAP     = 109;
 	public static final int MONK_ABILITIES  = 110;
+	public static final int ACE_COMBO        = 111;
 
 	public HeroIcon(HeroSubClass subCls){
 		super();

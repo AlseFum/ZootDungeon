@@ -39,6 +39,7 @@ import com.zootdungeon.actors.hero.spells.HolyWard;
 import com.zootdungeon.actors.hero.spells.LifeLinkSpell;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.BrokenSeal;
+import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.EquipableItem;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.curses.AntiEntropy;
@@ -278,6 +279,11 @@ public class Armor extends EquipableItem {
 	@Override
 	public void activate(Char ch) {
 		if (seal != null) Buff.affect(ch, BrokenSeal.WarriorShield.class).setArmor(this);
+		// ACE subclass: attach hit absorption counter when using GuardModal
+		if (seal instanceof GuardModal && ch instanceof Hero
+				&& ((Hero) ch).subClass == HeroSubClass.ACE) {
+			Buff.affect(ch, GuardModal.AceAbsorptionCounter.class);
+		}
 	}
 
 	public void affixSeal(BrokenSeal seal){

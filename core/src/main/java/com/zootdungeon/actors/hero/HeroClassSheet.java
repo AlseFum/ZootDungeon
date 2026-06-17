@@ -29,6 +29,7 @@ import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.arknights.SkillRecord;
 import com.zootdungeon.arknights.plugins.SkillSheet;
 import com.zootdungeon.items.BrokenSeal;
+import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.armor.ClothArmor;
 import com.zootdungeon.items.artifacts.CloakOfShadows;
@@ -313,6 +314,7 @@ public final class HeroClassSheet {
             .register();
 
     public static final HeroClass RESERVED_GUARD = registerStandardClass("reservedGuard")
+            .subClasses(HeroSubClass.OP_SHARP, HeroSubClass.ACE, HeroSubClass.BLAZE)
             .spritesheet("cola/guard.png")
             .spriteCellSize(22, 23)
             .splashArt("cola/guard_splashart.png")
@@ -337,6 +339,12 @@ public final class HeroClassSheet {
             .initializer(hero -> {
                 // 基础武器
                 (hero.belongings.weapon = new WornShortsword()).identify();
+
+                // 守护印记 - 特色物品（可投掷触发单挑）
+                if (hero.belongings.armor != null) {
+                    hero.belongings.armor.affixSeal(new GuardModal());
+                    Catalog.setSeen(GuardModal.class);
+                }
 
                 // 投掷石头
                 ThrowingStone stones = new ThrowingStone();

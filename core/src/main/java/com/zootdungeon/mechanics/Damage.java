@@ -22,6 +22,7 @@ import com.zootdungeon.actors.hero.spells.GuidingLight;
 import com.zootdungeon.actors.hero.spells.LifeLinkSpell;
 import com.zootdungeon.actors.mobs.Brute;
 import com.zootdungeon.actors.mobs.YogDzewa;
+import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.armor.glyphs.Viscosity;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfChallenge;
@@ -309,6 +310,17 @@ public class Damage {
         Berserk berserk = attacker.buff(Berserk.class);
         if (berserk != null) dmg = berserk.damageFactor(dmg);
         if (attacker.buff(Fury.class) != null) dmg *= 1.5f;
+
+        // Feather Fury: OP_SHARP damage boost against duel target
+        if (attacker == Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.OP_SHARP
+                && Dungeon.hero.hasTalent(Talent.OP_SHARP_FEATHER_FURY)) {
+            GuardModal.FeatherDuelGuard guard = Dungeon.hero.buff(GuardModal.FeatherDuelGuard.class);
+            if (guard != null && guard.duelTarget == defender) {
+                float[] boost = {1.0f, 1.20f, 1.25f, 1.50f};
+                int pts = Dungeon.hero.pointsInTalent(Talent.OP_SHARP_FEATHER_FURY);
+                dmg *= boost[pts];
+            }
+        }
 
         PowerOfMany.PowerBuff powerOfMany = attacker.buff(PowerOfMany.PowerBuff.class);
         if (powerOfMany != null) {

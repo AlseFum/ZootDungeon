@@ -23,6 +23,8 @@ import com.zootdungeon.actors.buffs.Barrier;
 import com.zootdungeon.actors.buffs.Berserk;
 import com.zootdungeon.actors.buffs.Bless;
 import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.AceCombo;
+import com.zootdungeon.actors.buffs.BlazeHeatBuff;
 import com.zootdungeon.actors.buffs.Charm;
 import com.zootdungeon.actors.buffs.Combo;
 import com.zootdungeon.actors.buffs.Drowsy;
@@ -73,6 +75,7 @@ import com.zootdungeon.items.material.Dewdrop;
 import com.zootdungeon.items.EquipableItem;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Heap.Type;
+import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.armor.Armor;
@@ -282,6 +285,18 @@ public class Hero extends Char {
 
         if (hasTalent(Talent.STRONGMAN)) {
             strBonus += (int) Math.floor(STR * (0.03f + 0.05f * pointsInTalent(Talent.STRONGMAN)));
+        }
+
+        if (subClass == HeroSubClass.ACE && hasTalent(Talent.ACE_STRENGTH_ENHANCE)) {
+            strBonus += pointsInTalent(Talent.ACE_STRENGTH_ENHANCE);
+        }
+
+        if (subClass == HeroSubClass.OP_SHARP && hasTalent(Talent.OP_SHARP_STRENGTH_ENHANCE)) {
+            strBonus += pointsInTalent(Talent.OP_SHARP_STRENGTH_ENHANCE);
+        }
+
+        if (subClass == HeroSubClass.BLAZE && hasTalent(Talent.BLAZE_STRENGTH_ENHANCE)) {
+            strBonus += pointsInTalent(Talent.BLAZE_STRENGTH_ENHANCE);
         }
 
         return STR + strBonus;
@@ -544,6 +559,14 @@ public class Hero extends Char {
             Buff.affect(this, Sai.ComboStrikeTracker.class).addHit();
         }
 
+        if (hit && subClass == HeroSubClass.ACE && wasEnemy
+                && hasTalent(Talent.ACE_VERSATILE_COMBO)) {
+            AceCombo combo = Buff.affect(this, AceCombo.class);
+            if (pointsInTalent(Talent.ACE_VERSATILE_COMBO) >= 2) {
+                combo.hit(enemy);
+            }
+        }
+
         return hit;
     }
 
@@ -625,6 +648,13 @@ public class Hero extends Char {
             return INFINITE_EVASION;
         }
 
+        if (buff(AceCombo.CounterTracker.class) != null) {
+            if (canAttack(enemy) && !isCharmedBy(enemy)) {
+                Buff.affect(this, AceCombo.CounterRiposteTracker.class).enemy = enemy;
+            }
+            return INFINITE_EVASION;
+        }
+
         if (buff(RoundShield.GuardTracker.class) != null) {
             return INFINITE_EVASION;
         }
@@ -686,6 +716,14 @@ public class Hero extends Char {
                 Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
             }
             return Messages.get(Monk.class, "parried");
+        }
+
+        if (buff(AceCombo.CounterTracker.class) != null) {
+            buff(AceCombo.CounterTracker.class).detach();
+            if (sprite != null && sprite.visible) {
+                Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
+            }
+            return Messages.get(AceCombo.class, "countered");
         }
 
         return super.defenseVerb();
@@ -1601,6 +1639,39 @@ public class Hero extends Char {
         }
 
         switch (subClass) {
+            case OP_SHARP:
+                // Sweeping Strikes: chance to attack another enemy in 3x3 range
+                if (hasTalent(Talent.OP_SHARP_SWEEPING_STRIKES) && damage > 0) {
+                    float sweepChance = 0.2f * pointsInTalent(Talent.OP_SHARP_SWEEPING_STRIKES);
+                    if (Random.Float() < sweepChance) {
+                        ArrayList<Char> targets = new ArrayList<>();
+                        for (int n : PathFinder.NEIGHBOURS8) {
+                            int cell = pos + n;
+                            Char ch = Actor.findChar(cell);
+                            if (ch != null && ch != enemy && ch.alignment == Alignment.ENEMY && ch.isAlive()) {
+                                targets.add(ch);
+                            }
+                        }
+                        if (!targets.isEmpty()) {
+                            final Char secondaryTarget = Random.element(targets);
+                            final int splashDmg = damage;
+                            Actor.add(new Actor() {
+                                {
+                                    actPriority = VFX_PRIO;
+                                }
+                                @Override
+                                protected boolean act() {
+                                    if (secondaryTarget.isAlive()) {
+                                        secondaryTarget.damage(splashDmg, Hero.this);
+                                    }
+                                    Actor.remove(this);
+                                    return true;
+                                }
+                            });
+                        }
+                    }
+                }
+                break;
             case SNIPER:
                 if (wep instanceof MissileWeapon && !(wep instanceof SpiritBow.SpiritArrow) && enemy != this) {
                     Actor.add(new Actor() {
@@ -1629,6 +1700,94 @@ public class Hero extends Char {
                     });
                 }
                 break;
+            case ACE:
+                // AoE Attack: chance to hit another enemy in 3x3 range
+                if (hasTalent(Talent.ACE_AOE_ATTACK) && damage > 0) {
+                    float sweepChance = 0.2f * pointsInTalent(Talent.ACE_AOE_ATTACK);
+                    if (Random.Float() < sweepChance) {
+                        ArrayList<Char> targets = new ArrayList<>();
+                        for (int n : PathFinder.NEIGHBOURS8) {
+                            int cell = pos + n;
+                            Char ch = Actor.findChar(cell);
+                            if (ch != null && ch != enemy && ch.alignment == Alignment.ENEMY && ch.isAlive()) {
+                                targets.add(ch);
+                            }
+                        }
+                        if (!targets.isEmpty()) {
+                            final Char secondaryTarget = Random.element(targets);
+                            final int splashDmg = damage;
+                            Actor.add(new Actor() {
+                                {
+                                    actPriority = VFX_PRIO;
+                                }
+                                @Override
+                                protected boolean act() {
+                                    if (secondaryTarget.isAlive()) {
+                                        secondaryTarget.damage(splashDmg, Hero.this);
+                                    }
+                                    Actor.remove(this);
+                                    return true;
+                                }
+                            });
+                        }
+                    }
+                }
+                break;
+            case BLAZE:
+                // AoE Attack
+                if (hasTalent(Talent.BLAZE_AOE_ATTACK) && damage > 0) {
+                    float sweepChance = 0.2f * pointsInTalent(Talent.BLAZE_AOE_ATTACK);
+                    if (Random.Float() < sweepChance) {
+                        ArrayList<Char> targets = new ArrayList<>();
+                        for (int n : PathFinder.NEIGHBOURS8) {
+                            int cell = pos + n;
+                            Char ch = Actor.findChar(cell);
+                            if (ch != null && ch != enemy && ch.alignment == Alignment.ENEMY && ch.isAlive()) {
+                                targets.add(ch);
+                            }
+                        }
+                        if (!targets.isEmpty()) {
+                            final Char secondaryTarget = Random.element(targets);
+                            final int splashDmg = damage;
+                            Actor.add(new Actor() {
+                                { actPriority = VFX_PRIO; }
+                                @Override
+                                protected boolean act() {
+                                    if (secondaryTarget.isAlive()) {
+                                        secondaryTarget.damage(splashDmg, Hero.this);
+                                    }
+                                    Actor.remove(this);
+                                    return true;
+                                }
+                            });
+                        }
+                    }
+                }
+                // Saw Mastery: chance for extra hit
+                if (hasTalent(Talent.BLAZE_SAW_MASTERY)
+                        && belongings.attackingWeapon() instanceof com.zootdungeon.items.weapon.melee.Saw) {
+                    float extraHitChance = pointsInTalent(Talent.BLAZE_SAW_MASTERY) / 3f;
+                    if (Random.Float() < extraHitChance) {
+                        enemy.damage(damage, Hero.this);
+                    }
+                }
+                // Apply Burning based on Heat/Burning
+                if (hasTalent(Talent.BLAZE_SAW_MASTERY) && enemy.isAlive()) {
+                    BlazeHeatBuff heat = buff(BlazeHeatBuff.class);
+                    com.zootdungeon.actors.buffs.Burning burn = enemy.buff(com.zootdungeon.actors.buffs.Burning.class);
+                    int totalStacks = (heat != null ? (int) heat.count() : 0)
+                            + (burn != null ? 1 : 0);
+                    float burnChance = Math.min(0.5f, totalStacks * 0.1f);
+                    if (Random.Float() < burnChance) {
+                        Buff.affect(enemy, com.zootdungeon.actors.buffs.Burning.class).reignite(enemy, 4f);
+                    }
+                }
+                // Heat on attack
+                {
+                    BlazeHeatBuff heat = Buff.affect(this, BlazeHeatBuff.class);
+                    heat.countUp(1);
+                }
+                break;
             default:
         }
 
@@ -1638,6 +1797,35 @@ public class Hero extends Char {
     @Override
     public int defenseProc(Char enemy, int damage) {
         // EventBus removed
+
+        // OP_SHARP Feather Duel Guard: halve damage from non-duel targets
+        if (damage > 0 && subClass == HeroSubClass.OP_SHARP) {
+            GuardModal.FeatherDuelGuard guard = buff(GuardModal.FeatherDuelGuard.class);
+            if (guard != null && guard.duelTarget != null && guard.duelTarget.isAlive() && enemy != guard.duelTarget) {
+                damage = Math.round(damage * guard.damageMultiplier(enemy));
+            }
+        }
+
+        // ACE: GuardModal hit absorption + combo from being hit
+        if (damage > 0 && subClass == HeroSubClass.ACE) {
+            GuardModal.AceAbsorptionCounter abs = buff(GuardModal.AceAbsorptionCounter.class);
+            if (abs != null && belongings.armor() != null) {
+                damage = abs.tryAbsorb(damage, belongings.armor().DRMax());
+            }
+            if (damage > 0) {
+                AceCombo combo = Buff.affect(this, AceCombo.class);
+                combo.struck(enemy, damage);
+            }
+        }
+
+        // BLAZE: fire resistance from Infernal Endurance
+        if (damage > 0 && subClass == HeroSubClass.BLAZE
+                && hasTalent(Talent.BLAZE_INFERNAL_ENDURANCE)
+                && buff(com.zootdungeon.actors.buffs.Burning.class) != null) {
+            float[] fireResist = {1f, 0.7f, 0.5f, 0.25f};
+            int pts = pointsInTalent(Talent.BLAZE_INFERNAL_ENDURANCE);
+            damage = Math.round(damage * fireResist[pts]);
+        }
 
         if (damage > 0 && subClass == HeroSubClass.BERSERKER) {
             Berserk berserk = Buff.affect(this, Berserk.class);
@@ -2484,6 +2672,11 @@ public class Hero extends Char {
 
         if (hit && heroClass == HeroClass.DUELIST && wasEnemy) {
             Buff.affect(this, Sai.ComboStrikeTracker.class).addHit();
+        }
+
+        // ACE: melee attacks always build combo
+        if (hit && subClass == HeroSubClass.ACE && wasEnemy) {
+            Buff.affect(this, AceCombo.class).hit(enemy);
         }
 
         curAction = null;

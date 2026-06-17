@@ -34,6 +34,7 @@ import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Flare;
 import com.zootdungeon.effects.FloatingText;
+import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.effects.particles.LeafParticle;
 import com.zootdungeon.items.BrokenSeal;
@@ -315,6 +316,25 @@ public class Talent implements Bundlable {
 	public static final Talent RESERVED_GUARD_RUNIC_TRANSFERENCE = new Talent(6, 2, "RESERVED_GUARD_RUNIC_TRANSFERENCE");
 	public static final Talent RESERVED_GUARD_LETHAL_MOMENTUM = new Talent(7, 2, "RESERVED_GUARD_LETHAL_MOMENTUM");
 	public static final Talent RESERVED_GUARD_IMPROVISED_PROJECTILES = new Talent(8, 2, "RESERVED_GUARD_IMPROVISED_PROJECTILES");
+	//RESERVED_GUARD T3 (OP_SHARP subclass)
+	public static final Talent OP_SHARP_FEATHER_FURY = new Talent(227, 3, "OP_SHARP_FEATHER_FURY");
+	public static final Talent OP_SHARP_DUEL_MOMENTUM = new Talent(228, 3, "OP_SHARP_DUEL_MOMENTUM");
+	public static final Talent OP_SHARP_SWEEPING_STRIKES = new Talent(229, 3, "OP_SHARP_SWEEPING_STRIKES");
+	public static final Talent OP_SHARP_BOUNTY_DUEL = new Talent(230, 3, "OP_SHARP_BOUNTY_DUEL");
+	public static final Talent OP_SHARP_STRENGTH_ENHANCE = new Talent(236, 3, "OP_SHARP_STRENGTH_ENHANCE");
+
+	//RESERVED_GUARD T3 (ACE subclass)
+	public static final Talent ACE_STRENGTH_ENHANCE = new Talent(231, 3, "ACE_STRENGTH_ENHANCE");
+	public static final Talent ACE_AOE_ATTACK = new Talent(232, 3, "ACE_AOE_ATTACK");
+	public static final Talent ACE_ARMOR_ACCUMULATION = new Talent(233, 3, "ACE_ARMOR_ACCUMULATION");
+	public static final Talent ACE_COMBO_EXTENSION = new Talent(234, 3, "ACE_COMBO_EXTENSION");
+	public static final Talent ACE_VERSATILE_COMBO = new Talent(235, 2, "ACE_VERSATILE_COMBO");
+
+	//RESERVED_GUARD T3 (BLAZE subclass)
+	public static final Talent BLAZE_STRENGTH_ENHANCE = new Talent(237, 3, "BLAZE_STRENGTH_ENHANCE");
+	public static final Talent BLAZE_AOE_ATTACK = new Talent(238, 3, "BLAZE_AOE_ATTACK");
+	public static final Talent BLAZE_SAW_MASTERY = new Talent(239, 3, "BLAZE_SAW_MASTERY");
+	public static final Talent BLAZE_INFERNAL_ENDURANCE = new Talent(240, 3, "BLAZE_INFERNAL_ENDURANCE");
 
 	//RESERVED_CASTER T1 (copied from MAGE)
 	public static final Talent RESERVED_CASTER_EMPOWERING_MEAL = new Talent(32, 2, "RESERVED_CASTER_EMPOWERING_MEAL");
@@ -521,7 +541,7 @@ public class Talent implements Bundlable {
 		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
 	};
 	public static class VariedChargeTracker extends Buff{
-		public Class weapon;
+		public Class<?> weapon;
 
 		private static final String WEAPON    = "weapon";
 		@Override
@@ -904,8 +924,9 @@ public class Talent implements Bundlable {
 				Collections.addAll(tierTalents, PRECISE_ASSAULT, DEADLY_FOLLOWUP);
 		} else if (cls == HeroClassSheet.CLERIC) {
 				Collections.addAll(tierTalents, CLEANSE, LIGHT_READING);
-		} else if (cls == HeroClassSheet.ReservedOp) {
-			// 预备干员无第三层职业天赋
+		} else if (cls == HeroClassSheet.ReservedOp
+				|| cls == HeroClassSheet.RESERVED_GUARD) {
+			// 预备干员与重装近卫无第三层职业天赋（由子类提供）
 		} else {
 			// Default to warrior
 			Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
@@ -926,13 +947,22 @@ public class Talent implements Bundlable {
 
 	public static void initSubclassTalents( Hero hero ){
 		if (hero.heroClass == HeroClassSheet.ReservedOp
-				|| hero.heroClass == HeroClassSheet.RESERVED_GUARD
 				|| hero.heroClass == HeroClassSheet.RESERVED_CASTER
 				|| hero.heroClass == HeroClassSheet.RESERVED_SNIPER
 				|| hero.heroClass == HeroClassSheet.RESERVED_SPECIALIST) {
 			return;
 		}
 		initSubclassTalents( hero.subClass, hero.talents );
+
+		// BLAZE: replace starting weapon with Saw
+		if (hero.subClass == HeroSubClass.BLAZE
+				&& hero.belongings.weapon instanceof com.zootdungeon.items.weapon.melee.WornShortsword) {
+			hero.belongings.weapon.detach(hero.belongings.backpack);
+			com.zootdungeon.items.weapon.melee.Saw saw = new com.zootdungeon.items.weapon.melee.Saw();
+			saw.identify();
+			hero.belongings.weapon = saw;
+			saw.activate(hero);
+		}
 	}
 
 	public static void initSubclassTalents( HeroSubClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents ){
@@ -969,6 +999,16 @@ public class Talent implements Bundlable {
 				Collections.addAll(tierTalents, HOLY_LANCE, HALLOWED_GROUND, MNEMONIC_PRAYER);
 		} else if (cls == HeroSubClass.PALADIN) {
 				Collections.addAll(tierTalents, LAY_ON_HANDS, AURA_OF_PROTECTION, WALL_OF_LIGHT);
+		} else if (cls == HeroSubClass.OP_SHARP) {
+				Collections.addAll(tierTalents, OP_SHARP_FEATHER_FURY,
+						OP_SHARP_DUEL_MOMENTUM, OP_SHARP_SWEEPING_STRIKES, OP_SHARP_BOUNTY_DUEL,
+						OP_SHARP_STRENGTH_ENHANCE);
+		} else if (cls == HeroSubClass.BLAZE) {
+			Collections.addAll(tierTalents, BLAZE_STRENGTH_ENHANCE, BLAZE_AOE_ATTACK,
+					BLAZE_SAW_MASTERY, BLAZE_INFERNAL_ENDURANCE);
+		} else if (cls == HeroSubClass.ACE) {
+			Collections.addAll(tierTalents, ACE_STRENGTH_ENHANCE, ACE_AOE_ATTACK,
+					ACE_ARMOR_ACCUMULATION, ACE_COMBO_EXTENSION, ACE_VERSATILE_COMBO);
 		} else {
 			// Default to berserker
 			Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST);
@@ -1034,6 +1074,10 @@ public class Talent implements Bundlable {
 		//v2.4.0
 		removedTalents.add("TEST_SUBJECT");
 		removedTalents.add("TESTED_HYPOTHESIS");
+
+		//v3.0.x - OP_SHARP: removed/reworked talents
+		removedTalents.add("OP_SHARP_FEATHER_DUEL");
+		removedTalents.add("OP_SHARP_DUEL_MASTERY");
 	}
 
 	private static final HashMap<String, String> renamedTalents = new HashMap<>();

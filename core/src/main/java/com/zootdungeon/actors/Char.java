@@ -69,6 +69,7 @@ import com.zootdungeon.actors.mobs.Necromancer;
 import com.zootdungeon.actors.mobs.Tengu;
 import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.particles.ShadowParticle;
+import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.armor.glyphs.AntiMagic;
@@ -483,10 +484,13 @@ public abstract class Char extends Actor {
 					speed *= 0.667f;
 				} else if (buffClass == com.zootdungeon.arknights.ascalon.AscalonWound.class){
 					speed *= 0.82f;
+				} else if (buffClass == GuardModal.DuelMomentumBuff.class) {
+					GuardModal.DuelMomentumBuff mb = (GuardModal.DuelMomentumBuff) buff;
+					speed *= mb.speedMultiplier();
 				}
 			}
 		}
-		
+
 		return speed;
 	}
 
