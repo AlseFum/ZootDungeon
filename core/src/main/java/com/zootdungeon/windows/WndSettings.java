@@ -72,7 +72,7 @@ public class WndSettings extends WndTabbed {
 	private DataTab     data;
 	private AudioTab    audio;
 	private LangsTab    langs;
-	private ResourceOverridesTab overridesTab;
+	private ImportExportTab importExport;
 
 	public static int last_index = 0;
 
@@ -191,17 +191,17 @@ public class WndSettings extends WndTabbed {
 		};
 		add( langsTab );
 
-		overridesTab = new ResourceOverridesTab();
-		overridesTab.setSize(width, 0);
-		height = Math.max(height, overridesTab.height());
-		add( overridesTab );
+		importExport = new ImportExportTab();
+		importExport.setSize(width, 0);
+		height = Math.max(height, importExport.height());
+		add( importExport );
 
-		add( new IconTab(Icons.get(Icons.PREFS)){
+		add( new IconTab(Icons.get(Icons.DATA)){
 			@Override
 			protected void select(boolean value) {
 				super.select(value);
-				overridesTab.visible = overridesTab.active = value;
-				if (value) last_index = tabs.size() - 1;
+				importExport.visible = importExport.active = value;
+				if (value) last_index = 6;
 			}
 		});
 
@@ -873,8 +873,6 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkUpdates;
 		CheckBox chkBetas;
 		CheckBox chkWifi;
-		RedButton btnExportData;
-		RedButton btnImportData;
 
 		@Override
 		protected void createChildren() {
@@ -933,34 +931,6 @@ public class WndSettings extends WndTabbed {
 				chkWifi.checked(CDSettings.WiFi());
 				add(chkWifi);
 			}
-			
-			// 导出全局数据到剪贴板按钮
-			btnExportData = new RedButton(Messages.get(this, "export_data")){
-				@Override
-				protected void onClick() {
-					if (SaveManager.exportGlobalToClipboard()) {
-						parent.add(new WndMessage(Messages.get(DataTab.class, "export_success")));
-					} else {
-						parent.add(new WndMessage(Messages.get(DataTab.class, "export_failed")));
-					}
-				}
-			};
-			btnExportData.icon(Icons.get(Icons.COPY));
-			add(btnExportData);
-			
-			// 从剪贴板导入全局数据按钮
-			btnImportData = new RedButton(Messages.get(this, "import_data")){
-				@Override
-				protected void onClick() {
-					if (SaveManager.importGlobalFromClipboard()) {
-						parent.add(new WndMessage(Messages.get(DataTab.class, "import_success")));
-					} else {
-						parent.add(new WndMessage(Messages.get(DataTab.class, "import_failed")));
-					}
-				}
-			};
-			btnImportData.icon(Icons.get(Icons.PASTE));
-			add(btnImportData);
 		}
 
 		@Override
@@ -992,14 +962,66 @@ public class WndSettings extends WndTabbed {
 				chkWifi.setRect(0, pos + GAP, width, BTN_HEIGHT);
 				pos = chkWifi.bottom();
 			}
-			
-			// 导出导入按钮布局
-			btnExportData.setRect(0, pos + GAP, width/2 - GAP/2, BTN_HEIGHT);
-			btnImportData.setRect(width/2 + GAP/2, pos + GAP, width/2 - GAP/2, BTN_HEIGHT);
-			pos = btnExportData.bottom();
 
 			height = pos;
 
+		}
+	}
+
+	private static class ImportExportTab extends Component {
+		RenderedTextBlock title;
+		ColorBlock sep1;
+		RedButton btnExportData;
+		RedButton btnImportData;
+
+		@Override
+		protected void createChildren() {
+			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
+			title.hardlight(Window.TITLE_COLOR);
+			add(title);
+
+			sep1 = new ColorBlock(1, 1, 0xFF000000);
+			add(sep1);
+
+			btnExportData = new RedButton(Messages.get(this, "export_data")){
+				@Override
+				protected void onClick() {
+					if (SaveManager.exportGlobalToClipboard()) {
+						parent.add(new WndMessage(Messages.get(ImportExportTab.class, "export_success")));
+					} else {
+						parent.add(new WndMessage(Messages.get(ImportExportTab.class, "export_failed")));
+					}
+				}
+			};
+			btnExportData.icon(Icons.get(Icons.COPY));
+			add(btnExportData);
+
+			btnImportData = new RedButton(Messages.get(this, "import_data")){
+				@Override
+				protected void onClick() {
+					if (SaveManager.importGlobalFromClipboard()) {
+						parent.add(new WndMessage(Messages.get(ImportExportTab.class, "import_success")));
+					} else {
+						parent.add(new WndMessage(Messages.get(ImportExportTab.class, "import_failed")));
+					}
+				}
+			};
+			btnImportData.icon(Icons.get(Icons.PASTE));
+			add(btnImportData);
+		}
+
+		@Override
+		protected void layout() {
+			title.setPos((width - title.width())/2, y + GAP);
+			sep1.size(width, 1);
+			sep1.y = title.bottom() + 3*GAP;
+
+			float pos = sep1.y + 1 + GAP;
+			btnExportData.setRect(0, pos, width/2 - GAP/2, BTN_HEIGHT);
+			btnImportData.setRect(width/2 + GAP/2, pos, width/2 - GAP/2, BTN_HEIGHT);
+			pos = btnExportData.bottom();
+
+			height = pos;
 		}
 	}
 
@@ -1390,159 +1412,4 @@ public class WndSettings extends WndTabbed {
 		}
 	}
 
-	private static final int OVERRIDES_LIST_HEIGHT = 80;
-
-	private static class ResourceOverridesTab extends Component {
-
-		RenderedTextBlock title;
-		ColorBlock sep1;
-		RenderedTextBlock txtLoadedIndices;
-		RenderedTextBlock txtInfo;
-		Component listContainer;
-		ScrollPane scrollPane;
-		RedButton btnAddOverride;
-		RedButton btnClearOverrides;
-
-		@Override
-		protected void createChildren() {
-			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
-			title.hardlight(Window.TITLE_COLOR);
-			add(title);
-
-			sep1 = new ColorBlock(1, 1, 0xFF000000);
-			add(sep1);
-
-			txtLoadedIndices = PixelScene.renderTextBlock(7);
-			add(txtLoadedIndices);
-
-			txtInfo = PixelScene.renderTextBlock(7);
-			add(txtInfo);
-
-			listContainer = new Component();
-			scrollPane = new ScrollPane(listContainer);
-			add(scrollPane);
-
-			btnAddOverride = new RedButton(Messages.get(this, "add_override")) {
-				@Override
-				protected void onClick() {
-					final float w = width;
-					ColaDungeon.scene().addToFront(new WndOverrideEntry(() -> {
-						refreshList(w);
-						updateInfoText();
-					}));
-					Sample.INSTANCE.play(Assets.getSound(Assets.Sounds.CLICK), 0.7f, 0.7f, 1.2f);
-				}
-			};
-			add(btnAddOverride);
-
-			btnClearOverrides = new RedButton(Messages.get(this, "clear_overrides")) {
-				@Override
-				protected void onClick() {
-					boolean hadLang = !Assets.manualOverrideIndex.isEmpty(ResourceType.LANG);
-					for (ResourceType type : ResourceType.values()) {
-						Assets.manualOverrideIndex.getResourcesByType(type).clear();
-					}
-					Assets.saveManualOverrides();
-					if (hadLang) {
-						Messages.setup(CDSettings.language());
-					}
-					refreshList(ResourceOverridesTab.this.width);
-					updateInfoText();
-					Sample.INSTANCE.play(Assets.getSound(Assets.Sounds.CLICK), 0.7f, 0.7f, 1.2f);
-				}
-			};
-			add(btnClearOverrides);
-		}
-
-		private void refreshList(float listWidth) {
-			listContainer.clear();
-			float rowY = 0;
-			int rowHeight = 14;
-			for (ResourceType type : ResourceType.values()) {
-				Map<String, String> map = Assets.manualOverrideIndex.getResourcesByType(type);
-				for (Map.Entry<String, String> e : map.entrySet()) {
-					final ResourceType t = type;
-					final String id = e.getKey();
-					String path = e.getValue();
-					String typeName = type.name().substring(0, Math.min(4, type.name().length()));
-					String display = typeName + ": " + (id.length() > 18 ? id.substring(0, 15) + "..." : id) + " -> " + (path.length() > 12 ? path.substring(0, 9) + "..." : path);
-					RenderedTextBlock lbl = PixelScene.renderTextBlock(display, 6);
-					lbl.maxWidth((int) (listWidth - BTN_HEIGHT - 2));
-					lbl.setPos(0, rowY);
-					listContainer.add(lbl);
-					RedButton btnRemove = new RedButton(Messages.get(ResourceOverridesTab.class, "remove"), 6) {
-						@Override
-						protected void onClick() {
-							Assets.manualOverrideIndex.getResourcesByType(t).remove(id);
-							Assets.saveManualOverrides();
-							if (t == ResourceType.LANG) {
-								Messages.setup(CDSettings.language());
-							}
-							refreshList(listWidth);
-							updateInfoText();
-							Sample.INSTANCE.play(Assets.getSound(Assets.Sounds.CLICK), 0.7f, 0.7f, 1.2f);
-						}
-					};
-					btnRemove.setRect(listWidth - BTN_HEIGHT - 1, rowY, BTN_HEIGHT, BTN_HEIGHT - 2);
-					listContainer.add(btnRemove);
-					rowY += rowHeight;
-				}
-			}
-			listContainer.setSize(listWidth, Math.max(rowY, 1));
-		}
-
-		private void updateLoadedIndicesText() {
-			java.util.List<Assets.ResourceIndex> added = Assets.getAddedIndices();
-			if (added.isEmpty()) {
-				txtLoadedIndices.text(Messages.get(this, "loaded_indices_none"));
-			} else {
-				StringBuilder sb = new StringBuilder();
-				sb.append(Messages.get(this, "loaded_indices_title")).append("\n");
-				for (int i = 0; i < added.size(); i++) {
-					Assets.ResourceIndex idx = added.get(i);
-					String name = idx.displayName != null && !idx.displayName.isEmpty() ? idx.displayName : ("#" + (i + 1));
-					int lang = idx.langResources.size();
-					int tex = idx.textureResources.size();
-					int snd = idx.soundResources.size();
-					int scr = idx.scriptResources.size();
-					sb.append("  ").append(name).append(": ")
-						.append(Messages.get(this, "index_coverage", lang, tex, snd, scr)).append("\n");
-				}
-				txtLoadedIndices.text(sb.toString().trim());
-			}
-		}
-
-		private void updateInfoText() {
-			int lang = Assets.manualOverrideIndex.langResources.size();
-			int tex = Assets.manualOverrideIndex.textureResources.size();
-			int snd = Assets.manualOverrideIndex.soundResources.size();
-			int scr = Assets.manualOverrideIndex.scriptResources.size();
-			txtInfo.text(Messages.get(this, "info", lang, tex, snd, scr));
-			btnClearOverrides.enable(Assets.hasManualOverrides());
-		}
-
-		@Override
-		protected void layout() {
-			title.setPos((width - title.width()) / 2, y + GAP);
-			sep1.size(width, 1);
-			sep1.y = title.bottom() + 3 * GAP;
-
-			updateLoadedIndicesText();
-			txtLoadedIndices.setPos(0, sep1.y + 1 + GAP);
-			txtLoadedIndices.maxWidth((int) width);
-
-			updateInfoText();
-			txtInfo.setPos(0, txtLoadedIndices.bottom() + GAP);
-			txtInfo.maxWidth((int) width);
-
-			refreshList(width);
-			scrollPane.setRect(0, txtInfo.bottom() + GAP, width, OVERRIDES_LIST_HEIGHT);
-
-			btnAddOverride.setRect(0, scrollPane.bottom() + GAP, width, BTN_HEIGHT);
-			btnClearOverrides.setRect(0, btnAddOverride.bottom() + GAP, width, BTN_HEIGHT);
-			btnClearOverrides.enable(Assets.hasManualOverrides());
-
-			height = btnClearOverrides.bottom();
-		}
-	}
 }
