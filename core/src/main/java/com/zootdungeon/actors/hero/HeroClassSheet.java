@@ -52,6 +52,7 @@ import com.zootdungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.items.supply.DebugSupply;
 import com.zootdungeon.items.wands.WandOfMagicMissile;
+import com.zootdungeon.items.weapon.RhodesShortBow;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.accurateWeapon.Cudgel;
 import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
@@ -358,6 +359,7 @@ public final class HeroClassSheet {
             .register();
 
     public static final HeroClass RESERVED_CASTER = registerStandardClass("reservedCaster")
+            .subClasses(HeroSubClass.PITH, HeroSubClass.LOGOS, HeroSubClass.MANTRA)
             .spritesheet("cola/guard.png")
             .spriteCellSize(22, 23)
             .splashArt("cola/guard_splashart.png")
@@ -395,6 +397,7 @@ public final class HeroClassSheet {
             .register();
 
     public static final HeroClass RESERVED_SNIPER = registerStandardClass("reservedSniper")
+            .subClasses(HeroSubClass.STORMEYE, HeroSubClass.ROSMONTIS, HeroSubClass.OUTCAST)
             .spritesheet("cola/guard.png")
             .spriteCellSize(22, 23)
             .splashArt("cola/guard_splashart.png")
@@ -421,8 +424,8 @@ public final class HeroClassSheet {
                 // 基础武器
                 (hero.belongings.weapon = new Gloves()).identify();
 
-                // 灵魂弓
-                SpiritBow bow = new SpiritBow();
+                // 罗德短弓
+                RhodesShortBow bow = new RhodesShortBow();
                 bow.identify().collect();
 
                 // 快捷栏
@@ -435,6 +438,7 @@ public final class HeroClassSheet {
             .register();
 
     public static final HeroClass RESERVED_SPECIALIST = registerStandardClass("reservedSpecialist")
+            .subClasses(HeroSubClass.MISERY, HeroSubClass.SCOUT, HeroSubClass.RADIAN)
             .spritesheet("cola/guard.png")
             .spriteCellSize(22, 23)
             .splashArt("cola/guard_splashart.png")

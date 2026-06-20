@@ -67,10 +67,7 @@ public class TalentsPane extends ScrollPane {
                 tiersAvailable = 3;
             }
             if (Dungeon.hero != null
-                    && (Dungeon.hero.heroClass == HeroClass.ReservedOp
-                    || Dungeon.hero.heroClass == HeroClass.RESERVED_CASTER
-                    || Dungeon.hero.heroClass == HeroClass.RESERVED_SNIPER
-                    || Dungeon.hero.heroClass == HeroClass.RESERVED_SPECIALIST)) {
+                    && Dungeon.hero.heroClass == HeroClass.ReservedOp) {
                 tiersAvailable = Math.min(tiersAvailable, 2);
             }
         }
@@ -104,10 +101,7 @@ public class TalentsPane extends ScrollPane {
         } else if (tiersAvailable == 2) {
             if (Dungeon.hero == null
                     || (Dungeon.hero.heroClass != HeroClass.ReservedOp
-                    && Dungeon.hero.heroClass != HeroClass.RESERVED_GUARD
-                    && Dungeon.hero.heroClass != HeroClass.RESERVED_CASTER
-                    && Dungeon.hero.heroClass != HeroClass.RESERVED_SNIPER
-                    && Dungeon.hero.heroClass != HeroClass.RESERVED_SPECIALIST)) {
+                    && Dungeon.hero.heroClass != HeroClass.RESERVED_GUARD)) {
                 blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
                 content.add(blockText);
             } else {
@@ -263,7 +257,7 @@ public class TalentsPane extends ScrollPane {
                 left += btn.width() + gap;
             }
 
-            height = buttons.get(0).bottom() - y;
+            height = buttons.isEmpty() ? title.bottom() - y : buttons.get(0).bottom() - y;
 
         }
 

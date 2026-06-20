@@ -31,7 +31,16 @@ public enum HeroSubClass {
 
 		OP_SHARP(HeroIcon.OP_SHARP),
 		ACE(HeroIcon.ACE),
-		BLAZE(HeroIcon.BLAZE);
+		BLAZE(HeroIcon.BLAZE),
+		STORMEYE(HeroIcon.STORMEYE),
+		ROSMONTIS(HeroIcon.ROSMONTIS),
+		OUTCAST(HeroIcon.OUTCAST),
+		PITH(HeroIcon.PITH),
+		LOGOS(HeroIcon.LOGOS),
+		MANTRA(HeroIcon.MANTRA),
+		MISERY(HeroIcon.MISERY),
+		SCOUT(HeroIcon.SCOUT),
+		RADIAN(HeroIcon.RADIAN);
 
 		int icon;
 

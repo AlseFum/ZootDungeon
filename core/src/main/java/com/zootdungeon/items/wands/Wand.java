@@ -76,6 +76,7 @@ import java.util.ArrayList;
 public abstract class Wand extends Item {
 
 	public static final String AC_ZAP	= "ZAP";
+	public static final String AC_DECLARE = "DECLARE";
 
 	private static final float TIME_TO_ZAP	= 1f;
 	
@@ -108,6 +109,9 @@ public abstract class Wand extends Item {
 		if (curCharges > 0 || !curChargeKnown) {
 			actions.add( AC_ZAP );
 		}
+		if (hero.subClass == HeroSubClass.MANTRA && curCharges >= 2) {
+				actions.add( AC_DECLARE );
+			}
 
 		return actions;
 	}

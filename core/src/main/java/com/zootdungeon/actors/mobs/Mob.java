@@ -48,6 +48,7 @@ import com.zootdungeon.items.artifacts.MasterThievesArmband;
 import com.zootdungeon.items.artifacts.TimekeepersHourglass;
 import com.zootdungeon.items.potions.exotic.ExoticPotion;
 import com.zootdungeon.items.rings.Ring;
+import com.zootdungeon.actors.buffs.ScoutLootBuff;
 import com.zootdungeon.items.rings.RingOfWealth;
 import com.zootdungeon.items.scrolls.exotic.ExoticScroll;
 import com.zootdungeon.items.stones.StoneOfAggression;
@@ -653,6 +654,16 @@ public abstract class Mob extends Char {
 		attack( enemy );
 		Invisibility.dispel(this);
 		spend( attackDelay() );
+		// MANTRA declaration: ATTACK trigger
+		if (Dungeon.hero.buff(com.zootdungeon.actors.buffs.MantraDeclarationBuff.class) != null
+				&& enemy == Dungeon.hero) {
+			com.zootdungeon.actors.buffs.MantraDeclarationBuff mantra =
+				Dungeon.hero.buff(com.zootdungeon.actors.buffs.MantraDeclarationBuff.class);
+			if (mantra != null && mantra.getTriggerType()
+					== com.zootdungeon.actors.buffs.MantraDeclarationBuff.TriggerType.ATTACK) {
+				mantra.onTrigger(this, Dungeon.hero);
+			}
+		}
 		super.onAttackComplete();
 	}
 	
@@ -901,6 +912,7 @@ public abstract class Mob extends Char {
 		float lootChance = this.lootChance;
 
 		float dropBonus = RingOfWealth.dropChanceMultiplier( Dungeon.hero );
+		dropBonus *= ScoutLootBuff.dropChanceMultiplier( Dungeon.hero );
 
 		Talent.BountyHunterTracker bhTracker = Dungeon.hero.buff(Talent.BountyHunterTracker.class);
 		if (bhTracker != null){

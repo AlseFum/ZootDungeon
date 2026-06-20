@@ -27,8 +27,11 @@ import com.zootdungeon.actors.buffs.Blindness;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.buffs.MagicImmune;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.actors.hero.HeroClass;
+import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.items.Generator;
+import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.ItemStatusHandler;
 import com.zootdungeon.items.Recipe;
@@ -187,6 +190,30 @@ public abstract class Scroll extends Item {
                 GLog.n(Messages.get(this, "cursed"));
             } else {
                 doRead();
+                // RESERVED_CASTER: scroll recharge talent
+                if (hero.heroClass == HeroClass.RESERVED_CASTER
+                        && hero.subClass != HeroSubClass.NONE
+                        && hero.hasTalent(Talent.CASTER_SCROLL_RECHARGE)) {
+                    int pts = hero.pointsInTalent(Talent.CASTER_SCROLL_RECHARGE);
+                    float charges = pts == 1 ? 0.5f : pts == 2 ? 1f : 3f;
+                    for (Item item : hero.belongings.backpack.items) {
+                        if (item instanceof Wand) {
+                            ((Wand) item).gainCharge(charges);
+                        }
+                    }
+                }
+                // LOGOS: blank scroll creation
+                if (hero.subClass == HeroSubClass.LOGOS
+                        && hero.hasTalent(Talent.LOGOS_BLANK_SCROLL)) {
+                    int pts = hero.pointsInTalent(Talent.LOGOS_BLANK_SCROLL);
+                    float[] chances = {0f, 0.4f, 0.6f, 0.9f};
+                    if (com.watabou.utils.Random.Float() < chances[pts]) {
+                        LogosBlankScroll blank = new LogosBlankScroll();
+                        if (blank.collect()) {
+                            GLog.p(Messages.get(LogosBlankScroll.class, "created"));
+                        }
+                    }
+                }
             }
 
         }

@@ -69,6 +69,15 @@ public class HeroIcon extends Image {
 	public static final int OP_SHARP    = 12;
 	public static final int ACE         = 13;
 	public static final int BLAZE       = 14;
+	public static final int STORMEYE    = 15;
+	public static final int ROSMONTIS   = 16;
+	public static final int OUTCAST     = 17;
+	public static final int PITH        = 18;
+	public static final int LOGOS       = 19;
+	public static final int MANTRA      = 20;
+	public static final int MISERY      = 21;
+	public static final int SCOUT       = 22;
+	public static final int RADIAN      = 23;
 
 	//abilities
 	public static final int HEROIC_LEAP     = 16;

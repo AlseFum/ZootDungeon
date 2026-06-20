@@ -23,6 +23,7 @@ package com.zootdungeon.items.weapon.melee;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.ArtifactRecharge;
 import com.zootdungeon.actors.buffs.Barrier;
@@ -88,6 +89,11 @@ public class MeleeWeapon extends Weapon {
 		if (isEquipped(hero) && hero.heroClass == HeroClass.DUELIST){
 			actions.add(AC_ABILITY);
 		}
+		// ROSMONTIS: throw melee weapon
+		if (isEquipped(hero) && hero.subClass == HeroSubClass.ROSMONTIS
+				&& hero.hasTalent(Talent.ROSMONTIS_THROW_MELEE)) {
+			actions.add(AC_THROW);
+		}
 		return actions;
 	}
 
@@ -146,6 +152,29 @@ public class MeleeWeapon extends Weapon {
 					});
 				}
 			}
+		} else if (action.equals(AC_THROW) && hero.subClass == HeroSubClass.ROSMONTIS) {
+			usesTargeting = true;
+			curUser = hero;
+			curItem = this;
+			GameScene.selectCell(new CellSelector.Listener() {
+				@Override
+				public void onSelect(Integer cell) {
+					if (cell == null) return;
+					final Char enemy = Actor.findChar(cell);
+					if (enemy == null || enemy == hero || !Dungeon.level.heroFOV[cell]) return;
+					hero.sprite.attack(cell, () -> {
+						float[] dmgMult = {0.5f, 1.0f, 1.5f};
+						int pts = hero.pointsInTalent(Talent.ROSMONTIS_THROW_MELEE);
+						int dmg = Math.round(damageRoll(hero) * dmgMult[pts]);
+						enemy.damage(dmg, hero);
+						hero.spendAndNext(hero.attackDelay());
+					});
+				}
+				@Override
+				public String prompt() {
+					return Messages.get(MeleeWeapon.class, "throw_prompt");
+				}
+			});
 		}
 	}
 

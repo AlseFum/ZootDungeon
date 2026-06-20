@@ -336,6 +336,65 @@ public class Talent implements Bundlable {
 	public static final Talent BLAZE_SAW_MASTERY = new Talent(239, 3, "BLAZE_SAW_MASTERY");
 	public static final Talent BLAZE_INFERNAL_ENDURANCE = new Talent(240, 3, "BLAZE_INFERNAL_ENDURANCE");
 
+	//RESERVED_SNIPER T3 (common talents for STORMEYE/ROSMONTIS/OUTCAST)
+	public static final Talent SNIPER_RECON_SHOT = new Talent(241, 3, "SNIPER_RECON_SHOT");
+	public static final Talent SNIPER_ROOTING_SHOT = new Talent(242, 3, "SNIPER_ROOTING_SHOT");
+
+	//RESERVED_SNIPER T3 (STORMEYE specific)
+	public static final Talent STORMEYE_ARMOR_PIERCE = new Talent(243, 3, "STORMEYE_ARMOR_PIERCE");
+	public static final Talent STORMEYE_DEVICE_CHARGE = new Talent(244, 3, "STORMEYE_DEVICE_CHARGE");
+	public static final Talent STORMEYE_FOLLOWUP_SHOT = new Talent(245, 3, "STORMEYE_FOLLOWUP_SHOT");
+
+	//RESERVED_SNIPER T3 (ROSMONTIS specific)
+	public static final Talent ROSMONTIS_PIERCING_THROW = new Talent(246, 3, "ROSMONTIS_PIERCING_THROW");
+	public static final Talent ROSMONTIS_ENHANCED_THROWN = new Talent(247, 3, "ROSMONTIS_ENHANCED_THROWN");
+	public static final Talent ROSMONTIS_THROW_MELEE = new Talent(248, 3, "ROSMONTIS_THROW_MELEE");
+
+	//RESERVED_SNIPER T3 (OUTCAST specific)
+	public static final Talent OUTCAST_SPECIAL_AMMO = new Talent(249, 3, "OUTCAST_SPECIAL_AMMO");
+	public static final Talent OUTCAST_QUICK_DRAW = new Talent(250, 3, "OUTCAST_QUICK_DRAW");
+	public static final Talent OUTCAST_HIGH_NOON = new Talent(251, 3, "OUTCAST_HIGH_NOON");
+
+	//RESERVED_CASTER T3 (common talents for PITH/LOGOS/MANTRA)
+	public static final Talent CASTER_SCROLL_RECHARGE = new Talent(252, 3, "CASTER_SCROLL_RECHARGE");
+	public static final Talent CASTER_LAST_CHARGE_BOOST = new Talent(253, 3, "CASTER_LAST_CHARGE_BOOST");
+
+	//RESERVED_CASTER T3 (PITH specific)
+	public static final Talent PITH_WAND_CHAIN = new Talent(222, 3, "PITH_WAND_CHAIN");
+	public static final Talent PITH_CHAIN_STRONGER = new Talent(223, 3, "PITH_CHAIN_STRONGER");
+	public static final Talent PITH_FULL_DISCHARGE = new Talent(224, 3, "PITH_FULL_DISCHARGE");
+
+	//RESERVED_CASTER T3 (LOGOS specific)
+	public static final Talent LOGOS_BLANK_SCROLL = new Talent(225, 3, "LOGOS_BLANK_SCROLL");
+	public static final Talent LOGOS_WAND_SENTINEL = new Talent(226, 3, "LOGOS_WAND_SENTINEL");
+	public static final Talent LOGOS_RUNE_POWER = new Talent(227, 3, "LOGOS_RUNE_POWER");
+
+	//RESERVED_CASTER T3 (MANTRA specific)
+	public static final Talent MANTRA_SPLASH_TRIGGER = new Talent(228, 3, "MANTRA_SPLASH_TRIGGER");
+	public static final Talent MANTRA_ALLY_TRIGGER = new Talent(229, 3, "MANTRA_ALLY_TRIGGER");
+	public static final Talent MANTRA_ETERNAL_BUFF = new Talent(230, 3, "MANTRA_ETERNAL_BUFF");
+
+	//RESERVED_SPECIALIST T3 (common talent)
+	public static final Talent SPECIALIST_CLOAK_UNEQUIPPED = new Talent(231, 3, "SPECIALIST_CLOAK_UNEQUIPPED");
+
+	//RESERVED_SPECIALIST T3 (MISERY specific)
+	public static final Talent MISERY_SHADOW_TELEPORT = new Talent(232, 3, "MISERY_SHADOW_TELEPORT");
+	public static final Talent MISERY_CRIPPLE_BLOB = new Talent(233, 3, "MISERY_CRIPPLE_BLOB");
+	public static final Talent MISERY_SOUL_REAP = new Talent(234, 3, "MISERY_SOUL_REAP");
+	public static final Talent MISERY_LAST_SHADOW = new Talent(235, 3, "MISERY_LAST_SHADOW");
+
+	//RESERVED_SPECIALIST T3 (SCOUT specific)
+	public static final Talent SCOUT_GOLD_SYNTH = new Talent(236, 3, "SCOUT_GOLD_SYNTH");
+	public static final Talent SCOUT_BETTER_LOOT = new Talent(237, 3, "SCOUT_BETTER_LOOT");
+	public static final Talent SCOUT_MERCHANT_REFRESH = new Talent(238, 3, "SCOUT_MERCHANT_REFRESH");
+	public static final Talent SCOUT_SUMMON_MERCHANT = new Talent(239, 3, "SCOUT_SUMMON_MERCHANT");
+
+	//RESERVED_SPECIALIST T3 (RADIAN specific)
+	public static final Talent RADIAN_SUMMON_CONTROL = new Talent(240, 3, "RADIAN_SUMMON_CONTROL");
+	public static final Talent RADIAN_CONTROL_RANGE = new Talent(241, 3, "RADIAN_CONTROL_RANGE");
+	public static final Talent RADIAN_REPAIR_COST = new Talent(242, 3, "RADIAN_REPAIR_COST");
+	public static final Talent RADIAN_TELEPORT_TO_SUMMON = new Talent(243, 3, "RADIAN_TELEPORT_TO_SUMMON");
+
 	//RESERVED_CASTER T1 (copied from MAGE)
 	public static final Talent RESERVED_CASTER_EMPOWERING_MEAL = new Talent(32, 2, "RESERVED_CASTER_EMPOWERING_MEAL");
 	public static final Talent RESERVED_CASTER_SCHOLARS_INTUITION = new Talent(33, 2, "RESERVED_CASTER_SCHOLARS_INTUITION");
@@ -924,9 +983,10 @@ public class Talent implements Bundlable {
 				Collections.addAll(tierTalents, PRECISE_ASSAULT, DEADLY_FOLLOWUP);
 		} else if (cls == HeroClassSheet.CLERIC) {
 				Collections.addAll(tierTalents, CLEANSE, LIGHT_READING);
-		} else if (cls == HeroClassSheet.ReservedOp
-				|| cls == HeroClassSheet.RESERVED_GUARD) {
-			// 预备干员与重装近卫无第三层职业天赋（由子类提供）
+		} else if (cls != null && cls.subClasses() != null && cls.subClasses().length > 0) {
+			// 有子类的职业，T3由initSubclassTalents提供
+		} else if (cls == HeroClassSheet.ReservedOp) {
+			// 预备干员无第三层职业天赋
 		} else {
 			// Default to warrior
 			Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
@@ -946,10 +1006,7 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initSubclassTalents( Hero hero ){
-		if (hero.heroClass == HeroClassSheet.ReservedOp
-				|| hero.heroClass == HeroClassSheet.RESERVED_CASTER
-				|| hero.heroClass == HeroClassSheet.RESERVED_SNIPER
-				|| hero.heroClass == HeroClassSheet.RESERVED_SPECIALIST) {
+		if (hero.heroClass == HeroClassSheet.ReservedOp) {
 			return;
 		}
 		initSubclassTalents( hero.subClass, hero.talents );
@@ -1009,6 +1066,33 @@ public class Talent implements Bundlable {
 		} else if (cls == HeroSubClass.ACE) {
 			Collections.addAll(tierTalents, ACE_STRENGTH_ENHANCE, ACE_AOE_ATTACK,
 					ACE_ARMOR_ACCUMULATION, ACE_COMBO_EXTENSION, ACE_VERSATILE_COMBO);
+		} else if (cls == HeroSubClass.STORMEYE) {
+			Collections.addAll(tierTalents, SNIPER_RECON_SHOT, SNIPER_ROOTING_SHOT,
+					STORMEYE_ARMOR_PIERCE, STORMEYE_DEVICE_CHARGE, STORMEYE_FOLLOWUP_SHOT);
+		} else if (cls == HeroSubClass.ROSMONTIS) {
+			Collections.addAll(tierTalents, SNIPER_RECON_SHOT, SNIPER_ROOTING_SHOT,
+					ROSMONTIS_PIERCING_THROW, ROSMONTIS_ENHANCED_THROWN, ROSMONTIS_THROW_MELEE);
+		} else if (cls == HeroSubClass.OUTCAST) {
+			Collections.addAll(tierTalents, SNIPER_RECON_SHOT, SNIPER_ROOTING_SHOT,
+					OUTCAST_SPECIAL_AMMO, OUTCAST_QUICK_DRAW, OUTCAST_HIGH_NOON);
+		} else if (cls == HeroSubClass.PITH) {
+			Collections.addAll(tierTalents, CASTER_SCROLL_RECHARGE, CASTER_LAST_CHARGE_BOOST,
+					PITH_WAND_CHAIN, PITH_CHAIN_STRONGER, PITH_FULL_DISCHARGE);
+		} else if (cls == HeroSubClass.LOGOS) {
+			Collections.addAll(tierTalents, CASTER_SCROLL_RECHARGE, CASTER_LAST_CHARGE_BOOST,
+					LOGOS_BLANK_SCROLL, LOGOS_WAND_SENTINEL, LOGOS_RUNE_POWER);
+		} else if (cls == HeroSubClass.MANTRA) {
+			Collections.addAll(tierTalents, CASTER_SCROLL_RECHARGE, CASTER_LAST_CHARGE_BOOST,
+					MANTRA_SPLASH_TRIGGER, MANTRA_ALLY_TRIGGER, MANTRA_ETERNAL_BUFF);
+		} else if (cls == HeroSubClass.MISERY) {
+			Collections.addAll(tierTalents, SPECIALIST_CLOAK_UNEQUIPPED,
+					MISERY_SHADOW_TELEPORT, MISERY_CRIPPLE_BLOB, MISERY_SOUL_REAP, MISERY_LAST_SHADOW);
+		} else if (cls == HeroSubClass.SCOUT) {
+			Collections.addAll(tierTalents, SPECIALIST_CLOAK_UNEQUIPPED,
+					SCOUT_GOLD_SYNTH, SCOUT_BETTER_LOOT, SCOUT_MERCHANT_REFRESH, SCOUT_SUMMON_MERCHANT);
+		} else if (cls == HeroSubClass.RADIAN) {
+			Collections.addAll(tierTalents, SPECIALIST_CLOAK_UNEQUIPPED,
+					RADIAN_SUMMON_CONTROL, RADIAN_CONTROL_RANGE, RADIAN_REPAIR_COST, RADIAN_TELEPORT_TO_SUMMON);
 		} else {
 			// Default to berserker
 			Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST);

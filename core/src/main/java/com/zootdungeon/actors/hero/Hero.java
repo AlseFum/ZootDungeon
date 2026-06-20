@@ -26,6 +26,8 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.AceCombo;
 import com.zootdungeon.actors.buffs.BlazeHeatBuff;
 import com.zootdungeon.actors.buffs.Charm;
+import com.zootdungeon.actors.buffs.RevealedArea;
+import com.zootdungeon.actors.buffs.Roots;
 import com.zootdungeon.actors.buffs.Combo;
 import com.zootdungeon.actors.buffs.Drowsy;
 import com.zootdungeon.actors.buffs.Foresight;
@@ -1698,6 +1700,100 @@ public class Hero extends Char {
                             return true;
                         }
                     });
+                }
+                break;
+            case STORMEYE: case ROSMONTIS: case OUTCAST:
+                if (wep instanceof MissileWeapon && enemy != this && enemy.isAlive()) {
+                    // Recon Shot: reveal area around target
+                    if (hasTalent(Talent.SNIPER_RECON_SHOT)) {
+                        int pts = pointsInTalent(Talent.SNIPER_RECON_SHOT);
+                        int radius = pts >= 3 ? 2 : 1; // 3x3/3x3/5x5
+                        int duration = pts == 1 ? 3 : pts == 2 ? 5 : 7;
+                        int cell = enemy.pos;
+                        for (int n : PathFinder.NEIGHBOURS9) {
+                            Buff.affect(Hero.this, RevealedArea.class, duration)
+                                .pos = cell + (radius > 1 ? n * 2 : n);
+                        }
+                        RevealedArea r = Buff.affect(Hero.this, RevealedArea.class, duration);
+                        r.depth = Dungeon.depth; r.branch = Dungeon.branch; r.pos = cell;
+                    }
+                    // Rooting Shot: root enemies near target
+                    if (hasTalent(Talent.SNIPER_ROOTING_SHOT)) {
+                        int pts = pointsInTalent(Talent.SNIPER_ROOTING_SHOT);
+                        int radius = pts >= 3 ? 2 : 1;
+                        float rootDur = pts == 1 ? 3f : pts == 2 ? 5f : 7f;
+                        for (Char ch : Actor.chars()) {
+                            if (ch != enemy && ch.alignment == Alignment.ENEMY
+                                    && Dungeon.level.distance(enemy.pos, ch.pos) <= radius) {
+                                Buff.prolong(ch, Roots.class, rootDur);
+                            }
+                        }
+                    }
+                    // STORMEYE: Armor Pierce (bow ignores 15/30/45% defense)
+                    if (subClass == HeroSubClass.STORMEYE && hasTalent(Talent.STORMEYE_ARMOR_PIERCE)
+                            && wep instanceof MissileWeapon && damage > 0) {
+                        float[] pierceRates = {0f, 0.15f, 0.30f, 0.45f};
+                        int pts = pointsInTalent(Talent.STORMEYE_ARMOR_PIERCE);
+                        damage = Math.round(damage * (1f + pierceRates[pts]));
+                    }
+                    // STORMEYE: Follow-up Shot (chance + knockback)
+                    if (subClass == HeroSubClass.STORMEYE && hasTalent(Talent.STORMEYE_FOLLOWUP_SHOT)
+                            && wep instanceof MissileWeapon && enemy.isAlive() && damage > 0) {
+                        float[] followChances = {0f, 0.2f, 0.35f, 0.5f};
+                        int pts = pointsInTalent(Talent.STORMEYE_FOLLOWUP_SHOT);
+                        if (Random.Float() < followChances[pts]) {
+                            final int bonusDmg = damage / 2;
+                            final Char target = enemy;
+                            Actor.add(new Actor() {
+                                { actPriority = VFX_PRIO; }
+                                @Override
+                                protected boolean act() {
+                                    if (target.isAlive()) {
+                                        target.damage(bonusDmg, Hero.this);
+                                        // small knockback
+                                        for (int n : PathFinder.NEIGHBOURS8) {
+                                            int cell = target.pos + n;
+                                            if (Dungeon.level.passable[cell] && Actor.findChar(cell) == null) {
+                                                target.pos = cell;
+                                                target.sprite.move(target.pos, cell);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    Actor.remove(this);
+                                    return true;
+                                }
+                            });
+                        }
+                    }
+                    // ROSMONTIS: Piercing Throw (thrown weapons pierce to next enemy)
+                    if (subClass == HeroSubClass.ROSMONTIS && hasTalent(Talent.ROSMONTIS_PIERCING_THROW)
+                            && wep instanceof MissileWeapon && enemy.isAlive() && damage > 0) {
+                        float[] pierceChances = {0f, 0.2f, 0.4f, 0.6f};
+                        int pts = pointsInTalent(Talent.ROSMONTIS_PIERCING_THROW);
+                        if (Random.Float() < pierceChances[pts]) {
+                            // find enemy behind target along trajectory
+                            int dx = enemy.pos % Dungeon.level.width() - pos % Dungeon.level.width();
+                            int dy = enemy.pos / Dungeon.level.width() - pos / Dungeon.level.width();
+                            int behind = enemy.pos + (dx != 0 ? (dx > 0 ? 1 : -1) : 0)
+                                    + (dy != 0 ? (dy > 0 ? 1 : -1) : 0) * Dungeon.level.width();
+                            final Char behindEnemy = Actor.findChar(behind);
+                            if (behindEnemy != null && behindEnemy.alignment == Alignment.ENEMY) {
+                                final int pierceDmg = damage;
+                                Actor.add(new Actor() {
+                                    { actPriority = VFX_PRIO; }
+                                    @Override
+                                    protected boolean act() {
+                                        if (behindEnemy.isAlive()) {
+                                            behindEnemy.damage(pierceDmg, Hero.this);
+                                        }
+                                        Actor.remove(this);
+                                        return true;
+                                    }
+                                });
+                            }
+                        }
+                    }
                 }
                 break;
             case ACE:

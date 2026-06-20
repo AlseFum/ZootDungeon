@@ -70,7 +70,8 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if ((isEquipped( hero ) || hero.hasTalent(Talent.LIGHT_CLOAK))
+		if ((isEquipped( hero ) || hero.hasTalent(Talent.LIGHT_CLOAK)
+				|| hero.hasTalent(Talent.SPECIALIST_CLOAK_UNEQUIPPED))
 				&& !cursed
 				&& hero.buff(MagicImmune.class) == null
 				&& (charge > 0 || activeBuff != null)) {
