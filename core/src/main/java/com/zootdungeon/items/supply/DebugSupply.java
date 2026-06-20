@@ -11,6 +11,7 @@ import com.zootdungeon.items.weapon.configurable.RangeReducedWeapon;
 import com.zootdungeon.arknights.phantom.PhantomKnife;
 import com.zootdungeon.items.weapon.configurable.TransferMechWeapon;
 import com.zootdungeon.arknights.tragodia.TragodiaWand;
+import com.zootdungeon.arknights.WandOfEyjafjalla;
 import com.zootdungeon.arknights.necrass.NecrassCard;
 import com.zootdungeon.items.weapon.chakram.Chakram;
 import com.zootdungeon.items.weapon.configurable.TwinBlade;
@@ -107,6 +108,7 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(StateSwitchWeapon.class, 1));
         weapons.add(() -> create(PhantomKnife.class, 1));
         weapons.add(() -> create(TragodiaWand.class, 1));
+weapons.add(() -> create(WandOfEyjafjalla.class, 1));
         weapons.add(() -> create(RangeReducedWeapon.class, 1));
         weapons.add(() -> create(MomentumWeapon.class, 1));
         weapons.add(() -> create(PropertyHuntingWeapon.class, 1));
