@@ -10,21 +10,20 @@ import com.zootdungeon.utils.FileHandle;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PlatformSupport;
 
+// Application entry point. Bootstraps assets, settings, audio, and launches the first scene.
+// Also provides scene-switching utilities and window save/restore across transitions.
+// The only root-package class that does not participate in save/load.
+// Normally you shouldn't modify this file. You may check Dungeon.java
 public class ColaDungeon extends Game {
 
-    //rankings from v1.2.3 and older use a different score formula, so this reference is kept
-    // public static final int older_scorer_version = 1;
-    //savegames from versions older than v2.3.2 are no longer supported, and data from them is ignored
-    // public static final int oldest_compatiable_version = 1;
-    // public static final int v2_4_2 = 1;
-    // public static final int v2_5_4 = 1;
+    // Save format version; bump when breaking save compatibility.
     public static final int v_latest = 1;
 
     public ColaDungeon(PlatformSupport platform) {
-        // TODO: WelcomeScene 逻辑待修；暂时与 SPD 一样先进标题界面
         super(sceneClass == null ? TitleScene.class : sceneClass, platform);
     }
 
+    // Called once at launch: loads asset indexes, key bindings, audio prefs, and pre-caches sounds.
     @Override
     public void create() {
         super.create();
@@ -42,32 +41,34 @@ public class ColaDungeon extends Game {
         Sample.INSTANCE.volume(CDSettings.SFXVol() * CDSettings.SFXVol() / 100f);
 
         Sample.INSTANCE.load(Assets.getSoundsAllResolved());
-
     }
 
+    // Exit on desktop/Android; return to title on iOS (Apple HIG — apps should not quit).
     @Override
     public void finish() {
         if (!DeviceCompat.isiOS()) {
             super.finish();
         } else {
-            //can't exit on iOS (Apple guidelines), so just go to title screen
             switchScene(TitleScene.class);
         }
     }
 
+    // Switch scenes without a fade transition.
     public static void switchNoFade(Class<? extends PixelScene> c) {
         switchNoFade(c, null);
     }
 
+    // Switch without fade, with an optional post-switch callback.
     public static void switchNoFade(Class<? extends PixelScene> c, SceneChangeCallback callback) {
         PixelScene.noFade = true;
         switchScene(c, callback);
     }
 
+    // Save open windows, then reload the current scene in-place. Used when a setting change
+    // requires rebuilding the UI without a full scene switch.
     public static void seamlessResetScene(SceneChangeCallback callback) {
         if (scene() instanceof PixelScene _scene) {
             _scene.saveWindows();
-
             switchNoFade((Class<? extends PixelScene>) sceneClass, callback);
         } else {
             resetScene();
@@ -78,6 +79,7 @@ public class ColaDungeon extends Game {
         seamlessResetScene(null);
     }
 
+    /** After a scene switch, restore any windows that were saved from the previous scene. */
     @Override
     protected void switchScene() {
         super.switchScene();
@@ -86,6 +88,10 @@ public class ColaDungeon extends Game {
         }
     }
 
+    /**
+     * Called when the window is resized. Saves open windows on the old size,
+     * then delegates to the platform for display size recalculation.
+     */
     @Override
     public void resize(int width, int height) {
         if (width == 0 || height == 0) {
@@ -99,11 +105,10 @@ public class ColaDungeon extends Game {
         }
 
         super.resize(width, height);
-
         updateDisplaySize();
-
     }
 
+    /** Called on application exit. Shuts down the background actor thread. */
     @Override
     public void destroy() {
         super.destroy();
