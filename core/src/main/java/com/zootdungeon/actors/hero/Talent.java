@@ -492,6 +492,15 @@ public class Talent implements Bundlable {
 			return Math.max(0, visualcooldown() / maxCooldown);
 		}
 	};
+	public static class CrippleBlobCooldown extends FlavourBuff{
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0.4f, 0.1f, 0.3f); }
+		public float iconFadePercent() {
+			int pts = Dungeon.hero != null ? Dungeon.hero.pointsInTalent(MISERY_CRIPPLE_BLOB) : 1;
+			float cd = 30f - 5f * pts; // Lv1:25, Lv2:20, Lv3:15
+			return Math.max(0, visualcooldown() / cd);
+		}
+	};
 	public static class RejuvenatingStepsCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }

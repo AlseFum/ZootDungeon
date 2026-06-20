@@ -16,8 +16,10 @@ import com.zootdungeon.actors.blobs.SacrificialFire;
 import com.zootdungeon.actors.buffs.AdrenalineSurge;
 import com.zootdungeon.actors.buffs.AttackUpBuff;
 import com.zootdungeon.actors.buffs.ArtifactRecharge;
-import com.zootdungeon.actors.buffs.CrippleDebuff;
+
 import com.zootdungeon.actors.blobs.MiseryShadowBlob;
+import com.zootdungeon.actors.buffs.ShadowStepAction;
+import com.zootdungeon.ui.ActionIndicator;
 
 import com.zootdungeon.actors.buffs.AscensionChallenge;
 import com.zootdungeon.actors.buffs.Awareness;
@@ -959,6 +961,16 @@ public class Hero extends Char {
         // calls to dungeon.observe will also update hero's local FOV.
         fieldOfView = Dungeon.level.heroFOV;
 
+        // MISERY shadow step action indicator
+        if (subClass == HeroSubClass.MISERY && Dungeon.level != null) {
+            MiseryShadowBlob blob = (MiseryShadowBlob) Dungeon.level.blobs.get(MiseryShadowBlob.class);
+            if (blob != null && blob.findNearestShadow(pos) != -1) {
+                ActionIndicator.setAction(ShadowStepAction.INSTANCE);
+            } else {
+                ActionIndicator.clearAction(ShadowStepAction.INSTANCE);
+            }
+        }
+
         if (buff(Endure.EndureTracker.class) != null) {
             buff(Endure.EndureTracker.class).endEnduring();
         }
@@ -1888,34 +1900,6 @@ public class Hero extends Char {
                 }
                 break;
             case MISERY:
-                // CRIPPLE_BLOB (233): thrown weapons create shadow miasma AOE
-                if (hasTalent(Talent.MISERY_CRIPPLE_BLOB) && wep instanceof MissileWeapon && damage > 0) {
-                    int pts = pointsInTalent(Talent.MISERY_CRIPPLE_BLOB);
-                    int radius = pts; // Lv1: 1, Lv2: 2, Lv3: 3
-                    int cell = enemy.pos;
-
-                    MiseryShadowBlob blob = (MiseryShadowBlob) Dungeon.level.blobs.get(MiseryShadowBlob.class);
-                    // Add center cell as shadow
-                    if (blob != null) {
-                        blob.addShadowCell(cell, 15);
-                    }
-
-                    // Apply CrippleDebuff to enemies within radius
-                    for (int n : PathFinder.NEIGHBOURS8) {
-                        int targetCell = cell + n;
-                        if (Dungeon.level.distance(cell, targetCell) > radius) continue;
-                        Char target = Actor.findChar(targetCell);
-                        if (target != null && target.alignment == Alignment.ENEMY) {
-                            float crippleDur = 5f + pts * 2f; // 7/9/11 turns
-                            Buff.affect(target, CrippleDebuff.class, crippleDur);
-                        }
-                        // Add shadow cells for free teleport
-                        if (blob != null && Dungeon.level.passable[targetCell]) {
-                            blob.addShadowCell(targetCell, 15);
-                        }
-                    }
-                }
-
                 // SOUL_REAP (234): Lv2+ lifesteal on ambush kills
                 if (hasTalent(Talent.MISERY_SOUL_REAP) && pointsInTalent(Talent.MISERY_SOUL_REAP) >= 2
                         && damage > 0 && enemy instanceof Mob && ((Mob) enemy).surprisedBy(this)) {
@@ -1934,29 +1918,6 @@ public class Hero extends Char {
     @Override
     public int defenseProc(Char enemy, int damage) {
         // EventBus removed
-
-        // MISERY LAST_SHADOW (235): on fatal damage, auto-teleport to nearest shadow
-        if (damage > 0 && subClass == HeroSubClass.MISERY
-                && hasTalent(Talent.MISERY_LAST_SHADOW)
-                && buff(Talent.LastShadowCooldown.class) == null
-                && damage >= (HP + shielding())) {
-            MiseryShadowBlob blob = (MiseryShadowBlob) Dungeon.level.blobs.get(MiseryShadowBlob.class);
-            if (blob != null) {
-                int nearestShadow = blob.findNearestShadow(pos);
-                if (nearestShadow != -1) {
-                    // Survive with at least 1 HP
-                    blob.teleportTo(this, nearestShadow);
-                    HP = Math.max(HP, 1);
-                    // Apply cooldown
-                    int pts = pointsInTalent(Talent.MISERY_LAST_SHADOW);
-                    float cooldown = 300f - 50f * pts; // Lv1:250, Lv2:200, Lv3:150
-                    Buff.affect(this, Talent.LastShadowCooldown.class, cooldown);
-                    // Negate the fatal damage
-                    damage = 0;
-                    GLog.p("Your Last Shadow talent saved you from a fatal blow!");
-                }
-            }
-        }
 
         // OP_SHARP Feather Duel Guard: halve damage from non-duel targets
         if (damage > 0 && subClass == HeroSubClass.OP_SHARP) {
@@ -2610,6 +2571,26 @@ public class Hero extends Char {
 
     @Override
     public void die(Object cause) {
+
+        // MISERY LAST_SHADOW: auto-teleport to nearest shadow instead of dying
+        if (subClass == HeroSubClass.MISERY
+                && hasTalent(Talent.MISERY_LAST_SHADOW)
+                && buff(Talent.LastShadowCooldown.class) == null) {
+            MiseryShadowBlob blob = (MiseryShadowBlob) Dungeon.level.blobs.get(MiseryShadowBlob.class);
+            if (blob != null) {
+                int nearestShadow = blob.findNearestShadow(pos);
+                if (nearestShadow != -1) {
+                    HP = 1; blob.teleportTo(this, nearestShadow);
+                    HP = Math.max(HP, 1);
+                    int pts = pointsInTalent(Talent.MISERY_LAST_SHADOW);
+                    float cooldown = 300f - 50f * pts;
+                    Buff.affect(this, Talent.LastShadowCooldown.class, cooldown);
+                    GLog.p("Your Last Shadow talent saved you from a fatal blow!");
+                    interrupt();
+                    return;
+                }
+            }
+        }
 
         curAction = null;
 

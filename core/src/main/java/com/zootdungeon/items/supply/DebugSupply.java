@@ -27,6 +27,7 @@ import com.zootdungeon.arknights.firearms.LateranGun;
 import com.zootdungeon.items.weapon.firearms.FirearmBullet;
 import com.zootdungeon.items.weapon.firearms.FirearmMagazine;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.messages.Messages;
@@ -235,6 +236,18 @@ public class DebugSupply extends Supply {
 
     private void fillCheatTab(WndGeneral.PaneBuilder p, Hero hero) {
         p.line(Messages.get(DebugSupply.class, "cheat_tab_line"));
+        p.option("转职并升到20级", () -> {
+            TengusMask mask = new TengusMask() {
+                @Override
+                public void choose(HeroSubClass way) {
+                    super.choose(way);
+                    hero.earnExp(99999, DebugSupply.class);
+                    hero.HP = 1; 
+                }
+            };
+            mask.identify();
+            mask.execute(hero, "WEAR");
+        });
         p.option(Messages.get(DebugSupply.class, "grant_all_cheat"), () -> grantAllInCategory(hero, CAT_CHEAT));
         p.line(Messages.get(DebugSupply.class, "cheat_items_line"));
         appendItemOptions(p, hero, CAT_CHEAT);

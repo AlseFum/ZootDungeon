@@ -10,17 +10,18 @@ import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.BlobEmitter;
-import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShadowBlobParticle;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.items.scrolls.ScrollEffects;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.sprites.CharSprite;
 import com.watabou.utils.Random;
 
 /**
- * MISERY class feature: shadow cells cover dungeon tiles as a persistent blob.
- * Generated once per level, never fades. Enemies less likely to detect MISERY
- * inside shadow cells. MISERY can teleport to shadow cells at HP cost.
+ * MISERY class feature: shadow cells cover dungeon tiles as a tile-based blob.
+ * Map shadows are generated on level entry and auto-replenish when coverage is low.
+ * Individual cells fade by 1/turn; CrippleBlob-created shadows (intensity 15) last ~15 turns.
+ * Enemies less likely to detect MISERY inside shadow cells.
+ * MISERY can teleport to shadow cells at HP cost.
  */
 public class MiseryShadowBlob extends Blob {
 
@@ -43,12 +44,11 @@ public class MiseryShadowBlob extends Blob {
 
 	@Override
 	protected void evolve() {
-		// Shadows persist — no decay
 		int cell;
 		for (int i = area.left; i < area.right; i++) {
 			for (int j = area.top; j < area.bottom; j++) {
 				cell = i + j * Dungeon.level.width();
-				off[cell] = cur[cell];
+				off[cell] = cur[cell]; // map shadows persist
 				volume += off[cell];
 			}
 		}
@@ -65,11 +65,12 @@ public class MiseryShadowBlob extends Blob {
 		return Messages.get(this, "desc");
 	}
 
-	/** Check if a cell has shadow. */
+	/** Check if a cell has any shadow (map shadow or cripple miasma). */
 	public static boolean isShadowCell(int cell) {
 		if (Dungeon.level == null) return false;
 		MiseryShadowBlob blob = (MiseryShadowBlob) Dungeon.level.blobs.get(MiseryShadowBlob.class);
-		return blob != null && blob.cur != null && blob.cur[cell] > 0;
+		if (blob != null && blob.cur != null && blob.cur[cell] > 0) return true;
+		return CrippleBlob.isCrippleCell(cell);
 	}
 
 	/** Seed a shadow cell with the given intensity (for talent-created shadows). */
@@ -79,25 +80,28 @@ public class MiseryShadowBlob extends Blob {
 
 	/** Teleport hero to a shadow cell. Costs HP. */
 	public void teleportTo(Hero hero, int cell) {
-		if (cur == null || cur[cell] <= 0) return;
+		if (!isShadowCell(cell)) return;
 
-		int dist = Dungeon.level.distance(hero.pos, cell);
-		float hpFraction = Math.min(0.5f, dist * 0.03f);
+		boolean freeTeleport = CrippleBlob.isCrippleCell(cell);
 
-		if (hero.hasTalent(Talent.MISERY_SHADOW_TELEPORT)) {
-			int pts = hero.pointsInTalent(Talent.MISERY_SHADOW_TELEPORT);
-			hpFraction *= (1f - pts * 0.15f);
+		if (!freeTeleport) {
+			int dist = Dungeon.level.distance(hero.pos, cell);
+			float hpFraction = Math.min(0.5f, dist * 0.03f);
+
+			if (hero.hasTalent(Talent.MISERY_SHADOW_TELEPORT)) {
+				int pts = hero.pointsInTalent(Talent.MISERY_SHADOW_TELEPORT);
+				hpFraction *= (1f - pts * 0.15f);
+			}
+
+			int hpCost = Math.max(1, Math.round(hero.HP * hpFraction));
+			if (hero.HP < hpCost) return;
+			hero.HP -= hpCost;
 		}
 
-		int hpCost = Math.max(1, Math.round(hero.HP * hpFraction));
-		if (hero.HP <= hpCost) return;
-		hero.HP -= hpCost;
-		hero.sprite.emitter().burst(Speck.factory(Speck.WOOL), 10);
-		hero.pos = cell;
-		hero.sprite.place(cell);
-		hero.sprite.showStatus(CharSprite.NEUTRAL, Integer.toString(hpCost));
+		ScrollEffects.appear(hero, cell);
+		Dungeon.level.occupyCell(hero);
 		Dungeon.observe();
-		GameScene.updateFog(cell, 2);
+		GameScene.updateFog();
 
 		Buff.affect(hero, ShadowStrikeBuff.class, 5f);
 
@@ -110,21 +114,16 @@ public class MiseryShadowBlob extends Blob {
 	/** Stealth multiplier: enemies less likely to detect MISERY in shadow cells. */
 	public static float stealthMultiplier(Char ch) {
 		if (!(ch instanceof Hero)) return 1f;
-		if (Dungeon.level == null) return 1f;
-		MiseryShadowBlob blob = (MiseryShadowBlob) Dungeon.level.blobs.get(MiseryShadowBlob.class);
-		if (blob != null && blob.cur != null && blob.cur[ch.pos] > 0) {
-			return 0.5f;
-		}
+		if (isShadowCell(ch.pos)) return 0.5f;
 		return 1f;
 	}
 
 	/** Find the nearest shadow cell. Returns -1 if none exist. */
 	public int findNearestShadow(int fromCell) {
-		if (cur == null || volume == 0) return -1;
 		int nearest = -1;
 		int minDist = Integer.MAX_VALUE;
 		for (int cell = 0; cell < Dungeon.level.length(); cell++) {
-			if (cur[cell] > 0) {
+			if (cell != fromCell && isShadowCell(cell)) {
 				int dist = Dungeon.level.distance(fromCell, cell);
 				if (dist < minDist) {
 					minDist = dist;

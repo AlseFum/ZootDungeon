@@ -3,13 +3,19 @@ package com.zootdungeon.items.weapon.missiles;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.blobs.CrippleBlob;
 import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.CrippleDebuff;
+import com.zootdungeon.effects.CellEmitter;
+import com.zootdungeon.effects.particles.CrippleBlobParticle;
+import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.actors.buffs.MagicImmune;
 import com.zootdungeon.actors.buffs.Momentum;
 import com.zootdungeon.actors.buffs.PinCushion;
 import com.zootdungeon.actors.buffs.RevealedArea;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
+import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bags.Bag;
@@ -23,6 +29,7 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -232,6 +239,37 @@ abstract public class MissileWeapon extends Weapon {
 				rangedHit( enemy, cell );
 
 			}
+		}
+
+		// MISERY CRIPPLE_BLOB: thrown weapons create cripple miasma AOE
+		if (curUser instanceof Hero && ((Hero) curUser).subClass == HeroSubClass.MISERY
+				&& ((Hero) curUser).hasTalent(Talent.MISERY_CRIPPLE_BLOB)
+				&& curUser.buff(Talent.CrippleBlobCooldown.class) == null) {
+			int pts = ((Hero) curUser).pointsInTalent(Talent.MISERY_CRIPPLE_BLOB);
+			int radius = pts * 2 + 1;
+			CrippleBlob cblob = (CrippleBlob) Dungeon.level.blobs.get(CrippleBlob.class);
+			if (cblob == null) {
+				cblob = new CrippleBlob();
+				Dungeon.level.blobs.put(CrippleBlob.class, cblob);
+				GameScene.add(cblob);
+			}
+			cblob.seed(Dungeon.level, cell, 15);
+			CellEmitter.get(cell).burst(CrippleBlobParticle.FACTORY, 8);
+			for (int n : PathFinder.NEIGHBOURS8) {
+				int targetCell = cell + n;
+				if (Dungeon.level.distance(cell, targetCell) > radius) continue;
+				Char target = Actor.findChar(targetCell);
+				if (target != null && target.alignment == Char.Alignment.ENEMY) {
+					float crippleDur = 5f + pts * 2f;
+					Buff.affect(target, CrippleDebuff.class, crippleDur);
+				}
+				if (Dungeon.level.passable[targetCell]) {
+					cblob.seed(Dungeon.level, targetCell, 15);
+					CellEmitter.get(targetCell).burst(CrippleBlobParticle.FACTORY, 4);
+				}
+			}
+			float cd = 30f - 5f * pts; // Lv1:25, Lv2:20, Lv3:15
+			Buff.affect(curUser, Talent.CrippleBlobCooldown.class, cd);
 		}
 	}
 

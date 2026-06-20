@@ -420,6 +420,10 @@ public class Damage {
         if (nextAttackBoost != null && nextAttackBoost.used) {
             nextAttackBoost.detach();
         }
+        ShadowStrikeBuff shadowStrike = attacker.buff(ShadowStrikeBuff.class);
+        if (shadowStrike != null) {
+            shadowStrike.detach();
+        }
         NextAttackReachBoost nextAttackReachBoost = attacker.buff(NextAttackReachBoost.class);
         if (nextAttackReachBoost != null) {
             nextAttackReachBoost.detach();
