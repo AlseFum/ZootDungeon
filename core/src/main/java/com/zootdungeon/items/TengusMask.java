@@ -24,8 +24,6 @@ package com.zootdungeon.items;
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.actors.Actor;
-import com.zootdungeon.actors.buffs.Buff;
-import com.zootdungeon.actors.buffs.Preparation;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
@@ -102,10 +100,8 @@ public class TengusMask extends Item {
 		curUser.subClass = way;
 		Talent.initSubclassTalents(curUser);
 
-		if (way == HeroSubClass.ASSASSIN && curUser.invisible > 0){
-			Buff.affect(curUser, Preparation.class);
-		}
-		
+		way.init(curUser);
+
 		curUser.sprite.operate( curUser.pos );
 		Sample.INSTANCE.play( Assets.Sounds.MASTERY );
 		

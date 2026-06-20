@@ -481,6 +481,17 @@ public class Talent implements Bundlable {
 		}
 	}
 	public static class BountyHunterTracker extends FlavourBuff{};
+	// MISERY LastShadow cooldown tracker
+	public static class LastShadowCooldown extends FlavourBuff{
+		{ revivePersists = true; }
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0.2f, 0.1f, 0.3f); }
+		public float iconFadePercent() {
+			int pts = Dungeon.hero.pointsInTalent(MISERY_LAST_SHADOW);
+			float maxCooldown = 300f - 50f * pts; // Lv1:250, Lv2:200, Lv3:150
+			return Math.max(0, visualcooldown() / maxCooldown);
+		}
+	};
 	public static class RejuvenatingStepsCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }

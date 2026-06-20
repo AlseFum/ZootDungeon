@@ -25,6 +25,7 @@ import com.zootdungeon.actors.buffs.Burning;
 import com.zootdungeon.actors.buffs.ChampionEnemy;
 import com.zootdungeon.actors.buffs.Charm;
 import com.zootdungeon.actors.buffs.Chill;
+import com.zootdungeon.actors.buffs.CrippleDebuff;
 import com.zootdungeon.actors.buffs.Corrosion;
 import com.zootdungeon.actors.buffs.Corruption;
 import com.zootdungeon.actors.buffs.Daze;
@@ -824,6 +825,8 @@ public abstract class Char extends Actor {
 			//slowed and chilled do not stack
 		} else if (buff( Chill.class ) != null) {
 			timeScale *= buff( Chill.class ).speedFactor();
+		} else if (buff( CrippleDebuff.class ) != null) {
+			timeScale *= buff( CrippleDebuff.class ).speedFactor();
 		}
 		if (buff( Speed.class ) != null) {
 			timeScale *= 2.0f;

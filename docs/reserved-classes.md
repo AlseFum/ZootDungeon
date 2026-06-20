@@ -246,22 +246,44 @@
 
 ### 4.1 MISERY
 
-**核心机制：阴影系统（MiseryShadowBlob）**  
-- 只有MISERY可见的暗色阴影格，定期在地图随机生成
-- 处于阴影中时敌人更不易发现MISERY（潜行倍率0.5）
+**核心机制：阴影系统（MiseryShadowBlob）** ✅ 已实现
+- 选择 MISERY 子类时自动激活（`TengusMask.choose()` → `GameScene.add(Blob.seed(...))`）
+- 暗色阴影格，每次进入新楼层时一次性生成覆盖全图（`Dungeon.switchLevel()` → `MiseryShadowBlob.generateForLevel()`）
+- 处于阴影中时敌人更不易发现MISERY（潜行倍率0.5，`Mob.surprisedBy()` 中强制触发突袭）
 - 可消耗当前HP百分比传送至阴影格（基础每格3%HP）
-- 传送后5回合：攻击若是暗杀+100%伤害，否则+50%（ShadowStrikeBuff）
-- 致命伤时自动传送至最近阴影（天赋5，长冷却）
+- 传送后5回合：攻击若是暗杀+100%伤害，否则+50%（ShadowStrikeBuff，在 `Damage.computeBaseDamage()` 中计算）
+- 致命伤时自动传送至最近阴影（LAST_SHADOW 天赋，长冷却，在 `Hero.defenseProc()` 中拦截）
+- 跨楼层持久：`switchLevel()` 在每次楼层切换时自动生成（无需额外 buff 或每回合检查）
 
 **T3 天赋（5个）：**
 
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| CLOAK_UNEQUIPPED | 231 | （公共） |
-| SHADOW_TELEPORT（暗影传送） | 232 | 传送HP消耗降低（-15/30/45%），暗杀倍率提升，Lv3传送后隐形3回合 |
-| CRIPPLE_BLOB（瘴气） | 233 | 投掷武器创建阴影瘴气AOE，范围内敌人减速减闪避（CrippleDebuff）。可免费传送至瘴气中并触发暗杀。点数越高：范围越大、冷却越短 |
-| SOUL_REAP（灵魂收割） | 234 | 暗杀击杀增加掉落。Lv2+暗杀时吸血 |
-| LAST_SHADOW（最终阴影） | 235 | 极长冷却，受致命伤自动传至最近阴影。等级越高冷却越快 |
+| 天赋 | 图标ID | 效果 | 状态 |
+|------|--------|------|------|
+| CLOAK_UNEQUIPPED | 231 | （公共） | ✅ |
+| SHADOW_TELEPORT（暗影传送） | 232 | 传送HP消耗降低（-15/30/45%），暗杀倍率提升，Lv3传送后隐形3回合 | ✅ |
+| CRIPPLE_BLOB（瘴气） | 233 | 投掷武器创建阴影瘴气AOE，范围内敌人减速减闪避（CrippleDebuff）。可免费传送至瘴气中并触发暗杀。点数越高：范围越大、冷却越短 | ✅ |
+| SOUL_REAP（灵魂收割） | 234 | 暗杀击杀增加掉落（+15/30/45%，`Mob.lootChance()` 中乘以 `MiseryShadowBlob.soulReapDropChance()`）。Lv2+暗杀时吸血（15/25%，`Hero.attackProc()` 中处理） | ✅ |
+| LAST_SHADOW（最终阴影） | 235 | 极长冷却（250/200/150回合），受致命伤自动传至最近阴影，保留至少1HP（`Hero.defenseProc()` 中拦截）。使用 `Talent.LastShadowCooldown` 追踪冷却 | ✅ |
+
+**实现细节：**
+
+| 文件 | 改动 |
+|------|------|
+| `MiseryShadowBlob.java` | **actors/blobs/ 包**；基于 tile 的 Blob 实现，`cur[]` 存储阴影强度；`findNearestShadow()`；`stealthMultiplier()`；`soulReapDropChance()` 静态方法 |
+| `Dungeon.java` (`switchLevel()`) | 楼层切换时检查 `hero.subClass == MISERY` → `MiseryShadowBlob.generateForLevel()` |
+| `ShadowStrikeBuff.java` | **新建文件**，从 MiseryShadowBlob 中提取为 public 类 |
+| `CrippleDebuff.java` | `speedFactor()` 减速33%；`evasionMultiplier()` 闪避-30% |
+| `Talent.java` | 新增 `LastShadowCooldown` 内部类追踪冷却 |
+| `TengusMask.java` | 选择 MISERY 时 `GameScene.add(Blob.seed(...))` 初始化阴影 blob |
+| `Hero.java` | `damageRoll()`: ShadowStrikeBuff 伤害加成；`attackProc()`: CRIPPLE_BLOB AOE + SOUL_REAP 吸血；`defenseProc()`: LAST_SHADOW 致命伤拦截 |
+| `Mob.java` | `surprisedBy()`: 阴影格强制突袭；`defenseSkill()`: CrippleDebuff 闪避削减；`lootChance()`: SOUL_REAP 掉落加成 |
+| `Char.java` | `spend()`: CrippleDebuff 减速 |
+| `actors.properties` / `actors_zh.properties` | 新增 MiseryShadowBlob、ShadowStrikeBuff、CrippleDebuff 本地化文本 |
+
+**ShadowStrikeBuff 伤害计算：**
+- 突袭时（`surprisedBy`）: `dmg * 2.0`（+100%）
+- 非突袭时: `dmg * 1.5`（+50%）
+- 位于 `Hero.damageRoll()` 中 AttackUpBuff 之后，先于保底0检查
 
 ---
 
@@ -331,8 +353,12 @@
 | `Wand.java` | PITH AC_DISCHARGE/DECLARE、终充增强、法杖连锁、MANTRA宣告入口 |
 | `Scroll.java` | 卷轴充能(CASTER)、空白卷轴生成(LOGOS) |
 | `CloakOfShadows.java` | SPECIALIST斗篷未装备使用 |
-| `Mob.java` | SCOUT掉率、MANTRA宣告触发 |
+| `Mob.java` | SCOUT掉率、MANTRA宣告触发、MISERY阴影潜行+瘴气闪避削减+灵魂收割掉落 |
 | `RingOfWealth.java` | 掉率计算（SCOUT加成在Mob.lootChance而非此处） |
+| `Hero.java` | OP_SHARP/ACE/BLAZE/SNIPER/STORMEYE/ROSMONTIS/OUTCAST/PITH/MANTRA/LOGOS 效果；MISERY 暗影一击伤害+瘴气AOE+灵魂收割吸血+最终阴影致命伤拦截 |
+| `TengusMask.java` | MISERY 子类选择时激活 MiseryShadowBlob（tile blob）|
+| `Talent.java` | LastShadowCooldown 内部类（MISERY 最终阴影冷却追踪） |
+| `Char.java` | CrippleDebuff 减速时间缩放 |
 
 ## 新建文件索引
 
@@ -349,7 +375,10 @@
 | `LogosBlankScroll.java` | LOGOS 空白卷轴 |
 | `LogosRuneBuff.java` | LOGOS 符文系统 |
 | `MantraDeclarationBuff.java` | MANTRA 宣告系统 |
-| `MiseryShadowBlob.java` | MISERY 阴影系统 |
+| `MiseryShadowBlob.java` | MISERY 阴影系统（actors/blobs/，tile-based Blob） |
+| `Dungeon.java` (`switchLevel()`) | 楼层切换时检查 `hero.subClass == MISERY` → `MiseryShadowBlob.generateForLevel()` |
+| `TengusMask.java` | 选择 MISERY 时 `GameScene.add(Blob.seed(...))` 初始化阴影 blob |
+| `ShadowStrikeBuff.java` | MISERY 暗影一击buff（传送后5回合伤害加成） |
 | `CrippleDebuff.java` | MISERY 瘴气debuff |
 | `ScoutLootBuff.java` | SCOUT 更佳掉落 |
 

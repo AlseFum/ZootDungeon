@@ -21,6 +21,7 @@ import com.zootdungeon.actors.hero.spells.BeamingRay;
 import com.zootdungeon.actors.hero.spells.GuidingLight;
 import com.zootdungeon.actors.hero.spells.LifeLinkSpell;
 import com.zootdungeon.actors.mobs.Brute;
+import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.YogDzewa;
 import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.KindOfWeapon;
@@ -310,6 +311,16 @@ public class Damage {
         Berserk berserk = attacker.buff(Berserk.class);
         if (berserk != null) dmg = berserk.damageFactor(dmg);
         if (attacker.buff(Fury.class) != null) dmg *= 1.5f;
+
+        // MISERY ShadowStrikeBuff: +100% damage on ambush, +50% otherwise
+        ShadowStrikeBuff shadowStrike = attacker.buff(ShadowStrikeBuff.class);
+        if (shadowStrike != null) {
+            if (defender instanceof Mob && ((Mob) defender).surprisedBy(attacker)) {
+                dmg *= 2.0f; // ambush: +100%
+            } else {
+                dmg *= 1.5f; // normal: +50%
+            }
+        }
 
         // Feather Fury: OP_SHARP damage boost against duel target
         if (attacker == Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.OP_SHARP

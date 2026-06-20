@@ -14,12 +14,14 @@ import com.zootdungeon.actors.buffs.AscensionChallenge;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.ChampionEnemy;
 import com.zootdungeon.actors.buffs.Charm;
+import com.zootdungeon.actors.buffs.CrippleDebuff;
 import com.zootdungeon.actors.buffs.Corruption;
 import com.zootdungeon.actors.buffs.Dread;
 import com.zootdungeon.actors.buffs.GreaterHaste;
 import com.zootdungeon.actors.buffs.Hunger;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.buffs.MindVision;
+import com.zootdungeon.actors.blobs.MiseryShadowBlob;
 import com.zootdungeon.actors.buffs.MonkEnergy;
 import com.zootdungeon.actors.buffs.Preparation;
 import com.zootdungeon.actors.buffs.Sleep;
@@ -685,7 +687,13 @@ public abstract class Mob extends Char {
 		if ( !surprisedBy(enemy)
 				&& paralysed == 0
 				&& !(alignment == Alignment.ALLY && enemy == Dungeon.hero)) {
-			return this.defenseSkill;
+			int skill = this.defenseSkill;
+			// CrippleDebuff: -30% evasion
+			float evasionMult = CrippleDebuff.evasionMultiplier(this);
+			if (evasionMult < 1f) {
+				skill = Math.round(skill * evasionMult);
+			}
+			return skill;
 		} else {
 			return 0;
 		}
@@ -760,9 +768,15 @@ public abstract class Mob extends Char {
 	}
 
 	public boolean surprisedBy( Char enemy, boolean attacking ){
-		return enemy == Dungeon.hero
+		boolean isSurprise = enemy == Dungeon.hero
 				&& (enemy.invisible > 0 || !enemySeen || (fieldOfView != null && fieldOfView.length == Dungeon.level.length() && !fieldOfView[enemy.pos]))
 				&& (!attacking || enemy.canSurpriseAttack());
+
+		// MISERY: if in shadow cell, heroes can always get surprise attacks
+		if (!isSurprise && enemy == Dungeon.hero && MiseryShadowBlob.stealthMultiplier(Dungeon.hero) < 1f) {
+			return true;
+		}
+		return isSurprise;
 	}
 
 	//whether the hero should interact with the mob (true) or attack it (false)
@@ -913,6 +927,8 @@ public abstract class Mob extends Char {
 
 		float dropBonus = RingOfWealth.dropChanceMultiplier( Dungeon.hero );
 		dropBonus *= ScoutLootBuff.dropChanceMultiplier( Dungeon.hero );
+		// MISERY SOUL_REAP: ambush kills increase loot
+		dropBonus *= MiseryShadowBlob.soulReapDropChance( Dungeon.hero, this );
 
 		Talent.BountyHunterTracker bhTracker = Dungeon.hero.buff(Talent.BountyHunterTracker.class);
 		if (bhTracker != null){

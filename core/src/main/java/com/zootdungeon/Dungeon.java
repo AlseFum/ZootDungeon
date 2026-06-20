@@ -11,6 +11,7 @@ import java.util.TimeZone;
 
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.blobs.MiseryShadowBlob;
 import com.zootdungeon.actors.buffs.Amok;
 import com.zootdungeon.actors.buffs.AscensionChallenge;
 import com.zootdungeon.actors.buffs.Awareness;
@@ -21,6 +22,7 @@ import com.zootdungeon.actors.buffs.MindVision;
 import com.zootdungeon.actors.buffs.RevealedArea;
 import com.zootdungeon.actors.buffs.Terror;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.zootdungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -393,6 +395,10 @@ public class Dungeon {
 
         Dungeon.level = level;
         hero.pos = pos;
+
+        if (hero.subClass == HeroSubClass.MISERY) {
+            MiseryShadowBlob.generateForLevel();
+        }
 
         currentLevelId = depth + "_" + branch;
 

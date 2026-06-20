@@ -1,11 +1,16 @@
 package com.zootdungeon.actors.hero;
 
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.blobs.MiseryShadowBlob;
+import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.Preparation;
+import com.zootdungeon.ui.HeroIcon;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
-import com.zootdungeon.ui.HeroIcon;
 import com.watabou.noosa.Game;
+
+import java.util.function.Consumer;
 
 public enum HeroSubClass {
 
@@ -17,7 +22,9 @@ public enum HeroSubClass {
 		BATTLEMAGE(HeroIcon.BATTLEMAGE),
 		WARLOCK(HeroIcon.WARLOCK),
 
-		ASSASSIN(HeroIcon.ASSASSIN),
+		ASSASSIN(HeroIcon.ASSASSIN, hero -> {
+			if (hero.invisible > 0) Buff.affect(hero, Preparation.class);
+		}),
 		FREERUNNER(HeroIcon.FREERUNNER),
 
 		SNIPER(HeroIcon.SNIPER),
@@ -38,14 +45,20 @@ public enum HeroSubClass {
 		PITH(HeroIcon.PITH),
 		LOGOS(HeroIcon.LOGOS),
 		MANTRA(HeroIcon.MANTRA),
-		MISERY(HeroIcon.MISERY),
+		MISERY(HeroIcon.MISERY, hero -> MiseryShadowBlob.generateForLevel()),
 		SCOUT(HeroIcon.SCOUT),
 		RADIAN(HeroIcon.RADIAN);
 
 		int icon;
+		Consumer<Hero> onChoose;
 
 		HeroSubClass(int icon){
+			this(icon, null);
+		}
+
+		HeroSubClass(int icon, Consumer<Hero> onChoose){
 			this.icon = icon;
+			this.onChoose = onChoose;
 		}
 
 		public String title() {
@@ -57,7 +70,6 @@ public enum HeroSubClass {
 		}
 
 		public String desc() {
-			//Include the staff effect description in the battlemage's desc if possible
 			if (this == BATTLEMAGE){
 				String desc = Messages.get(this, name() + "_desc");
 				if (Game.scene() instanceof GameScene){
@@ -75,6 +87,12 @@ public enum HeroSubClass {
 
 		public int icon(){
 			return icon;
+		}
+
+		public void init(Hero hero) {
+			if (onChoose != null) {
+				onChoose.accept(hero);
+			}
 		}
 
 }
