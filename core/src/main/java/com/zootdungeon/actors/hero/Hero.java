@@ -1900,14 +1900,6 @@ public class Hero extends Char {
                 }
                 break;
             case MISERY:
-                // SOUL_REAP (234): Lv2+ lifesteal on ambush kills
-                if (hasTalent(Talent.MISERY_SOUL_REAP) && pointsInTalent(Talent.MISERY_SOUL_REAP) >= 2
-                        && damage > 0 && enemy instanceof Mob && ((Mob) enemy).surprisedBy(this)) {
-                    float[] healRates = {0f, 0f, 0.15f, 0.25f}; // Lv1:0%, Lv2:15%, Lv3:25%
-                    int healAmount = Math.max(1, Math.round(damage * healRates[pointsInTalent(Talent.MISERY_SOUL_REAP)]));
-                    HP = Math.min(HT, HP + healAmount);
-                    sprite.showStatus(CharSprite.POSITIVE, Integer.toString(healAmount));
-                }
                 break;
             default:
         }

@@ -424,6 +424,15 @@ public class Damage {
         if (shadowStrike != null) {
             shadowStrike.detach();
         }
+        // MISERY SOUL_REAP: lifesteal on ambush kills
+        if (totalDamage > 0 && attacker instanceof Hero h && h.subClass == HeroSubClass.MISERY
+                && h.hasTalent(Talent.MISERY_SOUL_REAP) && h.pointsInTalent(Talent.MISERY_SOUL_REAP) >= 2
+                && defender instanceof Mob m && m.surprisedBy(h)) {
+            float[] rates = {0f, 0f, 0.15f, 0.25f};
+            int heal = Math.max(1, Math.round(totalDamage * rates[h.pointsInTalent(Talent.MISERY_SOUL_REAP)]));
+            h.HP = Math.min(h.HT, h.HP + heal);
+            h.sprite.showStatus(CharSprite.POSITIVE, Integer.toString(heal));
+        }
         NextAttackReachBoost nextAttackReachBoost = attacker.buff(NextAttackReachBoost.class);
         if (nextAttackReachBoost != null) {
             nextAttackReachBoost.detach();
