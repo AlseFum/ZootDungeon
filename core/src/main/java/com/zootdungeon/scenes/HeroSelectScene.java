@@ -50,12 +50,14 @@ import com.zootdungeon.windows.WndTitledMessage;
 import com.zootdungeon.windows.WndVictoryCongrats;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
+import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.ScrollArea;
 import com.watabou.noosa.tweeners.Tweener;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
@@ -87,6 +89,26 @@ public class HeroSelectScene extends PixelScene {
 	private IconButton btnOptions;
 	private GameOptions optionsPane;
 	private IconButton btnExit;
+
+	// Horizontal scroll state for hero area in landscape
+	private float heroScrollX = 0;
+	private float maxHeroScrollX = 0;
+	private boolean heroAreaScrollable = false;
+	private ScrollArea heroScrollArea;
+	private PointF heroScrollLastPos = new PointF();
+	private boolean heroScrolling = false;
+	private static final float HERO_SCROLL_DRAG_THRESHOLD = 5f;
+	private java.util.HashMap<StyledButton, Float> heroBtnBaseX = new java.util.HashMap<>();
+
+	// Vertical scroll state for hero area in portrait
+	private float portraitScrollY = 0;
+	private float maxPortraitScrollY = 0;
+	private boolean portraitScrollable = false;
+	private ScrollArea portraitScrollArea;
+	private PointF portraitScrollLastPos = new PointF();
+	private boolean portraitScrolling = false;
+	private static final float PORTRAIT_SCROLL_DRAG_THRESHOLD = 5f;
+	private java.util.HashMap<StyledButton, Float> heroBtnBasePortraitY = new java.util.HashMap<>();
 
 	private static Image createHeroPortrait(HeroClass cl, int row) {
 		Image portrait = new Image(
@@ -261,32 +283,38 @@ public class HeroSelectScene extends PixelScene {
 				btnHeight += 6;
 			}
 
-			// dynamic rows: fit columns to available width, then calculate rows
-			int maxCols = Math.max(1, (int)(leftArea / (btnWidth + 1)));
-			int rows = Math.max(2, (int)Math.ceil((float)heroBtns.size() / maxCols));
-			int cols = (int)Math.ceil((float)heroBtns.size() / rows);
-			float curX = (leftArea - btnWidth * cols + (cols-1))/2f;
+			// Calculate rows based on available height to allow horizontal overflow
+			float reservedHeight = uiSpacing + 26;
+			if (uiHeight >= 160) reservedHeight += 14;
+			if (uiHeight >= 180) reservedHeight += 16;
+			int maxRowsByHeight = Math.max(1, (int)((uiHeight - reservedHeight) / (btnHeight + 1)));
+			int rows = Math.min(maxRowsByHeight, heroBtns.size());
+			int perRow = (int)Math.ceil((float)heroBtns.size() / rows);
+
+			float totalContentWidth = perRow * (btnWidth + 1) - 1;
+			heroAreaScrollable = totalContentWidth > leftArea;
+			maxHeroScrollX = heroAreaScrollable ? totalContentWidth - leftArea + 30 : 0;
+
+			float startX = heroAreaScrollable ? 15 : (leftArea - totalContentWidth) / 2f;
 			float curY = title.bottom() + uiSpacing;
 
+			heroBtnBaseX.clear();
 			int count = 0;
-			int row = 0;
-			int perRow = (int)Math.ceil((float)heroBtns.size() / rows);
-			float stagger = (btnWidth + 1) * 0.25f; // cascade each row rightward
 			for (StyledButton button : heroBtns){
-				button.setRect(curX, curY, btnWidth, btnHeight);
+				int col = count % perRow;
+				int rowIdx = count / perRow;
+				float bx = startX + col * (btnWidth + 1);
+				float by = curY + rowIdx * (btnHeight + 1);
+				button.setRect(bx, by, btnWidth, btnHeight);
 				align(button);
-				curX += btnWidth+1;
+				heroBtnBaseX.put(button, bx);
 				count++;
-				if (count >= perRow){
-					curX = (leftArea - btnWidth * cols + (cols-1))/2f + (row + 1) * stagger;
-					curY += btnHeight+1;
-					count = 0;
-					row++;
-				}
 			}
 
+			float lastBtnBottom = curY + rows * (btnHeight + 1) - 1;
+
 			heroName = renderTextBlock(9);
-			heroName.setPos(0, heroBtns.get(heroBtns.size()-1).bottom()+5);
+			heroName.setPos( (leftArea - heroName.width())/2f, lastBtnBottom + 5);
 			add(heroName);
 
 			if (uiHeight >= 160){
@@ -295,7 +323,7 @@ public class HeroSelectScene extends PixelScene {
 				heroDesc = renderTextBlock(5);
 			}
 			heroDesc.align(RenderedTextBlock.CENTER_ALIGN);
-			heroDesc.setPos(0, heroName.bottom()+5);
+			heroDesc.setPos( (leftArea - heroDesc.width())/2f, heroName.bottom()+5);
 			add(heroDesc);
 
 			startBtn.text(Messages.titleCase(Messages.get(this, "start")));
@@ -326,6 +354,87 @@ public class HeroSelectScene extends PixelScene {
 			btnOptions.setRect(startBtn.right(), startBtn.top(), 20, 21);
 			optionsPane.setPos(btnOptions.right(), btnOptions.top() - optionsPane.height() - 2);
 			align(optionsPane);
+
+			// Horizontal scroll area for hero buttons in landscape
+			float gridTop = title.bottom() + uiSpacing;
+			float gridBottom = curY + rows * (btnHeight + 1);
+			heroScrollArea = new ScrollArea(0, gridTop, leftArea, gridBottom - gridTop){
+				private PointF dragStart = new PointF();
+				private boolean tracking = false;
+				private HeroBtn pressedHeroBtn = null;
+				private static final float MOUSE_WHEEL_SCROLL_SPEED = 40f;
+
+				@Override
+				protected void onPointerDown(PointerEvent event) {
+					if (!heroAreaScrollable) return;
+					dragStart.set(event.current);
+					tracking = true;
+					heroScrolling = false;
+					pressedHeroBtn = null;
+					float px = event.current.x;
+					float py = event.current.y;
+					for (StyledButton btn : heroBtns) {
+						if (btn.active && px >= btn.left() && px <= btn.right()
+								&& py >= btn.top() && py <= btn.bottom()) {
+							pressedHeroBtn = (HeroBtn) btn;
+							pressedHeroBtn.showPressed();
+							break;
+						}
+					}
+				}
+
+				@Override
+				protected void onDrag(PointerEvent event) {
+					if (!tracking) return;
+					float dx = event.current.x - dragStart.x;
+					if (Math.abs(dx) > HERO_SCROLL_DRAG_THRESHOLD || heroScrolling) {
+						if (!heroScrolling) {
+							heroScrolling = true;
+							heroScrollLastPos.set(dragStart);
+							if (pressedHeroBtn != null) {
+								pressedHeroBtn.showReleased();
+								pressedHeroBtn = null;
+							}
+						}
+						scrollHeroArea(event.current.x - heroScrollLastPos.x);
+						heroScrollLastPos.set(event.current);
+					}
+				}
+
+				@Override
+				protected void onPointerUp(PointerEvent event) {
+					if (!tracking) return;
+					tracking = false;
+					if (pressedHeroBtn != null) {
+						pressedHeroBtn.showReleased();
+					}
+					if (!heroScrolling) {
+						float px = event.current.x;
+						float py = event.current.y;
+						for (StyledButton btn : heroBtns) {
+							if (btn.active && px >= btn.left() && px <= btn.right()
+									&& py >= btn.top() && py <= btn.bottom()) {
+								((HeroBtn) btn).triggerClick();
+								break;
+							}
+						}
+					}
+					heroScrolling = false;
+					pressedHeroBtn = null;
+				}
+
+				@Override
+				protected void onScroll(ScrollEvent event) {
+					if (!heroAreaScrollable) return;
+					if (pressedHeroBtn != null) {
+						pressedHeroBtn.showReleased();
+						pressedHeroBtn = null;
+					}
+					scrollHeroArea(event.amount * MOUSE_WHEEL_SCROLL_SPEED);
+				}
+			};
+			heroScrollArea.active = heroAreaScrollable;
+			add(heroScrollArea);
 		} else {
 			background.visible = false;
 
@@ -343,30 +452,130 @@ public class HeroSelectScene extends PixelScene {
 				btnWidth += (int)Math.min(curX / (cols / 2f), 15);
 				curX = (Camera.main.width - btnWidth * cols) / 2f;
 			}
-			float curY = Camera.main.height - btnHeight * rows + 3;
 
+			// Reserve space at bottom for title + startBtn + spacing
+			float bottomReserve = title.height() + 2 + startBtn.height() + 4;
+			float availableForButtons = Camera.main.height - bottomReserve;
+
+			// Calculate total content height and determine if vertical scrolling is needed
+			float totalContentHeight = rows * (btnHeight + 1) - 1;
+			portraitScrollable = totalContentHeight > availableForButtons;
+			maxPortraitScrollY = portraitScrollable ? totalContentHeight - availableForButtons + 30 : 0;
+
+			// Calculate first row Y
+			float curY;
+			if (portraitScrollable) {
+				curY = 5; // start near top, user can scroll
+			} else {
+				// Center the button block vertically in the available space
+				curY = availableForButtons - totalContentHeight;
+				if (curY < 5) curY = 5;
+			}
+
+			heroBtnBasePortraitY.clear();
 			int count = 0;
 			int row = 0;
 			float stagger = btnWidth * 0.25f; // cascade each row rightward
 			int perRow = (int)Math.ceil((float)heroBtns.size() / rows);
 			for (StyledButton button : heroBtns) {
-				button.setRect(curX, curY, btnWidth, btnHeight);
+				float by = curY + row * (btnHeight + 1);
+				button.setRect(curX, by, btnWidth, btnHeight);
 				align(button);
+				heroBtnBasePortraitY.put(button, by);
 				curX += btnWidth;
 				count++;
 				if (count >= perRow) {
 					curX = (Camera.main.width - btnWidth * cols) / 2f + (row + 1) * stagger;
-					curY += btnHeight;
 					count = 0;
 					row++;
 				}
 			}
 
-			title.setPos((Camera.main.width - title.width()) / 2f, curY - title.height() - 2);
+			// Bottom fixed controls: title and options at the bottom of the screen
+			title.setPos((Camera.main.width - title.width()) / 2f, Camera.main.height - bottomReserve);
 
-			float lastRowTop = curY - btnHeight;
-			btnOptions.setRect(heroBtns.get(0).left() + 16, lastRowTop - 16, 20, 21);
+			btnOptions.setRect(heroBtns.get(0).left() + 16, Camera.main.height - bottomReserve - 20, 20, 21);
 			optionsPane.setPos(heroBtns.get(0).left(), 0);
+
+			// Vertical scroll area covers only the button grid area
+			float scrollAreaBottom = Camera.main.height - bottomReserve - 4;
+			portraitScrollArea = new ScrollArea(0, 0, Camera.main.width, scrollAreaBottom){
+				private PointF dragStart = new PointF();
+				private boolean tracking = false;
+				private HeroBtn pressedHeroBtn = null;
+				private static final float MOUSE_WHEEL_SCROLL_SPEED = 40f;
+
+				@Override
+				protected void onPointerDown(PointerEvent event) {
+					if (!portraitScrollable) return;
+					dragStart.set(event.current);
+					tracking = true;
+					portraitScrolling = false;
+					pressedHeroBtn = null;
+					float px = event.current.x;
+					float py = event.current.y;
+					for (StyledButton btn : heroBtns) {
+						if (btn.active && px >= btn.left() && px <= btn.right()
+								&& py >= btn.top() && py <= btn.bottom()) {
+							pressedHeroBtn = (HeroBtn) btn;
+							pressedHeroBtn.showPressed();
+							break;
+						}
+					}
+				}
+
+				@Override
+				protected void onDrag(PointerEvent event) {
+					if (!tracking) return;
+					float dy = event.current.y - dragStart.y;
+					if (Math.abs(dy) > PORTRAIT_SCROLL_DRAG_THRESHOLD || portraitScrolling) {
+						if (!portraitScrolling) {
+							portraitScrolling = true;
+							portraitScrollLastPos.set(dragStart);
+							if (pressedHeroBtn != null) {
+								pressedHeroBtn.showReleased();
+								pressedHeroBtn = null;
+							}
+						}
+						scrollPortraitArea(event.current.y - portraitScrollLastPos.y);
+						portraitScrollLastPos.set(event.current);
+					}
+				}
+
+				@Override
+				protected void onPointerUp(PointerEvent event) {
+					if (!tracking) return;
+					tracking = false;
+					if (pressedHeroBtn != null) {
+						pressedHeroBtn.showReleased();
+					}
+					if (!portraitScrolling) {
+						float px = event.current.x;
+						float py = event.current.y;
+						for (StyledButton btn : heroBtns) {
+							if (btn.active && px >= btn.left() && px <= btn.right()
+									&& py >= btn.top() && py <= btn.bottom()) {
+								((HeroBtn) btn).triggerClick();
+								break;
+							}
+						}
+					}
+					portraitScrolling = false;
+					pressedHeroBtn = null;
+				}
+
+				@Override
+				protected void onScroll(ScrollEvent event) {
+					if (!portraitScrollable) return;
+					if (pressedHeroBtn != null) {
+						pressedHeroBtn.showReleased();
+						pressedHeroBtn = null;
+					}
+					scrollPortraitArea(-event.amount * MOUSE_WHEEL_SCROLL_SPEED);
+				}
+			};
+			portraitScrollArea.active = portraitScrollable;
+			add(portraitScrollArea);
 		}
 
 		btnExit = new ExitButton();
@@ -474,9 +683,8 @@ public class HeroSelectScene extends PixelScene {
 			startBtn.visible = startBtn.active = true;
 			startBtn.text(Messages.titleCase(cl.title()));
 			startBtn.setSize(startBtn.reqWidth() + 8, 21);
-
-			float lastBtnTop = heroBtns.get(heroBtns.size()-1).top();
-			startBtn.setPos((Camera.main.width - startBtn.width())/2f, lastBtnTop + 2 - startBtn.height());
+			// Position startBtn at fixed bottom, below the title
+			startBtn.setPos((Camera.main.width - startBtn.width())/2f, title.bottom() + 2);
 			PixelScene.align(startBtn);
 
 			infoButton.visible = infoButton.active = true;
@@ -564,6 +772,42 @@ public class HeroSelectScene extends PixelScene {
 		updateFade();
 	}
 
+	// --- Landscape horizontal scroll ---
+	private void scrollHeroArea(float delta) {
+		heroScrollX += delta;
+		heroScrollX = GameMath.gate(-maxHeroScrollX, heroScrollX, 0);
+		applyHeroScroll();
+	}
+
+	private void applyHeroScroll() {
+		if (!landscape()) return;
+		for (StyledButton btn : heroBtns) {
+			Float baseX = heroBtnBaseX.get(btn);
+			if (baseX != null) {
+				btn.setPos(baseX + heroScrollX, btn.top());
+				align(btn);
+			}
+		}
+	}
+
+	// --- Portrait vertical scroll ---
+	private void scrollPortraitArea(float delta) {
+		portraitScrollY += delta;
+		portraitScrollY = GameMath.gate(-maxPortraitScrollY, portraitScrollY, 0);
+		applyPortraitScroll();
+	}
+
+	private void applyPortraitScroll() {
+		if (landscape()) return;
+		for (StyledButton btn : heroBtns) {
+			Float baseY = heroBtnBasePortraitY.get(btn);
+			if (baseY != null) {
+				btn.setPos(btn.left(), baseY + portraitScrollY);
+				align(btn);
+			}
+		}
+	}
+
 	@Override
 	protected void onBackPressed() {
 		if (btnExit.active){
@@ -618,6 +862,20 @@ public class HeroSelectScene extends PixelScene {
 			} else {
 				setSelectedHero(cl);
 			}
+		}
+
+		// Called by scroll areas to forward taps when they intercept events
+		void triggerClick() {
+			onClick();
+		}
+
+		// Visual feedback for press/release when scroll area intercepts touch
+		void showPressed() {
+			bg.brightness(1.2f);
+		}
+
+		void showReleased() {
+			bg.resetColor();
 		}
 	}
 
