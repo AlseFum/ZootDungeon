@@ -338,16 +338,16 @@ public class HeroSelectScene extends PixelScene {
 			int cols = (int)Math.ceil((float)heroBtns.size() / rows);
 
 			// expand button width if there's room
-			float curX = (Camera.main.width - btnWidth * cols) / 2f ;
+			float curX = (Camera.main.width - btnWidth * cols) / 2f;
 			if (curX > 0) {
 				btnWidth += (int)Math.min(curX / (cols / 2f), 15);
-				curX = (Camera.main.width - btnWidth * cols) / 2f ;
+				curX = (Camera.main.width - btnWidth * cols) / 2f;
 			}
 			float curY = Camera.main.height - btnHeight * rows + 3;
 
 			int count = 0;
 			int row = 0;
-		float stagger = btnWidth * 0.25f; // cascade each row rightward
+			float stagger = btnWidth * 0.25f; // cascade each row rightward
 			int perRow = (int)Math.ceil((float)heroBtns.size() / rows);
 			for (StyledButton button : heroBtns) {
 				button.setRect(curX, curY, btnWidth, btnHeight);
