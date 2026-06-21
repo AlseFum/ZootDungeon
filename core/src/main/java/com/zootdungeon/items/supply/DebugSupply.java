@@ -27,17 +27,31 @@ import com.zootdungeon.arknights.firearms.IberianGun;
 import com.zootdungeon.arknights.firearms.LateranGun;
 import com.zootdungeon.items.weapon.firearms.FirearmBullet;
 import com.zootdungeon.items.weapon.firearms.FirearmMagazine;
+import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroSubClass;
+import com.zootdungeon.actors.mobs.Mob;
+import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
+import com.zootdungeon.items.keys.CrystalKey;
+import com.zootdungeon.items.keys.GoldenKey;
+import com.zootdungeon.items.keys.IronKey;
+import com.zootdungeon.items.keys.Key;
+import com.zootdungeon.items.keys.SkeletonKey;
+import com.zootdungeon.levels.Terrain;
+import com.zootdungeon.journal.Notes;
+import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
+import com.zootdungeon.scenes.InterlevelScene;
 import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.windows.WndTestLoot;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.items.cheat.CellEntityPlacer;
+import com.watabou.noosa.Game;
 import com.zootdungeon.items.cheat.EnemyPlacer;
 import com.zootdungeon.items.cheat.MinePlacer;
 import com.zootdungeon.items.cheat.MapDevicePlacer;
@@ -251,6 +265,7 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
             mask.execute(hero, "WEAR");
         });
         p.option(Messages.get(DebugSupply.class, "grant_all_cheat"), () -> grantAllInCategory(hero, CAT_CHEAT));
+        p.option(Messages.get(DebugSupply.class, "kill_all_loot_all"), () -> killAllLootAll(hero));
         p.line(Messages.get(DebugSupply.class, "cheat_items_line"));
         appendItemOptions(p, hero, CAT_CHEAT);
     }
@@ -327,6 +342,139 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
             }
         }
         if (onOpen != null) onOpen.get();
+    }
+
+    /**
+     * 清场搜刮：反复执行「击杀敌人 → 收集钥匙 → 开门 → 开宝箱」直到无新进展，
+     * 最后拾取所有掉落物并前往下一层。
+     */
+    private void killAllLootAll(Hero hero) {
+        int killed = 0, keysCollected = 0, doorsOpened = 0, chestsOpened = 0, itemsCollected = 0;
+
+        boolean changed;
+        do {
+            changed = false;
+
+            // Phase 1: 击杀所有敌人（新区域可能藏着新敌人）
+            int roundKilled = 0;
+            for (Mob mob : new ArrayList<>(Dungeon.level.mobs)) {
+                if (mob.isAlive() && mob.alignment == Char.Alignment.ENEMY) {
+                    mob.HP = 1;
+                    mob.damage(99999, hero);
+                    roundKilled++;
+                }
+            }
+            if (roundKilled > 0) { killed += roundKilled; changed = true; }
+
+            // Phase 2: 收集地上所有钥匙
+            int roundKeys = 0;
+            for (Heap heap : new ArrayList<>(Dungeon.level.heaps.valueList())) {
+                if (heap == null || heap.items.isEmpty()) continue;
+                java.util.List<Item> keyItems = new ArrayList<>();
+                for (Item item : heap.items) {
+                    if (item instanceof Key) {
+                        keyItems.add(item);
+                    }
+                }
+                for (Item key : keyItems) {
+                    heap.items.remove(key);
+                    if (((Key) key).doPickUp(hero, heap.pos)) {
+                        roundKeys++;
+                    }
+                }
+                if (heap.items.isEmpty()) {
+                    heap.destroy();
+                } else if (heap.sprite != null) {
+                    heap.sprite.view(heap).place(heap.pos);
+                }
+            }
+            if (roundKeys > 0) { keysCollected += roundKeys; changed = true; }
+
+            // Phase 3: 使用钥匙开门（LOCKED_DOOR / CRYSTAL_DOOR / LOCKED_EXIT）
+            int roundDoors = 0;
+            for (int cell = 0; cell < Dungeon.level.length(); cell++) {
+                int terrain = Dungeon.level.map[cell];
+                if (terrain == Terrain.LOCKED_DOOR) {
+                    if (Notes.keyCount(new IronKey(Dungeon.depth)) > 0) {
+                        Notes.remove(new IronKey(Dungeon.depth));
+                        Level.set(cell, Terrain.DOOR);
+                        GameScene.updateMap(cell);
+                        roundDoors++;
+                    }
+                } else if (terrain == Terrain.CRYSTAL_DOOR) {
+                    if (Notes.keyCount(new CrystalKey(Dungeon.depth)) > 0) {
+                        Notes.remove(new CrystalKey(Dungeon.depth));
+                        Level.set(cell, Terrain.EMPTY);
+                        GameScene.updateMap(cell);
+                        roundDoors++;
+                    }
+                } else if (terrain == Terrain.LOCKED_EXIT) {
+                    if (Notes.keyCount(new SkeletonKey(Dungeon.depth)) > 0) {
+                        Notes.remove(new SkeletonKey(Dungeon.depth));
+                        Level.set(cell, Terrain.UNLOCKED_EXIT);
+                        GameScene.updateMap(cell);
+                        roundDoors++;
+                    }
+                }
+            }
+            if (roundDoors > 0) { doorsOpened += roundDoors; changed = true; }
+
+            // Phase 4: 使用钥匙开宝箱
+            int roundChests = 0;
+            for (Heap heap : new ArrayList<>(Dungeon.level.heaps.valueList())) {
+                if (heap == null) continue;
+                boolean opened = false;
+                if (heap.type == Heap.Type.LOCKED_CHEST) {
+                    if (Notes.keyCount(new GoldenKey(Dungeon.depth)) > 0) {
+                        Notes.remove(new GoldenKey(Dungeon.depth));
+                        heap.open(hero);
+                        opened = true;
+                    }
+                } else if (heap.type == Heap.Type.CRYSTAL_CHEST) {
+                    if (Notes.keyCount(new CrystalKey(Dungeon.depth)) > 0) {
+                        Notes.remove(new CrystalKey(Dungeon.depth));
+                        heap.open(hero);
+                        opened = true;
+                    }
+                } else if (heap.type == Heap.Type.CHEST) {
+                    heap.open(hero);
+                    opened = true;
+                }
+                if (opened) roundChests++;
+            }
+            if (roundChests > 0) { chestsOpened += roundChests; changed = true; }
+
+        } while (changed);
+
+        // Phase 5: 拾取所有地面掉落物（使用 doPickUp 触发 Gold/EnergyCrystal/Dewdrop 等的 onPickUp）
+        // 排除商店物品、未开启的宝箱/墓碑/骸骨等
+        for (Heap heap : new ArrayList<>(Dungeon.level.heaps.valueList())) {
+            if (heap == null || heap.items.isEmpty()) continue;
+            if (heap.type == Heap.Type.FOR_SALE
+                    || heap.type == Heap.Type.LOCKED_CHEST
+                    || heap.type == Heap.Type.CRYSTAL_CHEST
+                    || heap.type == Heap.Type.CHEST
+                    || heap.type == Heap.Type.TOMB
+                    || heap.type == Heap.Type.SKELETON
+                    || heap.type == Heap.Type.REMAINS) continue;
+            java.util.List<Item> pending = new ArrayList<>();
+            Item item;
+            while ((item = heap.pickUp()) != null) {
+                pending.add(item);
+            }
+            for (Item it : pending) {
+                it.doPickUp(hero, heap.pos);
+                itemsCollected++;
+            }
+        }
+
+        GLog.p(Messages.get(DebugSupply.class, "kill_all_loot_all_result",
+                killed, keysCollected, doorsOpened, chestsOpened, itemsCollected));
+
+        // 搜刮完毕，前往下一层
+        Level.beforeTransition();
+        InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
+        Game.switchScene(InterlevelScene.class);
     }
 
     private void grantItem(Hero hero, Supplier<Item> supplier) {

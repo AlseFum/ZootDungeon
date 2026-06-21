@@ -39,6 +39,11 @@ public class Generator {
 		WEP_T5	( 0, 0, MeleeWeapon.class),
 
 		ARMOR	( 2, 1, Armor.class),
+		ARM_T1	( 0, 0, Armor.class),
+		ARM_T2	( 0, 0, Armor.class),
+		ARM_T3	( 0, 0, Armor.class),
+		ARM_T4	( 0, 0, Armor.class),
+		ARM_T5	( 0, 0, Armor.class),
 
 		MISSILE ( 1, 2, MissileWeapon.class),
 		MIS_T1  ( 0, 0, MissileWeapon.class),
@@ -250,7 +255,7 @@ public class Generator {
 	public static Item random( Category cat ) {
 		switch (cat) {
 			case ARMOR:
-				return LootRegistry.random(cat);
+				return randomArmor();
 			case WEAPON:
 				return randomWeapon();
 			case MISSILE:
@@ -280,7 +285,7 @@ public class Generator {
 		} else if (cat == Category.ARTIFACT) {
 			return randomArtifact();
 		} else if (cat == Category.ARMOR) {
-			return LootRegistry.randomUsingDefaults(cat);
+			return randomArmor(true);
 		}
 		// 委托到 LootRegistry
 		Item result = LootRegistry.randomUsingDefaults(cat);
@@ -332,6 +337,13 @@ public class Generator {
 			Category.MIS_T4,
 			Category.MIS_T5
 	};
+	public static final Category[] armTiers = new Category[]{
+			Category.ARM_T1,
+			Category.ARM_T2,
+			Category.ARM_T3,
+			Category.ARM_T4,
+			Category.ARM_T5
+		};
 	
 	public static MissileWeapon randomMissile(){
 		return randomMissile(Dungeon.depth / 5);
@@ -359,6 +371,29 @@ public class Generator {
 	}
 
 	//enforces uniqueness of artifacts throughout a run.
+
+	public static Armor randomArmor(){
+		return randomArmor(Dungeon.depth / 5);
+	}
+
+	public static Armor randomArmor(int floorSet) {
+		return randomArmor(floorSet, false);
+	}
+
+	public static Armor randomArmor(boolean useDefaults) {
+		return randomArmor(Dungeon.depth / 5, useDefaults);
+	}
+
+	public static Armor randomArmor(int floorSet, boolean useDefaults) {
+		floorSet = (int)GameMath.gate(0, floorSet, floorSetTierProbs.length-1);
+		Armor a;
+		if (useDefaults){
+			a = (Armor)randomUsingDefaults(armTiers[Random.chances(floorSetTierProbs[floorSet])]);
+		} else {
+			a = (Armor)random(armTiers[Random.chances(floorSetTierProbs[floorSet])]);
+		}
+		return a;
+	}
 	public static Artifact randomArtifact() {
 		Item item = LootRegistry.random(Category.ARTIFACT);
 		return item instanceof Artifact ? (Artifact) item : null;

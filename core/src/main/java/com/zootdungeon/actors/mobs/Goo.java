@@ -281,7 +281,6 @@ public class Goo extends Mob {
 
 	@Override
 	public void die( Object cause ) {
-		
 		super.die( cause );
 		
 		Dungeon.level.unseal();

@@ -81,9 +81,10 @@ public final class LootRegistry {
     public static CategoryPool TRINKET()   { return category("TRINKET", Trinket.class, null); }
     public static CategoryPool GOLD()      { return category("GOLD", com.zootdungeon.items.material.Gold.class, () -> new com.zootdungeon.items.material.Gold().random()); }
 
-    // Tier 级别（用于 WEP_T1-T5 / MIS_T1-T5）
+    // Tier 级别（用于 WEP_T1-T5 / MIS_T1-T5 / ARM_T1-T5）
     public static CategoryPool WEP_TIER(int tier) { return category("WEP_T" + tier, MeleeWeapon.class, null); }
     public static CategoryPool MIS_TIER(int tier) { return category("MIS_T" + tier, MissileWeapon.class, null); }
+    public static CategoryPool ARM_TIER(int tier) { return category("ARM_T" + tier, com.zootdungeon.items.armor.Armor.class, null); }
 
     // ============================================================
     // 物品注册（从 Generator 迁移）
@@ -109,6 +110,10 @@ public final class LootRegistry {
         // 远程武器层级
         CategoryPool[] misTierPools = new CategoryPool[6];
         for (int t = 1; t <= 5; t++) misTierPools[t] = MIS_TIER(t);
+
+        // 防具层级
+        CategoryPool[] armTierPools = new CategoryPool[6];
+        for (int t = 1; t <= 5; t++) armTierPools[t] = ARM_TIER(t);
 
         // ========== 药水 ==========
         potionPool.register(com.zootdungeon.items.potions.PotionOfStrength.class, 0f, 0f);
@@ -223,12 +228,23 @@ public final class LootRegistry {
         wepTierPools[5].register(com.zootdungeon.items.weapon.fastWeapon.Gauntlet.class, 2f);
         wepTierPools[5].register(com.zootdungeon.items.weapon.crowdWeapon.WarScythe.class, 2f);
 
-        // ========== 防具 ==========
-        armorPool.register(com.zootdungeon.items.armor.ClothArmor.class, 1f);
-        armorPool.register(com.zootdungeon.items.armor.LeatherArmor.class, 1f);
-        armorPool.register(com.zootdungeon.items.armor.MailArmor.class, 1f);
-        armorPool.register(com.zootdungeon.items.armor.ScaleArmor.class, 1f);
-        armorPool.register(com.zootdungeon.items.armor.PlateArmor.class, 1f);
+        // ========== 防具（按 Tier 注册，深度过滤） ==========
+        // T1 (depth 0-4): ClothArmor
+        armTierPools[1].register(com.zootdungeon.items.armor.ClothArmor.class, 2f);
+
+        // T2 (depth 0-9): LeatherArmor
+        armTierPools[2].register(com.zootdungeon.items.armor.LeatherArmor.class, 2f);
+
+        // T3 (depth 5-14): MailArmor
+        armTierPools[3].register(com.zootdungeon.items.armor.MailArmor.class, 2f);
+
+        // T4 (depth 10-19): ScaleArmor
+        armTierPools[4].register(com.zootdungeon.items.armor.ScaleArmor.class, 2f);
+
+        // T5 (depth 15+): PlateArmor
+        armTierPools[5].register(com.zootdungeon.items.armor.PlateArmor.class, 2f);
+
+        // 职业防具（掉落权重为 0，不随机生成）
         armorPool.register(com.zootdungeon.items.armor.WarriorArmor.class, 0f);
         armorPool.register(com.zootdungeon.items.armor.MageArmor.class, 0f);
         armorPool.register(com.zootdungeon.items.armor.RogueArmor.class, 0f);
@@ -406,6 +422,8 @@ public final class LootRegistry {
      */
     public static Item random(Generator.Category category) {
         if (category == null) return null;
+        // ARMOR 委托给 Generator.randomArmor() 走深度过滤
+        if (category == Generator.Category.ARMOR) return Generator.randomArmor();
         LootArgs args = LootArgs.create().depth(Dungeon.depth);
         List<Item> items = category.pool().roll(args, false);
         return items.isEmpty() ? null : items.get(0);
@@ -416,6 +434,8 @@ public final class LootRegistry {
      */
     public static Item randomUsingDefaults(Generator.Category category) {
         if (category == null) return null;
+        // ARMOR 委托给 Generator.randomArmor() 走深度过滤
+        if (category == Generator.Category.ARMOR) return Generator.randomArmor(true);
         LootArgs args = LootArgs.create().depth(Dungeon.depth);
         List<Item> items = category.pool().roll(args, true);
         return items.isEmpty() ? null : items.get(0);

@@ -23,8 +23,11 @@ package com.zootdungeon.items.wands;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
+import com.zootdungeon.actors.buffs.PithWandMemory;
 import com.zootdungeon.actors.buffs.WandEmpower;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.actors.hero.HeroSubClass;
+import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.messages.Messages;
 import com.watabou.noosa.audio.Sample;
 
@@ -58,6 +61,23 @@ public abstract class DamageWand extends Wand{
 				emp.detach();
 			}
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
+		}
+		// PITH CHAIN_STRONGER: 联动法术按表增伤 + HOLY_JUDGMENT 对恶魔/不死特攻
+		if (Dungeon.hero.subClass == HeroSubClass.PITH
+				&& Dungeon.hero.hasTalent(Talent.PITH_CHAIN_STRONGER)) {
+			PithWandMemory mem = Dungeon.hero.buff(PithWandMemory.class);
+			if (mem != null && mem.getMemorized() != null) {
+				PithWandMemory.ComboEntry combo = PithWandMemory.getCombo(mem.getMemorized(), this.getClass());
+				dmg = Math.round(dmg * combo.dmgMulti);
+			}
+		}
+		// PITH FULL_DISCHARGE: 消耗全部充能，伤害按充能数和天赋等级加成
+		if (dischargeBoost > 0 && Dungeon.hero.subClass == HeroSubClass.PITH) {
+			int pts = Dungeon.hero.pointsInTalent(Talent.PITH_FULL_DISCHARGE);
+			if (pts > 0) {
+				float mult = 1f + dischargeBoost * (0.15f + 0.1f * pts);
+				dmg = Math.round(dmg * mult);
+			}
 		}
 		return dmg;
 	}

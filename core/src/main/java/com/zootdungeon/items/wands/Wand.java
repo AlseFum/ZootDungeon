@@ -29,11 +29,17 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Barrier;
 import com.zootdungeon.actors.buffs.Blindness;
 import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.Burning;
+import com.zootdungeon.actors.buffs.Chill;
+import com.zootdungeon.actors.buffs.Corrosion;
 import com.zootdungeon.actors.buffs.Degrade;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.buffs.MagicImmune;
+import com.zootdungeon.actors.buffs.Paralysis;
+import com.zootdungeon.actors.buffs.PithWandMemory;
 import com.zootdungeon.actors.buffs.Recharging;
 import com.zootdungeon.actors.buffs.Regeneration;
+import com.zootdungeon.actors.buffs.Roots;
 import com.zootdungeon.actors.buffs.ScrollEmpower;
 import com.zootdungeon.actors.buffs.SoulMark;
 import com.zootdungeon.actors.hero.Hero;
@@ -63,6 +69,15 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.effects.CellEmitter;
+import com.zootdungeon.effects.Speck;
+import com.zootdungeon.effects.particles.SparkParticle;
+import com.zootdungeon.actors.blobs.Blob;
+import com.zootdungeon.actors.blobs.Fire;
+import com.zootdungeon.actors.blobs.ToxicGas;
+import com.zootdungeon.items.wands.DamageWand;
+import com.watabou.utils.PathFinder;
+import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.ui.QuickSlotButton;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -77,12 +92,14 @@ public abstract class Wand extends Item {
 
 	public static final String AC_ZAP	= "ZAP";
 	public static final String AC_DECLARE = "DECLARE";
+	public static final String AC_DISCHARGE = "DISCHARGE";
 
 	private static final float TIME_TO_ZAP	= 1f;
 	
 	public int maxCharges = initialCharges();
 	public int curCharges = maxCharges;
 	public float partialCharge = 0f;
+	public int dischargeBoost = 0; // PITH FULL_DISCHARGE
 	
 	protected Charger charger;
 	
@@ -112,6 +129,11 @@ public abstract class Wand extends Item {
 		if (hero.subClass == HeroSubClass.MANTRA && curCharges >= 2) {
 				actions.add( AC_DECLARE );
 			}
+		if (hero.subClass == HeroSubClass.PITH
+				&& hero.hasTalent(Talent.PITH_FULL_DISCHARGE)
+				&& curCharges >= 2) {
+				actions.add( AC_DISCHARGE );
+			}
 
 		return actions;
 	}
@@ -122,11 +144,16 @@ public abstract class Wand extends Item {
 		super.execute( hero, action );
 
 		if (action.equals( AC_ZAP )) {
-			
+
 			curUser = hero;
 			curItem = this;
 			GameScene.selectCell( zapper );
-			
+
+		} else if (action.equals( AC_DISCHARGE )) {
+			dischargeBoost = curCharges;
+			curUser = hero;
+			curItem = this;
+			GameScene.selectCell( zapper );
 		}
 	}
 
@@ -489,7 +516,12 @@ public abstract class Wand extends Item {
 			}
 		}
 		
-		curCharges -= cursed ? 1 : chargesPerCast();
+		if (dischargeBoost > 0) {
+			curCharges = 0;
+			dischargeBoost = 0;
+		} else {
+			curCharges -= cursed ? 1 : chargesPerCast();
+		}
 
 		//remove magic charge at a higher priority, if we are benefiting from it are and not the
 		//wand that just applied it
@@ -539,13 +571,179 @@ public abstract class Wand extends Item {
 			if (removed) new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
 		}
 
+		// --- PITH subclass talents ---
+		if (curUser instanceof Hero && ((Hero) curUser).subClass == HeroSubClass.PITH) {
+			Hero hero = (Hero) curUser;
+
+			if (hero.hasTalent(Talent.PITH_WAND_CHAIN)) {
+				PithWandMemory mem = hero.buff(PithWandMemory.class);
+				if (mem != null && mem.getMemorized() != null) {
+					float chainChance = 0.2f + 0.1f * hero.pointsInTalent(Talent.PITH_WAND_CHAIN);
+					if (Random.Float() < chainChance) {
+						for (Item item : hero.belongings.getAllItems(Wand.class)) {
+							if (item.getClass() == mem.getMemorized() && item != this) {
+								((Wand) item).gainCharge(1f);
+								if (hero.sprite != null) {
+									hero.sprite.showStatus(CharSprite.POSITIVE, "+1⚡");
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (hero.hasTalent(Talent.PITH_CHAIN_STRONGER)) {
+				PithWandMemory mem = Buff.affect(hero, PithWandMemory.class);
+				String prev = mem.getMemorized() != null ? mem.getMemorized().getSimpleName() : "none";
+				mem.memorize(this);
+				GLog.p("[PITH] " + this.name() + " <- prev=" + prev);
+				BuffIndicator.refreshHero();
+			}
+		}
+
 		Invisibility.dispel();
 		updateQuickslot();
 
 		curUser.spendAndNext( TIME_TO_ZAP );
 	}
-	
-	@Override
+	// PITH combo effects -- applied after onZap
+	private void applyComboEffect(Ballistica shot) {
+		if (!(curUser instanceof Hero)) { GLog.p("[PITH] curUser not Hero"); return; }
+		Hero hero = (Hero) curUser;
+		if (hero.subClass != HeroSubClass.PITH || !hero.hasTalent(Talent.PITH_CHAIN_STRONGER)) { GLog.p("[PITH] not PITH subclass or no talent"); return; }
+
+		PithWandMemory mem = hero.buff(PithWandMemory.class);
+		if (mem == null || mem.getMemorized() == null) { GLog.p("[PITH] no memory buff or nothing memorized"); return; }
+
+		PithWandMemory.ComboEntry combo = PithWandMemory.getCombo(mem.getMemorized(), this.getClass());
+		GLog.p("[PITH] combo " + mem.getMemorized().getSimpleName() + "->" + this.getClass().getSimpleName() + ": " + combo.dmgMulti + "x " + combo.effect);
+		if (combo.effect == PithWandMemory.ComboEffect.NONE) return;
+
+		int cell = shot.collisionPos;
+		Char target = Actor.findChar(cell);
+
+		switch (combo.effect) {
+			case STEAM_BURST:
+				if (this instanceof DamageWand) {
+					int splashDmg = Math.round(((DamageWand) this).damageRoll() * 0.4f);
+					for (int n : PathFinder.NEIGHBOURS9) {
+						Char ch = Actor.findChar(cell + n);
+						if (ch != null && ch.alignment == Char.Alignment.ENEMY) {
+							ch.damage(splashDmg, this);
+						}
+					}
+					CellEmitter.center(cell).burst(Speck.factory(Speck.STEAM), 5);
+				}
+				break;
+
+			case SUPERCONDUCT:
+				for (int i = 0, bounced = 0; i < PathFinder.NEIGHBOURS8.length && bounced < 2; i++) {
+					int n = cell + PathFinder.NEIGHBOURS8[i];
+					Char ch = Actor.findChar(n);
+					if (ch != null && ch.alignment == Char.Alignment.ENEMY) {
+						ch.damage(Random.NormalIntRange(4, 12), this);
+						ch.sprite.centerEmitter().burst(SparkParticle.FACTORY, 3);
+						ch.sprite.flash();
+						bounced++;
+					}
+				}
+				break;
+
+			case WILDFIRE:
+				GameScene.add(Blob.seed(cell, 2, Fire.class));
+				for (int n : PathFinder.NEIGHBOURS8) {
+					if (Random.Float() < 0.5f) {
+						GameScene.add(Blob.seed(cell + n, 2, Fire.class));
+					}
+				}
+				break;
+
+			case TOXIC_CLOUD:
+				GameScene.add(Blob.seed(cell, 50, ToxicGas.class));
+				break;
+
+			case PARTICLE_CASCADE:
+				if (target != null && target.isAlive()) {
+					Buff.affect(target, Degrade.class, Degrade.DURATION);
+				}
+				break;
+
+			case SENTRY_VOLLEY:
+				for (int i = 0; i < 2; i++) {
+					int t = cell;
+					Char ch = Actor.findChar(t);
+					if (ch == null || ch.alignment == Char.Alignment.ALLY) {
+						for (Char c : Actor.chars()) {
+							if (c.alignment == Char.Alignment.ENEMY && Dungeon.level.heroFOV[c.pos]) {
+								t = c.pos;
+								ch = c;
+								break;
+							}
+						}
+					}
+					if (ch != null && ch.isAlive()) {
+						ch.damage(Random.NormalIntRange(2, 8), this);
+						curUser.sprite.zap(ch.pos);
+					}
+				}
+				break;
+
+			case SHATTER:
+				if (target != null && target.isAlive()) {
+					Buff.prolong(target, Paralysis.class, 1f);
+				}
+				break;
+
+			case BLOOD_SHIELD:
+				if (this instanceof DamageWand) {
+					int estDmg = ((DamageWand) this).damageRoll();
+					int shield = Math.round(estDmg * combo.dmgMulti * 0.3f);
+					if (shield > 0) {
+						Buff.affect(hero, Barrier.class).setShield(shield);
+						hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING);
+					}
+				}
+				break;
+
+			case FROSTFIRE:
+				if (target != null && target.isAlive()) {
+					Buff.affect(target, Burning.class).reignite(target, 5f);
+					Buff.prolong(target, Chill.class, 5f);
+				}
+				break;
+
+			case PLASMA:
+				if (target != null && target.isAlive()) {
+					Buff.affect(target, Burning.class).reignite(target, 5f);
+				}
+				break;
+
+			case CORROSIVE_VINES:
+				if (target != null && target.isAlive()) {
+					Buff.prolong(target, Roots.class, 3f);
+					Buff.affect(target, Corrosion.class).set(5f, 6);
+				}
+				break;
+
+			case ROOT:
+				if (target != null && target.isAlive()) {
+					Buff.prolong(target, Roots.class, 2f);
+				}
+				break;
+
+			case OVERCHARGE:
+				gainCharge(1f);
+				if (hero.sprite != null) {
+					hero.sprite.showStatus(CharSprite.POSITIVE, "+1⚡");
+				}
+				break;
+
+			case HOLY_JUDGMENT:
+				break;
+		}
+	}
+@Override
 	public Item random() {
 		//+0: 66.67% (2/3)
 		//+1: 26.67% (4/15)
@@ -769,6 +967,7 @@ public abstract class Wand extends Item {
 						curWand.fx(shot, new Callback() {
 							public void call() {
 								curWand.onZap(shot);
+								curWand.applyComboEffect(shot);
 								if (Random.Float() < WondrousResin.extraCurseEffectChance()){
 									WondrousResin.forcePositive = true;
 									CursedWand.cursedZap(curWand,
