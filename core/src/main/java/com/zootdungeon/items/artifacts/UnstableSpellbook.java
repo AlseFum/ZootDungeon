@@ -33,6 +33,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.particles.ElmoParticle;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
+import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.items.bags.ScrollHolder;
 import com.zootdungeon.items.rings.RingOfEnergy;
@@ -90,14 +91,18 @@ public class UnstableSpellbook extends Artifact {
 	private void setupScrolls(){
 		scrolls.clear();
 
-		Class<?>[] scrollClasses = Generator.Category.SCROLL.classes;
-		float[] probs = Generator.Category.SCROLL.defaultProbsTotal.clone(); //array of primitives, clone gives deep copy.
-		int i = Random.chances(probs);
+		LootRegistry.CategoryPool pool = LootRegistry.SCROLL();
+		Class<?>[] scrollClasses = pool.classes;
+		if (scrollClasses.length == 0) return;
 
+		float[] probs = pool.defaultProbsTotal != null
+			? pool.defaultProbsTotal.clone()
+			: pool.probs.clone();
+
+		int i = Random.chances(probs);
 		while (i != -1){
 			scrolls.add(scrollClasses[i]);
 			probs[i] = 0;
-
 			i = Random.chances(probs);
 		}
 		scrolls.remove(ScrollOfTransmutation.class);

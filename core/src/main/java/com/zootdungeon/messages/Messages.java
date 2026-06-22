@@ -99,6 +99,12 @@ public class Messages {
 			if (c != null && c.getSuperclass() != null){
 				return get(c.getSuperclass(), k, args);
 			} else {
+				// 取键名后两部分，便于定位缺失的message
+				String lk = key.toLowerCase(Locale.ENGLISH);
+				String[] parts = lk.split("\\.");
+				if (parts.length >= 2) {
+					return "!!!" + parts[parts.length - 2] + "." + parts[parts.length - 1] + "!!!";
+				}
 				return NO_TEXT_FOUND;
 			}
 		}

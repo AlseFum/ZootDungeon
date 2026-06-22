@@ -52,7 +52,7 @@ import com.zootdungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.items.supply.DebugSupply;
 import com.zootdungeon.items.wands.WandOfMagicMissile;
-import com.zootdungeon.items.weapon.RhodesShortBow;
+import com.zootdungeon.items.weapon.RhodesStandardBow;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.accurateWeapon.Cudgel;
 import com.zootdungeon.items.weapon.ambushWeapon.Dagger;
@@ -425,7 +425,7 @@ public final class HeroClassSheet {
                 (hero.belongings.weapon = new Gloves()).identify();
 
                 // 罗德短弓
-                RhodesShortBow bow = new RhodesShortBow();
+                RhodesStandardBow bow = new RhodesStandardBow();
                 bow.identify().collect();
 
                 // 快捷栏

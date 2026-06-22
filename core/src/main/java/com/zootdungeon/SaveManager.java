@@ -144,7 +144,10 @@ public class SaveManager {
     public static void saveLevel(int slot, int depth, int branch, Bundle levelBundle) throws IOException {
         validateSlot(slot);
 
-        Bundle bundle = loadGameOrNew(slot);
+        Bundle bundle = loadGameOrNull(slot);
+        if (bundle == null) {
+            throw new IOException("Cannot save level: no game save exists in slot " + slot);
+        }
 
         Bundle levels = bundle.getBundle(LEVELS_KEY);
         if (levels == null || levels.isNull()) {
@@ -594,15 +597,6 @@ public class SaveManager {
         } catch (IOException e) {
             return null;
         }
-    }
-
-    private static Bundle loadGameOrNew(int slot) throws IOException {
-        Bundle bundle = loadGameOrNull(slot);
-        if (bundle == null) {
-            bundle = new Bundle();
-            bundle.put("slot", slot);
-        }
-        return bundle;
     }
 }
 

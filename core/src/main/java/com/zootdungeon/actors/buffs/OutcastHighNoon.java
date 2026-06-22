@@ -5,7 +5,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
-import com.zootdungeon.items.weapon.RhodesShortBow;
+import com.zootdungeon.items.weapon.RhodesStandardBow;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
@@ -127,7 +127,7 @@ public class OutcastHighNoon extends Buff implements ActionIndicator.Action {
 
 	private void executeHighNoon() {
 		Hero hero = (Hero) target;
-		RhodesShortBow bow = hero.belongings.getItem(RhodesShortBow.class);
+		RhodesStandardBow bow = hero.belongings.getItem(RhodesStandardBow.class);
 		if (bow == null) return;
 
 		float[] dmgMult = {1f, 2f, 3f, 4f};
@@ -143,7 +143,7 @@ public class OutcastHighNoon extends Buff implements ActionIndicator.Action {
 		}
 
 		// Empty the clip
-		RhodesShortBow.RhodesArrowStuck stuck = hero.buff(RhodesShortBow.RhodesArrowStuck.class);
+		RhodesStandardBow.RhodesArrowStuck stuck = hero.buff(RhodesStandardBow.RhodesArrowStuck.class);
 		if (stuck != null) stuck.detach();
 
 		hero.spendAndNext(hero.attackDelay());

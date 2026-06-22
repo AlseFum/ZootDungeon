@@ -1,6 +1,7 @@
 package com.zootdungeon.items.weapon;
 
 import com.zootdungeon.Assets;
+import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
@@ -22,13 +23,13 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
-public class RhodesShortBow extends Weapon {
+public class RhodesStandardBow extends Weapon {
 
 	public static final String AC_SHOOT  = "SHOOT";
 	public static final String AC_RECALL = "RECALL";
 
-	private static final int MAX_ARROWS = 6;
-	private int arrows = MAX_ARROWS;
+	static final int MAX_ARROWS = 6;
+	int arrows = MAX_ARROWS;
 
 	{
 		image = ItemSpriteSheet.SPIRIT_BOW;
@@ -69,10 +70,23 @@ public class RhodesShortBow extends Weapon {
 
 	private void recallArrows(Hero hero) {
 		RhodesArrowStuck stuck = hero.buff(RhodesArrowStuck.class);
-		if (stuck != null) {
-			int recovered = stuck.count();
+		int recovered = stuck != null ? stuck.count() : 0;
+		if (recovered > 0) {
 			arrows = Math.min(MAX_ARROWS, arrows + recovered);
+			updateQuickslot();
+		}
+		// Detach stuck buff first so pierced.detach() won't double-return
+		if (stuck != null) {
 			stuck.detach();
+		}
+		// Clean up pierced markers on current-depth enemies (no-ops since stuck is gone)
+		for (Char ch : Actor.chars()) {
+			RhodesArrowPierced pierced = ch.buff(RhodesArrowPierced.class);
+			if (pierced != null) {
+				pierced.detach();
+			}
+		}
+		if (recovered > 0) {
 			GLog.p(Messages.get(this, "recall", recovered));
 		}
 	}
@@ -143,17 +157,17 @@ public class RhodesShortBow extends Weapon {
 
 		@Override
 		public int STRReq(int lvl) {
-			return RhodesShortBow.this.STRReq();
+			return RhodesStandardBow.this.STRReq();
 		}
 
 		@Override
 		public boolean hasEnchant(Class<? extends Enchantment> type, Char owner) {
-			return RhodesShortBow.this.hasEnchant(type, owner);
+			return RhodesStandardBow.this.hasEnchant(type, owner);
 		}
 
 		@Override
 		public int proc(Char attacker, Char defender, int damage) {
-			return RhodesShortBow.this.proc(attacker, defender, damage);
+			return RhodesStandardBow.this.proc(attacker, defender, damage);
 		}
 
 		@Override
@@ -168,9 +182,15 @@ public class RhodesShortBow extends Weapon {
 				CellEmitter.get(cell).burst(Speck.factory(Speck.WOOL), 3);
 				return;
 			}
+			// Only consume arrow on successful hit
+			RhodesStandardBow.this.arrows--;
+			updateQuickslot();
 			// Arrow sticks into enemy
 			RhodesArrowStuck stuck = Buff.affect(curUser, RhodesArrowStuck.class);
 			stuck.incStuck();
+			// Mark enemy for auto-recovery on death
+			RhodesArrowPierced pierced = Buff.affect(enemy, RhodesArrowPierced.class);
+			pierced.addArrow();
 		}
 
 		@Override
@@ -181,11 +201,9 @@ public class RhodesShortBow extends Weapon {
 		@Override
 		public void cast(final Hero user, final int dst) {
 			if (arrows <= 0) {
-				GLog.w(Messages.get(RhodesShortBow.class, "no_arrows"));
+				GLog.w(Messages.get(RhodesStandardBow.class, "no_arrows"));
 				return;
 			}
-			arrows--;
-			updateQuickslot();
 			super.cast(user, dst);
 		}
 	}
@@ -200,7 +218,7 @@ public class RhodesShortBow extends Weapon {
 
 		@Override
 		public String prompt() {
-			return Messages.get(RhodesShortBow.class, "prompt");
+			return Messages.get(RhodesStandardBow.class, "prompt");
 		}
 	};
 
@@ -219,6 +237,15 @@ public class RhodesShortBow extends Weapon {
 		public void incStuck() {
 			stuckCount++;
 			BuffIndicator.refreshHero();
+		}
+
+		public void decCount(int n) {
+			stuckCount = Math.max(0, stuckCount - n);
+			if (stuckCount <= 0) {
+				detach();
+			} else {
+				BuffIndicator.refreshHero();
+			}
 		}
 
 		public int count() {
@@ -257,6 +284,67 @@ public class RhodesShortBow extends Weapon {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			stuckCount = bundle.getInt(STUCK_COUNT);
+		}
+	}
+
+	/**
+	 * Marker buff placed on enemies that have arrows stuck in them.
+	 * Periodically checks if the enemy is still alive; if not, arrows are
+	 * automatically returned to the hero's quiver.
+	 */
+	public static class RhodesArrowPierced extends Buff {
+
+		private int piercedCount = 0;
+
+		public void addArrow() {
+			piercedCount++;
+		}
+
+		public int count() {
+			return piercedCount;
+		}
+
+		@Override
+		public boolean act() {
+			if (target == null || !target.isAlive()) {
+				returnArrows();
+				detach();
+				return true;
+			}
+			spend(TICK);
+			return true;
+		}
+
+		private void returnArrows() {
+			if (piercedCount <= 0) return;
+			Hero hero = Dungeon.hero;
+			if (hero == null || !hero.isAlive()) return;
+			RhodesStandardBow bow = hero.belongings.getItem(RhodesStandardBow.class);
+			if (bow == null) return;
+			int toReturn = Math.min(piercedCount, MAX_ARROWS - bow.arrows);
+			if (toReturn > 0) {
+				bow.arrows = Math.min(MAX_ARROWS, bow.arrows + toReturn);
+				bow.updateQuickslot();
+			}
+			// Also clean up stuck counter if it still exists
+			RhodesArrowStuck stuck = hero.buff(RhodesArrowStuck.class);
+			if (stuck != null) {
+				stuck.decCount(toReturn);
+			}
+		}
+
+		private static final String PIERCED_COUNT = "pierced_count";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(PIERCED_COUNT, piercedCount);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			piercedCount = bundle.getInt(PIERCED_COUNT);
 		}
 	}
 }

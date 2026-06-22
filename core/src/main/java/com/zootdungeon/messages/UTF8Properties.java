@@ -57,7 +57,7 @@ public class UTF8Properties {
                     continue;
                 }
 
-                if (key != null && value.length() > 0) {
+                if (key != null) {
                     props.put(key.toLowerCase(Locale.ENGLISH), decodeEscape(value.toString()));
                 }
 
@@ -72,7 +72,7 @@ public class UTF8Properties {
                 value.setLength(0);
                 value.append(line.substring(eq + 1));
             }
-            if (key != null && value.length() > 0) {
+            if (key != null) {
                 props.put(key.toLowerCase(Locale.ENGLISH), decodeEscape(value.toString()));
             }
         } catch (IOException e) {
