@@ -738,6 +738,9 @@ public class Hero extends Char {
 
     @Override
     public int drRoll() {
+        if (buff(com.zootdungeon.items.weapon.BerserkWeapon.BerserkBuff.class) != null) {
+            return 0;
+        }
         int dr = super.drRoll();
 
         if (belongings.armor() != null) {
