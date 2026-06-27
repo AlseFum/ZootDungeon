@@ -53,11 +53,11 @@ public class WandBox extends Item {
 
             // 使用WndTabbedIconGrid构建器创建分标签页窗口
             WndTabbedIconGrid.Builder builder = new WndTabbedIconGrid.Builder()
-                    .setTitle("选择法杖")
+                    .setTitle(Messages.get(WandBox.class, "title"))
                     .setColumns(4);
-            
+
             // 添加法杖标签页
-            builder.addTab("法杖", Icons.get(Icons.WAND_HOLSTER));
+            builder.addTab(Messages.get(WandBox.class, "tab_wands"), Icons.get(Icons.WAND_HOLSTER));
             
             // 添加法杖到第一个标签页（索引0）
             builder.addItemToTab(0,
@@ -178,23 +178,23 @@ public class WandBox extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SELECT)) {
-            return "选择法杖";
+            return Messages.get(this, "ac_select");
         } else if (action.equals(AC_GENERATE)) {
-            return "生成法杖";
+            return Messages.get(this, "ac_generate");
         } else if (action.equals(AC_ZAP)) {
-            return "发射法杖";
+            return Messages.get(this, "ac_zap");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        return "法杖箱";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "这是一个可以让你选择生成各种法杖的物品。";
+        return Messages.get(this, "desc");
     }
 
     @Override
@@ -218,28 +218,13 @@ public class WandBox extends Item {
         return new ItemSprite(wand.image);
     }
 
-    // 获取法杖描述的辅助方法
     private static String getWandDescription(Class<? extends Wand> wandClass) {
-        String name = Messages.get(wandClass, "name");
-        String desc = Messages.get(wandClass, "desc");
-        
-        // 检查是否找到了有效的文本
-        if (name == null || name.equals(Messages.NO_TEXT_FOUND)) {
-            name = wandClass.getSimpleName();
-        }
-        if (desc == null || desc.equals(Messages.NO_TEXT_FOUND)) {
-            desc = "";
-        }
-        
-        // 如果描述太长，可以截取第一句话
-        if (!desc.isEmpty() && desc.length() > 100) {
-            int firstPeriod = desc.indexOf('。');
-            int firstPeriodEn = desc.indexOf('.');
-            int cutPoint = firstPeriod > 0 ? firstPeriod : (firstPeriodEn > 0 ? firstPeriodEn : Math.min(100, desc.length()));
-            desc = desc.substring(0, cutPoint);
-        }
-        
-        return desc.isEmpty() ? name : (name + "：" + desc);
+        Wand w = Reflection.newInstance(wandClass);
+        String name = w.name();
+        String stats = w.statsDesc();
+        if (name == null || name.equals(Messages.NO_TEXT_FOUND)) name = wandClass.getSimpleName();
+        if (stats == null || stats.equals(Messages.NO_TEXT_FOUND)) stats = "";
+        return name + "：" + stats;
     }
 }
 
