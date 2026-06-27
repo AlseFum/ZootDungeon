@@ -35,7 +35,6 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.ShadowBox;
-import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.LostBackpack;
 import com.zootdungeon.journal.Document;
@@ -427,6 +426,8 @@ public class InterlevelScene extends PixelScene {
 								break;
 							case RESET:
 								reset();
+								break;
+							case NONE:
 								break;
 						}
 						
