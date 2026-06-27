@@ -265,6 +265,7 @@ public class AlchemyScene extends PixelScene {
 								public void onSelect(int idx, boolean alt) {
 									super.onSelect(idx, alt);
 									Bag bag = bags.get(idx);
+									@SuppressWarnings("unchecked")
 									ArrayList<Item> items = (ArrayList<Item>) bag.items.clone();
 
 									for(Item i : bag.items){
@@ -587,6 +588,7 @@ public class AlchemyScene extends PixelScene {
 		}
 	};
 	
+	@SuppressWarnings("unchecked")
 	private<T extends Item> ArrayList<T> filterInput(Class<? extends T> itemClass){
 		ArrayList<T> filtered = new ArrayList<>();
 		for (int i = 0; i < inputs.length; i++){

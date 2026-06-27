@@ -38,7 +38,6 @@ import com.zootdungeon.windows.IconTitle;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.Scene;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.ui.Component;
 
@@ -364,40 +363,11 @@ public class ChangesScene extends PixelScene {
 		fadeIn();
 	}
 
-	private void updateChangesText(Image icon, String title, String... messages){
-		// Commented out changes text update functionality
-		/*
-		if (changeTitle != null) {
-			changeTitle.icon(icon);
-			changeTitle.label(title);
-			changeTitle.setPos(0, 1);
-			
-			String message;
-			if (messages.length == 1) {
-				message = messages[0];
-			} else {
-				message = messages[0];
-			}
-			
-			changeBody.text(message);
-			
-			rightScroll.content().setSize(rightScroll.width(), changeBody.bottom()+2);
-			rightScroll.setSize(rightScroll.width(), rightScroll.height());
-			rightScroll.scrollTo(0, 0);
-		} else {
-			if (messages.length == 1) {
-				addToFront(new WndChanges(icon, title, messages[0]));
-			} else {
-				addToFront(new WndChangesTabbed(icon, title, messages));
-			}
-		}
-		*/
-	}
-
 	public static void showChangeInfo(Image icon, String title, String... messages){
-		Scene s = ColaDungeon.scene();
 		// Commented out change info showing functionality
 		/*
+		Scene s = ColaDungeon.scene();
+		
 		if (s instanceof ChangesScene){
 			((ChangesScene) s).updateChangesText(icon, title, messages);
 		} else {

@@ -28,7 +28,6 @@ import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.scenes.InterlevelScene;
