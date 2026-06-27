@@ -277,6 +277,7 @@ public class PixelScene extends Scene {
 	private static ArrayList<Class<?extends Window>> savedWindows = new ArrayList<>();
 	private static Class<?extends PixelScene> savedClass = null;
 	
+	@SuppressWarnings("unchecked")
 	public synchronized void saveWindows(){
 		if (members == null) return;
 
