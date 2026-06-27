@@ -3,6 +3,7 @@ package com.zootdungeon.items.supply;
 import com.zootdungeon.arknights.ascalon.AscalonAmbush;
 import com.zootdungeon.arknights.ascalon.AscalonAOE;
 import com.zootdungeon.items.weapon.configurable.StateSwitchWeapon;
+import com.zootdungeon.items.weapon.BlastWeapon;
 import com.zootdungeon.items.weapon.configurable.InstantMechWeapon;
 import com.zootdungeon.items.weapon.configurable.MomentumWeapon;
 import com.zootdungeon.items.weapon.configurable.PropertyHuntingWeapon;
@@ -137,6 +138,7 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
         weapons.add(() -> create(Chakram.class, 1));
         weapons.add(() -> create(NearRangeCrossBow.class, 1));
         weapons.add(() -> create(DeployablewCrossBow.class, 1));
+        weapons.add(() -> create(BlastWeapon.class, 1));
         weapons.add(() -> createRhodesGauntlet());
         categories.put(CAT_WEAPONS, weapons);
 
