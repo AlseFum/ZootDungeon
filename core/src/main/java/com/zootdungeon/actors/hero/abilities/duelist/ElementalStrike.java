@@ -56,9 +56,8 @@ import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.bombs.Bomb;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.curses.Annoying;
 import com.zootdungeon.items.weapon.curses.Dazzling;
@@ -412,7 +411,7 @@ public class ElementalStrike extends ArmorAbility {
 
 				Ballistica aim = new Ballistica(hero.pos, ch.pos, Ballistica.WONT_STOP);
 				int knockback = Math.round(5*powerMulti);
-				WandEffects.knockback(ch,
+				ItemEffects.knockback(ch,
 						new Ballistica(ch.pos, aim.collisionPos, Ballistica.MAGIC_BOLT),
 						knockback,
 						true,
@@ -495,7 +494,7 @@ public class ElementalStrike extends ArmorAbility {
 			for (Char ch : affected){
 				if (Random.Float() < 0.5f*powerMulti){
 					int oldpos = ch.pos;
-					if (ScrollEffects.teleportChar(ch)){
+					if (ItemEffects.teleportChar(ch)){
 						if (Dungeon.level.heroFOV[oldpos]) {
 							CellEmitter.get( oldpos ).start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
 						}

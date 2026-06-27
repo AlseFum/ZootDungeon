@@ -86,9 +86,8 @@ import com.zootdungeon.items.rings.RingOfElements;
 import com.zootdungeon.items.scrolls.ScrollOfRetribution;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
 import com.zootdungeon.items.wands.WandOfFireblast;
 import com.zootdungeon.items.wands.WandOfFrost;
 import com.zootdungeon.items.wands.WandOfLightning;
@@ -238,8 +237,8 @@ public abstract class Char extends Actor {
 			}
 			pos = newPos;
 			c.pos = oldPos;
-			ScrollEffects.appear(this, newPos);
-			ScrollEffects.appear(c, oldPos);
+			ItemEffects.appear(this, newPos);
+			ItemEffects.appear(c, oldPos);
 			Dungeon.observe();
 			GameScene.updateFog();
 			return true;
@@ -742,7 +741,7 @@ public abstract class Char extends Actor {
 		NO_ARMOR_PHYSICAL_SOURCES.add(DwarfKing.Summoning.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(LifeLink.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(Chasm.class);
-		NO_ARMOR_PHYSICAL_SOURCES.add(WandEffects.Knockback.class);
+		NO_ARMOR_PHYSICAL_SOURCES.add(ItemEffects.Knockback.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(Heap.class); //damage from wraiths attempting to spawn from heaps
 		NO_ARMOR_PHYSICAL_SOURCES.add(Necromancer.SummoningBlockDamage.class);
 		NO_ARMOR_PHYSICAL_SOURCES.add(DriedRose.GhostHero.NoRoseDamage.class);

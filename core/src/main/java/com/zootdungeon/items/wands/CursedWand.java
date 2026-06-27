@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -79,7 +80,6 @@ import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfSirensSong;
-import com.zootdungeon.items.scrolls.ScrollEffects;
 import com.zootdungeon.items.trinkets.WondrousResin;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
@@ -263,14 +263,14 @@ public class CursedWand {
 			Char target = Actor.findChar( bolt.collisionPos );
 			//can only teleport target if positive only
 			if (target != null && !Char.hasProp(target, Char.Property.IMMOVABLE) && (positiveOnly || Random.Int(2) == 0)){
-				ScrollEffects.teleportChar(target);
+				ItemEffects.teleportChar(target);
 				tryForWandProc(target, origin);
 				return true;
 			} else {
 				if (positiveOnly || user == null || Char.hasProp(user, Char.Property.IMMOVABLE)){
 					return false;
 				} else {
-					ScrollEffects.teleportChar(user);
+					ItemEffects.teleportChar(user);
 					return true;
 				}
 			}
@@ -570,7 +570,7 @@ public class CursedWand {
 			for (Char ch : affected){
 				if (ch instanceof Hero) {
 					Buff.prolong(ch, Recharging.class, Recharging.DURATION/3f);
-					ScrollEffects.charge(ch);
+					ItemEffects.charge(ch);
 					SpellSprite.show(ch, SpellSprite.CHARGE);
 				}
 				//does not harm allies if positive only
@@ -772,7 +772,7 @@ public class CursedWand {
 
 			//scroll of teleportation if positive only, or inter-floor teleport disallowed
 			} else {
-				ScrollEffects.teleportChar(user);
+				ItemEffects.teleportChar(user);
 
 			}
 			return true;
@@ -785,7 +785,7 @@ public class CursedWand {
 		public boolean effect(Item origin, Char user, Ballistica bolt, boolean positiveOnly) {
 			//mirror images if positive only and user is hero
 			if (positiveOnly && user == Dungeon.hero){
-				ScrollEffects.spawnImages(Dungeon.hero, bolt.collisionPos, 2);
+				ItemEffects.spawnImages(Dungeon.hero, bolt.collisionPos, 2);
 			} else {
 				new SummoningTrap().set(bolt.collisionPos).activate();
 			}
@@ -825,7 +825,7 @@ public class CursedWand {
 
 				}
 			}
-			WandEffects.blastWave(bolt.collisionPos, 6);
+			ItemEffects.blastWave(bolt.collisionPos, 6);
 			Sample.INSTANCE.play(Assets.Sounds.BLAST);
 			Sample.INSTANCE.play(Assets.Sounds.BURNING);
 

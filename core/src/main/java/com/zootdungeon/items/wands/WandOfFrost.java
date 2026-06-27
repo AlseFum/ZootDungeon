@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -58,7 +59,7 @@ public class WandOfFrost extends DamageWand {
 	@Override
 	public void onZap(Ballistica bolt) {
 		Sample.INSTANCE.play(Assets.Sounds.HIT_MAGIC, 1, 1.1f * Random.Float(0.87f, 1.15f));
-		WandEffects.applyFrostZap(bolt, buffedLvl(), this);
+		ItemEffects.applyFrostZap(bolt, buffedLvl(), this);
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class WandOfFrost extends DamageWand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyFrostOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyFrostOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	@Override

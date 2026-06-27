@@ -51,7 +51,7 @@ import com.zootdungeon.items.artifacts.DriedRose;
 import com.zootdungeon.items.artifacts.LloydsBeacon;
 import com.zootdungeon.items.quest.MetalShard;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.themes.caves.CavesBossLevel;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
@@ -411,7 +411,7 @@ public class DM300 extends Mob {
 		if (Dungeon.level.adjacent(pos, target.pos)){
 			int oppositeAdjacent = target.pos + (target.pos - pos);
 			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT);
-			WandEffects.knockback(target, trajectory, 2, false, false, this);
+			ItemEffects.knockback(target, trajectory, 2, false, false, this);
 			if (target == Dungeon.hero){
 				Dungeon.hero.interrupt();
 			}
@@ -421,7 +421,7 @@ public class DM300 extends Mob {
 		} else if (fieldOfView[target.pos] && Dungeon.level.distance(pos, target.pos) == 2) {
 			int oppositeAdjacent = target.pos + (target.pos - pos);
 			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT);
-			WandEffects.knockback(target, trajectory, 1, false, false, this);
+			ItemEffects.knockback(target, trajectory, 1, false, false, this);
 			if (target == Dungeon.hero){
 				Dungeon.hero.interrupt();
 			}

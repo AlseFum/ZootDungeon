@@ -38,7 +38,7 @@ import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -109,7 +109,7 @@ public class Ratmogrify extends ArmorAbility {
 					rat.state = rat.HUNTING;
 					Buff.affect(rat, AscensionChallenge.AscensionBuffBlocker.class);
 					GameScene.add( rat );
-					ScrollEffects.appear( rat, spawnPoints.get( index ) );
+					ItemEffects.appear( rat, spawnPoints.get( index ) );
 
 					spawnPoints.remove( index );
 					ratsToSpawn--;

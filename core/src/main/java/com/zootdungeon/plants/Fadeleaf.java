@@ -29,7 +29,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.scenes.InterlevelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -59,12 +59,12 @@ public class Fadeleaf extends Plant {
 				Game.switchScene( InterlevelScene.class );
 				
 			} else {
-				ScrollEffects.teleportChar(ch, Fadeleaf.class);
+				ItemEffects.teleportChar(ch, Fadeleaf.class);
 			}
 			
 		} else if (ch instanceof Mob && !ch.properties().contains(Char.Property.IMMOVABLE)) {
 
-			ScrollEffects.teleportChar(ch, Fadeleaf.class);
+			ItemEffects.teleportChar(ch, Fadeleaf.class);
 
 		}
 		

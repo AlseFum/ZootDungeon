@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -65,7 +66,7 @@ public class WandOfMagicMissile extends DamageWand {
 			ch.sprite.burst(0xFFFFFFFF, buffedLvl() / 2 + 2);
 
 			//apply the magic charge buff
-			WandEffects.applyMagicCharge(curUser, buffedLvl(), this);
+			ItemEffects.applyMagicCharge(curUser, buffedLvl(), this);
 
 		} else {
 			Dungeon.level.pressCell(bolt.collisionPos);
@@ -75,7 +76,7 @@ public class WandOfMagicMissile extends DamageWand {
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
 		SpellSprite.show(attacker, SpellSprite.CHARGE);
-		WandEffects.applyMagicMissileOnHit(attacker, this, procChanceMultiplier(attacker));
+		ItemEffects.applyMagicMissileOnHit(attacker, this, procChanceMultiplier(attacker));
 	}
 
 	public int initialCharges() {

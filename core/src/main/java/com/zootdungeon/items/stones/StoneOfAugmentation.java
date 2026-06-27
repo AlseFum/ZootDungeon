@@ -27,7 +27,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfEnchantment;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.messages.Messages;
@@ -62,7 +62,7 @@ public class StoneOfAugmentation extends InventoryStone {
 		
 		weapon.augment = augment;
 		useAnimation();
-		ScrollEffects.upgradeVFX(curUser);
+		ItemEffects.upgradeVFX(curUser);
 		if (!anonymous) {
 			curItem.detach(curUser.belongings.backpack);
 			Catalog.countUse(getClass());
@@ -74,7 +74,7 @@ public class StoneOfAugmentation extends InventoryStone {
 		
 		armor.augment = augment;
 		useAnimation();
-		ScrollEffects.upgradeVFX(curUser);
+		ItemEffects.upgradeVFX(curUser);
 		if (!anonymous) {
 			curItem.detach(curUser.belongings.backpack);
 			Catalog.countUse(getClass());

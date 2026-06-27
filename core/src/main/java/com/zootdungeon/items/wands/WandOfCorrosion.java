@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -56,7 +57,7 @@ public class WandOfCorrosion extends Wand {
 
 	@Override
 	public void onZap(Ballistica bolt) {
-		WandEffects.deployCorrosiveGas(bolt.collisionPos, buffedLvl(), getClass(), this);
+		ItemEffects.deployCorrosiveGas(bolt.collisionPos, buffedLvl(), getClass(), this);
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class WandOfCorrosion extends Wand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyCorrosionOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyCorrosionOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	@Override

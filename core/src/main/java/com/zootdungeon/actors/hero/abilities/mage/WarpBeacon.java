@@ -35,7 +35,7 @@ import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -147,7 +147,7 @@ public class WarpBeacon extends ArmorAbility {
 									Random.shuffle(candidates);
 
 									if (!candidates.isEmpty()){
-										ScrollEffects.appear(hero, tracker.pos);
+										ItemEffects.appear(hero, tracker.pos);
 										Actor.add( new Pushing( toPush, toPush.pos, candidates.get(0) ));
 
 										toPush.pos = candidates.get(0);
@@ -157,10 +157,10 @@ public class WarpBeacon extends ArmorAbility {
 										GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
 									}
 								} else {
-									ScrollEffects.appear(hero, tracker.pos);
+									ItemEffects.appear(hero, tracker.pos);
 								}
 							} else {
-								ScrollEffects.appear(hero, tracker.pos);
+								ItemEffects.appear(hero, tracker.pos);
 							}
 
 							Invisibility.dispel();

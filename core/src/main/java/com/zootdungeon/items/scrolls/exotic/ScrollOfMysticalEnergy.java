@@ -25,7 +25,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.buffs.ArtifactRecharge;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.effects.SpellSprite;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
@@ -48,7 +48,7 @@ public class ScrollOfMysticalEnergy extends ExoticScroll {
 		
 		SpellSprite.show( curUser, SpellSprite.CHARGE, 0, 1, 1 );
 		identify();
-		ScrollEffects.charge(curUser);
+		ItemEffects.charge(curUser);
 		
 		readAnimation();
 	}

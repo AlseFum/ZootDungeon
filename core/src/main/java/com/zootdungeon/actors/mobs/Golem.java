@@ -32,7 +32,7 @@ import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GolemSprite;
 import com.watabou.utils.BArray;
@@ -130,7 +130,7 @@ public class Golem extends Mob {
 		if (teleporting){
 			((GolemSprite)sprite).teleParticles(false);
 			if (Actor.findChar(target) == null && Dungeon.level.openSpace[target]) {
-				ScrollEffects.appear(this, target);
+				ItemEffects.appear(this, target);
 				selfTeleCooldown = 30;
 			} else {
 				target = Dungeon.level.randomDestination(this);
@@ -164,7 +164,7 @@ public class Golem extends Mob {
 		}
 
 		if (bestPos != enemy.pos){
-			ScrollEffects.appear(enemy, bestPos);
+			ItemEffects.appear(enemy, bestPos);
 			if (enemy instanceof Hero){
 				((Hero) enemy).interrupt();
 				Dungeon.observe();

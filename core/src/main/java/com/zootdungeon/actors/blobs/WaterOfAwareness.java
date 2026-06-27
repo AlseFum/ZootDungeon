@@ -31,7 +31,7 @@ import com.zootdungeon.effects.Identification;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfIdentify;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Notes.Landmark;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.messages.Messages;
@@ -78,7 +78,7 @@ public class WaterOfAwareness extends WellWater {
 		if (item.isIdentified()) {
 			return null;
 		} else {
-			ScrollEffects.IDItem(item);
+			ItemEffects.IDItem(item);
 			
 			Sample.INSTANCE.play( Assets.Sounds.DRINK );
 			emitter.parent.add( new Identification( DungeonTilemap.tileCenterToWorld( pos ) ) );

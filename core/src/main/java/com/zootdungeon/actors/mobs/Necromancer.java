@@ -33,7 +33,7 @@ import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.CharSprite;
@@ -342,7 +342,7 @@ public class Necromancer extends Mob {
 						
 						if (telePos != -1){
 							
-							ScrollEffects.appear(mySkeleton, telePos);
+							ItemEffects.appear(mySkeleton, telePos);
 							mySkeleton.teleportSpend();
 							
 							if (sprite != null && sprite.visible){

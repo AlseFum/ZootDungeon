@@ -29,7 +29,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.quest.MetalShard;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.levels.traps.Trap;
@@ -89,7 +89,7 @@ public class ReclaimTrap extends TargetedSpell {
 				t.disarm(); //even disarms traps that normally wouldn't be
 				
 				Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
-				ScrollEffects.charge(hero);
+				ItemEffects.charge(hero);
 				Buff.affect(hero, ReclaimedTrap.class).trap = t.getClass();
 				Bestiary.setSeen(t.getClass());
 				

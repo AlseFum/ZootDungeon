@@ -23,7 +23,7 @@ package com.zootdungeon.items.weapon.enchantments;
 
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
@@ -52,7 +52,7 @@ public class Elastic extends Weapon.Enchantment {
 			//trim it to just be the part that goes past them
 			trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
 			//knock them back along that ballistica
-			WandEffects.knockback(defender,
+			ItemEffects.knockback(defender,
 					trajectory,
 					Math.round(2 * powerMulti),
 					!(weapon instanceof MissileWeapon || weapon instanceof SpiritBow),

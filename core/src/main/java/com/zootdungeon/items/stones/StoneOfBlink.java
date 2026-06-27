@@ -24,7 +24,7 @@ package com.zootdungeon.items.stones;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 
@@ -53,6 +53,6 @@ public class StoneOfBlink extends Runestone {
 	
 	@Override
 	protected void activate(int cell) {
-		ScrollEffects.teleportToLocation(curUser, cell);
+		ItemEffects.teleportToLocation(curUser, cell);
 	}
 }

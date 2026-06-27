@@ -27,7 +27,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.missiles.darts.Dart;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
@@ -93,7 +93,7 @@ public class Crossbow extends MeleeWeapon {
 			//trim it to just be the part that goes past them
 			trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
 			//knock them back along that ballistica
-			WandEffects.knockback(defender,
+			ItemEffects.knockback(defender,
 					trajectory,
 					4,
 					true,

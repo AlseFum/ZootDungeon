@@ -51,7 +51,7 @@ import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zootdungeon.items.wands.CursedWand;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.WandOfDisintegration;
 import com.zootdungeon.items.wands.WandOfFireblast;
 import com.zootdungeon.items.wands.WandOfFrost;
@@ -117,9 +117,9 @@ public class AntiMagic extends Armor.Glyph {
 
 		RESISTS.add( ElementalStrike.class );
 		RESISTS.add( Blazing.class );
-		RESISTS.add( WandEffects.FireBlastEnchantment.class );
+		RESISTS.add( ItemEffects.FireBlastEnchantment.class );
 		RESISTS.add( Shocking.class );
-		RESISTS.add( WandEffects.LightningEnchantment.class );
+		RESISTS.add( ItemEffects.LightningEnchantment.class );
 		RESISTS.add( Grim.class );
 
 		RESISTS.add( WarpBeacon.class );

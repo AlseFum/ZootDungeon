@@ -30,7 +30,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.journal.Catalog;
@@ -84,7 +84,7 @@ public class MagicalInfusion extends InventorySpell {
 	}
 
 	public Item upgradeItem( Item item ){
-		ScrollEffects.upgradeVFX(curUser);
+		ItemEffects.upgradeVFX(curUser);
 
 		Degrade.detach( curUser, Degrade.class );
 

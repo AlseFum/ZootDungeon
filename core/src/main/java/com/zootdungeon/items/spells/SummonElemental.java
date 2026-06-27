@@ -43,7 +43,7 @@ import com.zootdungeon.items.quest.Embers;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.ScrollOfTransmutation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -104,7 +104,7 @@ public class SummonElemental extends Spell {
 
 			for (Char ch : Actor.chars()){
 				if (ch instanceof Elemental && ch.buff(InvisAlly.class) != null){
-					ScrollEffects.appear( ch, Random.element(spawnPoints) );
+					ItemEffects.appear( ch, Random.element(spawnPoints) );
 					((Elemental) ch).state = ((Elemental) ch).HUNTING;
 					curUser.spendAndNext(Actor.TICK);
 					return;
@@ -116,7 +116,7 @@ public class SummonElemental extends Spell {
 			Buff.affect(elemental, InvisAlly.class);
 			elemental.setSummonedALly();
 			elemental.HP = elemental.HT;
-			ScrollEffects.appear( elemental, Random.element(spawnPoints) );
+			ItemEffects.appear( elemental, Random.element(spawnPoints) );
 			Invisibility.dispel(curUser);
 			curUser.sprite.operate(curUser.pos);
 			curUser.spendAndNext(Actor.TICK);

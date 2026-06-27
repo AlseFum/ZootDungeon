@@ -60,7 +60,7 @@ import com.zootdungeon.items.artifacts.DriedRose;
 import com.zootdungeon.items.journal.Guidebook;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.DimensionalSundial;
 import com.zootdungeon.items.trinkets.TrinketCatalyst;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
@@ -447,12 +447,12 @@ public class GameScene extends PixelScene {
 		switch (InterlevelScene.mode) {
 			case RESURRECT:
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
-				ScrollEffects.appearVFX( Dungeon.hero );
+				ItemEffects.appearVFX( Dungeon.hero );
 				SpellSprite.show(Dungeon.hero, SpellSprite.ANKH);
 				new Flare( 5, 16 ).color( 0xFFFF00, true ).show( hero, 4f ) ;
 				break;
 			case RETURN:
-				ScrollEffects.appearVFX( Dungeon.hero );
+				ItemEffects.appearVFX( Dungeon.hero );
 				break;
 			case DESCEND:
 			case FALL:

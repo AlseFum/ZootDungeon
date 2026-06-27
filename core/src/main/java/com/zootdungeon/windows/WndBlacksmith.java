@@ -35,7 +35,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.journal.Catalog;
@@ -268,7 +268,7 @@ public class WndBlacksmith extends Window {
 					}
 
 					Sample.INSTANCE.play( Assets.Sounds.EVOKE );
-					ScrollEffects.upgradeVFX( Dungeon.hero );
+					ItemEffects.upgradeVFX( Dungeon.hero );
 					Item.evoke( Dungeon.hero );
 
 					if (second.isEquipped( Dungeon.hero )) {
@@ -436,7 +436,7 @@ public class WndBlacksmith extends Window {
 				WndBlacksmith.this.hide();
 
 				Sample.INSTANCE.play(Assets.Sounds.EVOKE);
-				ScrollEffects.upgradeVFX( Dungeon.hero );
+				ItemEffects.upgradeVFX( Dungeon.hero );
 				Item.evoke( Dungeon.hero );
 
 				Badges.validateItemLevelAquired( item );

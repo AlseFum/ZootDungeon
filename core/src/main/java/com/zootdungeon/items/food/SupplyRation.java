@@ -28,7 +28,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.items.artifacts.CloakOfShadows;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 
@@ -65,7 +65,7 @@ public class SupplyRation extends Food {
 		CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 		if (cloak != null) {
 			cloak.directCharge(1);
-			ScrollEffects.charge(hero);
+			ItemEffects.charge(hero);
 		}
 	}
 

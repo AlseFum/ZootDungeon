@@ -45,7 +45,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
@@ -139,7 +139,7 @@ public class SmokeBomb extends ArmorAbility {
 			}
 
 			CellEmitter.get( hero.pos ).burst( Speck.factory( Speck.WOOL ), 10 );
-			ScrollEffects.appear( hero, target );
+			ItemEffects.appear( hero, target );
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
 			Dungeon.level.occupyCell( hero );
 			Dungeon.observe();

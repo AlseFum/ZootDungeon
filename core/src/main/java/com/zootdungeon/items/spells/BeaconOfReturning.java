@@ -31,7 +31,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfPassage;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
@@ -147,7 +147,7 @@ public class BeaconOfReturning extends Spell {
 				}
 			}
 
-			if (ScrollEffects.teleportToLocation(hero, returnPos)){
+			if (ItemEffects.teleportToLocation(hero, returnPos)){
 				hero.spendAndNext( 1f );
 			} else {
 				return;

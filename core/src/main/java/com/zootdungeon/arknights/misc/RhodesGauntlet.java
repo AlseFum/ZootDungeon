@@ -19,7 +19,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.weapon.fastWeapon.FastWeapon;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
@@ -364,7 +364,7 @@ public class RhodesGauntlet extends FastWeapon implements DodgeBoostBuff.Source 
             }
             int targetCell = defender.pos + direction;
             Ballistica trajectory = new Ballistica(defender.pos, targetCell, Ballistica.MAGIC_BOLT);
-            WandEffects.knockback(defender, trajectory, getKnockbackPower(), false, true, this);
+            ItemEffects.knockback(defender, trajectory, getKnockbackPower(), false, true, this);
             if (defender.isAlive()) {
                 float dur = getDisableDuration();
                 Buff.prolong(defender, Cripple.class, dur);

@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -70,7 +71,7 @@ public class WandOfBlastWave extends DamageWand {
 	@Override
 	public void onZap(Ballistica bolt) {
 		Sample.INSTANCE.play( Assets.Sounds.BLAST );
-		WandEffects.blastWave(bolt.collisionPos);
+		ItemEffects.blastWave(bolt.collisionPos);
 
 		//presses all tiles in the AOE first, with the exception of tengu dart traps
 		for (int i : PathFinder.NEIGHBOURS9){
@@ -92,7 +93,7 @@ public class WandOfBlastWave extends DamageWand {
 						&& ch.pos == bolt.collisionPos + i) {
 					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT);
 					int strength = 1 + Math.round(buffedLvl() / 2f);
-					WandEffects.knockback(ch, trajectory, strength, false, true, this);
+					ItemEffects.knockback(ch, trajectory, strength, false, true, this);
 				}
 
 			}
@@ -109,22 +110,12 @@ public class WandOfBlastWave extends DamageWand {
 					&& bolt.path.size() > bolt.dist+1 && ch.pos == bolt.collisionPos) {
 				Ballistica trajectory = new Ballistica(ch.pos, bolt.path.get(bolt.dist + 1), Ballistica.MAGIC_BOLT);
 				int strength = buffedLvl() + 3;
-				WandEffects.knockback(ch, trajectory, strength, false, true, this);
+				ItemEffects.knockback(ch, trajectory, strength, false, true, this);
 			}
 		}
 		
 	}
 
-	/** @deprecated Use {@link WandEffects#knockback} instead. */
-	@Deprecated
-	public static void throwChar(final Char ch, final Ballistica trajectory, int power,
-	                             boolean closeDoors, boolean collideDmg, Object cause){
-		WandEffects.knockback(ch, trajectory, power, closeDoors, collideDmg, cause);
-	}
-
-	/** @deprecated Use {@link WandEffects.Knockback} instead. */
-	@Deprecated
-	public static class Knockback{}
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
@@ -147,7 +138,7 @@ public class WandOfBlastWave extends DamageWand {
 			protected boolean act() {
 				Actor.remove(this);
 				if (defender.isAlive()) {
-					new WandEffects.BlastWaveEnchantment().proc(staff, attacker, defender, damage);
+					new ItemEffects.BlastWaveEnchantment().proc(staff, attacker, defender, damage);
 				}
 				if (tracker != null) tracker.detach();
 				return true;
@@ -155,7 +146,7 @@ public class WandOfBlastWave extends DamageWand {
 		});
 	}
 
-	// BlastWaveOnHit moved to WandEffects.BlastWaveEnchantment
+	// BlastWaveOnHit moved to ItemEffects.BlastWaveEnchantment
 
 	@Override
 	public String upgradeStat2(int level) {
@@ -214,21 +205,6 @@ public class WandOfBlastWave extends DamageWand {
 				alpha(p);
 				scale.y = scale.x = (1-p)*size;
 			}
-		}
-
-		// @deprecated Use WandEffects.blastWave(int) instead
-		@Deprecated
-		public static void blast(int pos) {
-			WandEffects.blastWave(pos);
-		}
-
-		// @deprecated Use WandEffects.blastWave(int, float) instead
-		@Deprecated
-		public static void blast(int pos, float radius) {
-			Group parent = Dungeon.hero.sprite.parent;
-			BlastWave b = (BlastWave) parent.recycle(BlastWave.class);
-			parent.bringToFront(b);
-			b.reset(pos, radius);
 		}
 
 	}

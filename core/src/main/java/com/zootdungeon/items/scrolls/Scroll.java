@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.ColaDungeon;

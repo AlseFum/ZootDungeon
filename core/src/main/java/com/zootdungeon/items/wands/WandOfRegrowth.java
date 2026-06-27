@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -217,7 +218,7 @@ public class WandOfRegrowth extends Wand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyRegrowthOnHit(attacker, defender, damage, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyRegrowthOnHit(attacker, defender, damage, buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	public void fx(Ballistica bolt, Callback callback) {
@@ -254,7 +255,7 @@ public class WandOfRegrowth extends Wand {
 	}
 
 	@Override
-	protected int chargesPerCast() {
+	public int chargesPerCast() {
 		if (cursed ||
 				(charger != null && charger.target != null && charger.target.buff(WildMagic.WildMagicTracker.class) != null)){
 			return 1;
@@ -407,7 +408,7 @@ public class WandOfRegrowth extends Wand {
 
 		private int wandLvl = 0;
 
-		void setLevel( int lvl ){ // package-private for WandEffects
+		void setLevel( int lvl ){ // public for ItemEffects
 			wandLvl = lvl;
 			HP = HT = 25 + 3*lvl;
 		}

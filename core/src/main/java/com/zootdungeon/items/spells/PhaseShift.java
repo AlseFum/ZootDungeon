@@ -29,7 +29,7 @@ import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -50,7 +50,7 @@ public class PhaseShift extends TargetedSpell {
 		final Char ch = Actor.findChar(bolt.collisionPos);
 		
 		if (ch != null) {
-			if (ScrollEffects.teleportChar(ch)){
+			if (ItemEffects.teleportChar(ch)){
 
 				if (ch instanceof Mob) {
 					if (((Mob) ch).state == ((Mob) ch).HUNTING) ((Mob) ch).state = ((Mob) ch).WANDERING;

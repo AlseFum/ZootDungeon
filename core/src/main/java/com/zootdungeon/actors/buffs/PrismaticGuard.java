@@ -28,7 +28,7 @@ import com.zootdungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.actors.mobs.npcs.PrismaticImage;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.ui.BuffIndicator;
@@ -81,7 +81,7 @@ public class PrismaticGuard extends Buff {
 				}
 				pris.state = pris.HUNTING;
 				GameScene.add(pris, 1);
-				ScrollEffects.appear(pris, bestPos);
+				ItemEffects.appear(pris, bestPos);
 				
 				detach();
 			} else {

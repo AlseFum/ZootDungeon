@@ -28,7 +28,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.wands.CursedWand;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.utils.GLog;
@@ -76,7 +76,7 @@ public class GravityChaosTracker extends Buff {
 				Ballistica path = new Ballistica(ch.pos, ch.pos + PathFinder.NEIGHBOURS8[idx], Ballistica.MAGIC_BOLT);
 				if (!(path.dist == 1 && Actor.findChar(path.collisionPos) != null)){
 					if (ch instanceof Hero) ((Hero) ch).interrupt();
-					WandEffects.knockback(ch, path, 3, false, false, this);
+					ItemEffects.knockback(ch, path, 3, false, false, this);
 					blocked.remove(ch);
 					blockedremoved = true;
 				}
@@ -111,7 +111,7 @@ public class GravityChaosTracker extends Buff {
 					blocked.add(ch);
 				} else {
 					if (ch instanceof Hero) ((Hero) ch).interrupt();
-					WandEffects.knockback(ch, path, 3, false, false, this);
+					ItemEffects.knockback(ch, path, 3, false, false, this);
 				}
 			}
 		}

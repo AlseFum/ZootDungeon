@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
@@ -39,49 +40,11 @@ public class ScrollOfTeleportation extends Scroll {
 		detach(curUser.belongings.backpack);
 		Sample.INSTANCE.play( Assets.Sounds.READ );
 
-		if (ScrollEffects.teleportPreferringUnseen( curUser )){
+		if (ItemEffects.teleportPreferringUnseen( curUser )){
 			readAnimation();
 		}
 		identify();
 
-	}
-
-	/** @deprecated Use {@link ScrollEffects#teleportToLocation} instead. */
-	@Deprecated
-	public static boolean teleportToLocation(Char ch, int pos){
-		return ScrollEffects.teleportToLocation(ch, pos);
-	}
-
-	/** @deprecated Use {@link ScrollEffects#teleportChar} instead. */
-	@Deprecated
-	public static boolean teleportChar( Char ch ) {
-		return ScrollEffects.teleportChar( ch );
-	}
-
-	/** @deprecated Use {@link ScrollEffects#teleportChar} instead. */
-	@Deprecated
-	public static boolean teleportChar( Char ch, Class source ) {
-		return ScrollEffects.teleportChar( ch, source );
-	}
-
-	/** @deprecated Use {@link ScrollEffects#teleportPreferringUnseen} instead. */
-	@Deprecated
-	public static boolean teleportPreferringUnseen( Hero hero ){
-		return ScrollEffects.teleportPreferringUnseen(hero);
-	}
-
-	// teleportInNonRegularLevel moved to ScrollEffects
-
-	/** @deprecated Use {@link ScrollEffects#appear} instead. */
-	@Deprecated
-	public static void appear( Char ch, int pos ) {
-		ScrollEffects.appear(ch, pos);
-	}
-
-	/** @deprecated Use {@link ScrollEffects#appearVFX} instead. */
-	@Deprecated
-	public static void appearVFX( Char ch ){
-		ScrollEffects.appearVFX(ch);
 	}
 
 	@Override

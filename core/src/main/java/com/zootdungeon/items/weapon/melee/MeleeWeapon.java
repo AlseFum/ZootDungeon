@@ -42,7 +42,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.KindOfWeapon;
 import com.zootdungeon.items.rings.RingOfForce;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
@@ -230,7 +230,7 @@ public class MeleeWeapon extends Weapon {
 				tracker.detach();
 				Charger charger = Buff.affect(hero, Charger.class);
 				charger.gainCharge(hero.pointsInTalent(Talent.VARIED_CHARGE) / 6f);
-				ScrollEffects.charge(hero);
+				ItemEffects.charge(hero);
 			}
 		}
 		if (hero.hasTalent(Talent.COMBINED_LETHALITY)) {

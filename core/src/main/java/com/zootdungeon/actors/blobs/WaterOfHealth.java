@@ -17,7 +17,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.Waterskin;
 import com.zootdungeon.items.potions.PotionOfHealing;
 import com.zootdungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.VialOfBlood;
 import com.zootdungeon.journal.Notes.Landmark;
 import com.zootdungeon.messages.Messages;
@@ -69,8 +69,8 @@ public class WaterOfHealth extends WellWater {
 			CellEmitter.get( pos ).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
 			Sample.INSTANCE.play( Assets.Sounds.DRINK );
 			return item;
-		} else if (ScrollEffects.uncursable(item)) {
-			if (ScrollEffects.uncurse( null, item )){
+		} else if (ItemEffects.uncursable(item)) {
+			if (ItemEffects.uncurse( null, item )){
 				CellEmitter.get( pos ).start( ShadowParticle.UP, 0.05f, 10 );
 			}
 			Sample.INSTANCE.play( Assets.Sounds.DRINK );

@@ -26,7 +26,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
@@ -224,7 +224,7 @@ public class GitanoCard extends Item {
 			default: {
 				Mob spadeTarget = randomVisibleEnemy(hero);
 				if (rank == 1) {
-					ScrollEffects.teleportChar(hero);
+					ItemEffects.teleportChar(hero);
 					applyFlavourBuff(hero, Invisibility.class, 5f);
 					return new CardOutcome(cardName, SpellSprite.VISION, Messages.get(this, "eff_spade_ace"));
 				}
@@ -269,7 +269,7 @@ public class GitanoCard extends Item {
 
 		switch (index) {
 			case 0:
-				ScrollEffects.teleportChar(hero);
+				ItemEffects.teleportChar(hero);
 				applyFlavourBuff(hero, Invisibility.class, 8f);
 				return new CardOutcome(cardName, SpellSprite.VISION, Messages.get(this, "eff_major_0"));
 			case 1:

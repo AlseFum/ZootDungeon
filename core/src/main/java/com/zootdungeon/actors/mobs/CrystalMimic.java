@@ -36,7 +36,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.rings.Ring;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.MimicTooth;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.messages.Messages;
@@ -138,7 +138,7 @@ public class CrystalMimic extends Mimic {
 			}
 
 			if (!candidates.isEmpty()){
-				ScrollEffects.appear(enemy, Random.element(candidates));
+				ItemEffects.appear(enemy, Random.element(candidates));
 			}
 
 			if (alignment == Alignment.ENEMY) state = FLEEING;

@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -152,10 +153,10 @@ public class WandOfFireblast extends DamageWand {
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
 		//acts like blazing enchantment
-		new WandEffects.FireBlastEnchantment().proc(staff, attacker, defender, damage);
+		new ItemEffects.FireBlastEnchantment().proc(staff, attacker, defender, damage);
 	}
 
-	// FireBlastOnHit moved to WandEffects.FireBlastEnchantment
+	// FireBlastOnHit moved to ItemEffects.FireBlastEnchantment
 
 	@Override
 	public void fx(Ballistica bolt, Callback callback) {
@@ -194,7 +195,7 @@ public class WandOfFireblast extends DamageWand {
 	}
 
 	@Override
-	protected int chargesPerCast() {
+	public int chargesPerCast() {
 		if (cursed ||
 				(charger != null && charger.target != null && charger.target.buff(WildMagic.WildMagicTracker.class) != null)){
 			return 1;

@@ -32,7 +32,7 @@ import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Honeypot;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 
@@ -49,7 +49,7 @@ public class TeleportationTrap extends Trap {
 		for (int i : PathFinder.NEIGHBOURS9){
 			Char ch = Actor.findChar(pos + i);
 			if (ch != null){
-				if (ScrollEffects.teleportChar(ch)) {
+				if (ItemEffects.teleportChar(ch)) {
 					if (ch instanceof Mob && ((Mob) ch).state == ((Mob) ch).HUNTING) {
 						((Mob) ch).state = ((Mob) ch).WANDERING;
 					}

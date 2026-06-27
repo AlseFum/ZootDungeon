@@ -27,7 +27,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.items.artifacts.TalismanOfForesight;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.BArray;
@@ -94,7 +94,7 @@ public class DisplacingDart extends TippedDart {
 			}
 			
 			if (chosenPos != -1){
-				ScrollEffects.appear( defender, chosenPos );
+				ItemEffects.appear( defender, chosenPos );
 				Dungeon.level.occupyCell(defender );
 				if (defender == Dungeon.hero){
 					Dungeon.observe();

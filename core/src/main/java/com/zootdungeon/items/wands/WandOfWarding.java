@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -113,7 +114,7 @@ public class WandOfWarding extends Wand {
 	
 	@Override
 	public void onZap(Ballistica bolt) {
-		WandEffects.applyWardingZap(bolt, buffedLvl(), wardAvailable);
+		ItemEffects.applyWardingZap(bolt, buffedLvl(), wardAvailable);
 	}
 
 	@Override
@@ -132,7 +133,7 @@ public class WandOfWarding extends Wand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyWardingOnHit(buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyWardingOnHit(buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	@Override
@@ -166,7 +167,7 @@ public class WandOfWarding extends Wand {
 	public static class Ward extends NPC {
 
 		public int tier = 1;
-		int wandLevel = 1; // package-private for WandEffects
+		public int wandLevel = 1; // public for ItemEffects
 
 		public int totalZaps = 0;
 

@@ -40,9 +40,8 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.quest.DarkGold;
 import com.zootdungeon.items.quest.Pickaxe;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.mechanics.Ballistica;
@@ -470,12 +469,12 @@ public class GnollGeomancer extends Mob {
 
 					if (!candidates.isEmpty()){
 						int newSapperPos = Random.element(candidates);
-						ScrollEffects.appear(closest, newSapperPos);
+						ItemEffects.appear(closest, newSapperPos);
 						closest.spawnPos = newSapperPos;
 						candidates.remove((Integer)newSapperPos);
 
 						if (guard instanceof GnollGuard && !candidates.isEmpty()){
-							ScrollEffects.appear((GnollGuard)guard, Random.element(candidates));
+							ItemEffects.appear((GnollGuard)guard, Random.element(candidates));
 						}
 
 					}
@@ -716,7 +715,7 @@ public class GnollGeomancer extends Mob {
 
 							if (!knockedChars.contains(ch) && rockPath.path.size() > rockPath.dist+1) {
 								Ballistica trajectory = new Ballistica(ch.pos, rockPath.path.get(rockPath.dist + 1), Ballistica.MAGIC_BOLT);
-								WandEffects.knockback(ch, trajectory, 1, false, false, source);
+								ItemEffects.knockback(ch, trajectory, 1, false, false, source);
 								knockedChars.add(ch);
 							}
 						} else if (ch == null) {

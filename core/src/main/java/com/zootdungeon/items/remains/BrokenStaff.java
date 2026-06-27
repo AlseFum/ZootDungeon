@@ -24,7 +24,7 @@ package com.zootdungeon.items.remains;
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
@@ -37,7 +37,7 @@ public class BrokenStaff extends RemainsItem {
 	@Override
 	protected void doEffect(Hero hero) {
 		hero.belongings.charge(1f);
-		ScrollEffects.charge(hero);
+		ItemEffects.charge(hero);
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 	}
 

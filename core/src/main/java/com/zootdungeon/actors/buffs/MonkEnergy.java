@@ -35,7 +35,7 @@ import com.zootdungeon.actors.mobs.YogDzewa;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.rings.RingOfForce;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.features.Door;
@@ -575,7 +575,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 							//trim it to just be the part that goes past them
 							trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 							//knock them back along that ballistica
-							WandEffects.knockback(enemy, trajectory, 6, true, false, hero);
+							ItemEffects.knockback(enemy, trajectory, 6, true, false, hero);
 
 							if (trajectory.dist > 0 && enemy.isActive()) {
 								Buff.affect(enemy, Paralysis.class, Math.min( 6, trajectory.dist));
@@ -596,7 +596,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 									//trim it to just be the part that goes past them
 									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 									//knock them back along that ballistica
-									WandEffects.knockback(ch, trajectory, 6, true, false, hero);
+									ItemEffects.knockback(ch, trajectory, 6, true, false, hero);
 
 									if (trajectory.dist > 0 && enemy.isActive()) {
 										Buff.affect(ch, Paralysis.class, Math.min( 6, trajectory.dist));

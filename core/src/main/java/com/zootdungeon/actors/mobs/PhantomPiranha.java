@@ -28,7 +28,7 @@ import com.zootdungeon.actors.buffs.Corruption;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
 import com.zootdungeon.items.food.PhantomMeat;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.PhantomPiranhaSprite;
@@ -68,7 +68,7 @@ public class PhantomPiranha extends Piranha {
 						}
 					}
 					if (!candidates.isEmpty()) {
-						ScrollEffects.appear(this, Random.element(candidates));
+						ItemEffects.appear(this, Random.element(candidates));
 						aggro(dmgSource);
 					} else {
 						teleportAway();
@@ -112,10 +112,10 @@ public class PhantomPiranha extends Piranha {
 
 		if (!outFOVCandidates.isEmpty()){
 			if (Dungeon.level.heroFOV[pos]) GLog.i(Messages.get(this, "teleport_away"));
-			ScrollEffects.appear(this, Random.element(outFOVCandidates));
+			ItemEffects.appear(this, Random.element(outFOVCandidates));
 			return true;
 		} else if (!inFOVCandidates.isEmpty()){
-			ScrollEffects.appear(this, Random.element(inFOVCandidates));
+			ItemEffects.appear(this, Random.element(inFOVCandidates));
 			return true;
 		}
 

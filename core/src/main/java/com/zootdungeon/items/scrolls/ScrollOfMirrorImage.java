@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import java.util.ArrayList;
 
@@ -47,7 +48,7 @@ public class ScrollOfMirrorImage extends Scroll {
 	@Override
 	public void doRead() {
 		detach(curUser.belongings.backpack);
-		if ( spawnImages(curUser, NIMAGES) > 0){
+		if ( ItemEffects.spawnImages(curUser, NIMAGES) > 0){
 			GLog.i(Messages.get(this, "copies"));
 		} else {
 			GLog.i(Messages.get(this, "no_copies"));
@@ -59,17 +60,6 @@ public class ScrollOfMirrorImage extends Scroll {
 		readAnimation();
 	}
 
-	/** @deprecated Use {@link ScrollEffects#spawnImages} instead. */
-	@Deprecated
-	public static int spawnImages( Hero hero, int nImages ){
-		return ScrollEffects.spawnImages(hero, nImages);
-	}
-
-	/** @deprecated Use {@link ScrollEffects#spawnImages} instead. */
-	@Deprecated
-	public static int spawnImages( Hero hero, int pos, int nImages ){
-		return ScrollEffects.spawnImages(hero, pos, nImages);
-	}
 
 	@Override
 	public int value() {

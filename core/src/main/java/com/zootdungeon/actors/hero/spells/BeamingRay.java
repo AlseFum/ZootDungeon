@@ -35,7 +35,7 @@ import com.zootdungeon.actors.mobs.npcs.DirectableAlly;
 import com.zootdungeon.effects.Beam;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -143,7 +143,7 @@ public class BeamingRay extends TargetedClericSpell {
 		}
 
 		hero.sprite.zap(telePos);
-		ScrollEffects.appear(ally, telePos);
+		ItemEffects.appear(ally, telePos);
 
 		if (chTarget == null){
 			for (Char ch : Actor.chars()){

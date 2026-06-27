@@ -124,7 +124,7 @@ import com.zootdungeon.items.rings.RingOfTenacity;
 import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfChallenge;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.ThirteenLeafClover;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfLivingEarth;
@@ -2993,7 +2993,7 @@ public class Hero extends Char {
 
                             Dungeon.level.discover(curr);
 
-                            ScrollEffects.discover(curr);
+                            ItemEffects.discover(curr);
 
                             if (fieldOfView[curr]) {
                                 smthFound = true;

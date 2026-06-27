@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Challenges;
@@ -36,7 +37,6 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.RainbowParticle;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
-import com.zootdungeon.items.scrolls.ScrollEffects;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.mechanics.Ballistica;
@@ -68,7 +68,7 @@ public class WandOfPrismaticLight extends DamageWand {
 
 	@Override
 	public void onZap(Ballistica beam) {
-		WandEffects.revealMapPrismatic(beam);
+		ItemEffects.revealMapPrismatic(beam);
 		
 		if (Dungeon.level.viewDistance < 6 ){
 			if (Dungeon.isChallenged(Challenges.DARKNESS)){
@@ -81,7 +81,7 @@ public class WandOfPrismaticLight extends DamageWand {
 		Char ch = Actor.findChar(beam.collisionPos);
 		if (ch != null){
 			wandProc(ch, chargesPerCast());
-			WandEffects.applyPrismaticDamage(ch, buffedLvl(), this);
+			ItemEffects.applyPrismaticDamage(ch, buffedLvl(), this);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class WandOfPrismaticLight extends DamageWand {
 					Dungeon.level.discover( cell );
 
 					GameScene.discoverTile( cell, terr );
-					ScrollEffects.discover(cell);
+					ItemEffects.discover(cell);
 
 					noticed = true;
 				}
@@ -162,7 +162,7 @@ public class WandOfPrismaticLight extends DamageWand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyPrismaticOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyPrismaticOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	@Override

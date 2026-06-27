@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -86,8 +87,8 @@ public class WandOfCorruption extends Wand {
 	// This is because the wand of corruption considers them to be a certain level of harmful
 	// for the purposes of reducing resistance, but does not actually apply them itself
 	
-	static final float MINOR_DEBUFF_WEAKEN = 1/4f; // package-private for WandEffects
-	static final HashMap<Class<? extends Buff>, Float> MINOR_DEBUFFS = new HashMap<>(); // package-private for WandEffects
+	public static final float MINOR_DEBUFF_WEAKEN = 1/4f; // public for ItemEffects
+	public static final HashMap<Class<? extends Buff>, Float> MINOR_DEBUFFS = new HashMap<>(); // public for ItemEffects
 	static{
 		MINOR_DEBUFFS.put(Weakness.class,       2f);
 		MINOR_DEBUFFS.put(Vulnerable.class,     2f);
@@ -105,8 +106,8 @@ public class WandOfCorruption extends Wand {
 		MINOR_DEBUFFS.put(Poison.class,         0f);
 	}
 
-	static final float MAJOR_DEBUFF_WEAKEN = 1/2f; // package-private for WandEffects
-	static final HashMap<Class<? extends Buff>, Float> MAJOR_DEBUFFS = new HashMap<>(); // package-private for WandEffects
+	public static final float MAJOR_DEBUFF_WEAKEN = 1/2f; // public for ItemEffects
+	public static final HashMap<Class<? extends Buff>, Float> MAJOR_DEBUFFS = new HashMap<>(); // public for ItemEffects
 	static{
 		MAJOR_DEBUFFS.put(Amok.class,           3f);
 		MAJOR_DEBUFFS.put(Slow.class,           2f);
@@ -237,7 +238,7 @@ public class WandOfCorruption extends Wand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyCorruptionOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyCorruptionOnHit(defender, buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	@Override

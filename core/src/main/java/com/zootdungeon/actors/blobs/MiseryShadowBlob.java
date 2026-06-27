@@ -12,7 +12,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.BlobEmitter;
 import com.zootdungeon.effects.particles.ShadowBlobParticle;
 import com.zootdungeon.messages.Messages;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.scenes.GameScene;
 import com.watabou.utils.Random;
 
@@ -98,7 +98,7 @@ public class MiseryShadowBlob extends Blob {
 			hero.HP -= hpCost;
 		}
 
-		ScrollEffects.appear(hero, cell);
+		ItemEffects.appear(hero, cell);
 		Dungeon.level.occupyCell(hero);
 		Dungeon.observe();
 		GameScene.updateFog();

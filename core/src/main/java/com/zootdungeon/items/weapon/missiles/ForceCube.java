@@ -27,7 +27,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.traps.TenguDartTrap;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -80,7 +80,7 @@ public class ForceCube extends MissileWeapon {
 			}
 		}
 		
-		WandEffects.blastWave(cell);
+		ItemEffects.blastWave(cell);
 		Sample.INSTANCE.play( Assets.Sounds.BLAST );
 	}
 }

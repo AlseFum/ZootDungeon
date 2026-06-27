@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
@@ -71,7 +72,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 	}
 
 	public Item upgradeItem( Item item ){
-		ScrollEffects.upgradeVFX( curUser );
+		ItemEffects.upgradeVFX( curUser );
 
 		Degrade.detach( curUser, Degrade.class );
 
@@ -87,9 +88,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
 			item = w.upgrade();
 
 			if (w.cursedKnown && hadCursedEnchant && !w.hasCurseEnchant()){
-				ScrollEffects.removeCurseVFX( Dungeon.hero );
+				ItemEffects.removeCurseVFX( Dungeon.hero );
 			} else if (w.cursedKnown && wasCursed && !w.cursed){
-				ScrollEffects.weakenCurseVFX( Dungeon.hero );
+				ItemEffects.weakenCurseVFX( Dungeon.hero );
 			}
 			if (wasHardened && !w.enchantHardened){
 				GLog.w( Messages.get(Weapon.class, "hardening_gone") );
@@ -107,9 +108,9 @@ public class ScrollOfUpgrade extends InventoryScroll {
 			item = a.upgrade();
 
 			if (a.cursedKnown && hadCursedGlyph && !a.hasCurseGlyph()){
-				ScrollEffects.removeCurseVFX( Dungeon.hero );
+				ItemEffects.removeCurseVFX( Dungeon.hero );
 			} else if (a.cursedKnown && wasCursed && !a.cursed){
-				ScrollEffects.weakenCurseVFX( Dungeon.hero );
+				ItemEffects.weakenCurseVFX( Dungeon.hero );
 			}
 			if (wasHardened && !a.glyphHardened){
 				GLog.w( Messages.get(Armor.class, "hardening_gone") );
@@ -123,7 +124,7 @@ public class ScrollOfUpgrade extends InventoryScroll {
 			item = item.upgrade();
 
 			if (item.cursedKnown && wasCursed && !item.cursed){
-				ScrollEffects.removeCurseVFX( Dungeon.hero );
+				ItemEffects.removeCurseVFX( Dungeon.hero );
 			}
 
 		} else {
@@ -137,24 +138,6 @@ public class ScrollOfUpgrade extends InventoryScroll {
 		Catalog.countUse(item.getClass());
 
 		return item;
-	}
-	
-	/** @deprecated Use {@link ScrollEffects#upgradeVFX} instead. */
-	@Deprecated
-	public static void upgrade( Hero hero ) {
-		ScrollEffects.upgradeVFX(hero);
-	}
-
-	/** @deprecated Use {@link ScrollEffects#weakenCurseVFX} instead. */
-	@Deprecated
-	public static void weakenCurse( Hero hero ){
-		ScrollEffects.weakenCurseVFX(hero);
-	}
-
-	/** @deprecated Use {@link ScrollEffects#removeCurseVFX} instead. */
-	@Deprecated
-	public static void removeCurse( Hero hero ){
-		ScrollEffects.removeCurseVFX(hero);
 	}
 	
 	@Override

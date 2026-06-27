@@ -34,7 +34,7 @@ import com.zootdungeon.effects.BlobEmitter;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.mechanics.Ballistica;
@@ -236,7 +236,7 @@ public class WallOfLight extends TargetedClericSpell {
 
 			Char ch = Actor.findChar(pos);
 			if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-				WandEffects.knockback(ch, new Ballistica(pos, pos+knockbackDIR, Ballistica.PROJECTILE), 1, false, false, WallOfLight.INSTANCE);
+				ItemEffects.knockback(ch, new Ballistica(pos, pos+knockbackDIR, Ballistica.PROJECTILE), 1, false, false, WallOfLight.INSTANCE);
 				Buff.affect(ch, Paralysis.class, ch.cooldown());
 			}
 		}

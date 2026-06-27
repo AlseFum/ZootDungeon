@@ -8,7 +8,7 @@ import com.zootdungeon.actors.blobs.Fire;
 import com.zootdungeon.actors.buffs.Burning;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.audio.Sample;
@@ -73,7 +73,7 @@ public class GeyserTrap extends Trap {
 					//trim it to just be the part that goes past them
 					trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 					//knock them back along that ballistica
-					WandEffects.knockback(ch, trajectory, 2, true, true, source);
+					ItemEffects.knockback(ch, trajectory, 2, true, true, source);
 				}
 			}
 		}
@@ -115,7 +115,7 @@ public class GeyserTrap extends Trap {
 				//trace a ballistica in the direction of our target
 				Ballistica trajectory = new Ballistica(pos, targetpos, Ballistica.MAGIC_BOLT);
 				//knock them back along that ballistica
-				WandEffects.knockback(ch, trajectory, 2, true, true, source);
+				ItemEffects.knockback(ch, trajectory, 2, true, true, source);
 			}
 		}
 	}

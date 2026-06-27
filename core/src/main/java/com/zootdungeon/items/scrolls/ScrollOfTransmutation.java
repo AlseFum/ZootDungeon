@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Challenges;
 import com.zootdungeon.Dungeon;

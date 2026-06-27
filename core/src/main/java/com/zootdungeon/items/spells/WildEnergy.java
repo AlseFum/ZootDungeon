@@ -30,7 +30,7 @@ import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.quest.MetalShard;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.CursedWand;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.mechanics.Ballistica;
@@ -60,7 +60,7 @@ public class WildEnergy extends TargetedSpell {
 	protected void affectTarget(Ballistica bolt, final Hero hero) {
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
-		ScrollEffects.charge(hero);
+		ItemEffects.charge(hero);
 		SpellSprite.show(hero, SpellSprite.CHARGE);
 
 		hero.belongings.charge(1f);

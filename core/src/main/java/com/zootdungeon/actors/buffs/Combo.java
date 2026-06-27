@@ -32,7 +32,7 @@ import com.zootdungeon.actors.mobs.DwarfKing;
 import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.items.BrokenSeal;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.mechanics.Damage;
 import com.zootdungeon.messages.Messages;
@@ -388,14 +388,14 @@ public class Combo extends Buff implements ActionIndicator.Action {
 						}
 					}
 					if (enemy.pos == oldPos) {
-						WandEffects.knockback(enemy, trajectory, dist, true, false, hero);
+						ItemEffects.knockback(enemy, trajectory, dist, true, false, hero);
 					}
 					break;
 				case PARRY:
 					hit(enemy);
 					break;
 				case CRUSH:
-					WandEffects.blastWave(enemy.pos);
+					ItemEffects.blastWave(enemy.pos);
 					PathFinder.buildDistanceMap(target.pos, BArray.not(Dungeon.level.solid, null), 3);
 					for (Char ch : Actor.chars()) {
 						if (ch != enemy && ch.alignment == Char.Alignment.ENEMY

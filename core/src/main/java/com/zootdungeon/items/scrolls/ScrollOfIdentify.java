@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Badges;
 import com.zootdungeon.effects.Identification;
@@ -50,14 +51,9 @@ public class ScrollOfIdentify extends InventoryScroll {
 	protected void onItemSelected( Item item ) {
 		curUser.sprite.parent.add( new Identification( curUser.sprite.center().offset( 0, -16 ) ) );
 
-		ScrollEffects.IDItem(item);
+		ItemEffects.IDItem(item);
 	}
 
-	/** @deprecated Use {@link ScrollEffects#IDItem} instead. */
-	@Deprecated
-	public static void IDItem( Item item ){
-		ScrollEffects.IDItem(item);
-	}
 	
 	@Override
 	public int value() {

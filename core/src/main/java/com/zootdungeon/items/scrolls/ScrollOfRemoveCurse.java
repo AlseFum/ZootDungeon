@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -79,20 +80,15 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		return uncursable(item);
+		return ItemEffects.uncursable(item);
 	}
 
-	/** @deprecated Use {@link ScrollEffects#uncursable} instead. */
-	@Deprecated
-	public static boolean uncursable( Item item ){
-		return ScrollEffects.uncursable(item);
-	}
 
 	@Override
 	protected void onItemSelected(Item item) {
 		new Flare( 6, 32 ).show( curUser.sprite, 2f );
 
-		boolean procced = ScrollEffects.uncurse( curUser, item );
+		boolean procced = ItemEffects.uncurse( curUser, item );
 
 		if (curUser.buff(Degrade.class) != null) {
 			Degrade.detach(curUser, Degrade.class);
@@ -104,12 +100,6 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 		} else {
 			GLog.i( Messages.get(this, "not_cleansed") );
 		}
-	}
-
-	/** @deprecated Use {@link ScrollEffects#uncurse} instead. */
-	@Deprecated
-	public static boolean uncurse( Hero hero, Item... items ) {
-		return ScrollEffects.uncurse(hero, items);
 	}
 	
 	@Override

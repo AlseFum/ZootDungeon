@@ -26,7 +26,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.scenes.GameScene;
 import com.watabou.utils.PathFinder;
@@ -98,7 +98,7 @@ public class SummoningTrap extends Trap {
 				Bestiary.countEncounter(t.getClass());
 				t.activate();
 			}
-			ScrollEffects.appear(mob, mob.pos);
+			ItemEffects.appear(mob, mob.pos);
 			Dungeon.level.occupyCell(mob);
 		}
 

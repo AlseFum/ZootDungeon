@@ -35,7 +35,7 @@ import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.particles.RainbowParticle;
 import com.zootdungeon.items.potions.PotionOfExperience;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -124,7 +124,7 @@ public class Pasty extends Food {
 				Sample.INSTANCE.play(Assets.Sounds.MIMIC);
 			case EASTER:
 				ArtifactRecharge.chargeArtifacts(hero, 2f);
-				ScrollEffects.charge( hero );
+				ItemEffects.charge( hero );
 				break;
 			case PRIDE:
 				Char target = null;
@@ -161,7 +161,7 @@ public class Pasty extends Food {
 				break;
 			case WINTER_HOLIDAYS:
 				hero.belongings.charge(0.5f); //2 turns worth
-				ScrollEffects.charge( hero );
+				ItemEffects.charge( hero );
 				break;
 			case NEW_YEARS:
 				//shields for 10% of max hp, min of 5

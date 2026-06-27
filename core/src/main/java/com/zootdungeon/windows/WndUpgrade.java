@@ -28,7 +28,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.rings.Ring;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.spells.MagicalInfusion;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.Weapon;
@@ -401,7 +401,7 @@ public class WndUpgrade extends Window {
 			protected void onClick() {
 				super.onClick();
 
-				ScrollEffects.upgradeVFX(Dungeon.hero);
+				ItemEffects.upgradeVFX(Dungeon.hero);
 
 				Item upgraded = toUpgrade;
 				if (upgrader instanceof ScrollOfUpgrade){

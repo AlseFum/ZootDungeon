@@ -6,7 +6,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.actors.entities.CellEntitySprite;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
@@ -78,7 +78,7 @@ public class ContactMine extends Mine {
         int dir = PathFinder.NEIGHBOURS8[Random.Int(PathFinder.NEIGHBOURS8.length)];
         int aim = victim.pos + dir;
         Ballistica trajectory = new Ballistica(victim.pos, aim, Ballistica.MAGIC_BOLT);
-        WandEffects.knockback(victim, trajectory, knockbackPower(), false, true, this);
+        ItemEffects.knockback(victim, trajectory, knockbackPower(), false, true, this);
     }
 
     @Override

@@ -54,10 +54,9 @@ import com.zootdungeon.effects.SpellSprite;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
 import com.zootdungeon.items.wands.WandOfCorrosion;
 import com.zootdungeon.items.wands.WandOfCorruption;
 import com.zootdungeon.items.wands.WandOfDisintegration;
@@ -249,7 +248,7 @@ public class ElementalBlast extends ArmorAbility {
 										Dungeon.level.discover(c);
 
 										GameScene.discoverTile(c, terr);
-										ScrollEffects.discover(c);
+										ItemEffects.discover(c);
 
 									}
 								}
@@ -306,7 +305,7 @@ public class ElementalBlast extends ArmorAbility {
 										Ballistica aim = new Ballistica(hero.pos, mob.pos, Ballistica.WONT_STOP);
 										int knockback = aoeSize + 1 - (int)Dungeon.level.trueDistance(hero.pos, mob.pos);
 										knockback *= effectMulti;
-										WandEffects.knockback(mob,
+										ItemEffects.knockback(mob,
 												new Ballistica(mob.pos, aim.collisionPos, Ballistica.MAGIC_BOLT),
 												knockback,
 												true,

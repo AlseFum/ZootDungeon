@@ -36,7 +36,7 @@ import com.zootdungeon.actors.mobs.npcs.DirectableAlly;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.ui.BuffIndicator;
@@ -172,7 +172,7 @@ public class Stasis extends ClericSpell {
 				Buff.prolong(Dungeon.hero, LifeLink.class, stasisAlly.buff(LifeLink.class).cooldown()).object = stasisAlly.id();
 			}
 
-			ScrollEffects.appear(stasisAlly, stasisAlly.pos);
+			ItemEffects.appear(stasisAlly, stasisAlly.pos);
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 			return super.act();

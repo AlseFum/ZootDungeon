@@ -11,7 +11,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.messages.Messages;
@@ -274,7 +274,7 @@ public class DeployablewCrossBow extends Weapon {
 			Avatar mob = new Avatar(hero, (DeployablewCrossBow) detached, target, facing);
 			mob.pos = target;
 			GameScene.add(mob);
-			ScrollEffects.appear(mob, target);
+			ItemEffects.appear(mob, target);
 			Dungeon.level.occupyCell(mob);
 
 			DeployedTurretBuff nb = Buff.affect(hero, DeployedTurretBuff.class);

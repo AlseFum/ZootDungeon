@@ -10,7 +10,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Burning;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.wands.DamageWand;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
@@ -78,7 +78,7 @@ public class WandOfEyjafjalla extends DamageWand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		new WandEffects.FireBlastEnchantment().proc(staff, attacker, defender, damage);
+		new ItemEffects.FireBlastEnchantment().proc(staff, attacker, defender, damage);
 	}
 
 	@Override

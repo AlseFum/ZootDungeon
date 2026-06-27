@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
@@ -44,7 +45,7 @@ public class ScrollOfRecharging extends Scroll {
 
 		detach(curUser.belongings.backpack);
 		Buff.affect(curUser, Recharging.class, Recharging.DURATION);
-		charge(curUser);
+		ItemEffects.charge(curUser);
 
 		Sample.INSTANCE.play( Assets.Sounds.READ );
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
@@ -56,11 +57,6 @@ public class ScrollOfRecharging extends Scroll {
 		readAnimation();
 	}
 	
-	/** @deprecated Use {@link ScrollEffects#charge} instead. */
-	@Deprecated
-	public static void charge( Char user ) {
-		ScrollEffects.charge(user);
-	}
 	
 	@Override
 	public int value() {

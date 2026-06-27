@@ -35,7 +35,7 @@ import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.items.rings.Ring;
 import com.zootdungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.ShardOfOblivion;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.Weapon;
@@ -381,7 +381,7 @@ public class Belongings implements Iterable<Item> {
 	}
 	
 	public void uncurseEquipped() {
-		ScrollEffects.uncurse( owner, armor(), weapon(), artifact(), misc(), ring(), secondWep());
+		ItemEffects.uncurse( owner, armor(), weapon(), artifact(), misc(), ring(), secondWep());
 	}
 	
 	public Item randomUnequipped() {

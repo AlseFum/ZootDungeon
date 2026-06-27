@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Challenges;
@@ -223,7 +224,7 @@ public class WandOfLivingEarth extends DamageWand {
 	
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyLivingEarthOnHit(attacker, damage, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyLivingEarthOnHit(attacker, damage, buffedLvl(), procChanceMultiplier(attacker));
 	}
 	
 	@Override
@@ -248,10 +249,10 @@ public class WandOfLivingEarth extends DamageWand {
 			type = buffType.POSITIVE;
 		}
 
-		int wandLevel; // package-private for WandEffects
-		int armor; // package-private for WandEffects
+		int wandLevel; // public for ItemEffects
+		int armor; // public for ItemEffects
 
-		float powerOfManyTurns = 0; // package-private for WandEffects
+		float powerOfManyTurns = 0; // public for ItemEffects
 
 		@Override
 		public boolean act() {
@@ -266,13 +267,13 @@ public class WandOfLivingEarth extends DamageWand {
 			return true;
 		}
 
-		void addArmor(int wandLevel, int toAdd ){ // package-private for WandEffects
+		public void addArmor(int wandLevel, int toAdd ){ // public for ItemEffects
 			this.wandLevel = Math.max(this.wandLevel, wandLevel);
 			armor += toAdd;
 			armor = Math.min(armor, 2*armorToGuardian());
 		}
 
-		int armorToGuardian(){ // package-private for WandEffects
+		int armorToGuardian(){ // public for ItemEffects
 			return 8 + wandLevel*4;
 		}
 

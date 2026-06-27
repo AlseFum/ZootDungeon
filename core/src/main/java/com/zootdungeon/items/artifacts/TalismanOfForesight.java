@@ -37,7 +37,7 @@ import com.zootdungeon.effects.CheckedCell;
 import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.rings.RingOfEnergy;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.mechanics.Ballistica;
@@ -178,7 +178,7 @@ public class TalismanOfForesight extends Artifact {
 						int oldValue = Dungeon.level.map[cell];
 						GameScene.discoverTile(cell, oldValue);
 						Dungeon.level.discover( cell );
-						ScrollEffects.discover(cell);
+						ItemEffects.discover(cell);
 						noticed = true;
 
 						if (oldValue == Terrain.SECRET_TRAP){

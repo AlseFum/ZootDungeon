@@ -30,7 +30,7 @@ import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
@@ -115,7 +115,7 @@ public class LongRangeWeapon extends MeleeWeapon{
                         //trim it to just be the part that goes past them
                         trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
                         //knock them back along that ballistica
-                        WandEffects.knockback(enemy, trajectory, 1, true, false, hero);
+                        ItemEffects.knockback(enemy, trajectory, 1, true, false, hero);
                     } else if (!enemy.isAlive()) {
                         wep.onAbilityKill(hero, enemy);
                     }

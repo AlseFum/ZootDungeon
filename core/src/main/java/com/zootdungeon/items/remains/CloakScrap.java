@@ -25,7 +25,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.actors.buffs.ArtifactRecharge;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
@@ -38,7 +38,7 @@ public class CloakScrap extends RemainsItem {
 	@Override
 	protected void doEffect(Hero hero) {
 		ArtifactRecharge.chargeArtifacts(hero, 4f);
-		ScrollEffects.charge(hero);
+		ItemEffects.charge(hero);
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 	}
 }

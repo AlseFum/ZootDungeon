@@ -1,4 +1,5 @@
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;

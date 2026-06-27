@@ -39,7 +39,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShaftParticle;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.MobSprite;
@@ -109,7 +109,7 @@ public class SpiritHawk extends ArmorAbility {
 				ally.pos = Random.element(spawnPoints);
 				GameScene.add(ally);
 
-				ScrollEffects.appear(ally, ally.pos);
+				ItemEffects.appear(ally, ally.pos);
 				Dungeon.observe();
 
 				Invisibility.dispel();

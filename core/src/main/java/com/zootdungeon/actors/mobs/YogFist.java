@@ -48,7 +48,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.LeafParticle;
 import com.zootdungeon.items.armor.glyphs.Viscosity;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.crowdWeapon.Sickle;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
@@ -540,7 +540,7 @@ public abstract class YogFist extends Mob {
 						|| Dungeon.level.solid[i]
 						|| Actor.findChar(i) != null
 						|| PathFinder.getStep(i, Dungeon.level.exit(), Dungeon.level.passable) == -1);
-				ScrollEffects.appear(this, i);
+				ItemEffects.appear(this, i);
 				state = WANDERING;
 				GameScene.flash(0x80FFFFFF);
 				GLog.w( Messages.get( this, "teleport" ));
@@ -613,7 +613,7 @@ public abstract class YogFist extends Mob {
 						|| Dungeon.level.solid[i]
 						|| Actor.findChar(i) != null
 						|| PathFinder.getStep(i, Dungeon.level.exit(), Dungeon.level.passable) == -1);
-				ScrollEffects.appear(this, i);
+				ItemEffects.appear(this, i);
 				state = WANDERING;
 				GameScene.flash(0, false);
 				GLog.w( Messages.get( this, "teleport" ));

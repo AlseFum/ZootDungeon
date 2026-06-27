@@ -6,7 +6,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.actors.Entity;
 
 /**
@@ -19,7 +19,7 @@ import com.zootdungeon.actors.Entity;
  *       {@link #isEnemy(Char)} 判断）。这样即使英雄/宠物踩到也不会自爆。</li>
  *   <li><b>单次触发</b>：{@link #detonate()} 自带 {@link #detonated} 幂等保护，
  *       被连锁引爆、同回合多源触发时不会重复结算。</li>
- *   <li><b>视觉 / 音效</b>：默认播放 {@link WandEffects#blastWave(int, float)}
+ *   <li><b>视觉 / 音效</b>：默认播放 {@link ItemEffects#blastWave(int, float)}
  *       + {@link Assets.Sounds#BLAST}，子类不需要再重复播放。</li>
  *   <li><b>移除</b>：{@link #detonate()} 结算完毕后自动
  *       {@link #despawn()}，子类只需实现 {@link #onDetonate()}。</li>
@@ -57,14 +57,14 @@ public abstract class Mine extends Entity {
     protected abstract void onDetonate();
 
     /**
-     * 爆炸视觉。默认使用 {@link WandEffects#blastWave(int, float)}
+     * 爆炸视觉。默认使用 {@link ItemEffects#blastWave(int, float)}
      * + 低音量爆炸音效。子类可覆盖以调整半径或禁用（返回前 super 不要调用）。
      */
     protected void playBlastVisual() {
         if (Dungeon.level == null) {
             return;
         }
-        WandEffects.blastWave(pos, blastVisualRadius());
+        ItemEffects.blastWave(pos, blastVisualRadius());
         Sample.INSTANCE.play(Assets.Sounds.BLAST);
     }
 

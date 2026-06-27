@@ -45,7 +45,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShaftParticle;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.WandOfLivingEarth;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -161,7 +161,7 @@ public class PowerOfMany extends ArmorAbility {
 				ch = new LightAlly(hero.lvl);
 				ch.pos = target;
 				GameScene.add((Mob) ch);
-				ScrollEffects.appear(ch, ch.pos);
+				ItemEffects.appear(ch, ch.pos);
 			}
 
 			Buff.affect(ch, PowerBuff.class, 100f);

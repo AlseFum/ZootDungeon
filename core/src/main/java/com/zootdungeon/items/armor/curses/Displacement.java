@@ -24,7 +24,7 @@ package com.zootdungeon.items.armor.curses;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
 
@@ -37,7 +37,7 @@ public class Displacement extends Armor.Glyph {
 
 		float procChance = 1/20f * procChanceMultiplier(defender);
 		if ( Random.Float() < procChance ) {
-			ScrollEffects.teleportChar(defender);
+			ItemEffects.teleportChar(defender);
 			return 0;
 		}
 

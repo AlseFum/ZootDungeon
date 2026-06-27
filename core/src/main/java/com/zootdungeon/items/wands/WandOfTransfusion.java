@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -68,7 +69,7 @@ public class WandOfTransfusion extends DamageWand {
 		return 6 + 2*level;
 	}
 
-	boolean freeCharge = false; // package-private for WandEffects
+	public boolean freeCharge = false; // public for ItemEffects
 
 	@Override
 	public void onZap(Ballistica beam) {
@@ -159,7 +160,7 @@ public class WandOfTransfusion extends DamageWand {
 
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-		WandEffects.applyTransfusionOnHit(this, attacker, defender, buffedLvl(), procChanceMultiplier(attacker));
+		ItemEffects.applyTransfusionOnHit(this, attacker, defender, buffedLvl(), procChanceMultiplier(attacker));
 	}
 
 	@Override

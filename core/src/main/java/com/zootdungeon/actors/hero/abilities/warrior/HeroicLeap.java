@@ -33,7 +33,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.abilities.ArmorAbility;
 import com.zootdungeon.items.armor.ClassArmor;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
@@ -108,7 +108,7 @@ public class HeroicLeap extends ArmorAbility {
 							if (mob.pos == hero.pos + i && hero.hasTalent(Talent.IMPACT_WAVE)){
 								Ballistica trajectory = new Ballistica(mob.pos, mob.pos + i, Ballistica.MAGIC_BOLT);
 								int strength = 1+hero.pointsInTalent(Talent.IMPACT_WAVE);
-								WandEffects.knockback(mob, trajectory, strength, true, true, HeroicLeap.this);
+								ItemEffects.knockback(mob, trajectory, strength, true, true, HeroicLeap.this);
 								if (Random.Int(4) < hero.pointsInTalent(Talent.IMPACT_WAVE)){
 									Buff.prolong(mob, Vulnerable.class, 5f);
 								}
@@ -116,7 +116,7 @@ public class HeroicLeap extends ArmorAbility {
 						}
 					}
 
-					WandEffects.blastWave(dest);
+					ItemEffects.blastWave(dest);
 					PixelScene.shake(2, 0.5f);
 
 					Invisibility.dispel();

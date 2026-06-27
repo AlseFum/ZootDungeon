@@ -50,7 +50,7 @@ import com.zootdungeon.items.artifacts.DriedRose;
 import com.zootdungeon.items.artifacts.LloydsBeacon;
 import com.zootdungeon.items.rings.RingOfForce;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfLightning;
 import com.zootdungeon.journal.Bestiary;
@@ -420,7 +420,7 @@ public class DwarfKing extends Mob {
 				}
 			}
 
-			if (bestPos != enemy.pos) ScrollEffects.appear(furthest, bestPos);
+			if (bestPos != enemy.pos) ItemEffects.appear(furthest, bestPos);
 			yell(Messages.get(this, "teleport_" + Random.IntRange(1, 2)));
 			return true;
 		}
@@ -490,7 +490,7 @@ public class DwarfKing extends Mob {
 			if (HP <= (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 100 : 50)) {
 				HP = (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 100 : 50);
 				sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
-				ScrollEffects.appear(this, CityBossLevel.throne);
+				ItemEffects.appear(this, CityBossLevel.throne);
 				properties.add(Property.IMMOVABLE);
 				phase = 2;
 				summonsMade = 0;

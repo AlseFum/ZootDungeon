@@ -37,7 +37,7 @@ import com.zootdungeon.actors.mobs.npcs.MirrorImage;
 import com.zootdungeon.actors.mobs.npcs.NPC;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundle;
@@ -126,7 +126,7 @@ public class Multiplicity extends Armor.Glyph {
 					if (!spawnPoints.isEmpty()) {
 						m.pos = Random.element(spawnPoints);
 						GameScene.add(m);
-						ScrollEffects.appear(m, m.pos);
+						ItemEffects.appear(m, m.pos);
 					}
 				}
 

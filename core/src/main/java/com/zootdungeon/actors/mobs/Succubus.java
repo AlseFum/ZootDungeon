@@ -37,7 +37,7 @@ import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.scrolls.ScrollOfIdentify;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.SuccubusSprite;
@@ -154,7 +154,7 @@ public class Succubus extends Mob {
 			}
 		}
 		
-		ScrollEffects.appear( this, cell );
+		ItemEffects.appear( this, cell );
 
 		blinkCooldown = Random.IntRange(4, 6);
 		return true;

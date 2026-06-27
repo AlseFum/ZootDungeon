@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -98,10 +99,10 @@ public class WandOfLightning extends DamageWand {
 	@Override
 	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
 		//acts like shocking enchantment
-		new WandEffects.LightningEnchantment().proc(staff, attacker, defender, damage);
+		new ItemEffects.LightningEnchantment().proc(staff, attacker, defender, damage);
 	}
 
-	// LightningOnHit moved to WandEffects.LightningEnchantment
+	// LightningOnHit moved to ItemEffects.LightningEnchantment
 
 	private void arc( Char ch ) {
 

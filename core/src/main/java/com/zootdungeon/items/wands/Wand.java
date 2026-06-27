@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.wands;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
@@ -58,7 +59,6 @@ import com.zootdungeon.items.bags.Bag;
 import com.zootdungeon.items.bags.MagicalHolster;
 import com.zootdungeon.items.rings.RingOfEnergy;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
-import com.zootdungeon.items.scrolls.ScrollEffects;
 import com.zootdungeon.items.trinkets.ShardOfOblivion;
 import com.zootdungeon.items.trinkets.WondrousResin;
 import com.zootdungeon.items.weapon.melee.MagesStaff;
@@ -464,7 +464,7 @@ public abstract class Wand extends Item {
 		return 2;
 	}
 
-	protected int chargesPerCast() {
+	public int chargesPerCast() { // public for ItemEffects
 		return 1;
 	}
 	
@@ -899,7 +899,7 @@ public abstract class Wand extends Item {
 						curWand.curCharges = 0;
 						curUser.sprite.operate(curUser.pos);
 						Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
-						ScrollEffects.charge(curUser);
+						ItemEffects.charge(curUser);
 						updateQuickslot();
 						curUser.spendAndNext(Actor.TICK);
 						return;

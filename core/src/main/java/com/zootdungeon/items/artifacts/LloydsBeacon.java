@@ -32,7 +32,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
@@ -159,7 +159,7 @@ public class LloydsBeacon extends Artifact {
 		} else if (action == AC_RETURN) {
 			
 			if (returnDepth == Dungeon.depth) {
-				ScrollEffects.appear( hero, returnPos );
+				ItemEffects.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
 					if (m.pos == hero.pos){
 						//displace mob
@@ -200,14 +200,14 @@ public class LloydsBeacon extends Artifact {
 			updateQuickslot();
 
 			if (Actor.findChar(target) == curUser){
-				ScrollEffects.teleportChar(curUser);
+				ItemEffects.teleportChar(curUser);
 				curUser.spendAndNext(1f);
 			} else {
 				final Ballistica bolt = new Ballistica( curUser.pos, target, Ballistica.MAGIC_BOLT );
 				final Char ch = Actor.findChar(bolt.collisionPos);
 
 				if (ch == curUser){
-					ScrollEffects.teleportChar(curUser);
+					ItemEffects.teleportChar(curUser);
 					curUser.spendAndNext( 1f );
 				} else {
 					Sample.INSTANCE.play( Assets.Sounds.ZAP );

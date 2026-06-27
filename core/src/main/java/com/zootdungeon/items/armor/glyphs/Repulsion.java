@@ -25,7 +25,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
@@ -49,7 +49,7 @@ public class Repulsion extends Armor.Glyph {
 
 			int oppositeHero = attacker.pos + (attacker.pos - defender.pos);
 			Ballistica trajectory = new Ballistica(attacker.pos, oppositeHero, Ballistica.MAGIC_BOLT);
-			WandEffects.knockback(attacker,
+			ItemEffects.knockback(attacker,
 					trajectory,
 					Math.round(2 * powerMulti),
 					true,

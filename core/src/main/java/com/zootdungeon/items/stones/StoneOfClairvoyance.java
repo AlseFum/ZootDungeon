@@ -25,7 +25,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.effects.CheckedCell;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.ShadowCaster;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -71,7 +71,7 @@ public class StoneOfClairvoyance extends Runestone {
 					
 					if (Dungeon.level.heroFOV[curr]) {
 						GameScene.discoverTile(curr, Dungeon.level.map[curr]);
-						ScrollEffects.discover(curr);
+						ItemEffects.discover(curr);
 						noticed = true;
 					}
 				}

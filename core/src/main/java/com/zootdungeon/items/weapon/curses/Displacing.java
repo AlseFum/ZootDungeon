@@ -27,7 +27,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.sprites.ItemSprite;
 import com.watabou.utils.Random;
@@ -43,7 +43,7 @@ public class Displacing extends Weapon.Enchantment {
 		if (Random.Float() < procChance && !defender.properties().contains(Char.Property.IMMOVABLE)){
 
 			int oldpos = defender.pos;
-			if (ScrollEffects.teleportChar(defender)){
+			if (ItemEffects.teleportChar(defender)){
 				if (Dungeon.level.heroFOV[oldpos]) {
 					CellEmitter.get( oldpos ).start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
 				}

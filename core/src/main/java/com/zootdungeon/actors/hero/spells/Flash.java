@@ -27,7 +27,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.abilities.cleric.AscendedForm;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.HeroIcon;
 import com.zootdungeon.utils.GLog;
@@ -75,7 +75,7 @@ public class Flash extends TargetedClericSpell {
 			return;
 		}
 
-		if (ScrollEffects.teleportToLocation(hero, target)){
+		if (ItemEffects.teleportToLocation(hero, target)){
 			hero.spendAndNext( 1f );
 			onSpellCast(tome, hero);
 			hero.buff(AscendedForm.AscendBuff.class).flashCasts++;

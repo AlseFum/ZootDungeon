@@ -40,7 +40,7 @@ import com.zootdungeon.actors.mobs.Statue;
 import com.zootdungeon.actors.mobs.Wraith;
 import com.zootdungeon.actors.mobs.npcs.RatKing;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
-import com.zootdungeon.items.scrolls.ScrollEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.levels.themes.Theme;
 import com.zootdungeon.scenes.GameScene;
@@ -165,7 +165,7 @@ public class DistortionTrap extends Trap{
 				Bestiary.countEncounter(t.getClass());
 				t.activate();
 			}
-			ScrollEffects.appear(mob, mob.pos);
+			ItemEffects.appear(mob, mob.pos);
 			Dungeon.level.occupyCell(mob);
 		}
 

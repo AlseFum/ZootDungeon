@@ -8,7 +8,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.Weapon;
 import com.zootdungeon.items.weapon.missiles.MissileWeapon;
 import com.zootdungeon.levels.Level;
@@ -336,7 +336,7 @@ public abstract class FirearmWeapon extends Weapon {
 				Ballistica push = new Ballistica(user.pos, target.pos, Ballistica.STOP_TARGET);
 				if (push.path.size() > push.dist + 1) {
 					Ballistica behind = new Ballistica(push.collisionPos, push.path.get(push.path.size() - 1), Ballistica.PROJECTILE);
-					WandEffects.knockback(target, behind, bullet.knockbackPower, true, false, user);
+					ItemEffects.knockback(target, behind, bullet.knockbackPower, true, false, user);
 				}
 			}
 		} else {

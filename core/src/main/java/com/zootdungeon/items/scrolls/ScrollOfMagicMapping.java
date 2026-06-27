@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.scrolls;
+import com.zootdungeon.items.ItemEffects;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -63,7 +64,7 @@ public class ScrollOfMagicMapping extends Scroll {
 					
 					if (Dungeon.level.heroFOV[i]) {
 						GameScene.discoverTile( i, terr );
-						discover( i );
+						ItemEffects.discover( i );
 						
 						noticed = true;
 					}
@@ -90,9 +91,4 @@ public class ScrollOfMagicMapping extends Scroll {
 		return isKnown() ? 40 * quantity : super.value();
 	}
 	
-	/** @deprecated Use {@link ScrollEffects#discover} instead. */
-	@Deprecated
-	public static void discover( int cell ) {
-		ScrollEffects.discover(cell);
-	}
 }

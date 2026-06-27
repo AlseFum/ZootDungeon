@@ -9,7 +9,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.wands.WandOfBlastWave;
-import com.zootdungeon.items.wands.WandEffects;
+import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.melee.MeleeWeapon;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
@@ -145,7 +145,7 @@ public class MomentumWeapon extends MeleeWeapon {
                     int pushPower = Math.min(3, Math.round(momentum));
                     
                     // 推开敌人
-                    WandEffects.knockback(defender, trajectory, pushPower, false, false, this);
+                    ItemEffects.knockback(defender, trajectory, pushPower, false, false, this);
                 }
             }
         }
