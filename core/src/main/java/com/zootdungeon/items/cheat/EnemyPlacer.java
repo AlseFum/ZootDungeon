@@ -66,11 +66,13 @@ import com.zootdungeon.actors.mobs.YogFist;
 import com.zootdungeon.actors.mobs.Yokai;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.windows.WndGeneral;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -81,12 +83,15 @@ import java.util.TreeMap;
 /**
  * 调试工具：选择任意 {@link Mob} 类型并在指定格子生成。
  * <p>
- * 默认动作 {@link #AC_SPAWN} 打开一个选择窗口，按难度分级（普通 / 精英 / Boss / 特殊），
- * 选中后通过 {@link CellSelector} 选择放置位置，以 PASSIVE 状态生成。
+ * 首次使用需选择怪物类型；之后默认行动直接进入放置模式，
+ * 无需重复选择。通过 {@link #AC_SELECT} 可更换怪物类型。
  */
 public class EnemyPlacer extends Item {
 
-    public static final String AC_SPAWN = "SPAWN";
+    public static final String AC_SPAWN  = "SPAWN";
+    public static final String AC_SELECT = "SELECT";
+
+    private Class<? extends Mob> selectedMob;
 
     public enum Tier {
         NORMAL("tier_normal"),
@@ -104,85 +109,41 @@ public class EnemyPlacer extends Item {
     private static final Map<Tier, List<Class<? extends Mob>>> MOB_BY_TIER = new TreeMap<>();
 
     static {
-        // === 普通（Weak）：地下城前中期常见杂兵，HP 5~50，等级 5~15 ===
         MOB_BY_TIER.put(Tier.NORMAL, List.of(
-                Rat.class,
-                Snake.class,
-                Bat.class,
-                Bee.class,
-                Slime.class,
-                Swarm.class,
-                Crab.class,
-                Gnoll.class,
-                Thief.class,
-                Skeleton.class,
-                Wraith.class,
-                TormentedSpirit.class,
-                FetidRat.class,
-                Bandit.class,
-                Shaman.class,
-                Spinner.class,
-                Scorpio.class,
-                CrystalWisp.class,
-                Yokai.class
+                Rat.class, Snake.class, Bat.class, Bee.class,
+                Slime.class, Swarm.class, Crab.class,
+                Gnoll.class, Thief.class, Skeleton.class,
+                Wraith.class, TormentedSpirit.class, FetidRat.class,
+                Bandit.class, Shaman.class, Spinner.class,
+                Scorpio.class, CrystalWisp.class, Yokai.class
         ));
 
-        // === 精英（Elite）：后期/高难度关卡敌人，HP 50~120，等级 16~26 ===
         MOB_BY_TIER.put(Tier.ELITE, List.of(
-                GreatCrab.class,
-                Brute.class,
-                ArmoredBrute.class,
-                GnollGuard.class,
-                GnollTrickster.class,
-                GnollSapper.class,
-                GnollGeomancer.class,
-                Guard.class,
-                Succubus.class,
-                Warlock.class,
-                Elemental.class,
-                Monk.class,
-                Senior.class,
-                DM100.class,
-                DM200.class,
-                DM201.class,
-                DM300.class,
-                Goo.class,
-                Tengu.class,
-                Hound.class,
-                RipperDemon.class,
-                Acidic.class,
-                Piranha.class,
-                PhantomPiranha.class,
-                Eye.class,
-                Necromancer.class,
-                Golem.class,
-                Ghoul.class,
-                RotLasher.class,
-                FungalSentry.class,
-                CausticSlime.class
+                GreatCrab.class, Brute.class, ArmoredBrute.class,
+                GnollGuard.class, GnollTrickster.class, GnollSapper.class,
+                GnollGeomancer.class, Guard.class, Succubus.class,
+                Warlock.class, Elemental.class, Monk.class,
+                Senior.class, DM100.class, DM200.class, DM201.class,
+                DM300.class, Goo.class, Tengu.class,
+                Hound.class, RipperDemon.class, Acidic.class,
+                Piranha.class, PhantomPiranha.class, Eye.class,
+                Necromancer.class, Golem.class, Ghoul.class,
+                RotLasher.class, FungalSentry.class, CausticSlime.class
         ));
 
-        // === Boss ===
         MOB_BY_TIER.put(Tier.BOSS, List.of(
-                DwarfKing.class,
-                YogFist.class,
-                YogDzewa.class,
-                RotHeart.class,
-                FungalCore.class,
-                CrystalMimic.class,
-                EbonyMimic.class,
-                GoldenMimic.class,
-                Pylon.class,
-                Device.class
+                DwarfKing.class, YogFist.class, YogDzewa.class,
+                RotHeart.class, FungalCore.class,
+                CrystalMimic.class, EbonyMimic.class, GoldenMimic.class,
+                Pylon.class, Device.class
         ));
 
-        // === 特殊 ===
-        MOB_BY_TIER.put(Tier.SPECIAL, List.of(
-        ));
+        MOB_BY_TIER.put(Tier.SPECIAL, List.of());
     }
 
     {
-        image = TextureRegistry.idByLabel("debug_bag");
+        image = TextureRegistry.once("enemy_icon", "cola/enemy_icon.png", 0, 0, 32, 32);
+        icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
         stackable = false;
         unique = true;
         defaultAction = AC_SPAWN;
@@ -191,22 +152,37 @@ public class EnemyPlacer extends Item {
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
-        actions.add(AC_SPAWN);
+        if (selectedMob != null) {
+            actions.add(AC_SPAWN);
+        }
+        actions.add(AC_SELECT);
         return actions;
     }
 
     @Override
     public void execute(Hero hero, String action) {
         super.execute(hero, action);
-        if (action.equals(AC_SPAWN)) {
-            showMobSelection();
+        if (action.equals(AC_SELECT)) {
+            showMobSelection(true);
+        } else if (action.equals(AC_SPAWN)) {
+            if (selectedMob != null) {
+                GameScene.selectCell(spawnListener(selectedMob));
+            } else {
+                showMobSelection(true);
+            }
         }
     }
 
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SPAWN)) {
-            return Messages.get(this, "ac_spawn");
+            String base = Messages.get(this, "ac_spawn");
+            if (selectedMob != null) {
+                return base + " (" + selectedMob.getSimpleName() + ")";
+            }
+            return base;
+        } else if (action.equals(AC_SELECT)) {
+            return Messages.get(this, "ac_select");
         }
         return super.actionName(action, hero);
     }
@@ -218,6 +194,9 @@ public class EnemyPlacer extends Item {
 
     @Override
     public String desc() {
+        if (selectedMob != null) {
+            return Messages.get(this, "desc_ready", selectedMob.getSimpleName());
+        }
         return Messages.get(this, "desc");
     }
 
@@ -231,7 +210,7 @@ public class EnemyPlacer extends Item {
         return true;
     }
 
-    private void showMobSelection() {
+    private void showMobSelection(boolean spawnAfter) {
         WndGeneral.Builder b = WndGeneral.make()
                 .title(Messages.get(this, "window_title"));
 
@@ -242,8 +221,13 @@ public class EnemyPlacer extends Item {
                 pane.line(Messages.get(this, "tier_hint", tierLabel));
                 for (Class<? extends Mob> cls : mobs) {
                     String name = cls.getSimpleName();
-                    pane.option(name, () -> {
-                        GameScene.selectCell(spawnListener(cls));
+                    boolean isCurrent = cls.equals(selectedMob);
+                    pane.option((isCurrent ? "▶ " : "") + name, () -> {
+                        selectedMob = cls;
+                        updateQuickslot();
+                        if (spawnAfter) {
+                            GameScene.selectCell(spawnListener(cls));
+                        }
                     });
                 }
             });
@@ -256,10 +240,8 @@ public class EnemyPlacer extends Item {
         return new CellSelector.Listener() {
             @Override
             public void onSelect(Integer cell) {
-                if (cell == null || cell < 0 || Dungeon.level == null) {
-                    return;
-                }
-                if (cell < 0 || cell >= Dungeon.level.length() || !Dungeon.level.insideMap(cell)) {
+                if (cell == null || cell < 0 || Dungeon.level == null) return;
+                if (!Dungeon.level.insideMap(cell)) {
                     GLog.w(Messages.get(EnemyPlacer.class, "invalid_cell"));
                     return;
                 }
@@ -293,6 +275,7 @@ public class EnemyPlacer extends Item {
                 } else {
                     GLog.w(Messages.get(EnemyPlacer.class, "killed_by_effect", mob.name()));
                 }
+                updateQuickslot();
             }
 
             @Override
@@ -300,5 +283,24 @@ public class EnemyPlacer extends Item {
                 return Messages.get(EnemyPlacer.class, "prompt_spawn");
             }
         };
+    }
+
+    private static final String SELECTED_MOB = "selectedMob";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        if (selectedMob != null) bundle.put(SELECTED_MOB, selectedMob.getName());
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        if (bundle.contains(SELECTED_MOB)) {
+            try {
+                selectedMob = (Class<? extends Mob>) Class.forName(bundle.getString(SELECTED_MOB));
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
     }
 }
