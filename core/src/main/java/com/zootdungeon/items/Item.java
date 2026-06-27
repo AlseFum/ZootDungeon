@@ -36,6 +36,8 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -422,6 +424,22 @@ public class Item implements Bundlable, Pred {
         level = value;
 
         updateQuickslot();
+    }
+
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = new LinkedHashMap<>();
+        cfg.put("level", level);
+        cfg.put("quantity", quantity);
+        cfg.put("cursed", cursed);
+        return cfg;
+    }
+
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "level": level = (Integer) value; updateQuickslot(); break;
+            case "quantity": quantity = (Integer) value; break;
+            case "cursed": cursed = (Boolean) value; break;
+        }
     }
 
     public Item upgrade() {

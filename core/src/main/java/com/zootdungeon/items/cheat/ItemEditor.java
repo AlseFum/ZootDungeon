@@ -12,9 +12,7 @@ import com.zootdungeon.windows.WndItemEditor;
 
 public class ItemEditor extends Item {
     static {
-        TextureRegistry.texture("sheet.cola.handle", "cola/handle.png")
-                .grid(16, 16)
-                .label("handle_holder");
+        TextureRegistry.once("handle_holder", "cola/handle.png", 0, 0, 16, 16);
     }
     
     {

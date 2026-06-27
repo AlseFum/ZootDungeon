@@ -39,6 +39,8 @@ import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;
+import java.util.Map;
+
 public class AmbushWeapon extends MeleeWeapon{
 
     {
@@ -56,6 +58,22 @@ public class AmbushWeapon extends MeleeWeapon{
         return  4*(tier+1) +
                 lvl*(tier+1);
     }
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("ambushRate", ambushRate);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "ambushRate": ambushRate = ((Number) value).floatValue(); break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     public float ambushRate=0.5f;
     @Override
     public int damageRoll(Char owner) {
@@ -70,6 +88,7 @@ public class AmbushWeapon extends MeleeWeapon{
                 int diff = mx - mn;
 
                 // 基础部分：将 [mn, mx] 区间压缩到 [mn+ambushRate*diff, mx]
+                
                 int biasedMin = mn + Math.round(diff * ambushRate);
                 if (biasedMin > mx) biasedMin = mx;
 

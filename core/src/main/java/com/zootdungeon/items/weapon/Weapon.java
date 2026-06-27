@@ -22,6 +22,7 @@ package com.zootdungeon.items.weapon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
@@ -357,6 +358,35 @@ abstract public class Weapon extends KindOfWeapon {
             level += 1 + level / 6;
         }
         return level;
+    }
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("augment", augment);
+        cfg.put("enchantHardened", enchantHardened);
+        cfg.put("curseInfusionBonus", curseInfusionBonus);
+        cfg.put("masteryPotionBonus", masteryPotionBonus);
+        cfg.put("附魔", (Runnable) () -> com.zootdungeon.scenes.GameScene.show(
+                com.zootdungeon.windows.WndItemEditor.WndListSelect.forWeaponEnchant(this)));
+        cfg.put("诅咒附魔", (Runnable) () -> com.zootdungeon.scenes.GameScene.show(
+                com.zootdungeon.windows.WndItemEditor.WndListSelect.forWeaponCurse(this)));
+        cfg.put("清除附魔", (Runnable) () -> {
+            this.enchant(null);
+            GLog.p("已清除附魔");
+        });
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "augment": augment = (Augment) value; break;
+            case "enchantHardened": enchantHardened = (Boolean) value; break;
+            case "curseInfusionBonus": curseInfusionBonus = (Boolean) value; break;
+            case "masteryPotionBonus": masteryPotionBonus = (Boolean) value; break;
+            default: super.setConfig(key, value); break;
+        }
     }
 
     @Override

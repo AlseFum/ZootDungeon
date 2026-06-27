@@ -87,6 +87,7 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public abstract class Wand extends Item {
 
@@ -383,6 +384,26 @@ public abstract class Wand extends Item {
 		if (curseInfusionBonus) level += 1 + level/6;
 		level += resinBonus;
 		return level;
+	}
+	@Override
+	public Map<String, Object> getConfig() {
+		Map<String, Object> cfg = super.getConfig();
+		cfg.put("curCharges", curCharges);
+		cfg.put("curChargeKnown", curChargeKnown);
+		cfg.put("充满能量", (Runnable) () -> {
+			this.curCharges = this.maxCharges;
+			this.updateQuickslot();
+			com.zootdungeon.utils.GLog.p("已充满能量");
+		});
+		return cfg;
+	}
+
+	@Override
+	public void setConfig(String key, Object value) {
+		switch (key) {
+			case "curCharges": curCharges = (Integer) value; break;
+			default: super.setConfig(key, value); break;
+		}
 	}
 	
 	@Override

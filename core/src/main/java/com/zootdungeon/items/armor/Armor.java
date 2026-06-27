@@ -81,6 +81,8 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Armor extends EquipableItem {
 
@@ -403,6 +405,33 @@ public class Armor extends EquipableItem {
 		return level;
 	}
 	
+	@Override
+	public Map<String, Object> getConfig() {
+		Map<String, Object> cfg = super.getConfig();
+		cfg.put("tier", tier);
+		cfg.put("glyphHardened", glyphHardened);
+		cfg.put("curseInfusionBonus", curseInfusionBonus);
+		cfg.put("masteryPotionBonus", masteryPotionBonus);
+		cfg.put("铭刻", (Runnable) () -> com.zootdungeon.scenes.GameScene.show(
+				com.zootdungeon.windows.WndItemEditor.WndListSelect.forArmorGlyph(this)));
+		cfg.put("清除铭刻", (Runnable) () -> {
+			this.inscribe(null);
+			com.zootdungeon.utils.GLog.p("已清除铭刻");
+		});
+		return cfg;
+	}
+
+	@Override
+	public void setConfig(String key, Object value) {
+		switch (key) {
+			case "tier": tier = (Integer) value; break;
+			case "glyphHardened": glyphHardened = (Boolean) value; break;
+			case "curseInfusionBonus": curseInfusionBonus = (Boolean) value; break;
+			case "masteryPotionBonus": masteryPotionBonus = (Boolean) value; break;
+			default: super.setConfig(key, value); break;
+		}
+	}
+
 	@Override
 	public Item upgrade() {
 		return upgrade( false );
