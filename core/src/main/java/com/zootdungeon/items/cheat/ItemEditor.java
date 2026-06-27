@@ -11,12 +11,9 @@ import com.zootdungeon.windows.WndBag;
 import com.zootdungeon.windows.WndItemEditor;
 
 public class ItemEditor extends Item {
-    static {
-        TextureRegistry.once("handle_holder", "cola/handle.png", 0, 0, 16, 16);
-    }
     
     {
-        image = TextureRegistry.idByLabel("handle_holder");
+        image = TextureRegistry.once("item_editor_icon", "cola/item_editor_icon.png", 0, 0, 32, 32);
         icon = ItemSpriteSheet.Icons.SYMBOL_DEBUG;
         stackable = false;
         unique = true;

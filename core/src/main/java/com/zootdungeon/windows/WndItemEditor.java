@@ -68,7 +68,6 @@ public class WndItemEditor extends Window {
         y = title.bottom() + GAP;
 
         // Info
-        y = addInfoRow("类型", item.getClass().getSimpleName(), y);
         y = addInfoRow("已鉴定", item.isIdentified() ? "是" : "否", y);
 
         // --- Config entries ---
