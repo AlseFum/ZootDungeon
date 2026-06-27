@@ -18,6 +18,7 @@ import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -143,6 +144,15 @@ public class RhodesStandardBow extends Weapon {
 			image = ItemSpriteSheet.SPIRIT_ARROW;
 			hitSound = Assets.Sounds.HIT_ARROW;
 			tier = 1;
+		}
+
+		@Override
+		public Emitter emitter() {
+			Emitter e = new Emitter();
+			e.pos(5, 5);
+			e.fillTarget = false;
+			e.pour(Speck.factory(Speck.LIGHT), 0.08f);
+			return e;
 		}
 
 		@Override

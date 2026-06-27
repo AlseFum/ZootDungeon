@@ -27,6 +27,7 @@ import com.zootdungeon.actors.mobs.GnollGeomancer;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.arknights.misc.DeployablewCrossBow;
 import com.zootdungeon.arknights.misc.NearRangeCrossBow;
+import com.zootdungeon.items.weapon.RhodesStandardBow;
 import com.zootdungeon.items.weapon.SpiritBow;
 import com.zootdungeon.items.weapon.melee.Crossbow;
 import com.zootdungeon.items.weapon.missiles.Bolas;
@@ -104,6 +105,7 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 		ANGULAR_SPEEDS.put(Trident.class,       0);
 		
 		ANGULAR_SPEEDS.put(SpiritBow.SpiritArrow.class,       0);
+		ANGULAR_SPEEDS.put(RhodesStandardBow.RhodesArrow.class,  0);
 		ANGULAR_SPEEDS.put(NearRangeCrossBow.ProximityBolt.class, 0);
 		ANGULAR_SPEEDS.put(DeployablewCrossBow.LineBolt.class, 0);
 		ANGULAR_SPEEDS.put(ScorpioSprite.ScorpioShot.class,   0);
@@ -173,6 +175,7 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 			speed *= 3f;
 			
 		} else if (item instanceof SpiritBow.SpiritArrow
+				|| item instanceof RhodesStandardBow.RhodesArrow
 				|| item instanceof NearRangeCrossBow.ProximityBolt
 				|| item instanceof DeployablewCrossBow.LineBolt
 				|| item instanceof ScorpioSprite.ScorpioShot
