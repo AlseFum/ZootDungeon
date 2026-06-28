@@ -67,11 +67,10 @@ public class ThrowingWeaponBox extends Item {
 
             // 使用WndTabbedIconGrid构建器创建分标签页窗口
             WndTabbedIconGrid.Builder builder = new WndTabbedIconGrid.Builder()
-                    .setTitle("选择投掷武器")
+                    .setTitle(Messages.get(ThrowingWeaponBox.class, "title"))
                     .setColumns(4);
-            
-            // 添加标准投掷武器标签页
-            builder.addTab("标准投掷武器", Icons.get(Icons.WAND_HOLSTER));
+
+            builder.addTab(Messages.get(ThrowingWeaponBox.class, "tab_standard"), Icons.get(Icons.WAND_HOLSTER));
             
             // 添加标准投掷武器到第一个标签页（索引0）
             builder.addItemToTab(0,
@@ -156,7 +155,7 @@ public class ThrowingWeaponBox extends Item {
             );
             
             // 添加飞镖标签页
-            builder.addTab("飞镖", Icons.get(Icons.WAND_HOLSTER));
+            builder.addTab(Messages.get(ThrowingWeaponBox.class, "tab_darts"), Icons.get(Icons.WAND_HOLSTER));
             
             // 添加飞镖到第二个标签页（索引1）
             builder.addItemToTab(1,
@@ -298,23 +297,23 @@ public class ThrowingWeaponBox extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SELECT)) {
-            return "选择武器";
+            return Messages.get(this, "ac_select");
         } else if (action.equals(AC_GENERATE)) {
-            return "生成武器";
+            return Messages.get(this, "ac_generate");
         } else if (action.equals(AC_THROW)) {
-            return "投掷武器";
+            return Messages.get(this, "ac_throw");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        return "投掷武器箱";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "这是一个可以让你选择生成各种投掷武器的物品。";
+        return Messages.get(this, "desc");
     }
 
     @Override

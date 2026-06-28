@@ -3,6 +3,7 @@ package com.zootdungeon.items.cheat;
 import java.util.ArrayList;
 
 import com.zootdungeon.Assets;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.InventoryScroll;
@@ -58,76 +59,76 @@ public class Codex extends Item {
 
             // 使用WndTabbedIconGrid构建器创建分标签页窗口
             WndTabbedIconGrid.Builder builder = new WndTabbedIconGrid.Builder()
-                    .setTitle("选择卷轴")
+                    .setTitle(Messages.get(Codex.class, "title"))
                     .setColumns(4);
             
             // 添加Regular Scrolls标签页
-            builder.addTab("标准卷轴", Icons.get(Icons.SCROLL_COLOR));
+            builder.addTab(Messages.get(Codex.class, "tab_standard"), Icons.get(Icons.SCROLL_COLOR));
             
             // 添加标准卷轴到第一个标签页（索引0）
             builder.addItemToTab(0, 
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_IDENTIFY)),
-                    "鉴定卷轴：鉴定物品",
+                    scrollDesc(ScrollOfIdentify.class),
                     () -> selectedScroll = ScrollOfIdentify.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_UPGRADE)),
-                    "升级卷轴：升级物品",
+                    scrollDesc(ScrollOfUpgrade.class),
                     () -> selectedScroll = ScrollOfUpgrade.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TELEPORT)),
-                    "传送卷轴：传送到随机位置",
+                    scrollDesc(ScrollOfTeleportation.class),
                     () -> selectedScroll = ScrollOfTeleportation.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RAGE)),
-                    "狂暴卷轴：激怒周围敌人",
+                    scrollDesc(ScrollOfRage.class),
                     () -> selectedScroll = ScrollOfRage.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RECHARGE)),
-                    "充能卷轴：为法杖充能",
+                    scrollDesc(ScrollOfRecharging.class),
                     () -> selectedScroll = ScrollOfRecharging.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TRANSMUTE)),
-                    "嬗变卷轴：改变物品",
+                    scrollDesc(ScrollOfTransmutation.class),
                     () -> selectedScroll = ScrollOfTransmutation.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MIRRORIMG)),
-                    "镜像卷轴：创造分身",
+                    scrollDesc(ScrollOfMirrorImage.class),
                     () -> selectedScroll = ScrollOfMirrorImage.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MAGICMAP)),
-                    "魔法地图卷轴：显示地图",
+                    scrollDesc(ScrollOfMagicMapping.class),
                     () -> selectedScroll = ScrollOfMagicMapping.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_LULLABY)),
-                    "催眠卷轴：催眠敌人",
+                    scrollDesc(ScrollOfLullaby.class),
                     () -> selectedScroll = ScrollOfLullaby.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_REMCURSE)),
-                    "移除诅咒卷轴：移除诅咒",
+                    scrollDesc(ScrollOfRemoveCurse.class),
                     () -> selectedScroll = ScrollOfRemoveCurse.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_RETRIB)),
-                    "惩戒卷轴：对敌人造成伤害",
+                    scrollDesc(ScrollOfRetribution.class),
                     () -> selectedScroll = ScrollOfRetribution.class
             );
             builder.addItemToTab(0,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TERROR)),
-                    "恐惧卷轴：使敌人逃跑",
+                    scrollDesc(ScrollOfTerror.class),
                     () -> selectedScroll = ScrollOfTerror.class
             );
             
             // 添加Exotic Scrolls标签页
-            builder.addTab("增强卷轴", Icons.get(Icons.SCROLL_COLOR));
+            builder.addTab(Messages.get(Codex.class, "tab_exotic"), Icons.get(Icons.SCROLL_COLOR));
             
             // 添加异域卷轴到第二个标签页（索引1）
             builder.addItemToTab(1,
@@ -253,11 +254,11 @@ public class Codex extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SELECT)) {
-            return "选择卷轴";
+            return Messages.get(this, "ac_select");
         } else if (action.equals(AC_READ)) {
-            return "阅读卷轴";
+            return Messages.get(this, "ac_read");
         } else if (action.equals(AC_GENERATE)) {
-            return "生成卷轴";
+            return Messages.get(this, "ac_generate");
         }
         return super.actionName(action, hero);
     }
@@ -268,12 +269,12 @@ public class Codex extends Item {
 
     @Override
     public String name() {
-        return "卷轴选择器";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "这是一个可以让你选择使用各种卷轴的物品。";
+        return Messages.get(this, "desc");
     }
 
     @Override
@@ -289,5 +290,10 @@ public class Codex extends Item {
     @Override
     public int value() {
         return 1000;
+    }
+
+    private static <T extends Scroll> String scrollDesc(Class<T> cls) {
+        T s = Reflection.newInstance(cls);
+        return s.name() + "：" + s.desc();
     }
 }

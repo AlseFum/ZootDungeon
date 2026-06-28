@@ -311,8 +311,15 @@ public class WndItemEditor extends Window {
             int h = (int) Math.min(contentH + chrome.marginTop() + chrome.marginBottom(), maxH);
 
             resize(w, h);
-            content.setPos(chrome.marginLeft(), chrome.marginTop());
-            add(content);
+            if (contentH + chrome.marginTop() + chrome.marginBottom() > maxH) {
+                ScrollPane sp = new ScrollPane(content);
+                sp.setRect(chrome.marginLeft(), chrome.marginTop(),
+                        w - chrome.marginHor(), h - chrome.marginVer());
+                add(sp);
+            } else {
+                content.setPos(chrome.marginLeft(), chrome.marginTop());
+                add(content);
+            }
         }
 
         public static WndListSelect forWeaponEnchant(Weapon weapon) {

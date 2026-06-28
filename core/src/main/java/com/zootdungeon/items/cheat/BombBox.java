@@ -46,11 +46,10 @@ public class BombBox extends Item {
 
             // 使用WndTabbedIconGrid构建器创建分标签页窗口
             WndTabbedIconGrid.Builder builder = new WndTabbedIconGrid.Builder()
-                    .setTitle("选择炸弹")
+                    .setTitle(Messages.get(BombBox.class, "title"))
                     .setColumns(4);
-            
-            // 添加炸弹标签页
-            builder.addTab("炸弹", Icons.get(Icons.WAND_HOLSTER));
+
+            builder.addTab(Messages.get(BombBox.class, "tab_bombs"), Icons.get(Icons.WAND_HOLSTER));
             
             // 添加炸弹到第一个标签页（索引0）
             builder.addItemToTab(0,
@@ -196,23 +195,23 @@ public class BombBox extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SELECT)) {
-            return "选择炸弹";
+            return Messages.get(this, "ac_select");
         } else if (action.equals(AC_GENERATE)) {
-            return "生成炸弹";
+            return Messages.get(this, "ac_generate");
         } else if (action.equals(AC_LIGHTTHROW)) {
-            return "点燃并扔出";
+            return Messages.get(this, "ac_lightthrow");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        return "炸弹箱";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "这是一个可以让你选择生成各种炸弹的物品。";
+        return Messages.get(this, "desc");
     }
 
     @Override

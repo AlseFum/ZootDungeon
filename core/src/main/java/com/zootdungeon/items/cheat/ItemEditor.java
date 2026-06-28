@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.TextureRegistry;
@@ -36,7 +37,7 @@ public class ItemEditor extends Item {
             GameScene.selectItem(new WndBag.ItemSelector() {
                 @Override
                 public String textPrompt() {
-                    return "选择要编辑的物品";
+                    return Messages.get(ItemEditor.class, "prompt");
                 }
 
                 @Override
@@ -58,19 +59,19 @@ public class ItemEditor extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_EDIT)) {
-            return "编辑物品";
+            return Messages.get(this, "ac_edit");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        return "物品编辑器";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "这个工具可以让你编辑物品的属性，包括等级、数量、诅咒状态等。";
+        return Messages.get(this, "desc");
     }
 
     @Override

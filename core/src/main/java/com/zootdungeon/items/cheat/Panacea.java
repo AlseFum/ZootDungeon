@@ -3,6 +3,7 @@ package com.zootdungeon.items.cheat;
 import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.potions.PotionOfExperience;
@@ -72,216 +73,216 @@ public class Panacea extends Item {
 
             // 使用WndTabbedIconGrid构建器创建分标签页窗口
             WndTabbedIconGrid.Builder builder = new WndTabbedIconGrid.Builder()
-                    .setTitle("选择药剂")
+                    .setTitle(Messages.get(Panacea.class, "title"))
                     .setColumns(4);
             
             // 添加标准药剂标签页
-            builder.addTab("标准药剂", Icons.get(Icons.POTION_BANDOLIER));
+            builder.addTab(Messages.get(Panacea.class, "tab_standard"), Icons.get(Icons.POTION_BANDOLIER));
             
             // 添加标准药剂到第一个标签页（索引0）
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfStrength.class),
-                    "力量药剂：增加力量",
+                    potionDesc(PotionOfStrength.class),
                     () -> selectedPotion = PotionOfStrength.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfHealing.class),
-                    "治疗药剂：恢复生命值",
+                    potionDesc(PotionOfHealing.class),
                     () -> selectedPotion = PotionOfHealing.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfMindVision.class),
-                    "心灵视觉药剂：显示周围生物",
+                    potionDesc(PotionOfMindVision.class),
                     () -> selectedPotion = PotionOfMindVision.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfFrost.class),
-                    "冰冻药剂：冻结目标",
+                    potionDesc(PotionOfFrost.class),
                     () -> selectedPotion = PotionOfFrost.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfLiquidFlame.class),
-                    "液态火焰药剂：燃烧目标",
+                    potionDesc(PotionOfLiquidFlame.class),
                     () -> selectedPotion = PotionOfLiquidFlame.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfToxicGas.class),
-                    "毒气药剂：使目标中毒",
+                    potionDesc(PotionOfToxicGas.class),
                     () -> selectedPotion = PotionOfToxicGas.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfHaste.class),
-                    "加速药剂：提高移动速度",
+                    potionDesc(PotionOfHaste.class),
                     () -> selectedPotion = PotionOfHaste.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfInvisibility.class),
-                    "隐身药剂：暂时隐身",
+                    potionDesc(PotionOfInvisibility.class),
                     () -> selectedPotion = PotionOfInvisibility.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfLevitation.class),
-                    "漂浮药剂：可以漂浮",
+                    potionDesc(PotionOfLevitation.class),
                     () -> selectedPotion = PotionOfLevitation.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfParalyticGas.class),
-                    "麻痹药剂：使目标麻痹",
+                    potionDesc(PotionOfParalyticGas.class),
                     () -> selectedPotion = PotionOfParalyticGas.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfPurity.class),
-                    "净化药剂：清除负面效果",
+                    potionDesc(PotionOfPurity.class),
                     () -> selectedPotion = PotionOfPurity.class
             );
             builder.addItemToTab(0,
                     createPotionIcon(PotionOfExperience.class),
-                    "经验药剂：获得经验值",
+                    potionDesc(PotionOfExperience.class),
                     () -> selectedPotion = PotionOfExperience.class
             );
             
             // 添加异域药剂标签页
-            builder.addTab("异域药剂", Icons.get(Icons.ALCHEMY));
+            builder.addTab(Messages.get(Panacea.class, "tab_exotic"), Icons.get(Icons.ALCHEMY));
             
             // 添加异域药剂到第二个标签页（索引1）
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfMastery.class),
-                    "精通药剂：提升技能等级",
+                    potionDesc(PotionOfMastery.class),
                     () -> selectedPotion = PotionOfMastery.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfShielding.class),
-                    "护盾药剂：获得护盾",
+                    potionDesc(PotionOfShielding.class),
                     () -> selectedPotion = PotionOfShielding.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfMagicalSight.class),
-                    "魔法视觉药剂：看穿魔法",
+                    potionDesc(PotionOfMagicalSight.class),
                     () -> selectedPotion = PotionOfMagicalSight.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfSnapFreeze.class),
-                    "急冻药剂：瞬间冻结",
+                    potionDesc(PotionOfSnapFreeze.class),
                     () -> selectedPotion = PotionOfSnapFreeze.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfDragonsBreath.class),
-                    "龙息药剂：喷吐火焰",
+                    potionDesc(PotionOfDragonsBreath.class),
                     () -> selectedPotion = PotionOfDragonsBreath.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfCorrosiveGas.class),
-                    "腐蚀毒气药剂：强力腐蚀",
+                    potionDesc(PotionOfCorrosiveGas.class),
                     () -> selectedPotion = PotionOfCorrosiveGas.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfStamina.class),
-                    "耐力药剂：持久加速",
+                    potionDesc(PotionOfStamina.class),
                     () -> selectedPotion = PotionOfStamina.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfShroudingFog.class),
-                    "迷雾药剂：范围隐身",
+                    potionDesc(PotionOfShroudingFog.class),
                     () -> selectedPotion = PotionOfShroudingFog.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfStormClouds.class),
-                    "风暴云药剂：召唤雷暴",
+                    potionDesc(PotionOfStormClouds.class),
                     () -> selectedPotion = PotionOfStormClouds.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfEarthenArmor.class),
-                    "大地护甲药剂：石肤防护",
+                    potionDesc(PotionOfEarthenArmor.class),
                     () -> selectedPotion = PotionOfEarthenArmor.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfCleansing.class),
-                    "净化药剂：深层清洁",
+                    potionDesc(PotionOfCleansing.class),
                     () -> selectedPotion = PotionOfCleansing.class
             );
             builder.addItemToTab(1,
                     createPotionIcon(PotionOfDivineInspiration.class),
-                    "神圣启示药剂：获得天赋点",
+                    potionDesc(PotionOfDivineInspiration.class),
                     () -> selectedPotion = PotionOfDivineInspiration.class
             );
             
             // 添加酿造药剂标签页
-            builder.addTab("酿造药剂", Icons.get(Icons.WAND_HOLSTER));
+            builder.addTab(Messages.get(Panacea.class, "tab_brews"), Icons.get(Icons.WAND_HOLSTER));
             
             // 添加酿造药剂到第三个标签页（索引2）
             builder.addItemToTab(2,
                     createPotionIcon(InfernalBrew.class),
-                    "地狱酿剂：燃烧地面",
+                    potionDesc(InfernalBrew.class),
                     () -> selectedPotion = InfernalBrew.class
             );
             builder.addItemToTab(2,
                     createPotionIcon(BlizzardBrew.class),
-                    "暴雪酿剂：冰冻区域",
+                    potionDesc(BlizzardBrew.class),
                     () -> selectedPotion = BlizzardBrew.class
             );
             builder.addItemToTab(2,
                     createPotionIcon(ShockingBrew.class),
-                    "电击酿剂：雷电攻击",
+                    potionDesc(ShockingBrew.class),
                     () -> selectedPotion = ShockingBrew.class
             );
             builder.addItemToTab(2,
                     createPotionIcon(CausticBrew.class),
-                    "腐蚀酿剂：酸性伤害",
+                    potionDesc(CausticBrew.class),
                     () -> selectedPotion = CausticBrew.class
             );
             builder.addItemToTab(2,
                     createPotionIcon(AquaBrew.class),
-                    "水之酿剂：水系效果",
+                    potionDesc(AquaBrew.class),
                     () -> selectedPotion = AquaBrew.class
             );
             builder.addItemToTab(2,
                     createPotionIcon(UnstableBrew.class),
-                    "不稳定酿剂：随机效果",
+                    potionDesc(UnstableBrew.class),
                     () -> selectedPotion = UnstableBrew.class
             );
             
             // 添加药剂精华标签页
-            builder.addTab("药剂精华", Icons.get(Icons.SEED_POUCH));
+            builder.addTab(Messages.get(Panacea.class, "tab_elixirs"), Icons.get(Icons.SEED_POUCH));
             
             // 添加药剂精华到第四个标签页（索引3）
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfHoneyedHealing.class),
-                    "蜂蜜治疗精华：强力治疗",
+                    potionDesc(ElixirOfHoneyedHealing.class),
                     () -> selectedPotion = ElixirOfHoneyedHealing.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfAquaticRejuvenation.class),
-                    "水之复苏精华：长期再生",
+                    potionDesc(ElixirOfAquaticRejuvenation.class),
                     () -> selectedPotion = ElixirOfAquaticRejuvenation.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfMight.class),
-                    "力量精华：永久力量",
+                    potionDesc(ElixirOfMight.class),
                     () -> selectedPotion = ElixirOfMight.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfDragonsBlood.class),
-                    "龙血精华：火焰附魔",
+                    potionDesc(ElixirOfDragonsBlood.class),
                     () -> selectedPotion = ElixirOfDragonsBlood.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfToxicEssence.class),
-                    "毒素精华：毒性附魔",
+                    potionDesc(ElixirOfToxicEssence.class),
                     () -> selectedPotion = ElixirOfToxicEssence.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfIcyTouch.class),
-                    "冰霜精华：冰冻附魔",
+                    potionDesc(ElixirOfIcyTouch.class),
                     () -> selectedPotion = ElixirOfIcyTouch.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfArcaneArmor.class),
-                    "奥术护甲精华：魔法防护",
+                    potionDesc(ElixirOfArcaneArmor.class),
                     () -> selectedPotion = ElixirOfArcaneArmor.class
             );
             builder.addItemToTab(3,
                     createPotionIcon(ElixirOfFeatherFall.class),
-                    "羽落精华：缓慢下降",
+                    potionDesc(ElixirOfFeatherFall.class),
                     () -> selectedPotion = ElixirOfFeatherFall.class
             );
 
@@ -322,23 +323,23 @@ public class Panacea extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SELECT)) {
-            return "选择药剂";
+            return Messages.get(this, "ac_select");
         } else if (action.equals(AC_DRINK)) {
-            return "饮用药剂";
+            return Messages.get(this, "ac_drink");
         } else if (action.equals(AC_GENERATE)) {
-            return "生成药剂";
+            return Messages.get(this, "ac_generate");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        return "药剂选择器";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "这是一个可以让你选择使用各种药剂的物品。";
+        return Messages.get(this, "desc");
     }
 
     @Override
@@ -370,5 +371,10 @@ public class Panacea extends Item {
             // 发生异常时使用默认图标
             return new ItemSprite(ItemSpriteSheet.POTION_HOLDER);
         }
+    }
+
+    private static <T extends Potion> String potionDesc(Class<T> cls) {
+        T p = Reflection.newInstance(cls);
+        return p.name() + "：" + p.desc();
     }
 }

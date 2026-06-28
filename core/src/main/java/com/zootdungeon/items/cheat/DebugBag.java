@@ -2,6 +2,7 @@ package com.zootdungeon.items.cheat;
 
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bags.Bag;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.items.supply.DebugSupply;
 
@@ -39,11 +40,11 @@ public class DebugBag extends Bag {
 
     @Override
     public String name() {
-        return "调试包";
+        return Messages.get(this, "name");
     }
 
     @Override
     public String desc() {
-        return "";
+        return Messages.get(this, "desc");
     }
 } 

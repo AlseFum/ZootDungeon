@@ -11,6 +11,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.levels.Level;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.features.LevelTransition;
 import com.zootdungeon.levels.themes.Theme;
@@ -49,7 +50,7 @@ public class LevelConsole extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (AC_OPEN.equals(action)) {
-            return "关卡控制台";
+            return Messages.get(this, "ac_open");
         }
         return super.actionName(action, hero);
     }
@@ -182,11 +183,11 @@ public class LevelConsole extends Item {
     public int value() { return 0; }
 
     @Override
-    public String name() { return "关卡控制台"; }
+    public String name() { return Messages.get(this, "name"); }
 
     @Override
     public String desc() {
-        return "调试工具：查看已生成关卡，或自定义 depth/branch/类型后直接前往。";
+        return Messages.get(this, "desc");
     }
 
     @Override

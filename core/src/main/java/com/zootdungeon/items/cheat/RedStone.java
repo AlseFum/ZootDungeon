@@ -3,6 +3,7 @@ package com.zootdungeon.items.cheat;
 import java.util.ArrayList;
 
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.messages.Messages;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSprite;
@@ -49,101 +50,21 @@ public class RedStone extends Item {
 
             // 使用Builder模式创建图标网格窗口
             WndIconGrid.Builder builder = new WndIconGrid.Builder()
-                    .setTitle("选择符文石")
+                    .setTitle(Messages.get(RedStone.class, "title"))
                     .setColumns(5);
-            // 添加所有符文石图标，每个图标都有自己的点击处理逻辑
-            builder.addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_AUGMENTATION),
-                    "增强符文石：增强武器和护甲",
-                    () -> {
-                        selectedStone = StoneOfAugmentation.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_ENCHANT),
-                    "附魔符文石：为武器和护甲附魔",
-                    () -> {
-                        selectedStone = StoneOfEnchantment.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_BLAST),
-                    "爆炸符文石：制造爆炸",
-                    () -> {
-                        selectedStone = StoneOfBlast.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_DETECT),
-                    "解除符文石：解除陷阱",
-                    () -> {
-                        selectedStone = StoneOfDisarming.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_FEAR),
-                    "恐惧符文石：使目标逃跑",
-                    () -> {
-                        selectedStone = StoneOfFear.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_FLOCK),
-                    "羊群符文石：召唤魔法羊",
-                    () -> {
-                        selectedStone = StoneOfFlock.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_INTUITION),
-                    "直觉符文石：猜测物品类型",
-                    () -> {
-                        selectedStone = StoneOfIntuition.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_DETECT),
-                    "魔法探测符文石：探测魔法物品",
-                    () -> {
-                        selectedStone = StoneOfDetectMagic.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_SHOCK),
-                    "震击符文石：造成范围伤害",
-                    () -> {
-                        selectedStone = StoneOfShock.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_SLEEP),
-                    "沉睡符文石：使目标陷入沉睡",
-                    () -> {
-                        selectedStone = StoneOfDeepSleep.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_CLAIRVOYANCE),
-                    "透视符文石：揭示周围区域",
-                    () -> {
-                        selectedStone = StoneOfClairvoyance.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_BLINK),
-                    "闪烁符文石：传送到目标位置",
-                    () -> {
-                        selectedStone = StoneOfBlink.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            ).addItem(
-                    new ItemSprite(ItemSpriteSheet.STONE_AGGRESSION),
-                    "激怒符文石：使目标变得敌对",
-                    () -> {
-                        selectedStone = StoneOfAggression.class;
-                        GLog.i("选择了" + Reflection.newInstance(selectedStone).name());
-                    }
-            );
+            addStoneItem(builder, ItemSpriteSheet.STONE_AUGMENTATION, StoneOfAugmentation.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_ENCHANT,       StoneOfEnchantment.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_BLAST,         StoneOfBlast.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_DETECT,        StoneOfDisarming.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_FEAR,          StoneOfFear.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_FLOCK,         StoneOfFlock.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_INTUITION,     StoneOfIntuition.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_DETECT,        StoneOfDetectMagic.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_SHOCK,         StoneOfShock.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_SLEEP,         StoneOfDeepSleep.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_CLAIRVOYANCE,  StoneOfClairvoyance.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_BLINK,         StoneOfBlink.class);
+            addStoneItem(builder, ItemSpriteSheet.STONE_AGGRESSION,    StoneOfAggression.class);
 
             // 显示窗口
             GameScene.show(builder.build());
@@ -223,20 +144,20 @@ public class RedStone extends Item {
     @Override
     public String actionName(String action, Hero hero) {
         if (action.equals(AC_SELECT)) {
-            return "选择符文石";
+            return Messages.get(this, "ac_select");
         } else if (action.equals(AC_USE)) {
-            return "使用符文石";
+            return Messages.get(this, "ac_use");
         } else if (action.equals(AC_THROW)) {
-            return "投掷符文石";
+            return Messages.get(this, "ac_throw");
         } else if (action.equals(AC_GENERATE)) {
-            return "生成符文石";
+            return Messages.get(this, "ac_generate");
         }
         return super.actionName(action, hero);
     }
 
     @Override
     public String name() {
-        String name = "符文石选择器";
+        String name = Messages.get(this, "name");
         if (selectedStone != null) {
             name += " (" + Reflection.newInstance(selectedStone).name() + ")";
         }
@@ -245,15 +166,12 @@ public class RedStone extends Item {
 
     @Override
     public String desc() {
-        StringBuilder desc = new StringBuilder();
-        desc.append("这是一个可以让你选择使用各种符文石的物品。");
+        String desc = Messages.get(this, "desc");
         if (selectedStone != null) {
-            desc.append("\n\n当前选择：").append(Reflection.newInstance(selectedStone).name());
-            desc.append("\n").append(Reflection.newInstance(selectedStone).desc());
-        } else {
-            desc.append("\n\n请先选择一个符文石。");
+            desc += "\n\n" + Messages.get(this, "current") + Reflection.newInstance(selectedStone).name();
+            desc += "\n" + Reflection.newInstance(selectedStone).desc();
         }
-        return desc.toString();
+        return desc;
     }
 
     @Override
@@ -269,5 +187,13 @@ public class RedStone extends Item {
     @Override
     public int value() {
         return 1000;
+    }
+
+    private <T extends Runestone> void addStoneItem(WndIconGrid.Builder builder, int icon, Class<T> cls) {
+        T stone = Reflection.newInstance(cls);
+        String desc = stone.name() + "：" + stone.desc();
+        builder.addItem(new ItemSprite(icon), desc, () -> {
+            selectedStone = cls;
+        });
     }
 }
