@@ -49,11 +49,11 @@ public class DeployablewCrossBow extends Weapon {
 	private int targetPos;
 
 	static {
-		TextureRegistry.texture("mod:deployedlineblade", "cola/redknife.png").grid(32, 32).label("deployed_line_blade");
+		TextureRegistry.once("mod:deployedlineblade", "cola/Pozemka_typewriter.png",0,0,32,32);
 	}
 
 	{
-		image = TextureRegistry.idByLabel("deployed_line_blade");
+		image = TextureRegistry.idByLabel("mod:deployedlineblade");
 		defaultAction = AC_SHOOT;
 		usesTargeting = true;
 		DLY = 1f;
