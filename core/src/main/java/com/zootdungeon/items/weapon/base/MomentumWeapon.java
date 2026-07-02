@@ -38,7 +38,7 @@ public class MomentumWeapon extends MeleeWeapon {
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         
-        tier = 0;
+        tier = 1;
     }
     
     @Override

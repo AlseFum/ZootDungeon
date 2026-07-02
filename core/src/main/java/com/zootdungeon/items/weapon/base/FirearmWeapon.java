@@ -45,7 +45,7 @@ public abstract class FirearmWeapon extends Weapon {
 	}
 
 	protected TriggerMode triggerMode = TriggerMode.SINGLE;
-	protected int tier = 3;
+	protected int tier = 1;
 
 	protected int maxRange = 8;
 	protected int burstCount = 3;

@@ -46,7 +46,7 @@ public class RangeReducedWeapon extends MeleeWeapon {
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         
-        tier = 2;
+        tier = 1;
         RCH = MAX_RANGE; // 设置最大攻击范围为4格
     }
     

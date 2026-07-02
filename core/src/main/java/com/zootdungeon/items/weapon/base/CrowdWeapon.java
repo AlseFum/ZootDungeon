@@ -45,7 +45,7 @@ public class CrowdWeapon extends MeleeWeapon {
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 0.9f;
 
-        tier = 5;
+        tier = 1;
         ACC = 0.8f; //20% penalty to accuracy
     }
 

@@ -31,7 +31,7 @@ public class BlockWeapon extends MeleeWeapon {
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.1f;
 
-        tier = 4;
+        tier = 1;
 
     }
 

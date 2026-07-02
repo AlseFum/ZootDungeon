@@ -274,7 +274,7 @@ public class MeleeWeapon extends Weapon {
 		return baseChargeUse(hero, target);
 	}
 
-	public int tier;
+	public int tier = 1;
 
 	@Override
 	public int min(int lvl) {

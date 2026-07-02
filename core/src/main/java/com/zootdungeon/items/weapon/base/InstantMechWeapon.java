@@ -45,7 +45,7 @@ public class InstantMechWeapon extends MeleeWeapon {
     
     {
         image = TextureRegistry.idByLabel("goldenglow_weapon");
-        tier = 0;
+        tier = 1;
     }
 
     @Override

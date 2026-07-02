@@ -45,7 +45,7 @@ public class CleaveWeapon  extends MeleeWeapon {
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1f;
 
-        tier = 3;
+        tier = 1;
     }
     public int dmgBoostBase=5;
     @Override

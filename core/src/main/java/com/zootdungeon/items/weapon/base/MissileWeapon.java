@@ -39,8 +39,9 @@ abstract public class MissileWeapon extends Weapon {
 	{
 		stackable = true;
 		levelKnown = true;
-		
+
 		bones = true;
+		tier = 1;
 
 		defaultAction = AC_THROW;
 		usesTargeting = true;

@@ -37,7 +37,7 @@ public class StateSwitchWeapon extends MeleeWeapon {
     
     {
         image = ItemSpriteSheet.SWORD;
-        tier = 3;
+        tier = 1;
         bones = false;
     }
     
