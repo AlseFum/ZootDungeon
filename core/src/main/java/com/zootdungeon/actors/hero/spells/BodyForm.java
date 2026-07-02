@@ -28,7 +28,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.abilities.cleric.Trinity;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.artifacts.HolyTome;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.ui.BuffIndicator;

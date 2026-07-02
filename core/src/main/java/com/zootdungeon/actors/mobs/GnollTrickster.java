@@ -31,7 +31,7 @@ import com.zootdungeon.actors.buffs.Poison;
 import com.zootdungeon.actors.mobs.npcs.Ghost;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GnollTricksterSprite;

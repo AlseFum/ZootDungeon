@@ -36,7 +36,7 @@ import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.CorrosionParticle;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;

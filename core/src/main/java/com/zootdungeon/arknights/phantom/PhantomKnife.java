@@ -12,7 +12,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
+import com.zootdungeon.items.weapon.base.AmbushWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GhostSprite;

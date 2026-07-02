@@ -26,7 +26,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.AscensionChallenge;
 import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.sprites.SlimeSprite;
 import com.watabou.utils.Random;
 

@@ -11,8 +11,8 @@ import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.items.trinkets.Trinket;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.plants.Plant;
 import com.zootdungeon.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
@@ -187,46 +187,46 @@ public final class LootRegistry {
         wandPool.register(com.zootdungeon.items.wands.WandOfRegrowth.class, 3f);
 
         // ========== T1 武器 ==========
-        wepTierPools[1].register(com.zootdungeon.items.weapon.melee.WornShortsword.class, 2f);
-        wepTierPools[1].register(com.zootdungeon.items.weapon.melee.MagesStaff.class, 0f);
-        wepTierPools[1].register(com.zootdungeon.items.weapon.ambushWeapon.Dagger.class, 2f);
-        wepTierPools[1].register(com.zootdungeon.items.weapon.fastWeapon.Gloves.class, 2f);
-        wepTierPools[1].register(com.zootdungeon.items.weapon.blockWeapon.Rapier.class, 2f);
-        wepTierPools[1].register(com.zootdungeon.items.weapon.accurateWeapon.Cudgel.class, 2f);
+        wepTierPools[1].register(com.zootdungeon.items.weapon.WornShortsword.class, 2f);
+        wepTierPools[1].register(com.zootdungeon.items.weapon.MagesStaff.class, 0f);
+        wepTierPools[1].register(com.zootdungeon.items.weapon.Dagger.class, 2f);
+        wepTierPools[1].register(com.zootdungeon.items.weapon.Gloves.class, 2f);
+        wepTierPools[1].register(com.zootdungeon.items.weapon.Rapier.class, 2f);
+        wepTierPools[1].register(com.zootdungeon.items.weapon.Cudgel.class, 2f);
 
         // ========== T2 武器 ==========
-        wepTierPools[2].register(com.zootdungeon.items.weapon.cleaveWeapon.Shortsword.class, 2f);
-        wepTierPools[2].register(com.zootdungeon.items.weapon.accurateWeapon.HandAxe.class, 2f);
-        wepTierPools[2].register(com.zootdungeon.items.weapon.longrangeWeapon.Spear.class, 2f);
-        wepTierPools[2].register(com.zootdungeon.items.weapon.blockWeapon.Quarterstaff.class, 2f);
-        wepTierPools[2].register(com.zootdungeon.items.weapon.ambushWeapon.Dirk.class, 2f);
-        wepTierPools[2].register(com.zootdungeon.items.weapon.crowdWeapon.Sickle.class, 2f);
+        wepTierPools[2].register(com.zootdungeon.items.weapon.Shortsword.class, 2f);
+        wepTierPools[2].register(com.zootdungeon.items.weapon.HandAxe.class, 2f);
+        wepTierPools[2].register(com.zootdungeon.items.weapon.Spear.class, 2f);
+        wepTierPools[2].register(com.zootdungeon.items.weapon.Quarterstaff.class, 2f);
+        wepTierPools[2].register(com.zootdungeon.items.weapon.Dirk.class, 2f);
+        wepTierPools[2].register(com.zootdungeon.items.weapon.Sickle.class, 2f);
 
         // ========== T3 武器 ==========
-        wepTierPools[3].register(com.zootdungeon.items.weapon.cleaveWeapon.Sword.class, 2f);
-        wepTierPools[3].register(com.zootdungeon.items.weapon.accurateWeapon.Mace.class, 2f);
-        wepTierPools[3].register(com.zootdungeon.items.weapon.melee.Scimitar.class, 2f);
-        wepTierPools[3].register(com.zootdungeon.items.weapon.blockWeapon.RoundShield.class, 2f);
-        wepTierPools[3].register(com.zootdungeon.items.weapon.fastWeapon.Sai.class, 2f);
-        wepTierPools[3].register(com.zootdungeon.items.weapon.longrangeWeapon.Whip.class, 2f);
+        wepTierPools[3].register(com.zootdungeon.items.weapon.Sword.class, 2f);
+        wepTierPools[3].register(com.zootdungeon.items.weapon.Mace.class, 2f);
+        wepTierPools[3].register(com.zootdungeon.items.weapon.Scimitar.class, 2f);
+        wepTierPools[3].register(com.zootdungeon.items.weapon.RoundShield.class, 2f);
+        wepTierPools[3].register(com.zootdungeon.items.weapon.Sai.class, 2f);
+        wepTierPools[3].register(com.zootdungeon.items.weapon.Whip.class, 2f);
 
         // ========== T4 武器 ==========
-        wepTierPools[4].register(com.zootdungeon.items.weapon.cleaveWeapon.Longsword.class, 2f);
-        wepTierPools[4].register(com.zootdungeon.items.weapon.accurateWeapon.BattleAxe.class, 2f);
-        wepTierPools[4].register(com.zootdungeon.items.weapon.melee.Flail.class, 2f);
-        wepTierPools[4].register(com.zootdungeon.items.weapon.melee.RunicBlade.class, 2f);
-        wepTierPools[4].register(com.zootdungeon.items.weapon.ambushWeapon.AssassinsBlade.class, 2f);
-        wepTierPools[4].register(com.zootdungeon.items.weapon.melee.Crossbow.class, 2f);
-        wepTierPools[4].register(com.zootdungeon.items.weapon.blockWeapon.Katana.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.Longsword.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.BattleAxe.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.Flail.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.RunicBlade.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.AssassinsBlade.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.Crossbow.class, 2f);
+        wepTierPools[4].register(com.zootdungeon.items.weapon.Katana.class, 2f);
 
         // ========== T5 武器 ==========
-        wepTierPools[5].register(com.zootdungeon.items.weapon.cleaveWeapon.Greatsword.class, 2f);
-        wepTierPools[5].register(com.zootdungeon.items.weapon.accurateWeapon.WarHammer.class, 2f);
-        wepTierPools[5].register(com.zootdungeon.items.weapon.longrangeWeapon.Glaive.class, 2f);
-        wepTierPools[5].register(com.zootdungeon.items.weapon.melee.Greataxe.class, 2f);
-        wepTierPools[5].register(com.zootdungeon.items.weapon.blockWeapon.Greatshield.class, 2f);
-        wepTierPools[5].register(com.zootdungeon.items.weapon.fastWeapon.Gauntlet.class, 2f);
-        wepTierPools[5].register(com.zootdungeon.items.weapon.crowdWeapon.WarScythe.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.Greatsword.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.WarHammer.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.Glaive.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.Greataxe.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.Greatshield.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.Gauntlet.class, 2f);
+        wepTierPools[5].register(com.zootdungeon.items.weapon.WarScythe.class, 2f);
 
         // ========== 防具（按 Tier 注册，深度过滤） ==========
         // T1 (depth 0-4): ClothArmor
@@ -256,7 +256,7 @@ public final class LootRegistry {
         misTierPools[1].register(com.zootdungeon.items.weapon.missiles.ThrowingStone.class, 3f);
         misTierPools[1].register(com.zootdungeon.items.weapon.missiles.ThrowingKnife.class, 3f);
         misTierPools[1].register(com.zootdungeon.items.weapon.missiles.ThrowingSpike.class, 3f);
-        misTierPools[1].register(com.zootdungeon.items.weapon.missiles.darts.Dart.class, 0f);
+        misTierPools[1].register(com.zootdungeon.items.weapon.darts.Dart.class, 0f);
 
         // ========== T2 远程武器 ==========
         misTierPools[2].register(com.zootdungeon.items.weapon.missiles.FishingSpear.class, 3f);

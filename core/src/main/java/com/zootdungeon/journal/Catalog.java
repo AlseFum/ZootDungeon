@@ -111,8 +111,8 @@ import com.zootdungeon.items.spells.UnstableSpell;
 import com.zootdungeon.items.spells.WildEnergy;
 import com.zootdungeon.items.trinkets.TrinketCatalyst;
 import com.zootdungeon.items.weapon.SpiritBow;
-import com.zootdungeon.items.weapon.Weapon;
-import com.zootdungeon.items.weapon.missiles.darts.TippedDart;
+import com.zootdungeon.items.weapon.base.Weapon;
+import com.zootdungeon.items.weapon.darts.TippedDart;
 import com.zootdungeon.messages.Messages;
 import com.watabou.utils.Bundle;
 

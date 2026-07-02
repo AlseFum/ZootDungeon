@@ -30,7 +30,7 @@ import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.TormentedSpiritSprite;
 import com.watabou.noosa.audio.Sample;

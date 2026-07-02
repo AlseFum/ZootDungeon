@@ -27,7 +27,7 @@ import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.effects.Lightning;
 import com.zootdungeon.effects.particles.SparkParticle;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.sprites.ItemSprite;
 import com.watabou.utils.BArray;
 import com.watabou.noosa.audio.Sample;

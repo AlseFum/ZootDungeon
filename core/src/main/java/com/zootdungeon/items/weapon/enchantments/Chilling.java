@@ -25,7 +25,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Chill;
 import com.zootdungeon.effects.Splash;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.sprites.ItemSprite.Glowing;
 import com.watabou.utils.Random;

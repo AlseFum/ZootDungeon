@@ -13,8 +13,8 @@ import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.stones.Runestone;
 import com.zootdungeon.items.trinkets.Trinket;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.plants.Plant;
 // import com.zootdungeon.utils.EventBus; // EventBus removed - TODO: restore when needed
 import com.watabou.utils.Bundle;

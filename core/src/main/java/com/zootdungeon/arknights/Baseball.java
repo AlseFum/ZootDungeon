@@ -1,7 +1,7 @@
 package com.zootdungeon.arknights;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 
 public class Baseball extends MissileWeapon {

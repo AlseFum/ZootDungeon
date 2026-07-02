@@ -5,7 +5,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.firearms.FirearmBullet;
 import com.zootdungeon.items.weapon.firearms.FirearmMagazine;
-import com.zootdungeon.items.weapon.firearms.FirearmWeapon;
+import com.zootdungeon.items.weapon.base.FirearmWeapon;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.windows.WndBag;
 import com.watabou.utils.Bundle;

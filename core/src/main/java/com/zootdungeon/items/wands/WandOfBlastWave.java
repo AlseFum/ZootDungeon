@@ -33,7 +33,7 @@ import com.zootdungeon.effects.Effects;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.weapon.enchantments.Elastic;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.features.Door;
 import com.zootdungeon.levels.traps.TenguDartTrap;

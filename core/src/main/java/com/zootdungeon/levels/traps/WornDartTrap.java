@@ -28,7 +28,7 @@ import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.weapon.missiles.darts.Dart;
+import com.zootdungeon.items.weapon.darts.Dart;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.MissileSprite;

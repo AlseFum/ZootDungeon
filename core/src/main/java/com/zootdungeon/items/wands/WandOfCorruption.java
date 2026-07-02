@@ -66,7 +66,7 @@ import com.zootdungeon.actors.mobs.Statue;
 import com.zootdungeon.actors.mobs.Swarm;
 import com.zootdungeon.actors.mobs.Wraith;
 import com.zootdungeon.effects.MagicMissile;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;

@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.weapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;
@@ -27,7 +28,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.BuffIndicator;

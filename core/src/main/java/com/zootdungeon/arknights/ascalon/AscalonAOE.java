@@ -8,7 +8,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BuffIndicator;

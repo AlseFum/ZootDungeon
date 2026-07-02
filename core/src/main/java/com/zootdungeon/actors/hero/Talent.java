@@ -53,10 +53,10 @@ import com.zootdungeon.items.stones.StoneOfIntuition;
 import com.zootdungeon.items.trinkets.ShardOfOblivion;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.weapon.SpiritBow;
-import com.zootdungeon.items.weapon.Weapon;
-import com.zootdungeon.items.weapon.fastWeapon.Gloves;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.Weapon;
+import com.zootdungeon.items.weapon.Gloves;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.messages.Messages;
@@ -1033,9 +1033,9 @@ public class Talent implements Bundlable {
 
 		// BLAZE: replace starting weapon with Saw
 		if (hero.subClass == HeroSubClass.BLAZE
-				&& hero.belongings.weapon instanceof com.zootdungeon.items.weapon.melee.WornShortsword) {
+				&& hero.belongings.weapon instanceof com.zootdungeon.items.weapon.WornShortsword) {
 			hero.belongings.weapon.detach(hero.belongings.backpack);
-			com.zootdungeon.items.weapon.melee.Saw saw = new com.zootdungeon.items.weapon.melee.Saw();
+			com.zootdungeon.items.weapon.Saw saw = new com.zootdungeon.items.weapon.Saw();
 			saw.identify();
 			hero.belongings.weapon = saw;
 			saw.activate(hero);

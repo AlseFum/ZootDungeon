@@ -37,7 +37,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.RainbowParticle;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;

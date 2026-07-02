@@ -38,7 +38,7 @@ import com.zootdungeon.items.armor.MailArmor;
 import com.zootdungeon.items.armor.PlateArmor;
 import com.zootdungeon.items.armor.ScaleArmor;
 import com.zootdungeon.items.trinkets.ParchmentScrap;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.journal.Notes;
 import com.zootdungeon.levels.themes.sewer.SewerLevel;
 import com.zootdungeon.levels.rooms.Room;

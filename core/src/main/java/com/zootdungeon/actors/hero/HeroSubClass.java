@@ -5,7 +5,7 @@ import com.zootdungeon.actors.blobs.MiseryShadowBlob;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Preparation;
 import com.zootdungeon.ui.HeroIcon;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.watabou.noosa.Game;

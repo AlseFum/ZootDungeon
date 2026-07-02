@@ -33,7 +33,7 @@ import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.buffs.Frost;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.Heap;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.levels.rooms.special.MagicalFireRoom;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.sprites.ItemSpriteSheet;

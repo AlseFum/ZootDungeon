@@ -129,17 +129,17 @@ import com.zootdungeon.items.trinkets.ThirteenLeafClover;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfLivingEarth;
 import com.zootdungeon.items.weapon.SpiritBow;
-import com.zootdungeon.items.weapon.Weapon;
-import com.zootdungeon.items.weapon.firearms.FirearmWeapon;
-import com.zootdungeon.items.weapon.melee.Crossbow;
-import com.zootdungeon.items.weapon.melee.Flail;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
-import com.zootdungeon.items.weapon.blockWeapon.Quarterstaff;
-import com.zootdungeon.items.weapon.blockWeapon.RoundShield;
-import com.zootdungeon.items.weapon.fastWeapon.Sai;
-import com.zootdungeon.items.weapon.melee.Scimitar;
-import com.zootdungeon.items.weapon.melee.WornShortsword;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.Weapon;
+import com.zootdungeon.items.weapon.base.FirearmWeapon;
+import com.zootdungeon.items.weapon.Crossbow;
+import com.zootdungeon.items.weapon.Flail;
+import com.zootdungeon.items.weapon.MagesStaff;
+import com.zootdungeon.items.weapon.Quarterstaff;
+import com.zootdungeon.items.weapon.RoundShield;
+import com.zootdungeon.items.weapon.Sai;
+import com.zootdungeon.items.weapon.Scimitar;
+import com.zootdungeon.items.weapon.WornShortsword;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.journal.Document;
 import com.zootdungeon.journal.Notes;
@@ -1879,7 +1879,7 @@ public class Hero extends Char {
                 }
                 // Saw Mastery: chance for extra hit
                 if (hasTalent(Talent.BLAZE_SAW_MASTERY)
-                        && belongings.attackingWeapon() instanceof com.zootdungeon.items.weapon.melee.Saw) {
+                        && belongings.attackingWeapon() instanceof com.zootdungeon.items.weapon.Saw) {
                     float extraHitChance = pointsInTalent(Talent.BLAZE_SAW_MASTERY) / 3f;
                     if (Random.Float() < extraHitChance) {
                         enemy.damage(damage, Hero.this);

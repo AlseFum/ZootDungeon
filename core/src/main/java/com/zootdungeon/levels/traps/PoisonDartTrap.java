@@ -31,7 +31,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Poison;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.weapon.missiles.darts.PoisonDart;
+import com.zootdungeon.items.weapon.darts.PoisonDart;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.MissileSprite;

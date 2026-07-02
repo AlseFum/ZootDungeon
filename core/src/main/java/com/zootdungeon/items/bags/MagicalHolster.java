@@ -24,7 +24,7 @@ package com.zootdungeon.items.bags;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bombs.Bomb;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 
 public class MagicalHolster extends Bag {

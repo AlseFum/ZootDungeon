@@ -64,7 +64,7 @@ import com.zootdungeon.items.wands.WandOfWarding;
 import com.zootdungeon.items.weapon.enchantments.Blazing;
 import com.zootdungeon.items.weapon.enchantments.Grim;
 import com.zootdungeon.items.weapon.enchantments.Shocking;
-import com.zootdungeon.items.weapon.missiles.darts.HolyDart;
+import com.zootdungeon.items.weapon.darts.HolyDart;
 import com.zootdungeon.levels.traps.DisintegrationTrap;
 import com.zootdungeon.levels.traps.GrimTrap;
 import com.zootdungeon.sprites.ItemSprite;

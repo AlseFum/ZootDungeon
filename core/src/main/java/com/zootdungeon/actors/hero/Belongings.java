@@ -38,7 +38,7 @@ import com.zootdungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.ShardOfOblivion;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.utils.GLog;

@@ -27,7 +27,7 @@ import com.zootdungeon.effects.particles.BlastParticle;
 import com.zootdungeon.effects.particles.SmokeParticle;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.bombs.Bomb;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSprite;

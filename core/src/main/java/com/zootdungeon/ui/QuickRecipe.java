@@ -69,7 +69,7 @@ import com.zootdungeon.items.stones.Runestone;
 
 
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.plants.Plant;
 import com.zootdungeon.scenes.AlchemyScene;

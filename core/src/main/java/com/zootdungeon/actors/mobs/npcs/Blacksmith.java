@@ -34,7 +34,7 @@ import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.quest.DarkGold;
 import com.zootdungeon.items.quest.Pickaxe;
 import com.zootdungeon.items.trinkets.ParchmentScrap;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.journal.Notes;
 import com.zootdungeon.levels.rooms.Room;
 import com.zootdungeon.levels.rooms.quest.BlacksmithRoom;

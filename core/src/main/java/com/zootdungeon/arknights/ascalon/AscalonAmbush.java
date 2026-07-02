@@ -5,7 +5,7 @@ import com.zootdungeon.actors.blobs.Blob;
 import com.zootdungeon.actors.blobs.SmokeScreen;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.mobs.Mob;
-import com.zootdungeon.items.weapon.ambushWeapon.AmbushWeapon;
+import com.zootdungeon.items.weapon.base.AmbushWeapon;
 import com.zootdungeon.sprites.TextureRegistry;
 
 public class AscalonAmbush extends AmbushWeapon {

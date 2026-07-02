@@ -29,7 +29,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.MonkEnergy;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.AttackIndicator;

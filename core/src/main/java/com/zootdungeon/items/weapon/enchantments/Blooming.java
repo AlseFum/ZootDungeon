@@ -26,7 +26,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Regeneration;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.LeafParticle;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.scenes.GameScene;

@@ -32,7 +32,7 @@ import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.Beam;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.PurpleParticle;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.ItemSpriteSheet;

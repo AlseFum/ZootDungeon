@@ -27,7 +27,7 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.Speck;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.utils.GLog;

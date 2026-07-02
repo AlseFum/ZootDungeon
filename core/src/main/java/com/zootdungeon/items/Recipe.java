@@ -62,7 +62,7 @@ import com.zootdungeon.items.spells.WildEnergy;
 import com.zootdungeon.items.trinkets.Trinket;
 import com.zootdungeon.items.trinkets.TrinketCatalyst;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.watabou.utils.Reflection;
 
 public abstract class Recipe {

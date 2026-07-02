@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -33,7 +34,7 @@ import com.zootdungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.zootdungeon.effects.Splash;
 import com.zootdungeon.effects.particles.LeafParticle;
 import com.zootdungeon.items.rings.RingOfSharpshooting;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.plants.Blindweed;
 import com.zootdungeon.plants.Firebloom;

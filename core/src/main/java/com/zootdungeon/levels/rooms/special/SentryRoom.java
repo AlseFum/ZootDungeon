@@ -37,7 +37,7 @@ import com.zootdungeon.items.Heap;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.potions.PotionOfHaste;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;

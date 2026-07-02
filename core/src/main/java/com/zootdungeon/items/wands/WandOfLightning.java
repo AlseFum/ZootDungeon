@@ -33,7 +33,7 @@ import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Lightning;
 import com.zootdungeon.effects.particles.SparkParticle;
 import com.zootdungeon.items.weapon.enchantments.Shocking;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.PixelScene;

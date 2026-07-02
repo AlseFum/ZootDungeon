@@ -38,7 +38,7 @@ import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.BloodParticle;
 import com.zootdungeon.effects.particles.ShadowParticle;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;

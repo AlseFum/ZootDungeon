@@ -1,4 +1,5 @@
 package com.zootdungeon.items.weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -9,7 +10,7 @@ import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;

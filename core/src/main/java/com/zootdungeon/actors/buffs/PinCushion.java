@@ -23,9 +23,9 @@ package com.zootdungeon.actors.buffs;
 
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
-import com.zootdungeon.items.weapon.missiles.darts.Dart;
-import com.zootdungeon.items.weapon.missiles.darts.TippedDart;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
+import com.zootdungeon.items.weapon.darts.Dart;
+import com.zootdungeon.items.weapon.darts.TippedDart;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.ui.BuffIndicator;
 import com.watabou.utils.Bundle;

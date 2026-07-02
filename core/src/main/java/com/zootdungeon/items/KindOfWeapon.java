@@ -25,7 +25,7 @@ import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;

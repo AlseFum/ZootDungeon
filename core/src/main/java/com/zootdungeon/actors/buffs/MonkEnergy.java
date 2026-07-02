@@ -36,7 +36,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.rings.RingOfForce;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.items.ItemEffects;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.features.Door;
 import com.zootdungeon.mechanics.Ballistica;

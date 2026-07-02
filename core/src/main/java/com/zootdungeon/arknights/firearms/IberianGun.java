@@ -2,7 +2,7 @@ package com.zootdungeon.arknights.firearms;
 
 import com.zootdungeon.items.weapon.firearms.FirearmBullet;
 import com.zootdungeon.items.weapon.firearms.FirearmMagazine;
-import com.zootdungeon.items.weapon.firearms.FirearmWeapon;
+import com.zootdungeon.items.weapon.base.FirearmWeapon;
 import com.watabou.utils.Bundle;
 
 /**

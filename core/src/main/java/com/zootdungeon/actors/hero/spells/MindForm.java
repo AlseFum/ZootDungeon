@@ -32,7 +32,7 @@ import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.trinkets.WondrousResin;
 import com.zootdungeon.items.wands.CursedWand;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.missiles.MissileWeapon;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;

@@ -35,7 +35,7 @@ import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.scrolls.ScrollOfTransmutation;
 import com.zootdungeon.items.scrolls.exotic.ExoticScroll;
 import com.zootdungeon.items.stones.Runestone;
-import com.zootdungeon.items.weapon.missiles.darts.TippedDart;
+import com.zootdungeon.items.weapon.darts.TippedDart;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.plants.Plant;
 import com.zootdungeon.sprites.ItemSpriteSheet;

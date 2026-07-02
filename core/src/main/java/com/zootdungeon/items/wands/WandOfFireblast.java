@@ -35,7 +35,7 @@ import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.actors.hero.abilities.mage.WildMagic;
 import com.zootdungeon.effects.MagicMissile;
 import com.zootdungeon.items.weapon.enchantments.Blazing;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.mechanics.Ballistica;

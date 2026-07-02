@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.weapon.missiles;
+import com.zootdungeon.items.weapon.base.MissileWeapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Badges;

@@ -29,7 +29,7 @@ import com.zootdungeon.items.artifacts.DriedRose;
 import com.zootdungeon.items.remains.RemainsItem;
 import com.zootdungeon.items.wands.WandOfLivingEarth;
 import com.zootdungeon.items.wands.WandOfWarding;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.EarthGuardianSprite;

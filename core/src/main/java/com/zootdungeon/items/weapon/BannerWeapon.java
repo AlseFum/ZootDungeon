@@ -20,6 +20,7 @@
  */
 
 package com.zootdungeon.items.weapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -31,7 +32,7 @@ import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.Speck;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;

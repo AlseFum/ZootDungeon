@@ -15,7 +15,7 @@ import com.zootdungeon.effects.Speck;
 import com.zootdungeon.effects.particles.ShadowParticle;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.sprites.TextureRegistry;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;

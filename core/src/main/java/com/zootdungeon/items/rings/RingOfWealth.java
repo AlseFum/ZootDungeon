@@ -44,7 +44,7 @@ import com.zootdungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.zootdungeon.items.spells.UnstableSpell;
 import com.zootdungeon.items.stones.StoneOfEnchantment;
 import com.zootdungeon.items.trinkets.ExoticCrystals;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Visual;

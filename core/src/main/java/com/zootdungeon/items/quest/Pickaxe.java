@@ -34,7 +34,7 @@ import com.zootdungeon.actors.mobs.Crab;
 import com.zootdungeon.actors.mobs.Scorpio;
 import com.zootdungeon.actors.mobs.Spinner;
 import com.zootdungeon.actors.mobs.Swarm;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.levels.MiningLevel;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;

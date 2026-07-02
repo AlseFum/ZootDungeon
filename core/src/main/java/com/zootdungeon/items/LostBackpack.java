@@ -29,7 +29,7 @@ import com.zootdungeon.items.artifacts.CloakOfShadows;
 import com.zootdungeon.items.artifacts.HolyTome;
 import com.zootdungeon.items.bags.MagicalHolster;
 import com.zootdungeon.items.wands.Wand;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.HeroSprite;
 import com.zootdungeon.sprites.ItemSpriteSheet;

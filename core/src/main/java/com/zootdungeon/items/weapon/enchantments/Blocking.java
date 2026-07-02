@@ -27,7 +27,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.ShieldBuff;
 import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.Speck;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.zootdungeon.sprites.ItemSprite;

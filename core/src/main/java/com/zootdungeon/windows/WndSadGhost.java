@@ -25,7 +25,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.mobs.npcs.Ghost;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.armor.Armor;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.PixelScene;

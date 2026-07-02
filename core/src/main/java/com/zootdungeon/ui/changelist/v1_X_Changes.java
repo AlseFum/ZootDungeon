@@ -34,7 +34,7 @@ import com.zootdungeon.items.scrolls.exotic.ScrollOfAntiMagic;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.zootdungeon.items.spells.TelekineticGrab;
 import com.zootdungeon.items.wands.WandOfTransfusion;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.ChangesScene;
 import com.zootdungeon.sprites.CharSprite;

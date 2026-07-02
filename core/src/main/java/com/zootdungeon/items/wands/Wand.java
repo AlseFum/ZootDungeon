@@ -61,7 +61,7 @@ import com.zootdungeon.items.rings.RingOfEnergy;
 import com.zootdungeon.items.scrolls.ScrollOfRecharging;
 import com.zootdungeon.items.trinkets.ShardOfOblivion;
 import com.zootdungeon.items.trinkets.WondrousResin;
-import com.zootdungeon.items.weapon.melee.MagesStaff;
+import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;

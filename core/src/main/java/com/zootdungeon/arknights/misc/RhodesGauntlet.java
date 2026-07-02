@@ -17,7 +17,7 @@ import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.buffs.Vertigo;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.KindOfWeapon;
-import com.zootdungeon.items.weapon.fastWeapon.FastWeapon;
+import com.zootdungeon.items.weapon.base.FastWeapon;
 import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;

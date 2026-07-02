@@ -49,7 +49,7 @@ import com.zootdungeon.effects.particles.LeafParticle;
 import com.zootdungeon.items.armor.glyphs.Viscosity;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
-import com.zootdungeon.items.weapon.crowdWeapon.Sickle;
+import com.zootdungeon.items.weapon.Sickle;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.traps.GeyserTrap;

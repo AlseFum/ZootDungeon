@@ -62,7 +62,7 @@ import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.DimensionalSundial;
 import com.zootdungeon.items.trinkets.TrinketCatalyst;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Document;
 import com.zootdungeon.journal.Journal;

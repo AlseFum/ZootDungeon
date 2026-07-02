@@ -24,7 +24,7 @@ package com.zootdungeon.items.weapon.curses;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.FlavourBuff;
-import com.zootdungeon.items.weapon.Weapon;
+import com.zootdungeon.items.weapon.base.Weapon;
 import com.zootdungeon.sprites.ItemSprite;
 import com.zootdungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;

@@ -42,7 +42,7 @@ import com.zootdungeon.items.bags.VelvetPouch;
 import com.zootdungeon.items.potions.Potion;
 import com.zootdungeon.items.remains.RemainsItem;
 import com.zootdungeon.items.scrolls.Scroll;
-import com.zootdungeon.items.weapon.melee.MeleeWeapon;
+import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.journal.Bestiary;
 import com.zootdungeon.journal.Catalog;
 import com.zootdungeon.journal.Document;
