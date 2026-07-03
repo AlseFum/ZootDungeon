@@ -61,6 +61,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MeleeWeapon extends Weapon {
 
@@ -275,6 +276,21 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	public int tier = 1;
+
+	@Override
+	public Map<String, Object> getConfig() {
+		Map<String, Object> cfg = super.getConfig();
+		cfg.put("tier", tier);
+		return cfg;
+	}
+
+	@Override
+	public void setConfig(String key, Object value) {
+		switch (key) {
+			case "tier": tier = (Integer) value; break;
+			default: super.setConfig(key, value); break;
+		}
+	}
 
 	@Override
 	public int min(int lvl) {

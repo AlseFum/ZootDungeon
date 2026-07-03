@@ -27,6 +27,7 @@ import com.watabou.utils.DeviceCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class FirearmWeapon extends Weapon {
 
@@ -52,6 +53,29 @@ public abstract class FirearmWeapon extends Weapon {
 	protected int autoCount = 5;
 	/** Gun-side multiplier applied to bullet base damage. */
 	protected float gunDamageMult = 1f;
+
+	@Override
+	public Map<String, Object> getConfig() {
+		Map<String, Object> cfg = super.getConfig();
+		cfg.put("tier", tier);
+		cfg.put("maxRange", maxRange);
+		cfg.put("burstCount", burstCount);
+		cfg.put("autoCount", autoCount);
+		cfg.put("gunDamageMult", gunDamageMult);
+		return cfg;
+	}
+
+	@Override
+	public void setConfig(String key, Object value) {
+		switch (key) {
+			case "tier": tier = (Integer) value; break;
+			case "maxRange": maxRange = (Integer) value; break;
+			case "burstCount": burstCount = (Integer) value; break;
+			case "autoCount": autoCount = (Integer) value; break;
+			case "gunDamageMult": gunDamageMult = ((Number) value).floatValue(); break;
+			default: super.setConfig(key, value); break;
+		}
+	}
 
 	/** Ammo behavior is fully delegated to this, if present. */
 	protected FirearmMagazine magazine = null;

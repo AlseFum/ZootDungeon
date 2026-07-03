@@ -24,6 +24,7 @@ import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.ui.AttackIndicator;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
+import java.util.Map;
 
 public class BlockWeapon extends MeleeWeapon {
     {
@@ -37,6 +38,23 @@ public class BlockWeapon extends MeleeWeapon {
 
     public int drBase = 3;
     public int drPerLevel = 1;
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("drBase", drBase);
+        cfg.put("drPerLevel", drPerLevel);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "drBase": drBase = (Integer) value; break;
+            case "drPerLevel": drPerLevel = (Integer) value; break;
+            default: super.setConfig(key, value); break;
+        }
+    }
 
     @Override
     public int max(int lvl) {

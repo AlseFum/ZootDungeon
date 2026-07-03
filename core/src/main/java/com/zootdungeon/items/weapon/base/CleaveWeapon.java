@@ -37,6 +37,7 @@ import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.zootdungeon.items.weapon.base.MeleeWeapon;
+import java.util.Map;
 
 public class CleaveWeapon  extends MeleeWeapon {
 
@@ -48,6 +49,22 @@ public class CleaveWeapon  extends MeleeWeapon {
         tier = 1;
     }
     public int dmgBoostBase=5;
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("dmgBoostBase", dmgBoostBase);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "dmgBoostBase": dmgBoostBase = (Integer) value; break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     @Override
     protected int baseChargeUse(Hero hero, Char target){
         if (hero.buff(Sword.CleaveTracker.class) != null){

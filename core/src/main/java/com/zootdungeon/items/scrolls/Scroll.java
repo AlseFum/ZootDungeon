@@ -106,7 +106,7 @@ public abstract class Scroll extends Item {
 
     @SuppressWarnings("unchecked")
     public static void initLabels() {
-        handler = new ItemStatusHandler<>((Class<? extends Scroll>[]) Generator.Category.SCROLL.classes, runes);
+        handler = new ItemStatusHandler<>((Class<? extends Scroll>[]) Generator.Category.SCROLL.pool().classes, runes);
     }
 
     public static void clearLabels() {
@@ -135,7 +135,7 @@ public abstract class Scroll extends Item {
 
     @SuppressWarnings("unchecked")
     public static void restore(Bundle bundle) {
-        handler = new ItemStatusHandler<>((Class<? extends Scroll>[]) Generator.Category.SCROLL.classes, runes, bundle);
+        handler = new ItemStatusHandler<>((Class<? extends Scroll>[]) Generator.Category.SCROLL.pool().classes, runes, bundle);
     }
 
     public Scroll() {
@@ -305,7 +305,7 @@ public abstract class Scroll extends Item {
     }
 
     public static boolean allKnown() {
-        return handler != null && handler.known().size() == Generator.Category.SCROLL.classes.length;
+        return handler != null && handler.known().size() == Generator.Category.SCROLL.pool().classes.length;
     }
 
     @Override

@@ -126,6 +126,14 @@ public class Generator {
 					// 如果 LootRegistry 中没有，创建一个空的（用于自定义类别）
 					pool = LootRegistry.category(key, superClass, make);
 				}
+				// 同步数据回 Category 字段，兼容旧代码直接访问 .classes/.probs
+				if (pool != null && pool.classes.length > 0) {
+					this.classes = pool.classes;
+					this.probs = pool.probs;
+					this.defaultProbs = pool.defaultProbs;
+					this.defaultProbs2 = pool.defaultProbs2;
+					this.defaultProbsTotal = pool.defaultProbsTotal;
+				}
 			}
 			return pool;
 		}
@@ -183,6 +191,7 @@ public class Generator {
 		generalReset();
 
 		for (Category cat : Category.values()) {
+			cat.pool(); // 触发延迟同步，确保 classes/probs 与 LootRegistry 一致
 			cat.using2ndProbs =  cat.defaultProbs2 != null && Random.Int(2) == 0;
 			reset(cat);
 			if (cat.defaultProbs != null) {

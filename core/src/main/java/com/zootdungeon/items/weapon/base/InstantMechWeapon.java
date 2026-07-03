@@ -24,6 +24,7 @@ import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 public class InstantMechWeapon extends MeleeWeapon {
     static {
@@ -42,7 +43,28 @@ public class InstantMechWeapon extends MeleeWeapon {
     public float autoTargetChance = 0.2f;
     public int transferRange = 5;
     public int explodeRange = 2;
-    
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("explodeChance", explodeChance);
+        cfg.put("autoTargetChance", autoTargetChance);
+        cfg.put("transferRange", transferRange);
+        cfg.put("explodeRange", explodeRange);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "explodeChance": explodeChance = ((Number) value).floatValue(); break;
+            case "autoTargetChance": autoTargetChance = ((Number) value).floatValue(); break;
+            case "transferRange": transferRange = (Integer) value; break;
+            case "explodeRange": explodeRange = (Integer) value; break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     {
         image = TextureRegistry.idByLabel("goldenglow_weapon");
         tier = 1;

@@ -33,6 +33,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 abstract public class MissileWeapon extends Weapon {
 
@@ -62,6 +63,21 @@ abstract public class MissileWeapon extends Weapon {
 	protected MissileWeapon parent;
 	
 	public int tier;
+
+	@Override
+	public Map<String, Object> getConfig() {
+		Map<String, Object> cfg = super.getConfig();
+		cfg.put("tier", tier);
+		return cfg;
+	}
+
+	@Override
+	public void setConfig(String key, Object value) {
+		switch (key) {
+			case "tier": tier = (Integer) value; break;
+			default: super.setConfig(key, value); break;
+		}
+	}
 	
 	@Override
 	public int min() {

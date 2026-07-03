@@ -16,6 +16,7 @@ import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.ui.AttackIndicator;
 import com.zootdungeon.utils.GLog;
+import java.util.Map;
 
 public class AccurateWeapon  extends MeleeWeapon{
     {
@@ -29,6 +30,22 @@ public class AccurateWeapon  extends MeleeWeapon{
         bones = false;
     }
     public int dmgBoostBase=3;
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("dmgBoostBase", dmgBoostBase);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "dmgBoostBase": dmgBoostBase = (Integer) value; break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     @Override
     public int max(int lvl) {
         return  4*(tier+1) +    //8 base, down from 10

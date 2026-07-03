@@ -19,6 +19,7 @@ import com.zootdungeon.utils.GLog;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * 双刀：单把可投掷，两把可组合为一把；组合后每次攻击会攻击两次。
@@ -37,6 +38,23 @@ public class TwinBlade extends MeleeWeapon {
     /** 是否为组合状态（两把合为一把） */
     private boolean combined = false;
     private float doubleStrikeChance = 1f;
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("combined", combined);
+        cfg.put("doubleStrikeChance", doubleStrikeChance);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "combined": combined = (Boolean) value; break;
+            case "doubleStrikeChance": doubleStrikeChance = ((Number) value).floatValue(); break;
+            default: super.setConfig(key, value); break;
+        }
+    }
 
     @Override
     public String name() {

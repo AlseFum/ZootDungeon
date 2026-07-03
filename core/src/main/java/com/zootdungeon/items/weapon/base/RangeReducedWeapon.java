@@ -30,12 +30,28 @@ import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import java.util.Map;
 
 public class RangeReducedWeapon extends MeleeWeapon {
     
     // 伤害衰减倍率：1格外的攻击伤害会乘以这个值
     public float reduceRate = 0.8f;
-    
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("reduceRate", reduceRate);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "reduceRate": reduceRate = ((Number) value).floatValue(); break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     // 最大攻击范围：最多可以攻击4格外的敌人
     private static final int MAX_RANGE = 4;
     private static final String REDUCE_RATE = "reduceRate";

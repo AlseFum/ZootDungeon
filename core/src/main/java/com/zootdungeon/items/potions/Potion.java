@@ -148,7 +148,7 @@ public class Potion extends Item {
 	
 	@SuppressWarnings("unchecked")
 	public static void initColors() {
-		handler = new ItemStatusHandler<>( (Class<? extends Potion>[])Generator.Category.POTION.classes, colors );
+		handler = new ItemStatusHandler<>( (Class<? extends Potion>[])Generator.Category.POTION.pool().classes, colors );
 	}
 
 	public static void clearColors() {
@@ -178,7 +178,7 @@ public class Potion extends Item {
 	
 	@SuppressWarnings("unchecked")
 	public static void restore( Bundle bundle ) {
-		handler = new ItemStatusHandler<>( (Class<? extends Potion>[])Generator.Category.POTION.classes, colors, bundle );
+		handler = new ItemStatusHandler<>( (Class<? extends Potion>[])Generator.Category.POTION.pool().classes, colors, bundle );
 	}
 	
 	public Potion() {
@@ -410,7 +410,7 @@ public class Potion extends Item {
 	}
 	
 	public static boolean allKnown() {
-		return handler != null && handler.known().size() == Generator.Category.POTION.classes.length;
+		return handler != null && handler.known().size() == Generator.Category.POTION.pool().classes.length;
 	}
 	
 	protected int splashColor(){

@@ -79,7 +79,7 @@ public class Ring extends EquipableMisc {
 	
 	@SuppressWarnings("unchecked")
 	public static void initGems() {
-		handler = new ItemStatusHandler<>( (Class<? extends Ring>[])Generator.Category.RING.classes, gems );
+		handler = new ItemStatusHandler<>( (Class<? extends Ring>[])Generator.Category.RING.pool().classes, gems );
 	}
 
 	public static void clearGems(){
@@ -96,7 +96,7 @@ public class Ring extends EquipableMisc {
 	
 	@SuppressWarnings("unchecked")
 	public static void restore( Bundle bundle ) {
-		handler = new ItemStatusHandler<>( (Class<? extends Ring>[])Generator.Category.RING.classes, gems, bundle );
+		handler = new ItemStatusHandler<>( (Class<? extends Ring>[])Generator.Category.RING.pool().classes, gems, bundle );
 	}
 	
 	public Ring() {
@@ -296,7 +296,7 @@ public class Ring extends EquipableMisc {
 	}
 	
 	public static boolean allKnown() {
-		return handler != null && handler.known().size() == Generator.Category.RING.classes.length;
+		return handler != null && handler.known().size() == Generator.Category.RING.pool().classes.length;
 	}
 	
 	@Override

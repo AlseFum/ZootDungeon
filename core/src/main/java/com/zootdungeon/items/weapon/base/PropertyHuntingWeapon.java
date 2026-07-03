@@ -11,12 +11,28 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 public class PropertyHuntingWeapon extends MeleeWeapon {
     
     // 针对指定property敌人的伤害倍率（额外增加）
     private float damageMultiplier = 1.5f;
-    
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("damageMultiplier", damageMultiplier);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "damageMultiplier": damageMultiplier = ((Number) value).floatValue(); break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     // 要检测的property列表（可以在子类中覆盖或初始化时设置）
     protected HashSet<Char.Property> targetProperties = new HashSet<>();
     private static final String TARGET_PROPERTIES = "targetProperties";

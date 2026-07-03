@@ -32,6 +32,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class StateSwitchWeapon extends MeleeWeapon {
     
@@ -52,7 +53,24 @@ public class StateSwitchWeapon extends MeleeWeapon {
     
     // 防御转换比例（防御骰值的百分比加入攻击）
     private float defenseToAttackRatio = 0.5f; // 50%
-    
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("currentState", currentState);
+        cfg.put("defenseToAttackRatio", defenseToAttackRatio);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "currentState": currentState = (WeaponState) value; break;
+            case "defenseToAttackRatio": defenseToAttackRatio = ((Number) value).floatValue(); break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     public static final String AC_SWITCH = "SWITCH";
     
     @Override

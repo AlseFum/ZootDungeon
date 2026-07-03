@@ -21,6 +21,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MomentumWeapon extends MeleeWeapon {
     
@@ -32,7 +33,26 @@ public class MomentumWeapon extends MeleeWeapon {
     
     // 冲量衰减：每回合衰减
     public float momentumDecay = 0.15f;
-    
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("pushThreshold", pushThreshold);
+        cfg.put("damageMultiplierPerSpeed", damageMultiplierPerSpeed);
+        cfg.put("momentumDecay", momentumDecay);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "pushThreshold": pushThreshold = ((Number) value).floatValue(); break;
+            case "damageMultiplierPerSpeed": damageMultiplierPerSpeed = ((Number) value).floatValue(); break;
+            case "momentumDecay": momentumDecay = ((Number) value).floatValue(); break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     {
         image = ItemSpriteSheet.SPEAR;
         hitSound = Assets.Sounds.HIT_SLASH;
@@ -136,17 +156,15 @@ public class MomentumWeapon extends MeleeWeapon {
             
             // 如果冲量够高，推开敌人
             if (momentum >= pushThreshold && defender.isAlive()) {
-                // 计算推开方向：从攻击者指向目标
-                Ballistica trajectory = new Ballistica(attacker.pos, defender.pos, Ballistica.PROJECTILE);
-                
-                // 如果轨迹有效且目标还在原位置
-                if (trajectory.path.size() > 1 && defender.pos == trajectory.collisionPos) {
-                    // 计算推开强度：基于冲量
-                    int pushPower = Math.min(3, Math.round(momentum));
-                    
-                    // 推开敌人
-                    ItemEffects.knockback(defender, trajectory, pushPower, false, false, this);
-                }
+                // 构建从目标位置延伸出去的轨迹，确保推力方向是远离攻击者
+                Ballistica trajectory = new Ballistica(attacker.pos, defender.pos, Ballistica.STOP_TARGET);
+                trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+
+                // 计算推开强度：基于冲量
+                int pushPower = Math.min(3, Math.round(momentum));
+
+                // 推开敌人
+                ItemEffects.knockback(defender, trajectory, pushPower, false, false, this);
             }
         }
         

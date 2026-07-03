@@ -28,6 +28,7 @@ import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 public class TransferMechWeapon extends MeleeWeapon {
     static {
@@ -43,7 +44,24 @@ public class TransferMechWeapon extends MeleeWeapon {
     private HashSet<TransferMechChar> activeMechChars = new HashSet<>();
     public int aoeRange = 2;
     public int searchRange = 8;
-    
+
+    @Override
+    public Map<String, Object> getConfig() {
+        Map<String, Object> cfg = super.getConfig();
+        cfg.put("aoeRange", aoeRange);
+        cfg.put("searchRange", searchRange);
+        return cfg;
+    }
+
+    @Override
+    public void setConfig(String key, Object value) {
+        switch (key) {
+            case "aoeRange": aoeRange = (Integer) value; break;
+            case "searchRange": searchRange = (Integer) value; break;
+            default: super.setConfig(key, value); break;
+        }
+    }
+
     {
         image = TextureRegistry.idByLabel("goldenglow_weapon");
         tier = 1;
