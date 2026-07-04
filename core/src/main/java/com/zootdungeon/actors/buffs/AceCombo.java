@@ -28,7 +28,6 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.items.BrokenSeal;
-import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;
@@ -152,7 +151,7 @@ public class AceCombo extends Buff implements ActionIndicator.Action {
 		float[] ratios = {0f, 0.05f, 0.08f, 0.12f};
 		int shieldAmt = Math.round(hero.HT * ratios[pts]);
 		BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-		shield.supercharge(Math.min(shield.maxShield(), shield.shielding() + shieldAmt));
+		shield.incShield(shieldAmt);
 	}
 
 	@Override
@@ -321,10 +320,6 @@ public class AceCombo extends Buff implements ActionIndicator.Action {
 					break;
 				}
 				case ACE_STRIKE:
-					if (!enemy.isAlive()) {
-						GuardModal.AceAbsorptionCounter abs = hero.buff(GuardModal.AceAbsorptionCounter.class);
-						if (abs != null) abs.absorbedHits = 0;
-					}
 					detach();
 					ActionIndicator.clearAction(this);
 					break;

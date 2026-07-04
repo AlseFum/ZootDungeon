@@ -83,7 +83,7 @@ public class Regeneration extends Buff {
 				MetabolismOverclock overclock = target.buff(MetabolismOverclock.class);
 				if (overclock != null && overclock.regenMult > 0) delay /= overclock.regenMult;
 				BlazeHeatBuff blazeHeat = target.buff(BlazeHeatBuff.class);
-				if (blazeHeat != null) delay /= blazeHeat.regenMultiplier();
+				if (blazeHeat != null) delay /= blazeHeat.consumeRegenBoost();
 
 				partialRegen += 1f / delay;
 

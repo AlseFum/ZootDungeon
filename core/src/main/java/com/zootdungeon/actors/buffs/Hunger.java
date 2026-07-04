@@ -94,7 +94,7 @@ public class Hunger extends Buff implements Hero.Doom {
 				MetabolismOverclock overclock = target.buff(MetabolismOverclock.class);
 				if (overclock != null && overclock.hungerMult > 0) hungerDelay /= overclock.hungerMult;
 				BlazeHeatBuff blazeHeat = target.buff(BlazeHeatBuff.class);
-				if (blazeHeat != null) hungerDelay /= blazeHeat.hungerMultiplier();
+				if (blazeHeat != null) hungerDelay /= blazeHeat.consumeHungerBoost();
 
 				float newLevel = level + (1f/hungerDelay);
 				if (newLevel >= STARVING) {

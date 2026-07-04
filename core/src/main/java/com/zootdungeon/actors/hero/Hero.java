@@ -1922,26 +1922,14 @@ public class Hero extends Char {
             }
         }
 
-        // ACE: GuardModal hit absorption + combo from being hit
+        // ACE: combo from being hit
         if (damage > 0 && subClass == HeroSubClass.ACE) {
-            GuardModal.AceAbsorptionCounter abs = buff(GuardModal.AceAbsorptionCounter.class);
-            if (abs != null && belongings.armor() != null) {
-                damage = abs.tryAbsorb(damage, belongings.armor().DRMax());
-            }
-            if (damage > 0) {
-                AceCombo combo = Buff.affect(this, AceCombo.class);
-                combo.struck(enemy, damage);
-            }
+            AceCombo combo = Buff.affect(this, AceCombo.class);
+            combo.struck(enemy, damage);
         }
 
-        // BLAZE: fire resistance from Infernal Endurance
-        if (damage > 0 && subClass == HeroSubClass.BLAZE
-                && hasTalent(Talent.BLAZE_INFERNAL_ENDURANCE)
-                && buff(com.zootdungeon.actors.buffs.Burning.class) != null) {
-            float[] fireResist = {1f, 0.7f, 0.5f, 0.25f};
-            int pts = pointsInTalent(Talent.BLAZE_INFERNAL_ENDURANCE);
-            damage = Math.round(damage * fireResist[pts]);
-        }
+        // BLAZE: Infernal Endurance fire resistance + heat conversion
+        damage = BlazeHeatBuff.infernalEndurance(this, damage);
 
         if (damage > 0 && subClass == HeroSubClass.BERSERKER) {
             Berserk berserk = Buff.affect(this, Berserk.class);
@@ -2012,6 +2000,7 @@ public class Hero extends Char {
             if (endure != null) {
                 damage = endure.adjustDamageTaken(dmg);
             }
+            damage = BlazeHeatBuff.infernalEndurance(this, (int) damage);
             // the same also applies to challenge scroll damage reduction
             if (buff(ScrollOfChallenge.ChallengeArena.class) != null) {
                 damage *= 0.67f;

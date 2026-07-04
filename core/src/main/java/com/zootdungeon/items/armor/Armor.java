@@ -281,11 +281,6 @@ public class Armor extends EquipableItem {
 	@Override
 	public void activate(Char ch) {
 		if (seal != null) Buff.affect(ch, BrokenSeal.WarriorShield.class).setArmor(this);
-		// ACE subclass: attach hit absorption counter when using GuardModal
-		if (seal instanceof GuardModal && ch instanceof Hero
-				&& ((Hero) ch).subClass == HeroSubClass.ACE) {
-			Buff.affect(ch, GuardModal.AceAbsorptionCounter.class);
-		}
 	}
 
 	public void affixSeal(BrokenSeal seal){

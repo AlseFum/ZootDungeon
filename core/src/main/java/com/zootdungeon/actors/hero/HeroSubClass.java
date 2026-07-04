@@ -6,6 +6,7 @@ import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Preparation;
 import com.zootdungeon.ui.HeroIcon;
 import com.zootdungeon.items.weapon.MagesStaff;
+import com.zootdungeon.items.weapon.missiles.CircularSawBlade;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.watabou.noosa.Game;
@@ -38,7 +39,9 @@ public enum HeroSubClass {
 
 		OP_SHARP(HeroIcon.OP_SHARP),
 		ACE(HeroIcon.ACE),
-		BLAZE(HeroIcon.BLAZE),
+		BLAZE(HeroIcon.BLAZE, hero -> {
+			new CircularSawBlade().quantity(5).collect(hero.belongings.backpack);
+		}),
 		STORMEYE(HeroIcon.STORMEYE),
 		ROSMONTIS(HeroIcon.ROSMONTIS),
 		OUTCAST(HeroIcon.OUTCAST),

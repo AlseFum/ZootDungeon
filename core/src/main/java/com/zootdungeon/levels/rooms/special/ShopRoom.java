@@ -53,6 +53,8 @@ import com.zootdungeon.items.spells.Alchemize;
 import com.zootdungeon.items.stones.StoneOfAugmentation;
 import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.items.weapon.darts.TippedDart;
+import com.zootdungeon.items.weapon.missiles.CircularSawBlade;
+import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.levels.Terrain;
 import com.zootdungeon.levels.painters.Painter;
@@ -295,6 +297,10 @@ public class ShopRoom extends SpecialRoom {
 				itemsToSpawn.add( new Honeypot() );
 				break;
 		}
+			// BLAZE subclass: extra circular saw blades
+			if (Dungeon.hero.subClass == HeroSubClass.BLAZE) {
+				itemsToSpawn.add( new CircularSawBlade().quantity(3) );
+			}
 
 		itemsToSpawn.add( new Ankh() );
 		itemsToSpawn.add( new StoneOfAugmentation() );

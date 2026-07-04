@@ -136,7 +136,6 @@ public class BuffIndicator extends Component {
 	public static final int FEATHER_DUEL_MARK  = 84;
 	public static final int FEATHER_DUEL_GUARD = 85;
 	public static final int ACE_COMBO          = 86;
-	public static final int ACE_ABSORPTION     = 87;
 
 	public static final int SIZE_SMALL  = 7;
 	public static final int SIZE_LARGE  = 16;

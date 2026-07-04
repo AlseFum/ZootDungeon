@@ -131,7 +131,9 @@ public class GuardModal extends BrokenSeal {
 				com.zootdungeon.actors.buffs.Buff.affect(hero,
 					FeatherDuelCooldown.class, 40f);
 				Sample.INSTANCE.play(Assets.Sounds.BLAST);
-				Dungeon.level.drop(this, cell).sprite.drop();
+				if (!this.collect(hero.belongings.backpack)) {
+					Dungeon.level.drop(this, cell).sprite.drop();
+				}
 				return;
 			}
 		}
@@ -292,67 +294,6 @@ public class GuardModal extends BrokenSeal {
 					guard.detach();
 				}
 			}
-		}
-	}
-
-	/**
-	 * ACE subclass: absorbs up to 5 hits where damage is less than 50% of armor defense rating.
-	 * Resets when armor is re-equipped or seal is re-affixed.
-	 */
-	public static class AceAbsorptionCounter extends Buff {
-		{
-			type = buffType.POSITIVE;
-		}
-
-		public int absorbedHits = 0;
-		public static final int MAX_ABSORB = 5;
-
-		@Override
-		public int icon() { return BuffIndicator.ACE_ABSORPTION; }
-		@Override
-		public void tintIcon(Image icon) { icon.hardlight(0.5f, 0.7f, 1f); }
-
-		@Override
-		public String iconTextDisplay() {
-			return Integer.toString(MAX_ABSORB - absorbedHits);
-		}
-
-		@Override
-		public String desc() {
-			return Messages.get(this, "desc", MAX_ABSORB - absorbedHits, MAX_ABSORB);
-		}
-
-		/**
-		 * Try to absorb a hit. Returns remaining damage after absorption.
-		 */
-		public int tryAbsorb(int damage, int armorDRMax) {
-			if (absorbedHits >= MAX_ABSORB) return damage;
-			int threshold = Math.round(armorDRMax * 0.5f);
-			if (threshold <= 0) return damage;
-			if (damage > 0 && damage < threshold) {
-				absorbedHits++;
-				BuffIndicator.refreshHero();
-				return 0;
-			}
-			return damage;
-		}
-
-		@Override
-		public void detach() {
-			super.detach();
-			if (target != null) BuffIndicator.refreshHero();
-		}
-
-		private static final String ABSORBED = "absorbed_hits";
-		@Override
-		public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put(ABSORBED, absorbedHits);
-		}
-		@Override
-		public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			absorbedHits = bundle.getInt(ABSORBED);
 		}
 	}
 

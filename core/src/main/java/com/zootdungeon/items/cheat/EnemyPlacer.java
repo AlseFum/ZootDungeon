@@ -93,6 +93,13 @@ public class EnemyPlacer extends Item {
 
     private Class<? extends Mob> selectedMob;
 
+    // ---- 生成参数 ----
+    private boolean useCustomHP = false;
+    private int customHP = 100;
+    /** 0=PASSIVE 1=HUNTING 2=WANDERING 3=SLEEPING */
+    private int aiStateIdx = 1;
+    private static final String[] AI_STATE_LABELS = {"PASSIVE", "HUNTING", "WANDERING", "SLEEPING"};
+
     public enum Tier {
         NORMAL("tier_normal"),
         ELITE("tier_elite"),
@@ -214,6 +221,22 @@ public class EnemyPlacer extends Item {
         WndGeneral.Builder b = WndGeneral.make()
                 .title(Messages.get(this, "window_title"));
 
+        // ⚙ 设置 tab：血量、AI 状态
+        b.tab("⚙", pane -> {
+            pane.line("生成参数设置");
+            pane.switchRow("自定义血量", useCustomHP, on -> useCustomHP = on);
+            pane.inputRow("血量值", String.valueOf(customHP), 6, val -> {
+                try { customHP = Integer.parseInt(val); } catch (NumberFormatException ignored) {}
+            });
+            pane.line("AI 状态: " + AI_STATE_LABELS[aiStateIdx]);
+            pane.hrow(r -> {
+                for (int i = 0; i < AI_STATE_LABELS.length; i++) {
+                    final int idx = i;
+                    r.button(AI_STATE_LABELS[i], () -> aiStateIdx = idx);
+                }
+            });
+        });
+
         for (Tier tier : Tier.values()) {
             String tierLabel = Messages.get(this, tier.msgKey);
             List<Class<? extends Mob>> mobs = MOB_BY_TIER.get(tier);
@@ -267,7 +290,18 @@ public class EnemyPlacer extends Item {
                 }
 
                 mob.pos = cell;
-                mob.state = mob.PASSIVE;
+                // AI 状态
+                switch (aiStateIdx) {
+                    case 0: mob.state = mob.PASSIVE;   break;
+                    case 1: mob.state = mob.HUNTING;   break;
+                    case 2: mob.state = mob.WANDERING; break;
+                    case 3: mob.state = mob.SLEEPING;  break;
+                }
+                // 自定义血量
+                if (useCustomHP) {
+                    mob.HT = customHP;
+                    mob.HP = customHP;
+                }
                 Dungeon.level.occupyCell(mob);
                 if (mob.isAlive()) {
                     GameScene.add(mob);
@@ -286,11 +320,17 @@ public class EnemyPlacer extends Item {
     }
 
     private static final String SELECTED_MOB = "selectedMob";
+    private static final String CUSTOM_HP = "customHP";
+    private static final String USE_CUSTOM_HP = "useCustomHP";
+    private static final String AI_STATE_IDX = "aiStateIdx";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         if (selectedMob != null) bundle.put(SELECTED_MOB, selectedMob.getName());
+        bundle.put(USE_CUSTOM_HP, useCustomHP);
+        bundle.put(CUSTOM_HP, customHP);
+        bundle.put(AI_STATE_IDX, aiStateIdx);
     }
 
     @Override
@@ -302,5 +342,8 @@ public class EnemyPlacer extends Item {
             } catch (ClassNotFoundException ignored) {
             }
         }
+        useCustomHP = bundle.getBoolean(USE_CUSTOM_HP);
+        customHP = bundle.getInt(CUSTOM_HP);
+        aiStateIdx = bundle.getInt(AI_STATE_IDX);
     }
 }
