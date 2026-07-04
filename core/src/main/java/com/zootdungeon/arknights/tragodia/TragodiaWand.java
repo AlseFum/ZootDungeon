@@ -8,6 +8,8 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.blobs.Blob;
+import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.Roots;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.MagicMissile;
@@ -166,7 +168,6 @@ public class TragodiaWand extends Wand {
 
         // 创建囚笼
         PrisonCage cage = Blob.seed(cagePos, duration, PrisonCage.class);
-        cage.setTargetPos(targetPos); // 设置目标位置（敌人位置）
         GameScene.add(cage);
 
         // 特效
@@ -226,8 +227,6 @@ public class TragodiaWand extends Wand {
     // 囚笼Blob类
     public static class PrisonCage extends Blob {
 
-        private int targetPos = -1; // 目标位置（敌人位置）
-
         {
             actPriority = BLOB_PRIO - 1; // 在普通Blob之前执行
         }
@@ -244,9 +243,9 @@ public class TragodiaWand extends Wand {
                         off[cell] = cur[cell] - 1;
                         volume += off[cell];
 
-                        // 如果囚笼还存在，尝试拉取敌人
-                        if (off[cell] > 0 && targetPos >= 0) {
-                            pullEnemyTowards(cell);
+                        // 囚笼还存在时，定身范围内敌人
+                        if (off[cell] > 0) {
+                            rootEnemiesNear(cell);
                         }
                     } else {
                         off[cell] = 0;
@@ -255,82 +254,19 @@ public class TragodiaWand extends Wand {
             }
         }
 
-        private void pullEnemyTowards(int cagePos) {
-            // 寻找附近的敌人
-            Char target = null;
-            int closestDist = Integer.MAX_VALUE;
+        private static final int ROOT_RANGE = 3;
 
+        private void rootEnemiesNear(int cagePos) {
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                 if (mob.alignment == Char.Alignment.ENEMY && mob.isAlive()) {
                     int dist = Dungeon.level.distance(mob.pos, cagePos);
-                    // 只拉取距离囚笼3格以内的敌人
-                    if (dist <= 3 && dist < closestDist) {
-                        target = mob;
-                        closestDist = dist;
+                    if (dist <= ROOT_RANGE) {
+                        // 每 tick 续 2 回合定身，在范围内就跑不了
+                        Buff.prolong(mob, Roots.class, 2f);
+                        CellEmitter.get(mob.pos).burst(Speck.factory(Speck.STAR), 1);
                     }
                 }
             }
-
-            if (target != null && closestDist > 0) {
-                // 计算拉取方向
-                int dx = (cagePos % Dungeon.level.width()) - (target.pos % Dungeon.level.width());
-                int dy = (cagePos / Dungeon.level.width()) - (target.pos / Dungeon.level.width());
-
-                // 尝试移动到更靠近囚笼的位置
-                int newPos = -1;
-
-                // 优先选择直接朝向囚笼的方向
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    // 水平方向优先
-                    if (dx > 0) {
-                        newPos = target.pos + 1; // 向右
-                    } else {
-                        newPos = target.pos - 1; // 向左
-                    }
-                } else {
-                    // 垂直方向优先
-                    if (dy > 0) {
-                        newPos = target.pos + Dungeon.level.width(); // 向下
-                    } else {
-                        newPos = target.pos - Dungeon.level.width(); // 向上
-                    }
-                }
-
-                // 检查新位置是否有效
-                if (newPos >= 0 && newPos < Dungeon.level.length()
-                        && Dungeon.level.passable[newPos]
-                        && Actor.findChar(newPos) == null) {
-                    // 移动敌人
-                    target.pos = newPos;
-                    target.sprite.place(newPos);
-                    Dungeon.level.occupyCell(target);
-
-                    // 特效
-                    CellEmitter.get(newPos).burst(Speck.factory(Speck.STAR), 3);
-                } else {
-                    // 如果直接方向不可行，尝试对角线方向
-                    for (int offset : PathFinder.NEIGHBOURS8) {
-                        newPos = target.pos + offset;
-                        if (newPos >= 0 && newPos < Dungeon.level.length()
-                                && Dungeon.level.passable[newPos]
-                                && Actor.findChar(newPos) == null) {
-                            // 检查是否更靠近囚笼
-                            int newDist = Dungeon.level.distance(newPos, cagePos);
-                            if (newDist < closestDist) {
-                                target.pos = newPos;
-                                target.sprite.place(newPos);
-                                Dungeon.level.occupyCell(target);
-                                CellEmitter.get(newPos).burst(Speck.factory(Speck.STAR), 3);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public void setTargetPos(int pos) {
-            targetPos = pos;
         }
 
         @Override
@@ -344,18 +280,14 @@ public class TragodiaWand extends Wand {
             return Messages.get(this, "desc");
         }
 
-        private static final String TARGET_POS = "targetPos";
-
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
-            bundle.put(TARGET_POS, targetPos);
         }
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            targetPos = bundle.getInt(TARGET_POS);
         }
     }
 }
