@@ -31,7 +31,6 @@ import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroSubClass;
 import com.zootdungeon.actors.hero.Talent;
-import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -99,7 +98,11 @@ public class GuardModal extends BrokenSeal {
 					mark.stuckItem = this;
 					FeatherDuelGuard guard = Buff.affect(curUser, FeatherDuelGuard.class);
 					guard.duelTarget = enemy;
-					Buff.affect(curUser, FeatherDuelCooldown.class, 40f);
+						Buff.affect(curUser, FeatherDuelCooldown.class, 40f);
+						if (hero.hasTalent(Talent.OP_SHARP_BOUNTY_DUEL)) {
+							BountyDuelLootBuff lootBuff = Buff.affect(enemy, BountyDuelLootBuff.class);
+							lootBuff.pts = hero.pointsInTalent(Talent.OP_SHARP_BOUNTY_DUEL);
+						}
 					// Item is now stored in the mark buff; don't drop it on the ground
 					return;
 				}
@@ -174,34 +177,16 @@ public class GuardModal extends BrokenSeal {
 					int pts = Dungeon.hero.pointsInTalent(Talent.OP_SHARP_DUEL_MOMENTUM);
 					float duration = 3f * pts; // 3/6/9 turns
 					Buff.affect(Dungeon.hero, DuelMomentumBuff.class, duration);
-					guard.duelTarget = null; // Clear dead target, guard persists
-					// Bounty Duel: gold reward + extra drop on kill
-					grantBountyReward(target.pos);
+						guard.duelTarget = null;
 				} else if (hasMomentum) {
 					// During momentum, guard persists even if mark expires naturally
 					guard.duelTarget = null;
 				} else {
-					// Bounty Duel: reward even without momentum talent
-					if (!target.isAlive()) {
-						grantBountyReward(target.pos);
-					}
 					guard.detach();
 				}
 			}
 		}
 
-		private void grantBountyReward(int cell) {
-			if (!Dungeon.hero.hasTalent(Talent.OP_SHARP_BOUNTY_DUEL)) return;
-			int pts = Dungeon.hero.pointsInTalent(Talent.OP_SHARP_BOUNTY_DUEL);
-			int reward = 40 * pts; // 40/80/120
-			// Grant gold directly
-			Dungeon.gold += reward;
-			GLog.p(Messages.get(GuardModal.class, "bounty_reward", reward));
-			// Extra loot: drop a gold pile at the enemy position
-			Gold loot = new Gold();
-			loot.quantity(reward / 2); // Extra gold drop: 20/40/60
-			Dungeon.level.drop(loot, cell).sprite.drop();
-		}
 
 		private static final String STUCK_ITEM = "stuck_item";
 		@Override
@@ -371,5 +356,14 @@ public class GuardModal extends BrokenSeal {
 		}
 	}
 
-	// endregion
+		/** Bounty Duel: marks an enemy for extra loot when killed during the duel. */
+		public static class BountyDuelLootBuff extends FlavourBuff {
+			{
+				type = buffType.NEUTRAL;
+			}
+			public int pts;
+			@Override public int icon() { return BuffIndicator.NONE; }
+		}
+
+		// endregion
 }

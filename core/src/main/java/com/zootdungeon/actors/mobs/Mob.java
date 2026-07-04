@@ -51,6 +51,7 @@ import com.zootdungeon.items.artifacts.TimekeepersHourglass;
 import com.zootdungeon.items.potions.exotic.ExoticPotion;
 import com.zootdungeon.items.rings.Ring;
 import com.zootdungeon.actors.buffs.ScoutLootBuff;
+import com.zootdungeon.items.GuardModal;
 import com.zootdungeon.items.rings.RingOfWealth;
 import com.zootdungeon.items.scrolls.exotic.ExoticScroll;
 import com.zootdungeon.items.stones.StoneOfAggression;
@@ -976,12 +977,22 @@ public abstract class Mob extends Char {
 			Dungeon.level.drop(buff(Lucky.LuckProc.class).genLoot(), pos).sprite.drop();
 			Lucky.showFlare(sprite);
 		}
+			GuardModal.BountyDuelLootBuff bountyBuff = buff(GuardModal.BountyDuelLootBuff.class);
+			if (bountyBuff != null) {
+				for (int i = 0; i < bountyBuff.pts; i++) {
+					Item bonus = RingOfWealth.genConsumableDrop(bountyBuff.pts - 1);
+					if (bonus != null) {
+						Dungeon.level.drop(bonus, pos).sprite.drop();
+					}
+				}
+				RingOfWealth.showFlareForBonusDrop(sprite);
+			}
 
 		//soul eater talent
-		if (buff(SoulMark.class) != null &&
-				Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)){
-			Talent.onFoodEaten(Dungeon.hero, 0, null);
-		}
+			if (buff(SoulMark.class) != null &&
+					Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)){
+				Talent.onFoodEaten(Dungeon.hero, 0, null);
+			}
 
 	}
 	
