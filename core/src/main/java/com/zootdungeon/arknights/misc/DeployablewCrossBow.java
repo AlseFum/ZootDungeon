@@ -31,6 +31,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * 机弩：与 {@link NearRangeCrossBow} 相同，射击距离上限 3；纯上下左右且曼哈顿 1～2 格时伤害 +60%。
@@ -396,6 +397,22 @@ public class DeployablewCrossBow extends Weapon {
 			}
 		};
 
+		/** 调整朝向时高亮可选的四方向格子 */
+		private final CellSelector.Select aimRangeSelect = new CellSelector.Select() {
+			@Override
+			public Collection<Integer> getAffectedCells(int hoverCell, Object variable) {
+				int p = Avatar.this.pos;
+				ArrayList<Integer> cells = new ArrayList<>();
+				for (int delta : com.watabou.utils.PathFinder.NEIGHBOURS4) {
+					int c = p + delta;
+					if (Dungeon.level.insideMap(c)) {
+						cells.add(c);
+					}
+				}
+				return cells;
+			}
+		};
+
 		public Avatar() {
 			super();
 		}
@@ -481,7 +498,7 @@ public class DeployablewCrossBow extends Weapon {
 								who.spendAndNext(1f);
 							} else if (index == 1) {
 								blade.setCurrent(who);
-								GameScene.selectCell(Avatar.this.aimListener);
+								GameScene.selectCellWithView(Avatar.this.aimListener, Avatar.this.aimRangeSelect);
 							}
 						}
 					});
