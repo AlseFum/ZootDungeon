@@ -15,6 +15,7 @@ import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.plants.Swiftthistle;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 import com.watabou.noosa.Image;
@@ -54,7 +55,7 @@ public class MomentumWeapon extends MeleeWeapon {
     }
 
     {
-        image = ItemSpriteSheet.SPEAR;
+        image = TextureRegistry.once("grani:spear","cola/grani_spear.png",0,0,32,32);
         hitSound = Assets.Sounds.HIT_SLASH;
         hitSoundPitch = 1.0f;
         
