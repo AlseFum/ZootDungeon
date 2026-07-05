@@ -122,7 +122,6 @@ import com.zootdungeon.items.rings.RingOfHaste;
 import com.zootdungeon.items.rings.RingOfMight;
 import com.zootdungeon.items.rings.RingOfTenacity;
 import com.zootdungeon.items.scrolls.Scroll;
-import com.zootdungeon.items.scrolls.ScrollOfMagicMapping;
 import com.zootdungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.ThirteenLeafClover;
@@ -1513,7 +1512,6 @@ public class Hero extends Char {
     private boolean actTransition(HeroAction.LvlTransition action) {
         int stairs = action.dst;
         LevelTransition transition = Dungeon.level.getTransition(stairs);
-        System.out.println("[Hero::actTransition]Got " + transition);
         if (rooted) {
             PixelScene.shake(1, 1f);
             ready();
@@ -2388,7 +2386,7 @@ public class Hero extends Char {
         return true;
     }
 
-    public void earnExp(int exp, Class source) {
+    public void earnExp(int exp, Class<?> source) {
 
         // xp granted by ascension challenge is only for on-exp gain effects
         if (source != AscensionChallenge.class) {

@@ -34,6 +34,7 @@ import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.utils.GLog;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -49,7 +50,7 @@ import com.watabou.utils.Bundle;
 public class GuardModal extends BrokenSeal {
 
 	{
-		image = ItemSpriteSheet.SEAL; // TODO: replace with GuardModal sprite
+		image = TextureRegistry.once("guard_modal","cola/guard_modal.png",0,0,32,32);
 		cursedKnown = levelKnown = true;
 		unique = true;
 		bones = false;

@@ -260,13 +260,12 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
 
     private void fillCheatTab(WndGeneral.PaneBuilder p, Hero hero) {
         p.line(Messages.get(DebugSupply.class, "cheat_tab_line"));
-        p.option("转职并升到20级", () -> {
+        p.option("转职并升满", () -> {
             TengusMask mask = new TengusMask() {
                 @Override
                 public void choose(HeroSubClass way) {
                     super.choose(way);
                     hero.earnExp(99999, DebugSupply.class);
-                    hero.HP = 1; 
                 }
             };
             mask.identify();
