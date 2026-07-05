@@ -20,6 +20,7 @@ import com.zootdungeon.actors.buffs.Dread;
 import com.zootdungeon.actors.buffs.GreaterHaste;
 import com.zootdungeon.actors.buffs.Hunger;
 import com.zootdungeon.actors.buffs.Invisibility;
+import com.zootdungeon.actors.buffs.MantraDeclarationBuff;
 import com.zootdungeon.actors.buffs.MindVision;
 import com.zootdungeon.actors.blobs.MiseryShadowBlob;
 import com.zootdungeon.actors.buffs.MonkEnergy;
