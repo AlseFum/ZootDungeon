@@ -892,6 +892,7 @@ public class Talent implements Bundlable {
 		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 0f); }
 		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
 	}
+	public static class LastChargeBoostTracker extends FlavourBuff{};
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends FlavourBuff{
 		public int object;

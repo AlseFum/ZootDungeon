@@ -25,6 +25,7 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.ColaDungeon;
 import com.zootdungeon.Statistics;
 import com.zootdungeon.actors.buffs.Blindness;
+import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Invisibility;
 import com.zootdungeon.actors.buffs.MagicImmune;
 import com.zootdungeon.actors.hero.Hero;
@@ -203,7 +204,14 @@ public abstract class Scroll extends Item {
                         }
                     }
                 }
-                // LOGOS: blank scroll creation
+                // CASTER common: LAST_CHARGE_BOOST Lv2 - scroll reading grants +1 level tracker
+	                if (hero.heroClass == HeroClass.RESERVED_CASTER
+	                        && hero.subClass != HeroSubClass.NONE
+	                        && hero.hasTalent(Talent.CASTER_LAST_CHARGE_BOOST)
+	                        && hero.pointsInTalent(Talent.CASTER_LAST_CHARGE_BOOST) >= 2) {
+	                    Buff.prolong(hero, Talent.LastChargeBoostTracker.class, 30f);
+	                }
+	                // LOGOS: blank scroll creation
                 if (hero.subClass == HeroSubClass.LOGOS
                         && hero.hasTalent(Talent.LOGOS_BLANK_SCROLL)) {
                     int pts = hero.pointsInTalent(Talent.LOGOS_BLANK_SCROLL);

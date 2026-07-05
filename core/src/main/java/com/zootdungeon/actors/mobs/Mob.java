@@ -658,16 +658,8 @@ public abstract class Mob extends Char {
 		Invisibility.dispel(this);
 		spend( attackDelay() );
 		// MANTRA declaration: ATTACK trigger
-		if (Dungeon.hero.buff(com.zootdungeon.actors.buffs.MantraDeclarationBuff.class) != null
-				&& enemy == Dungeon.hero) {
-			com.zootdungeon.actors.buffs.MantraDeclarationBuff mantra =
-				Dungeon.hero.buff(com.zootdungeon.actors.buffs.MantraDeclarationBuff.class);
-			if (mantra != null && mantra.getTriggerType()
-					== com.zootdungeon.actors.buffs.MantraDeclarationBuff.TriggerType.ATTACK) {
-				mantra.onTrigger(this, Dungeon.hero);
-			}
-		}
 		super.onAttackComplete();
+		MantraDeclarationBuff.onEnemyAttack(this);
 	}
 	
 	@Override

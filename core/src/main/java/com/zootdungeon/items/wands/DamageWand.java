@@ -63,21 +63,26 @@ public abstract class DamageWand extends Wand{
 			}
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 		}
-		// PITH CHAIN_STRONGER: 联动法术按表增伤 + HOLY_JUDGMENT 对恶魔/不死特攻
-		if (Dungeon.hero.subClass == HeroSubClass.PITH
-				&& Dungeon.hero.hasTalent(Talent.PITH_CHAIN_STRONGER)) {
+		// PITH: 联动法术按表增伤，CHAIN_STRONGER 额外增强倍率
+		if (Dungeon.hero.subClass == HeroSubClass.PITH) {
 			PithWandMemory mem = Dungeon.hero.buff(PithWandMemory.class);
 			if (mem != null && mem.getMemorized() != null) {
-				PithWandMemory.ComboEntry combo = PithWandMemory.getCombo(mem.getMemorized(), this.getClass());
-				dmg = Math.round(dmg * combo.dmgMulti);
+				PithWandMemory.ComboEntry combo = mem.getCombo(this.getClass());
+				float mult = combo.powerLevel;
+				if (Dungeon.hero.hasTalent(Talent.PITH_CHAIN_STRONGER)) {
+					mult += 0.1f * Dungeon.hero.pointsInTalent(Talent.PITH_CHAIN_STRONGER);
+				}
+				dmg = Math.round(dmg * mult);
 			}
 		}
-		// PITH FULL_DISCHARGE: 消耗全部充能，伤害按充能数和天赋等级加成
-		if (dischargeBoost > 0 && Dungeon.hero.subClass == HeroSubClass.PITH) {
-			int pts = Dungeon.hero.pointsInTalent(Talent.PITH_FULL_DISCHARGE);
-			if (pts > 0) {
-				float mult = 1f + dischargeBoost * (0.15f + 0.1f * pts);
-				dmg = Math.round(dmg * mult);
+		// PITH FULL_DISCHARGE: 通过 PithWandMemory 计算完全释放增伤
+		if (Dungeon.hero.subClass == HeroSubClass.PITH) {
+			PithWandMemory mem = Dungeon.hero.buff(PithWandMemory.class);
+			if (mem != null) {
+				float dischargeMult = mem.fullDischargePower();
+				if (dischargeMult > 1f) {
+					dmg = Math.round(dmg * dischargeMult);
+				}
 			}
 		}
 		return dmg;
