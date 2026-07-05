@@ -1782,6 +1782,14 @@ public class Hero extends Char {
                             });
                         }
                     }
+                    // ROSMONTIS: Enhanced Thrown (+1/+2/+3 effective level)
+                    if (subClass == HeroSubClass.ROSMONTIS && hasTalent(Talent.ROSMONTIS_ENHANCED_THROWN)
+                            && wep instanceof MissileWeapon && damage > 0) {
+                        int pts = pointsInTalent(Talent.ROSMONTIS_ENHANCED_THROWN);
+                        // each talent point adds roughly +1 dmg per weapon tier
+                        float lvlBonus = ((MissileWeapon) wep).tier * pts;
+                        damage += Math.round(lvlBonus);
+                    }
                     // ROSMONTIS: Piercing Throw (thrown weapons pierce to next enemy)
                     if (subClass == HeroSubClass.ROSMONTIS && hasTalent(Talent.ROSMONTIS_PIERCING_THROW)
                             && wep instanceof MissileWeapon && enemy.isAlive() && damage > 0) {

@@ -43,6 +43,7 @@ import com.zootdungeon.actors.buffs.SoulMark;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.actors.hero.HeroSubClass;
+import com.zootdungeon.actors.hero.RosmontisThrow;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.abilities.mage.WildMagic;
 import com.zootdungeon.actors.hero.spells.DivineSense;
@@ -139,6 +140,27 @@ public abstract class Wand extends Item {
 
 	@Override
 	public void execute( Hero hero, String action ) {
+
+		// ROSMONTIS: throw wand as an attack before default AC_THROW handling
+		if (action.equals( AC_THROW ) && hero.subClass == HeroSubClass.ROSMONTIS
+				&& hero.hasTalent(Talent.ROSMONTIS_THROW_MELEE)) {
+			curUser = hero;
+			curItem = this;
+			GameScene.selectCell(new CellSelector.Listener() {
+				@Override
+				public void onSelect(Integer cell) {
+					if (cell == null) return;
+					hero.sprite.attack(cell, () ->
+						RosmontisThrow.throwItem(hero, curItem, cell)
+					);
+				}
+				@Override
+				public String prompt() {
+					return Messages.get(Wand.class, "throw_prompt");
+				}
+			});
+			return;
+		}
 
 		super.execute( hero, action );
 

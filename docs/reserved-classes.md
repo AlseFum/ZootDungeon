@@ -90,72 +90,83 @@
 
 ---
 
-## 2. RESERVED_SNIPER（预备狙击）
+## 2. RESERVED_SNIPER（预备狙击）— ❌ 全部待重做
+
+**设计决策：** 整个预备狙击体系需要重新设计，所有已有实现均视为废弃（包括代码和文档中的描述），等待新方案。
 
 **基类：** HUNTRESS  
-**特色物品：** RhodesShortBow（罗德短弓）  
-**T1 天赋（4个）：** 自然恩赐 / 生存直觉 / 追击打击 / 自然援助  
-**T2 天赋（5个）：** 活力餐食 / 液体自然 / 回春步伐 / 敏锐感知 / 耐久弹药
+**T1 天赋（4个）：** 自然恩赐 / 生存直觉 / 追击打击 / 自然援助 — ❌ 待重做  
+**T2 天赋（5个）：** 活力餐食 / 液体自然 / 回春步伐 / 敏锐感知 / 耐久弹药 — ❌ 待重做
 
-**公共天赋（STORMEYE/ROSMONTIS/OUTCAST 共享，2个）：**
+### 子职业
 
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| RECON_SHOT（侦察射击） | 241 | 远程命中后目标周围3×3/3×3/5×5 展开视野，持续3/5/7回合。`RevealedArea` buff |
-| ROOTING_SHOT（束缚射击） | 242 | 远程命中后束缚目标周围1/1/2格敌人，持续3/5/7回合。`Roots` buff |
+| 子职业 | 状态 |
+|--------|------|
+| STORMEYE | ❌ 待重做 |
+| ROSMONTIS | ✅ **已实现** |
+| OUTCAST | ❌ 待重做 |
 
-**RhodesShortBow 机制：**
-- 主手武器，不可升级，Tier 2
-- 6支箭矢弹药，射击消耗1支
-- 箭矢（RhodesArrow）命中后留置在敌人身上（RhodesArrowStuck buff）
-- AC_RECALL：唤回所有留置箭矢，恢复弹药
-- 箭矢本身伤害弱（1+等级 ~ 3+2×等级）
+### 代码状态
 
----
-
-### 2.1 STORMEYE
-
-**T3 天赋（5个，含2公共+3专属）：**
-
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| RECON_SHOT | 241 | （公共） |
-| ROOTING_SHOT | 242 | （公共） |
-| ARMOR_PIERCE（破甲射击） | 243 | 弓无视15%/30%/45%目标防御。在 `Hero.attackProc()` 中通过伤害倍率实现 |
-| DEVICE_CHARGE（装置充能） | 244 | TODO：攻击MapDevice充能+1/+2/+3 |
-| FOLLOWUP_SHOT（追击射击） | 245 | 20%/35%/50%追加一击（半数伤害+轻微击退） |
+| 文件 | 状态 |
+|------|------|
+| `RosmontisThrow.java` | ✅ **新增** — 统一投掷逻辑 |
+| `RhodesStandardBow.java` | ❌ 罗德短弓机制待重新设计 |
+| `OutcastHighNoon.java` | ❌ 午时已到待重做 |
+| Hero.java 中 ROSMONTIS 的 attackProc 逻辑 | ✅ 投掷强化 + 穿透投掷 |
+| Hero.java 中 STORMEYE/OUTCAST 的 attackProc 逻辑 | ❌ 待随各自重做清理 |
+| MeleeWeapon.java 的 AC_THROW | ✅ 已走 RosmontisThrow |
+| Wand.java 的 AC_THROW | ✅ 已走 RosmontisThrow |
+| ScoutLootBuff.java | ❌ 未使用（SCOUT 已暂停） |
 
 ---
 
-### 2.2 ROSMONTIS
+### ROSMONTIS（已实现）
 
-**T3 天赋（5个）：**
+**定位：** 投掷武器特化，一切能扔的都扔出去。
 
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| RECON_SHOT | 241 | （公共） |
-| ROOTING_SHOT | 242 | （公共） |
-| PIERCING_THROW（穿透投掷） | 246 | 投掷武器20%/40%/60%穿透目标击中后方敌人 |
-| ENHANCED_THROWN（投掷强化） | 247 | TODO：投掷结算等级+1/+2/+3 |
-| THROW_MELEE（投掷近战） | 248 | 可投掷近战武器，伤害50%/100%/150%。在 `MeleeWeapon.actions()` 和 `execute()` 中新增 AC_THROW |
+#### 新增文件
 
----
+- `RosmontisThrow.java` — 统一处理所有投掷行为，`actors.hero` 包
 
-### 2.3 OUTCAST
+#### T3 天赋（5 个，2 公共 + 3 专属）
 
-**T3 天赋（5个）：**
+| # | 天赋 | 效果 |
+|---|------|------|
+| 1 | RECON_SHOT（公共） | 远程命中展开视野 |
+| 2 | ROOTING_SHOT（公共） | 远程命中束缚周围 |
+| 3 | **PIERCING_THROW** | 投掷武器 20/40/60% 穿透目标攻击后方敌人 |
+| 4 | **ENHANCED_THROWN** | 投掷结算时等级视为 `实际等级 + 天赋点数`，影响 MissileWeapon 和 RosmontisThrow 投掷伤害 |
+| 5 | **THROW_MELEE** | 可投掷近战武器和法杖，造成 50/100/150% 伤害，走 weapon.proc() |
 
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| RECON_SHOT | 241 | （公共） |
-| ROOTING_SHOT | 242 | （公共） |
-| SPECIAL_AMMO（特殊弹药） | 249 | TODO：消耗符石/药剂/法杖充能给下次射击添加特效。示例表在 `OutcastAmmoTable.java`（火种→燃烧+3火伤，液火药剂→3×3火AOE，法杖充能→等级×3魔法伤等） |
-| QUICK_DRAW（快速拔枪） | 250 | 换弹加速，手枪可无时间消耗替换并射击 |
-| HIGH_NOON（午时已到） | 251 | 7/6/5回合buff，不攻击则充能。激活后对所有可见敌人发射全部弹药，200%/300%/400%伤害并清空弹夹。`OutcastHighNoon.java` 实现，带 ActionIndicator |
+#### 核心机制
+
+**入口：** `MeleeWeapon.actions()` 和 `Wand.execute()` 在 ROSMONTIS 且天赋5 解锁时拦截 AC_THROW。
+
+**执行（统一走 `RosmontisThrow.throwItem()`）：**
+
+```
+RosmontisThrow.throwItem(hero, item, cell)
+    ├── Weapon / MeleeWeapon / MagesStaff
+    │     damage = damageRoll(boostedLvl) × throwMult[天赋5点数]
+    │     damage = item.proc(hero, enemy, damage)  ← 走武器自己的proc链，触发附魔/特殊效果
+    │     enemy.damage(damage, hero)
+    │
+    └── Wand（背包内的法杖，不含 MagesStaff）
+          TODO: 效果待定
+```
+
+其中 `boostedLvl = item.level() + pointsInTalent(ENHANCED_THROWN)`。
+
+**Hero.attackProc 中 ENHANCED_THROWN 对 MissileWeapon 加成：** `damage += tier × talentPts`
+
+**注意：** 投掷行为不是装备解除，只是远程攻击一次，武器/法杖仍保留在手上。
 
 ---
 
 ## 3. RESERVED_CASTER（预备术士）
+
+**⚠️ 注意：** 术士子类对 Wand 的使用存在瞄准目标类型不统一的问题——`AC_ZAP`和`AC_DISCHARGE`走 `zapper`（Ballistica 投射物目标，cell/mob 皆可），`AC_RUNE`走自定义 CellSelector（选地板格子），`AC_DECLARE`则直接弹出窗口选类型。这个需要在后续重新思考统一。
 
 **基类：** MAGE  
 **特色物品：** MagesStaff（法师法杖）  
@@ -287,9 +298,11 @@
 
 ---
 
-### 4.2 SCOUT
+### 4.2 SCOUT — ❌ 暂停实现
 
-**核心机制：**  
+**原因：** 核心天赋 GOLD_SYNTH 依赖炼金合成系统，但炼金缶可能改为其他形式，待合成系统定型后再做。
+
+**核心机制（存档）：**  
 - 发现更多仅SCOUT可见的房间（之前楼层未生成的会补充生成）
 - 开箱子时概率额外掉落
 - 更多炼金合成配方（TODO表）
@@ -297,32 +310,29 @@
 
 **T3 天赋（5个）：**
 
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| CLOAK_UNEQUIPPED | 231 | （公共） |
-| GOLD_SYNTH（金币合成） | 236 | TODO：消耗金币替代炼金材料。需材料-金币对照表 |
-| BETTER_LOOT（更佳掉落） | 237 | 掉率+30/60/90%。在 `Mob.lootChance()` 中乘以 `ScoutLootBuff.dropChanceMultiplier()`，与财富之戒叠加 |
-| MERCHANT_REFRESH（商人刷新） | 238 | Lv1: 可请求1次刷新/更多商品；Lv3: 2次刷新 |
-| SUMMON_MERCHANT（召唤商人） | 239 | 消耗40%/30%/20%金钱召唤旅行商人提供临时商品 |
+| 天赋 | 图标ID | 预期效果 | 状态 |
+|------|--------|---------|------|
+| CLOAK_UNEQUIPPED | 231 | （公共） | ✅ 已实现 |
+| GOLD_SYNTH（金币合成） | 236 | 消耗金币替代炼金材料。需材料-金币对照表 | ❌ 暂停，等合成系统定型 |
+| BETTER_LOOT（更佳掉落） | 237 | 掉率+30/60/90%。ScoutLootBuff + Mob.lootChance() | ⚠️ 代码已写但随 SCOUT 整体暂停 |
+| MERCHANT_REFRESH（商人刷新） | 238 | Lv1: 可请求1次刷新/更多商品；Lv3: 2次刷新 | ❌ 暂停 |
+| SUMMON_MERCHANT（召唤商人） | 239 | 消耗40%/30%/20%金钱召唤旅行商人提供临时商品 | ❌ 暂停 |
 
 ---
 
-### 4.3 RADIAN
+### 4.3 RADIAN — ❌ 暂停实现
 
-**核心机制：**  
-- 消耗材料制造召唤物（TODO表）
-- 选择RADIAN后提供两个特供召唤物
-- 可点击召唤物传送（天赋5，1/2/3充能）
+**原因：** 召唤/部署物体系与地牢探索的孤军深入、步步为营的核心逻辑冲突，且多线程实现复杂。暂时搁置，等更成熟的方案或以后换个方向再做。
 
-**T3 天赋（5个）：**
+**T3 天赋（存档）：**
 
-| 天赋 | 图标ID | 效果 |
-|------|--------|------|
-| CLOAK_UNEQUIPPED | 231 | （公共） |
-| SUMMON_CONTROL（召唤控制） | 240 | TODO：增加召唤物控制模式。需控制模式表 |
-| CONTROL_RANGE（控制范围） | 241 | 增加召唤物控制范围，可路由控制 |
-| REPAIR_COST（维修折扣） | 242 | 降低可维修召唤物的维修成本 |
-| TELEPORT_TO_SUMMON（召唤传送） | 243 | 点击召唤物传送，1/2/3充能。等级越高充能越快 |
+| 天赋 | 预期效果 |
+|------|---------|
+| CLOAK_UNEQUIPPED | （公共） |
+| SUMMON_CONTROL | 增加召唤物控制模式 |
+| CONTROL_RANGE | 增加召唤物控制范围 |
+| REPAIR_COST | 降低维修成本 |
+| TELEPORT_TO_SUMMON | 传送到召唤物位置 |
 
 ---
 
@@ -355,7 +365,7 @@
 | `CloakOfShadows.java` | SPECIALIST斗篷未装备使用 |
 | `Mob.java` | SCOUT掉率、MANTRA宣告触发、MISERY阴影潜行+瘴气闪避削减+灵魂收割掉落 |
 | `RingOfWealth.java` | 掉率计算（SCOUT加成在Mob.lootChance而非此处） |
-| `Hero.java` | OP_SHARP/ACE/BLAZE/SNIPER/STORMEYE/ROSMONTIS/OUTCAST/PITH/MANTRA/LOGOS 效果；MISERY 暗影一击伤害+瘴气AOE+灵魂收割吸血+最终阴影致命伤拦截 |
+| `Hero.java` | OP_SHARP/ACE/BLAZE~~/SNIPER/STORMEYE/ROSMONTIS/OUTCAST~~/PITH/MANTRA/LOGOS 效果；MISERY 暗影一击伤害+瘴气AOE+灵魂收割吸血+最终阴影致命伤拦截 — ~~狙击系 attackProc 逻辑待清理~~ |
 | `TengusMask.java` | MISERY 子类选择时激活 MiseryShadowBlob（tile blob）|
 | `Talent.java` | LastShadowCooldown 内部类（MISERY 最终阴影冷却追踪） |
 | `Char.java` | CrippleDebuff 减速时间缩放 |
@@ -368,9 +378,8 @@
 | `WndAceCombo.java` | ACE 战技选择窗口 |
 | `BlazeHeatBuff.java` | BLAZE 炽热buff |
 | `Saw.java` | BLAZE 锯武器 |
-| `RhodesShortBow.java` | 预备狙击 罗德短弓 |
-| `OutcastAmmoTable.java` | OUTCAST 特殊弹药表 |
-| `OutcastHighNoon.java` | OUTCAST 午时已到 |
+| `RhodesStandardBow.java` | ~~预备狙击 罗德短弓（待重做）~~ |
+| `OutcastHighNoon.java` | ~~OUTCAST 午时已到（待重做）~~ |
 | `PithWandMemory.java` | PITH 法杖记忆 |
 | `LogosBlankScroll.java` | LOGOS 空白卷轴 |
 | `LogosRuneBuff.java` | LOGOS 符文系统 |

@@ -36,6 +36,7 @@ import com.zootdungeon.actors.buffs.Regeneration;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.HeroClass;
 import com.zootdungeon.actors.hero.HeroSubClass;
+import com.zootdungeon.actors.hero.RosmontisThrow;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.actors.hero.spells.HolyWeapon;
 import com.zootdungeon.effects.FloatingText;
@@ -162,15 +163,9 @@ public class MeleeWeapon extends Weapon {
 				@Override
 				public void onSelect(Integer cell) {
 					if (cell == null) return;
-					final Char enemy = Actor.findChar(cell);
-					if (enemy == null || enemy == hero || !Dungeon.level.heroFOV[cell]) return;
-					hero.sprite.attack(cell, () -> {
-						float[] dmgMult = {0.5f, 1.0f, 1.5f};
-						int pts = hero.pointsInTalent(Talent.ROSMONTIS_THROW_MELEE);
-						int dmg = Math.round(damageRoll(hero) * dmgMult[pts]);
-						enemy.damage(dmg, hero);
-						hero.spendAndNext(hero.attackDelay());
-					});
+					hero.sprite.attack(cell, () ->
+						RosmontisThrow.throwItem(hero, curItem, cell)
+					);
 				}
 				@Override
 				public String prompt() {
@@ -341,7 +336,7 @@ public class MeleeWeapon extends Weapon {
 		int damage = augment.damageFactor(super.damageRoll( owner ));
 		return damage;
 	}
-	
+
 	@Override
 	public String info() {
 
@@ -404,10 +399,10 @@ public class MeleeWeapon extends Weapon {
 		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST && !(this instanceof MagesStaff)){
 			info += "\n\n" + abilityInfo();
 		}
-		
+
 		return info;
 	}
-	
+
 	public String statsInfo(){
 		return Messages.get(this, "stats_desc");
 	}
