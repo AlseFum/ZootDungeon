@@ -6,6 +6,7 @@ import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
+import com.zootdungeon.sprites.TextureRegistry;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ public class BaseballBat extends MeleeWeapon {
     public static final String AC_THROW_BASEBALL = "THROW_BASEBALL";
 
     {
-        image = ItemSpriteSheet.THROWING_KNIFE;
+        image = TextureRegistry.once("cuora_baseballbat","cola/cuora_baseballbat.png",0,0,32,32);
         hitSound = Assets.Sounds.HIT_CRUSH;
         tier = 1;
     }
@@ -22,7 +23,7 @@ public class BaseballBat extends MeleeWeapon {
     @Override
     public ArrayList<String> actions(Hero hero) {
         ArrayList<String> actions = super.actions(hero);
-        if (hasBaseball(hero)) {
+        if (findBaseball(hero) != null) {
             actions.add(AC_THROW_BASEBALL);
         }
         return actions;
@@ -41,16 +42,12 @@ public class BaseballBat extends MeleeWeapon {
         if (action.equals(AC_THROW_BASEBALL)) {
             Baseball baseball = findBaseball(hero);
             if (baseball != null) {
-                baseball.setBatBonus(level()+3);
+                baseball.markBatSourced();
                 baseball.execute(hero, Item.AC_THROW);
             }
             return;
         }
         super.execute(hero, action);
-    }
-
-    private boolean hasBaseball(Hero hero) {
-        return findBaseball(hero) != null;
     }
 
     private Baseball findBaseball(Hero hero) {
@@ -64,15 +61,4 @@ public class BaseballBat extends MeleeWeapon {
         }
         return null;
     }
-
-    @Override
-    public int min(int lvl) {
-        return tier + lvl;
-    }
-
-    @Override
-    public int max(int lvl) {
-        return 5 * (tier + 1) + lvl * (tier + 1);
-    }
-
 }

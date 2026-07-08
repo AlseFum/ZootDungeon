@@ -162,6 +162,11 @@ RosmontisThrow.throwItem(hero, item, cell)
 
 **注意：** 投掷行为不是装备解除，只是远程攻击一次，武器/法杖仍保留在手上。
 
+#### 已知问题
+
+- **武器缓存问题：** 投掷武器后内部有状态缓存，再次投掷会失败。原因是 `RosmontisThrow.throwWeapon()` 临时修改 `weapon.level()` 又恢复，可能与 belongings 系统的引用缓存冲突。需要改为不修改武器等级、而是直接在伤害计算中注入等级加成的方式。
+- **与弓无联动：** ROSMONTIS 的投掷特化和基类 HUNTRESS 的弓（SpiritBow / RhodesStandardBow）没有配合。虽然是纯投掷路线不需要弓，但作为 RESERVED_SNIPER 的子类，缺少与远程武器体系的交互仍是一个设计缺口，需要思考怎么补。
+
 ---
 
 ## 3. RESERVED_CASTER（预备术士）
