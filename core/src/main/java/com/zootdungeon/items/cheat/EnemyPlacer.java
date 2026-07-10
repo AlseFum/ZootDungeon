@@ -64,6 +64,7 @@ import com.zootdungeon.actors.mobs.Wraith;
 import com.zootdungeon.actors.mobs.YogDzewa;
 import com.zootdungeon.actors.mobs.YogFist;
 import com.zootdungeon.actors.mobs.Yokai;
+import com.zootdungeon.arknights.SarkazCenturion;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.ItemSpriteSheet;
@@ -142,7 +143,8 @@ public class EnemyPlacer extends Item {
                 DwarfKing.class, YogFist.class, YogDzewa.class,
                 RotHeart.class, FungalCore.class,
                 CrystalMimic.class, EbonyMimic.class, GoldenMimic.class,
-                Pylon.class, Device.class
+                Pylon.class, Device.class,
+                SarkazCenturion.class
         ));
 
         MOB_BY_TIER.put(Tier.SPECIAL, List.of());
