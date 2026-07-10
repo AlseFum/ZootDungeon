@@ -21,14 +21,8 @@ import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.utils.GLog;
 
 public class NecrassCard extends MissileWeapon {
-	static {
-		TextureRegistry.texture("sheet.cola.necrass_card", "cola/necrass_card.png")
-				.grid(32, 32)
-				.label("necrass_card");
-	}
-
 	{
-		image = TextureRegistry.idByLabel("necrass_card");
+		image = TextureRegistry.once("necrass_card", "cola/necrass_card.png", 0, 0, 32, 32);
 		hitSound = Assets.Sounds.HIT_SLASH;
 		hitSoundPitch = 1.2f;
 
