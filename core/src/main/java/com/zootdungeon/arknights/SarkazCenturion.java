@@ -123,8 +123,6 @@ public class SarkazCenturion extends Mob implements Callback {
 
     // ── 远程攻击 ────────────────────────────────────────
 
-    public static class VoidBolt {}
-
     private void zap() {
         spend(TIME_TO_ZAP);
         Invisibility.dispel(this);
@@ -133,7 +131,7 @@ public class SarkazCenturion extends Mob implements Callback {
         if (hit(this, enemy, true)) {
             int dmg = damageRoll();
             dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
-            enemy.damage(dmg, new VoidBolt());
+            enemy.damage(dmg, this);
 
             // 命中时在目标脚下产生血红色粒子，竖直向上喷发
             Emitter e = GameScene.emitter();
