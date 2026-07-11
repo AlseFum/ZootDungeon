@@ -50,6 +50,7 @@ import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.scenes.InterlevelScene;
+import com.zootdungeon.levels.features.HighGrass;
 import com.zootdungeon.sprites.TextureRegistry;
 import com.zootdungeon.windows.WndGeneral;
 import com.zootdungeon.windows.WndTestLoot;
@@ -80,13 +81,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class DebugSupply extends Supply {
-    static {
-        TextureRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-                    .setArea("debug_bag", 0, 0, 32, 32);
-    }
     {
-        
-        image = TextureRegistry.idByLabel("debug_bag");
+        image = TextureRegistry.once("debug_bag", "cola/debug_bag.png", 0, 0, 32, 32);
     }
     private static final String CAT_CHEAT = "cat_cheat";
     private static final String CAT_WEAPONS = "cat_weapons";
@@ -126,7 +122,7 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(StateSwitchWeapon.class, 1));
         weapons.add(() -> create(PhantomKnife.class, 1));
         weapons.add(() -> create(TragodiaWand.class, 1));
-weapons.add(() -> create(WandOfEyjafjalla.class, 1));
+        weapons.add(() -> create(WandOfEyjafjalla.class, 1));
         weapons.add(() -> create(RangeReducedWeapon.class, 1));
         weapons.add(() -> create(MomentumWeapon.class, 1));
         weapons.add(() -> create(PropertyHuntingWeapon.class, 1));
@@ -357,16 +353,21 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
      */
     private void killAllLootAll(Hero hero) {
         int killed = 0, keysCollected = 0, doorsOpened = 0, chestsOpened = 0, itemsCollected = 0;
+        final int MAX_ITER = 100;
+        int iterations = 0;
 
         boolean changed;
         do {
+            if (++iterations > MAX_ITER) {
+                GLog.w("清场搜刮达到最大迭代次数 %d，强制退出", MAX_ITER);
+                break;
+            }
             changed = false;
 
             // Phase 1: 击杀所有敌人（新区域可能藏着新敌人）
             int roundKilled = 0;
             for (Mob mob : new ArrayList<>(Dungeon.level.mobs)) {
                 if (mob.isAlive() && mob.alignment == Char.Alignment.ENEMY) {
-                    mob.HP = 1;
                     mob.damage(99999, hero);
                     roundKilled++;
                 }
@@ -404,6 +405,7 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
                 if (terrain == Terrain.LOCKED_DOOR) {
                     if (Notes.keyCount(new IronKey(Dungeon.depth)) > 0) {
                         Notes.remove(new IronKey(Dungeon.depth));
+                        removeKeyFromInventory(hero, IronKey.class);
                         Level.set(cell, Terrain.DOOR);
                         GameScene.updateMap(cell);
                         roundDoors++;
@@ -411,6 +413,7 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
                 } else if (terrain == Terrain.CRYSTAL_DOOR) {
                     if (Notes.keyCount(new CrystalKey(Dungeon.depth)) > 0) {
                         Notes.remove(new CrystalKey(Dungeon.depth));
+                        removeKeyFromInventory(hero, CrystalKey.class);
                         Level.set(cell, Terrain.EMPTY);
                         GameScene.updateMap(cell);
                         roundDoors++;
@@ -418,6 +421,7 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
                 } else if (terrain == Terrain.LOCKED_EXIT) {
                     if (Notes.keyCount(new SkeletonKey(Dungeon.depth)) > 0) {
                         Notes.remove(new SkeletonKey(Dungeon.depth));
+                        removeKeyFromInventory(hero, SkeletonKey.class);
                         Level.set(cell, Terrain.UNLOCKED_EXIT);
                         GameScene.updateMap(cell);
                         roundDoors++;
@@ -426,7 +430,7 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
             }
             if (roundDoors > 0) { doorsOpened += roundDoors; changed = true; }
 
-            // Phase 4: 使用钥匙开宝箱
+            // Phase 4: 开箱/开坟墓/开骸骨
             int roundChests = 0;
             for (Heap heap : new ArrayList<>(Dungeon.level.heaps.valueList())) {
                 if (heap == null) continue;
@@ -434,16 +438,21 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
                 if (heap.type == Heap.Type.LOCKED_CHEST) {
                     if (Notes.keyCount(new GoldenKey(Dungeon.depth)) > 0) {
                         Notes.remove(new GoldenKey(Dungeon.depth));
+                        removeKeyFromInventory(hero, GoldenKey.class);
                         heap.open(hero);
                         opened = true;
                     }
                 } else if (heap.type == Heap.Type.CRYSTAL_CHEST) {
                     if (Notes.keyCount(new CrystalKey(Dungeon.depth)) > 0) {
                         Notes.remove(new CrystalKey(Dungeon.depth));
+                        removeKeyFromInventory(hero, CrystalKey.class);
                         heap.open(hero);
                         opened = true;
                     }
-                } else if (heap.type == Heap.Type.CHEST) {
+                } else if (heap.type == Heap.Type.CHEST
+                        || heap.type == Heap.Type.TOMB
+                        || heap.type == Heap.Type.SKELETON
+                        || heap.type == Heap.Type.REMAINS) {
                     heap.open(hero);
                     opened = true;
                 }
@@ -452,6 +461,9 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
             if (roundChests > 0) { chestsOpened += roundChests; changed = true; }
 
         } while (changed);
+
+        // Phase 6: 踩所有草（正常草变平地，高草出掉落物）
+        trampleAllGrass(hero);
 
         // Phase 5: 拾取所有地面掉落物（使用 doPickUp 触发 Gold/EnergyCrystal/Dewdrop 等的 onPickUp）
         // 排除商店物品、未开启的宝箱/墓碑/骸骨等
@@ -482,6 +494,29 @@ weapons.add(() -> create(WandOfEyjafjalla.class, 1));
         Level.beforeTransition();
         InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
         Game.switchScene(InterlevelScene.class);
+    }
+
+    /** 踩全图所有草：普通草压平，高草踩出掉落物。 */
+    private void trampleAllGrass(Hero hero) {
+        Level level = Dungeon.level;
+        for (int cell = 0; cell < level.length(); cell++) {
+            int terrain = level.map[cell];
+            if (terrain == Terrain.GRASS) {
+                Level.set(cell, Terrain.EMPTY);
+                GameScene.updateMap(cell);
+            } else if (terrain == Terrain.HIGH_GRASS || terrain == Terrain.FURROWED_GRASS) {
+                HighGrass.trample(level, cell);
+            }
+        }
+        Dungeon.observe();
+    }
+
+    /** 从英雄背包中移除一把指定类型的钥匙。 */
+    private static void removeKeyFromInventory(Hero hero, Class<? extends Key> keyClass) {
+        Key key = hero.belongings.getItem(keyClass);
+        if (key != null) {
+            key.detach(hero.belongings.backpack);
+        }
     }
 
     private void grantItem(Hero hero, Supplier<Item> supplier) {
