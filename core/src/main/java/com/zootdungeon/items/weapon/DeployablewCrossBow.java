@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights.misc;
+package com.zootdungeon.items.weapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -12,7 +12,8 @@ import com.zootdungeon.effects.Splash;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
-import com.zootdungeon.items.weapon.base.Weapon;
+import com.zootdungeon.items.EquipableItem;
+import com.zootdungeon.items.weapon.base.HeavyBow;
 import com.zootdungeon.items.weapon.base.MissileWeapon;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
@@ -34,20 +35,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * 机弩：与 {@link NearRangeCrossBow} 相同，射击距离上限 3；纯上下左右且曼哈顿 1～2 格时伤害 +60%。
+ * 机弩：{@link HeavyBow 重弩}的可部署变体。
  * 可将弩台部署到视野内任意空格；朝向在部署时由「英雄→落点」位移的主轴取正四向（投掷大方向）。
  * 可在相邻格交互再次「调整朝向」。每回合沿朝向射击最多 3 格，带 zap + 弹道动画。
  */
-public class DeployablewCrossBow extends Weapon {
+public class DeployablewCrossBow extends HeavyBow {
 
-	public static final String AC_SHOOT = "SHOOT";
 	public static final String AC_DEPLOY = "DEPLOY";
-
-	public static final int MAX_SHOOT_DISTANCE = 3;
-
-	private static final float ORTHO_BONUS = 1.6f;
-
-	private int targetPos;
 
 	static {
 		TextureRegistry.once("mod:deployedlineblade", "cola/Pozemka_typewriter.png",0,0,32,32);
@@ -64,9 +58,12 @@ public class DeployablewCrossBow extends Weapon {
 	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions(hero);
+		actions.remove(AC_SHOOT);             // 父类无条件添加了，子类只在装备时展示
 		if (isEquipped(hero)) {
 			actions.add(AC_SHOOT);
 			actions.add(AC_DEPLOY);
+		} else {
+			actions.add(EquipableItem.AC_EQUIP); // 父类移除了 EQUIP，子类需要恢复
 		}
 		return actions;
 	}
@@ -102,29 +99,6 @@ public class DeployablewCrossBow extends Weapon {
 	}
 
 	@Override
-	public int STRReq(int lvl) {
-		return STRReq(2, lvl);
-	}
-
-	@Override
-	public int min(int lvl) {
-		return 3 + lvl;
-	}
-
-	@Override
-	public int max(int lvl) {
-		return 10 + 2 * lvl;
-	}
-
-	@Override
-	public int damageRoll(Char owner) {
-		int dmg = augment.damageFactor(super.damageRoll(owner));
-		if (owner != null && Dungeon.level != null && NearRangeCrossBow.hasOrthogonalShortLineBonus(owner.pos, targetPos)) {
-			dmg = Math.round(dmg * ORTHO_BONUS);
-		}
-		return dmg;
-	}
-
 	public LineBolt knockBolt() {
 		return new LineBolt();
 	}
@@ -299,7 +273,15 @@ public class DeployablewCrossBow extends Weapon {
 
 		@Override
 		public int damageRoll(Char owner) {
-			return DeployablewCrossBow.this.damageRoll(owner);
+			int dmg = augment.damageFactor(
+					Random.NormalIntRange(
+							shootMin(DeployablewCrossBow.this.buffedLvl()),
+							shootMax(DeployablewCrossBow.this.buffedLvl())));
+			if (owner != null && Dungeon.level != null
+					&& hasOrthogonalShortLineBonus(owner.pos, DeployablewCrossBow.this.targetPos)) {
+				dmg = Math.round(dmg * ORTHO_BONUS);
+			}
+			return dmg;
 		}
 
 		@Override
