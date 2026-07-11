@@ -482,7 +482,7 @@ public abstract class Char extends Actor {
 					speed *= 2f;
 				} else if (buffClass == Slow.class || buffClass == Hex.class || buffClass == Vulnerable.class){
 					speed *= 0.667f;
-				} else if (buffClass == com.zootdungeon.arknights.ascalon.AscalonWound.class){
+				} else if (buffClass == com.zootdungeon.items.weapon.AscalonAOE.AscalonWound.class){
 					speed *= 0.82f;
 				} else if (buffClass == GuardModal.DuelMomentumBuff.class) {
 					GuardModal.DuelMomentumBuff mb = (GuardModal.DuelMomentumBuff) buff;

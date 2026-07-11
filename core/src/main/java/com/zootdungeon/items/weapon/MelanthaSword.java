@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon;
 
 import com.zootdungeon.items.weapon.base.CleaveWeapon;
 import com.zootdungeon.sprites.TextureRegistry;

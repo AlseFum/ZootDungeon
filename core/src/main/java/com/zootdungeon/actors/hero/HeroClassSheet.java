@@ -24,7 +24,7 @@ import com.zootdungeon.actors.hero.abilities.rogue.SmokeBomb;
 import com.zootdungeon.actors.hero.abilities.warrior.Endure;
 import com.zootdungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.zootdungeon.actors.hero.abilities.warrior.Shockwave;
-import com.zootdungeon.arknights.MelanthaSword;
+import com.zootdungeon.items.weapon.MelanthaSword;
 import com.zootdungeon.arknights.RhodesIslandTerminal;
 import com.zootdungeon.arknights.SkillRecord;
 import com.zootdungeon.arknights.plugins.SkillSheet;

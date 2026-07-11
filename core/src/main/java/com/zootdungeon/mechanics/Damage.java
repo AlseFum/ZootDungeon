@@ -245,9 +245,8 @@ public class Damage {
         }
 
         if (!anyHit) {
-            // 全部落空：只在最终确认 0 次命中时统一展示一次 miss，触发闪避回调
+            // 全部落空：只在最终确认 0 次命中时统一展示一次 miss
             defender.sprite.showStatus(CharSprite.NEUTRAL, "miss");
-            com.zootdungeon.arknights.misc.RhodesDodgeHooks.onDodge(attacker, defender);
             return new PhysicalResult(false, 0, Interrupt.Dodge, isVisibleFight);
         }
 

@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.Char;

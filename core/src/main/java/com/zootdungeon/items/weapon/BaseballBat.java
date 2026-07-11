@@ -1,11 +1,10 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.weapon;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.weapon.base.MeleeWeapon;
 import com.zootdungeon.messages.Messages;
-import com.zootdungeon.sprites.ItemSpriteSheet;
 import com.zootdungeon.sprites.TextureRegistry;
 
 import java.util.ArrayList;

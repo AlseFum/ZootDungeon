@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights;
+package com.zootdungeon.items.wands;
 
 import com.zootdungeon.Assets;
 import com.zootdungeon.Dungeon;
@@ -9,7 +9,6 @@ import com.zootdungeon.actors.blobs.Fire;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Burning;
 import com.zootdungeon.effects.MagicMissile;
-import com.zootdungeon.items.wands.DamageWand;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.weapon.MagesStaff;
 import com.zootdungeon.levels.Level;

@@ -1,4 +1,4 @@
-package com.zootdungeon.arknights.phantom;
+package com.zootdungeon.items.weapon;
 
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;

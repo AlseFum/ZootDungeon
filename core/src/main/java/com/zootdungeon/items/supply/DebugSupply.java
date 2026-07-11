@@ -1,7 +1,6 @@
 package com.zootdungeon.items.supply;
 
-import com.zootdungeon.arknights.ascalon.AscalonAmbush;
-import com.zootdungeon.arknights.ascalon.AscalonAOE;
+import com.zootdungeon.items.weapon.AscalonAOE;
 import com.zootdungeon.items.weapon.base.StateSwitchWeapon;
 import com.zootdungeon.items.weapon.BannerWeapon;
 import com.zootdungeon.items.weapon.BerserkWeapon;
@@ -10,22 +9,20 @@ import com.zootdungeon.items.weapon.BloodWeapon;
 import com.zootdungeon.items.weapon.base.InstantMechWeapon;
 import com.zootdungeon.items.weapon.base.MomentumWeapon;
 import com.zootdungeon.items.weapon.base.PropertyHuntingWeapon;
-import com.zootdungeon.arknights.gitano.GitanoCard;
 import com.zootdungeon.items.weapon.base.RangeReducedWeapon;
-import com.zootdungeon.arknights.phantom.PhantomKnife;
+import com.zootdungeon.items.weapon.PhantomKnife;
 import com.zootdungeon.items.weapon.base.TransferMechWeapon;
 import com.zootdungeon.arknights.tragodia.TragodiaWand;
-import com.zootdungeon.arknights.WandOfEyjafjalla;
+import com.zootdungeon.items.wands.WandOfEyjafjalla;
 import com.zootdungeon.arknights.necrass.NecrassCard;
 import com.zootdungeon.items.weapon.Chakram;
 import com.zootdungeon.items.weapon.base.TwinBlade;
 import com.zootdungeon.items.weapon.DeployablewCrossBow;
 import com.zootdungeon.items.weapon.base.HeavyBow;
-import com.zootdungeon.arknights.misc.RhodesGauntlet;
 import com.zootdungeon.arknights.SkillRecord;
-import com.zootdungeon.arknights.MelanthaSword;
-import com.zootdungeon.arknights.BaseballBat;
-import com.zootdungeon.arknights.Baseball;
+import com.zootdungeon.items.weapon.MelanthaSword;
+import com.zootdungeon.items.weapon.BaseballBat;
+import com.zootdungeon.items.weapon.Baseball;
 import com.zootdungeon.arknights.firearms.BlackSteelGun;
 import com.zootdungeon.arknights.firearms.IberianGun;
 import com.zootdungeon.arknights.firearms.LateranGun;
@@ -117,7 +114,6 @@ public class DebugSupply extends Supply {
         categories.put(CAT_CHEAT, cheat);
 
         List<Supplier<Item>> weapons = new ArrayList<>();
-        weapons.add(() -> create(AscalonAmbush.class, 1));
         weapons.add(() -> create(AscalonAOE.class, 1));
         weapons.add(() -> create(StateSwitchWeapon.class, 1));
         weapons.add(() -> create(PhantomKnife.class, 1));
@@ -126,7 +122,6 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(RangeReducedWeapon.class, 1));
         weapons.add(() -> create(MomentumWeapon.class, 1));
         weapons.add(() -> create(PropertyHuntingWeapon.class, 1));
-        weapons.add(() -> create(GitanoCard.class, 50));
         weapons.add(() -> create(NecrassCard.class, 50));
         weapons.add(() -> create(TwinBlade.class, 5));
         weapons.add(() -> create(InstantMechWeapon.class, 1));
@@ -141,7 +136,6 @@ public class DebugSupply extends Supply {
         weapons.add(() -> create(BloodWeapon.class, 1));
         weapons.add(() -> create(BannerWeapon.class, 1));
         weapons.add(() -> create(BerserkWeapon.class, 1));
-        weapons.add(() -> createRhodesGauntlet());
         categories.put(CAT_WEAPONS, weapons);
 
         List<Supplier<Item>> tests = new ArrayList<>();
@@ -174,10 +168,6 @@ public class DebugSupply extends Supply {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private static RhodesGauntlet createRhodesGauntlet() {
-        return new RhodesGauntlet();
     }
 
     private static FirearmMagazine createCPistolMagazine() {
