@@ -463,7 +463,7 @@ public class Hero extends Char {
         if (lvl < (Talent.tierLevelThresholds[tier] - 1)
                 || (tier == 3 && subClass == HeroSubClass.NONE)
                 || (tier == 4 && armorAbility == null)
-                || ((tier == 3 || tier == 4) && heroClass == HeroClass.ReservedOp)) {
+                || ((tier == 3 || tier == 4) )) {
             return 0;
         } else if (lvl >= Talent.tierLevelThresholds[tier + 1]) {
             return Talent.tierLevelThresholds[tier + 1] - Talent.tierLevelThresholds[tier] - talentPointsSpent(tier)
@@ -477,7 +477,7 @@ public class Hero extends Char {
         if (lvl < (Talent.tierLevelThresholds[tier] - 1)
                 || (tier == 3 && subClass == HeroSubClass.NONE)
                 || (tier == 4 && armorAbility == null)
-                || ((tier == 3 || tier == 4) && heroClass == HeroClass.ReservedOp)) {
+                || (tier == 3 || tier == 4)){
             return 0;
         } else if (buff(PotionOfDivineInspiration.DivineInspirationTracker.class) != null
                 && buff(PotionOfDivineInspiration.DivineInspirationTracker.class).isBoosted(tier)) {

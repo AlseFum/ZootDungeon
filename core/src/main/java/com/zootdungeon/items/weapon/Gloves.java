@@ -32,7 +32,7 @@ public class Gloves extends FastWeapon {
 		hitSound = Assets.Sounds.HIT;
 		hitSoundPitch = 1.3f;
 
-		tier = 1;
+		tier = 0;
 		DLY = 0.5f; //2x speed
 		
 		bones = false;

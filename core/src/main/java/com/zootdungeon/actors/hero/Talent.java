@@ -1006,8 +1006,6 @@ public class Talent implements Bundlable {
 				Collections.addAll(tierTalents, CLEANSE, LIGHT_READING);
 		} else if (cls != null && cls.subClasses() != null && cls.subClasses().length > 0) {
 			// 有子类的职业，T3由initSubclassTalents提供
-		} else if (cls == HeroClassSheet.ReservedOp) {
-			// 预备干员无第三层职业天赋
 		} else {
 			// Default to warrior
 			Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
@@ -1027,9 +1025,6 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initSubclassTalents( Hero hero ){
-		if (hero.heroClass == HeroClassSheet.ReservedOp) {
-			return;
-		}
 		initSubclassTalents( hero.subClass, hero.talents );
 
 		// BLAZE: replace starting weapon with Saw
@@ -1127,8 +1122,7 @@ public class Talent implements Bundlable {
 	}
 
 	public static void initArmorTalents( Hero hero ){
-		if (hero.heroClass == HeroClassSheet.ReservedOp
-				|| hero.heroClass == HeroClassSheet.RESERVED_GUARD
+		if (hero.heroClass == HeroClassSheet.RESERVED_GUARD
 				|| hero.heroClass == HeroClassSheet.RESERVED_CASTER
 				|| hero.heroClass == HeroClassSheet.RESERVED_SNIPER
 				|| hero.heroClass == HeroClassSheet.RESERVED_SPECIALIST) {

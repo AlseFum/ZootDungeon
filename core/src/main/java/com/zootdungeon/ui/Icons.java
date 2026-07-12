@@ -474,9 +474,7 @@ public enum Icons {
 				return new ItemSprite(ItemSpriteSheet.RAPIER);
 		} else if (cl == HeroClass.CLERIC) {
 				return new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME);
-		} else if (cl == HeroClass.ReservedOp) {
-            return new ItemSprite(TextureRegistry.idByLabel("rhodes_island_terminal"));
-        } else {
+		} else {
 				return new ItemSprite(ItemSpriteSheet.SEAL); // Default icon for unknown classes
 		}
 	}

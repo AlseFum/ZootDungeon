@@ -283,37 +283,6 @@ public final class HeroClassSheet {
                 new ScrollOfRemoveCurse().identify();
             })
             .register();
-    public static final HeroClass ReservedOp=registerStandardClass("reservedOp")
-            .spritesheet("cola/guard.png")
-            .spriteCellSize(22, 23)
-            .splashArt("cola/guard_splashart.png")
-            .classTalentsTier1(
-                Talent.RESERVED_OP_APPRAISAL,
-                Talent.RESERVED_OP_FIELD_RATION,
-                Talent.RESERVED_OP_COMMAND_SHIELD
-            )
-            .classTalentsTier2(
-                Talent.RESERVED_OP_RAPID_MEAL,
-                Talent.RESERVED_OP_ALCHEMY_SUBSIDY,
-                Talent.RESERVED_OP_COST_SURGE,
-                Talent.RESERVED_OP_COST_MASTERY
-            )
-            .icons(
-                new ItemSprite(TextureRegistry.idByLabel("rhodes_island_terminal"))
-            )
-            .initializer(hero -> {
-                // 开局给个 Melantha 剑：tier=1 cleave 武器，有 dmgBoostBase=3，能打能升。
-                // 配合 SkillRecord(SKILL_1) + 终端 cost=40，让玩家有事可做。
-                new MelanthaSword().identify().collect();
-                RhodesIslandTerminal terminal = new RhodesIslandTerminal();
-                terminal.identify().collect();
-                Dungeon.quickslot.setSlot(2, terminal);
-                terminal.setCost(40);
-                // 开局赠送 1 份技能档案
-                new SkillRecord(SkillSheet.SKILL_1).collect();
-            })
-            .register();
-
     public static final HeroClass RESERVED_GUARD = registerStandardClass("reservedGuard")
             .subClasses(HeroSubClass.OP_SHARP, HeroSubClass.ACE, HeroSubClass.BLAZE)
             .spritesheet("cola/guard.png")
