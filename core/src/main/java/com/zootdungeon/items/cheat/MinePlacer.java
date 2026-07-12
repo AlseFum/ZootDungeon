@@ -122,7 +122,9 @@ public class MinePlacer extends Item {
 
     @Override
     public String desc() {
-        return Messages.get(this, "desc");
+        String base = Messages.get(this, "desc");
+        String lastName = actionName(lastPlacedType, Dungeon.hero);
+        return base + "\n\n" + Messages.get(this, "desc_last_placed", lastName);
     }
 
     @Override
@@ -135,23 +137,27 @@ public class MinePlacer extends Item {
         return true;
     }
 
+    /** 上次布置的地雷类型（对应 AC_PLACE_* 常量），初始为 CONTACT。 */
+    private String lastPlacedType = AC_PLACE_CONTACT;
+
     // ==== CellSelector.Listeners ====
 
     private final CellSelector.Listener placePattern = placeListener(
-            PatternMine::new, "prompt_place_pattern");
+            PatternMine::new, "prompt_place_pattern", AC_PLACE_PATTERN);
     private final CellSelector.Listener placeContact = placeListener(
-            ContactMine::new, "prompt_place_contact");
+            ContactMine::new, "prompt_place_contact", AC_PLACE_CONTACT);
     private final CellSelector.Listener placeProximity = placeListener(
-            FlashMine::new, "prompt_place_proximity");
+            FlashMine::new, "prompt_place_proximity", AC_PLACE_PROXIMITY);
     private final CellSelector.Listener placeCross = placeListener(
-            CrossMine::new, "prompt_place_cross");
+            CrossMine::new, "prompt_place_cross", AC_PLACE_CROSS);
     private final CellSelector.Listener placeDoor = placeListener(
-            DoorMine::new, "prompt_place_door");
+            DoorMine::new, "prompt_place_door", AC_PLACE_DOOR);
     private final CellSelector.Listener placeRemote = placeListener(
-            RemoteMine::new, "prompt_place_remote");
+            RemoteMine::new, "prompt_place_remote", AC_PLACE_REMOTE);
 
     private CellSelector.Listener placeListener(final java.util.function.Supplier<? extends Mine> factory,
-                                                final String promptKey) {
+                                                final String promptKey,
+                                                final String actionType) {
         return new CellSelector.Listener() {
             @Override
             public void onSelect(Integer cell) {
@@ -164,6 +170,9 @@ public class MinePlacer extends Item {
                 }
                 Mine mine = factory.get();
                 Dungeon.level.addCellEntity(mine, cell);
+                // 记录本次布置的类型，同时更新 defaultAction 方便连续放置同一种雷
+                lastPlacedType = actionType;
+                defaultAction = actionType;
                 GLog.p(Messages.get(MinePlacer.class, "placed", mine.name(), cell));
             }
 

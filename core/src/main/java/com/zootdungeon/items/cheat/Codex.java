@@ -133,62 +133,62 @@ public class Codex extends Item {
             // 添加异域卷轴到第二个标签页（索引1）
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_DIVINATE)),
-                    "占卜卷轴：探知物品信息",
+                    scrollDesc(ScrollOfDivination.class),
                     () -> selectedScroll = ScrollOfDivination.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_ENCHANT)),
-                    "附魔卷轴：为装备附魔",
+                    scrollDesc(ScrollOfEnchantment.class),
                     () -> selectedScroll = ScrollOfEnchantment.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PASSAGE)),
-                    "通道卷轴：创造传送门",
+                    scrollDesc(ScrollOfPassage.class),
                     () -> selectedScroll = ScrollOfPassage.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_CHALLENGE)),
-                    "挑战卷轴：激怒并强化敌人",
+                    scrollDesc(ScrollOfChallenge.class),
                     () -> selectedScroll = ScrollOfChallenge.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_MYSTENRG)),
-                    "神秘能量卷轴：强力充能",
+                    scrollDesc(ScrollOfMysticalEnergy.class),
                     () -> selectedScroll = ScrollOfMysticalEnergy.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_METAMORPH)),
-                    "变形卷轴：改变职业特性",
+                    scrollDesc(ScrollOfMetamorphosis.class),
                     () -> selectedScroll = ScrollOfMetamorphosis.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PRISIMG)),
-                    "棱镜镜像卷轴：创造彩色分身",
+                    scrollDesc(ScrollOfPrismaticImage.class),
                     () -> selectedScroll = ScrollOfPrismaticImage.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_FORESIGHT)),
-                    "预知卷轴：显示详细地图",
+                    scrollDesc(ScrollOfForesight.class),
                     () -> selectedScroll = ScrollOfForesight.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_SIREN)),
-                    "海妖之歌卷轴：魅惑敌人",
+                    scrollDesc(ScrollOfSirensSong.class),
                     () -> selectedScroll = ScrollOfSirensSong.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_ANTIMAGIC)),
-                    "反魔法卷轴：移除魔法效果",
+                    scrollDesc(ScrollOfAntiMagic.class),
                     () -> selectedScroll = ScrollOfAntiMagic.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_PSIBLAST)),
-                    "心灵爆炸卷轴：精神伤害",
+                    scrollDesc(ScrollOfPsionicBlast.class),
                     () -> selectedScroll = ScrollOfPsionicBlast.class
             );
             builder.addItemToTab(1,
                     new Image(Assets.getTexture(Assets.Sprites.ITEM_ICONS), ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_DREAD)),
-                    "恐怖卷轴：造成持续恐惧",
+                    scrollDesc(ScrollOfDread.class),
                     () -> selectedScroll = ScrollOfDread.class
             );
 
@@ -293,7 +293,10 @@ public class Codex extends Item {
     }
 
     private static <T extends Scroll> String scrollDesc(Class<T> cls) {
-        T s = Reflection.newInstance(cls);
-        return s.name() + "：" + s.desc();
+        // 直接从 properties 读取已判别（identified）的名称和描述，
+        // 避免因 Scroll.isKnown() 返回 false 而显示符文名/未知描述。
+        String name = Messages.get(cls, "name");
+        String desc = Messages.get(cls, "desc");
+        return name + "：" + desc;
     }
 }
