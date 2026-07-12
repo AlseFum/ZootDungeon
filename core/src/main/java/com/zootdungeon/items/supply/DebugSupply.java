@@ -141,6 +141,7 @@ public class DebugSupply extends Supply {
         skills.add(() -> new SkillRecord(com.zootdungeon.arknights.plugins.SkillSheet.SKILL_2));
         skills.add(() -> new SkillRecord(com.zootdungeon.arknights.plugins.SkillSheet.ATTACK_UP_ALPHA));
         skills.add(() -> new SkillRecord(com.zootdungeon.arknights.plugins.SkillSheet.NEXT_ATTACK_BOOST));
+        skills.add(() -> new SkillRecord(com.zootdungeon.arknights.plugins.SkillSheet.RANGED_DOT));
         categories.put(CAT_SKILLS, skills);
 
         // Firearms: one tab, 4 rows x 3 columns (type rows, A/B/C columns)

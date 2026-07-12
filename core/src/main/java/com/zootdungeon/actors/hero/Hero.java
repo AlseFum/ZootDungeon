@@ -34,6 +34,7 @@ import com.zootdungeon.actors.buffs.Charm;
 import com.zootdungeon.actors.buffs.RevealedArea;
 import com.zootdungeon.actors.buffs.Roots;
 import com.zootdungeon.actors.buffs.Combo;
+import com.zootdungeon.arknights.plugins.SkillSheet;
 import com.zootdungeon.actors.buffs.Drowsy;
 import com.zootdungeon.actors.buffs.Foresight;
 import com.zootdungeon.actors.buffs.GreaterHaste;
@@ -1654,6 +1655,12 @@ public class Hero extends Char {
                     enemy.damage(Smite.bonusDmg(this, enemy), Smite.INSTANCE);
                 }
             }
+        }
+
+        // Ranged DoT: apply on ranged hit when skill buff is active
+        SkillSheet.RangedDoTSkillBuff dotSkill = buff(SkillSheet.RangedDoTSkillBuff.class);
+        if (dotSkill != null && belongings.thrownWeapon != null && enemy.isAlive() && damage > 0) {
+            Buff.affect(enemy, SkillSheet.RangedDoTEnemyBuff.class).set(dotSkill.dotDamage, dotSkill.dotTurns);
         }
 
         switch (subClass) {

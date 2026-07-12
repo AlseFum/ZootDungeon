@@ -1,9 +1,15 @@
 package com.zootdungeon.arknights.plugins;
 
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 import com.zootdungeon.actors.buffs.AttackUpBuff;
 import com.zootdungeon.actors.buffs.Buff;
+import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.buffs.PowerStrike;
 import com.zootdungeon.actors.hero.Hero;
+import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.CharSprite;
+import com.zootdungeon.ui.BuffIndicator;
 import com.zootdungeon.utils.GLog;
 
 import java.util.HashMap;
@@ -11,6 +17,8 @@ import java.util.Map;
 
 /**
  * 全局技能注册表。每个技能以 {@link SkillDef} 定义，通过 {@link #register(SkillDef)} 进入 {@link #registeredSkills}。
+ * <p>
+ * 也包含技能所需的 Buff 类作为内部类。
  */
 public final class SkillSheet {
 
@@ -67,6 +75,14 @@ public final class SkillSheet {
 			GLog.p("下一次攻击伤害提升30%");
 		});
 
+	// 淬毒射击：远程攻击附加 DoT，持续 15 回合
+	public static final SkillDef RANGED_DOT = new SkillDef("ranged_dot", "淬毒射击",
+		"远程攻击给目标附加 3 点/回合的持续伤害，持续 5 回合。技能持续 15 回合。", 3,
+		() -> {
+			Buff.affect(com.zootdungeon.Dungeon.hero, RangedDoTSkillBuff.class, 15f);
+			GLog.p("远程攻击将附加持续伤害！");
+		});
+
 	static {
 		register(SKILL_1);
 		register(SKILL_2);
@@ -74,6 +90,7 @@ public final class SkillSheet {
 		register(ATTACK_UP_BETA);
 		register(ATTACK_UP_GAMMA);
 		register(NEXT_ATTACK_BOOST);
+		register(RANGED_DOT);
 	}
 
 	public static SkillDef register(SkillDef skill) {
@@ -91,5 +108,109 @@ public final class SkillSheet {
 
 	private SkillSheet() {
 		throw new AssertionError("SkillSheet is a utility class and should not be instantiated");
+	}
+
+	// ===== Buff 内部类 =====
+
+	/**
+	 * 英雄激活「淬毒射击」后的标记 buff。
+	 * 持续期间内，远程攻击会给目标附加 {@link RangedDoTEnemyBuff}。
+	 */
+	public static class RangedDoTSkillBuff extends FlavourBuff {
+
+		public int dotDamage = 3;
+		public int dotTurns = 5;
+
+		{
+			type = buffType.POSITIVE;
+			announced = true;
+		}
+
+		@Override
+		public int icon() {
+			return BuffIndicator.POISON;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(0f, 0.8f, 0.2f);
+		}
+
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc", dotDamage, dotTurns, dispTurns());
+		}
+	}
+
+	/**
+	 * 远程攻击附着的持续伤害（DoT）。
+	 * 每回合对目标造成一次伤害，持续若干回合后自动解除。
+	 */
+	public static class RangedDoTEnemyBuff extends Buff {
+
+		private int damagePerTurn = 2;
+		private int turnsLeft = 5;
+
+		private static final String DAMAGE = "damagePerTurn";
+		private static final String TURNS  = "turnsLeft";
+
+		{
+			type = buffType.NEGATIVE;
+			announced = true;
+		}
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(DAMAGE, damagePerTurn);
+			bundle.put(TURNS, turnsLeft);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			damagePerTurn = bundle.getInt(DAMAGE);
+			turnsLeft = bundle.getInt(TURNS);
+		}
+
+		public void set(int damage, int turns) {
+			if (damage > this.damagePerTurn) {
+				this.damagePerTurn = damage;
+			}
+			this.turnsLeft = Math.max(this.turnsLeft, turns);
+		}
+
+		@Override
+		public boolean act() {
+			if (target.isAlive()) {
+				target.damage(damagePerTurn, this);
+				if (target.sprite != null) {
+					target.sprite.showStatus(CharSprite.NEGATIVE,
+							Messages.get(this, "status", damagePerTurn));
+				}
+			}
+			turnsLeft--;
+			if (turnsLeft <= 0 || !target.isAlive()) {
+				detach();
+			} else {
+				spend(TICK);
+			}
+			return true;
+		}
+
+		@Override
+		public int icon() {
+			return BuffIndicator.POISON;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(0.2f, 0.8f, 0.2f);
+		}
+
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc", damagePerTurn, turnsLeft);
+		}
 	}
 }
