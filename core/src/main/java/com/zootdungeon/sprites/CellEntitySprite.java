@@ -1,4 +1,4 @@
-package com.zootdungeon.actors.entities;
+package com.zootdungeon.sprites;
 
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.tweeners.AlphaTweener;

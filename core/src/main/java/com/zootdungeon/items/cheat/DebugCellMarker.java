@@ -1,4 +1,4 @@
-package com.zootdungeon.actors.entities;
+package com.zootdungeon.items.cheat;
 
 import com.watabou.utils.Bundle;
 import com.zootdungeon.actors.Char;
@@ -6,6 +6,7 @@ import com.zootdungeon.actors.Entity;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;
+import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.utils.GLog;
 
 /**
@@ -71,5 +72,17 @@ public class DebugCellMarker extends Entity {
         super.restoreFromBundle(bundle);
         stepCount = bundle.getInt(STEP_COUNT);
         flyCount = bundle.getInt(FLY_COUNT);
+    }
+
+    /**
+     * {@link DebugCellMarker} 的调试贴图。直接复用 {@code cola/trashbin.png}（16x16），
+     * 便于在地图上快速定位被放置的调试实体。
+     */
+    public static class DebugCellMarkerSprite extends CellEntitySprite {
+
+        public DebugCellMarkerSprite() {
+            super();
+            texture("cola/trashbin.png");
+        }
     }
 }

@@ -2,22 +2,24 @@ package com.zootdungeon.actors.entities.mines;
 
 import java.util.ArrayList;
 
+import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.entities.Mine;
 import com.zootdungeon.actors.buffs.Blindness;
 import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
-import com.zootdungeon.actors.entities.CellEntitySprite;
+import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 
 /**
- * 感应（闪光）地雷。
+ * 闪光地雷。
  * <p>
  * 每个 tick 检查以自身为中心的 3×3 格子：一旦出现任何敌方角色就立即爆炸。
  * 爆炸不追求击杀，而是把 3×3 内的所有敌方
@@ -27,11 +29,11 @@ import com.zootdungeon.sprites.CharSprite;
  * </ul>
  * 伤害较低（仅为「震爆」象征值），主要用于压制。
  */
-public class ProximityMine extends Mine {
+public class FlashMine extends Mine {
 
     @Override
     public Class<? extends CellEntitySprite> spriteClass() {
-        return ProximityMineSprite.class;
+        return Sprite.class;
     }
 
     /** 爆炸波及半径（格，用来构造 3×3 影响范围）。 */
@@ -146,5 +148,45 @@ public class ProximityMine extends Mine {
                 flashDamage(),
                 (int) paralysisDuration(),
                 (int) blindnessDuration());
+    }
+
+    // ===== Sprite =====
+
+    public static class Sprite extends Mine.Sprite {
+        public Sprite() {
+            super();
+            String tex = "cola/trashbin.png";
+            texture(tex);
+            TextureFilm film = new TextureFilm(tex, 16, 16);
+
+            idle = new Animation(6, true);
+            idle.frames(film, 0, 1, 0, 2);
+
+            place = new Animation(4, false);
+            place.frames(film, 0, 0, 1, 2);
+
+            disarm = new Animation(1, false);
+            disarm.frames(film, 3);
+
+            detonate = new Animation(1, false);
+            detonate.frames(film, 3);
+
+            hardlight(0xFFFF50);
+        }
+
+        @Override
+        protected int baseColor() {
+            return 0xFFFF50;
+        }
+
+        @Override
+        protected float shakeMagnitude() {
+            return 0f;
+        }
+
+        @Override
+        protected int detonateColor() {
+            return 0xFFFF88;
+        }
     }
 }

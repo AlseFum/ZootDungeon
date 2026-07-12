@@ -249,10 +249,9 @@ Dungeon.level.addCellEntity(marker, cellPos);
 
 | 路径 | 作用 |
 |---|---|
-| `core/.../levels/entities/CellEntity.java` | 基类 |
-| `core/.../levels/entities/CellEntitySprite.java` | 贴图基类 |
-| `core/.../levels/entities/DebugCellMarker.java` | 内置示例实体 |
-| `core/.../levels/entities/DebugCellMarkerSprite.java` | 内置示例贴图 |
+| `core/.../actors/Entity.java` | 基类 |
+| `core/.../sprites/CellEntitySprite.java` | 贴图基类 |
+| `core/.../items/cheat/DebugCellMarker.java` | 内置示例实体（含内部类 `DebugCellMarkerSprite`） |
 | `core/.../levels/Level.java` | `cellEntities` 存储、`add/remove/cellEntityAt`、`occupyCell` 触发 |
 | `core/.../actors/Actor.java` | `init()` 里把 CellEntity 加入 Actor 调度 |
 | `core/.../scenes/GameScene.java` | `cellEntities` 渲染 group + 静态代理方法 |

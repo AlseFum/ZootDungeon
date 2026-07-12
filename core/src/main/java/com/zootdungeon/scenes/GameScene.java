@@ -962,9 +962,9 @@ public class GameScene extends PixelScene {
 
 	private void addCellEntitySpriteInternal( com.zootdungeon.actors.Entity entity ) {
 		if (entity == null || cellEntities == null) return;
-		Class<? extends com.zootdungeon.actors.entities.CellEntitySprite> clazz = entity.spriteClass();
+		Class<? extends com.zootdungeon.sprites.CellEntitySprite> clazz = entity.spriteClass();
 		if (clazz == null) return;
-		com.zootdungeon.actors.entities.CellEntitySprite sprite
+		com.zootdungeon.sprites.CellEntitySprite sprite
 				= com.watabou.utils.Reflection.newInstance(clazz);
 		if (sprite == null) return;
 		sprite.link(entity);

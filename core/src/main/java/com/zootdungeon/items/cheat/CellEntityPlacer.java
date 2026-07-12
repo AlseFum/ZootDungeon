@@ -6,7 +6,6 @@ import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.actors.Entity;
-import com.zootdungeon.actors.entities.DebugCellMarker;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
 import com.zootdungeon.scenes.GameScene;

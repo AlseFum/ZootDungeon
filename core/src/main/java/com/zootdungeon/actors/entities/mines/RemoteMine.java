@@ -2,14 +2,16 @@ package com.zootdungeon.actors.entities.mines;
 
 import java.util.ArrayList;
 
+import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
+import com.zootdungeon.actors.entities.Mine;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
-import com.zootdungeon.actors.entities.CellEntitySprite;
+import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 
@@ -32,7 +34,7 @@ public class RemoteMine extends Mine {
 
     @Override
     public Class<? extends CellEntitySprite> spriteClass() {
-        return RemoteMineSprite.class;
+        return Sprite.class;
     }
 
     /** 爆炸半径。默认 1 格，即 3×3。 */
@@ -105,5 +107,45 @@ public class RemoteMine extends Mine {
                 blastRadius() * 2 + 1,
                 baseDamage(),
                 bonusPerExtraTarget());
+    }
+
+    // ===== Sprite =====
+
+    public static class Sprite extends Mine.Sprite {
+        public Sprite() {
+            super();
+            String tex = "cola/trashbin.png";
+            texture(tex);
+            TextureFilm film = new TextureFilm(tex, 16, 16);
+
+            idle = new Animation(1, true);
+            idle.frames(film, 0);
+
+            place = new Animation(4, false);
+            place.frames(film, 0, 1, 0, 2);
+
+            disarm = new Animation(1, false);
+            disarm.frames(film, 3);
+
+            detonate = new Animation(1, false);
+            detonate.frames(film, 3);
+
+            hardlight(0x60FFFF);
+        }
+
+        @Override
+        protected int baseColor() {
+            return 0x60FFFF;
+        }
+
+        @Override
+        protected float shakeMagnitude() {
+            return 4f;
+        }
+
+        @Override
+        protected int detonateColor() {
+            return 0xFF9040;
+        }
     }
 }

@@ -19,18 +19,10 @@ public class DebugBag extends Bag {
 
     @Override
     public boolean canHold(Item item) {
-        return item instanceof DivineAnkh
-            || item instanceof RedStone
-            || item instanceof Codex
-            || item instanceof Panacea
-            || item instanceof DebugSupply
-            || item instanceof ItemRemover
-            || item instanceof ThrowingWeaponBox
-            || item instanceof WandBox
-            || item instanceof BombBox
-            || item instanceof ItemEditor
-            || item instanceof LevelConsole
-            ; 
+        // cheat 包下的所有调试工具 + DebugSupply
+        if (item instanceof DebugSupply) return true;
+        Package pkg = item.getClass().getPackage();
+        return pkg != null && pkg.getName().equals("com.zootdungeon.items.cheat");
     }
 
     @Override

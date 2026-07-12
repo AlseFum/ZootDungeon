@@ -22,13 +22,8 @@ import com.watabou.noosa.Game;
 //Not finished
 public class LevelConsole extends Item {
 
-    // static {
-    //     TextureRegistry.texture("sheet.cola.debug_bag", "cola/debug_bag.png")
-    //             .setArea("debug_bag", 0, 0, 32, 32);
-    // }
-
     {
-        image = TextureRegistry.idByLabel("debug_bag");
+        image = TextureRegistry.once("levelconsole","cola/level_selector.png",0,0,32,32);
         stackable = false;
         unique = true;
         defaultAction = AC_OPEN;

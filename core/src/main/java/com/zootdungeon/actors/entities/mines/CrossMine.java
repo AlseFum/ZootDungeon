@@ -1,12 +1,15 @@
 package com.zootdungeon.actors.entities.mines;
 
+import com.watabou.noosa.TextureFilm;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.effects.CellEmitter;
 import com.zootdungeon.effects.particles.BlastParticle;
+import com.zootdungeon.effects.particles.SparkParticle;
 import com.zootdungeon.actors.Entity;
-import com.zootdungeon.actors.entities.CellEntitySprite;
+import com.zootdungeon.actors.entities.Mine;
+import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 
@@ -25,7 +28,7 @@ public class CrossMine extends Mine {
 
     @Override
     public Class<? extends CellEntitySprite> spriteClass() {
-        return CrossMineSprite.class;
+        return Sprite.class;
     }
 
     /** 每次沿单一方向延伸的格数（默认 2 格）。 */
@@ -54,6 +57,12 @@ public class CrossMine extends Mine {
         int reach = Math.max(1, reach());
         int dmg = Math.max(0, damage());
 
+        // 中心爆炸特效（浓烈一点）
+        if (Dungeon.level.heroFOV[pos]) {
+            CellEmitter.center(pos).burst(BlastParticle.FACTORY, 6);
+            CellEmitter.center(pos).burst(SparkParticle.FACTORY, 12);
+        }
+
         // 中心格：可能此时敌人刚踩上来，也可能是被连锁引爆，安全起见先处理中心。
         damageAt(pos, dmg);
 
@@ -71,6 +80,7 @@ public class CrossMine extends Mine {
                 }
                 if (Dungeon.level.heroFOV[cell]) {
                     CellEmitter.center(cell).burst(BlastParticle.FACTORY, 3);
+                    CellEmitter.center(cell).burst(SparkParticle.FACTORY, 6);
                 }
                 damageAt(cell, dmg);
                 chainAt(cell);
@@ -109,5 +119,45 @@ public class CrossMine extends Mine {
     @Override
     public String desc() {
         return Messages.get(this, "desc", reach(), damage());
+    }
+
+    // ===== Sprite =====
+
+    public static class Sprite extends Mine.Sprite {
+        public Sprite() {
+            super();
+            String tex = "cola/trashbin.png";
+            texture(tex);
+            TextureFilm film = new TextureFilm(tex, 16, 16);
+
+            idle = new Animation(1, true);
+            idle.frames(film, 0);
+
+            place = new Animation(4, false);
+            place.frames(film, 0, 1, 2, 3);
+
+            disarm = new Animation(1, false);
+            disarm.frames(film, 3);
+
+            detonate = new Animation(1, false);
+            detonate.frames(film, 3);
+
+            hardlight(0xFF9040);
+        }
+
+        @Override
+        protected int baseColor() {
+            return 0xFF9040;
+        }
+
+        @Override
+        protected float shakeMagnitude() {
+            return 10f;
+        }
+
+        @Override
+        protected float detonateScaleTo() {
+            return 3.5f;
+        }
     }
 }

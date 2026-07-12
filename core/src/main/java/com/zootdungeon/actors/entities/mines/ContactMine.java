@@ -1,13 +1,14 @@
 package com.zootdungeon.actors.entities.mines;
 
+import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
-import com.zootdungeon.items.wands.WandOfBlastWave;
+import com.zootdungeon.actors.entities.Mine;
 import com.zootdungeon.items.ItemEffects;
-import com.zootdungeon.actors.entities.CellEntitySprite;
+import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.mechanics.Ballistica;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
@@ -26,7 +27,7 @@ public class ContactMine extends Mine {
 
     @Override
     public Class<? extends CellEntitySprite> spriteClass() {
-        return ContactMineSprite.class;
+        return Sprite.class;
     }
 
     /** 单体伤害。 */
@@ -84,5 +85,40 @@ public class ContactMine extends Mine {
     @Override
     public String desc() {
         return Messages.get(this, "desc", damage(), knockbackPower());
+    }
+
+    // ===== Sprite =====
+
+    public static class Sprite extends Mine.Sprite {
+        public Sprite() {
+            super();
+            String tex = "cola/trashbin.png";
+            texture(tex);
+            TextureFilm film = new TextureFilm(tex, 16, 16);
+
+            idle = new Animation(1, true);
+            idle.frames(film, 0);
+
+            place = new Animation(4, false);
+            place.frames(film, 0, 0, 1, 2);
+
+            disarm = new Animation(1, false);
+            disarm.frames(film, 3);
+
+            detonate = new Animation(1, false);
+            detonate.frames(film, 3);
+
+            hardlight(0xFF5050);
+        }
+
+        @Override
+        protected int baseColor() {
+            return 0xFF5050;
+        }
+
+        @Override
+        protected float shakeMagnitude() {
+            return 8f;
+        }
     }
 }

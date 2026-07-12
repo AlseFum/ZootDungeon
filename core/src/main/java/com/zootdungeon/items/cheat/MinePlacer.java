@@ -9,9 +9,9 @@ import com.zootdungeon.actors.Entity;
 import com.zootdungeon.actors.entities.mines.ContactMine;
 import com.zootdungeon.actors.entities.mines.CrossMine;
 import com.zootdungeon.actors.entities.mines.DoorMine;
-import com.zootdungeon.actors.entities.mines.Mine;
+import com.zootdungeon.actors.entities.Mine;
 import com.zootdungeon.actors.entities.mines.PatternMine;
-import com.zootdungeon.actors.entities.mines.ProximityMine;
+import com.zootdungeon.actors.entities.mines.FlashMine;
 import com.zootdungeon.actors.entities.mines.RemoteMine;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.CellSelector;
@@ -27,7 +27,7 @@ import com.zootdungeon.utils.GLog;
  * <ul>
  *     <li>{@link #AC_PLACE_CONTACT}：放一枚 {@link ContactMine}
  *         （敌人踩上即爆 + 随机方向推开）。</li>
- *     <li>{@link #AC_PLACE_PROXIMITY}：放一枚 {@link ProximityMine}
+ *     <li>{@link #AC_PLACE_PROXIMITY}：放一枚 {@link FlashMine}
  *         （敌人进入 3×3 即爆，施加麻痹 + 致盲）。</li>
  *     <li>{@link #AC_PLACE_CROSS}：放一枚 {@link CrossMine}
  *         （敌人踩上即爆，四向 2 格伤害，连锁引爆其它地雷）。</li>
@@ -142,7 +142,7 @@ public class MinePlacer extends Item {
     private final CellSelector.Listener placeContact = placeListener(
             ContactMine::new, "prompt_place_contact");
     private final CellSelector.Listener placeProximity = placeListener(
-            ProximityMine::new, "prompt_place_proximity");
+            FlashMine::new, "prompt_place_proximity");
     private final CellSelector.Listener placeCross = placeListener(
             CrossMine::new, "prompt_place_cross");
     private final CellSelector.Listener placeDoor = placeListener(

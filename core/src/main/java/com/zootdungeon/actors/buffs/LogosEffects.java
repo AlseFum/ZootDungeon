@@ -22,8 +22,8 @@ import com.zootdungeon.actors.buffs.Degrade;
 import com.zootdungeon.actors.buffs.FlavourBuff;
 import com.zootdungeon.actors.buffs.Paralysis;
 import com.zootdungeon.actors.buffs.Roots;
-import com.zootdungeon.actors.entities.CellEntitySprite;
-import com.zootdungeon.actors.entities.mines.MineSprite;
+import com.zootdungeon.sprites.CellEntitySprite;
+import com.zootdungeon.actors.entities.Mine;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.effects.CellEmitter;
@@ -296,7 +296,7 @@ public class LogosEffects {
 
 	// ==================== 内部类：符文精灵 ====================
 
-	public static class RuneEntitySprite extends MineSprite {
+	public static class RuneEntitySprite extends Mine.Sprite {
 		private static final String TEX = "cola/trashbin.png";
 		public RuneEntitySprite() { this(RuneType.GENERIC); }
 		public RuneEntitySprite(RuneType type) {

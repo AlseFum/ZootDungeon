@@ -26,7 +26,8 @@ import com.zootdungeon.effects.particles.SparkParticle;
 import com.watabou.noosa.particles.Emitter;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.actors.Entity;
-import com.zootdungeon.actors.entities.CellEntitySprite;
+import com.zootdungeon.actors.entities.Mine;
+import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.sprites.CharSprite;
 import com.watabou.noosa.TextureFilm;
@@ -133,8 +134,8 @@ public class PatternMine extends Mine {
         }
 
         // 6. 播放引爆动画
-        if (sprite instanceof MineSprite) {
-            ((MineSprite) sprite).detonate();
+        if (sprite instanceof Mine.Sprite) {
+            ((Mine.Sprite) sprite).detonate();
         }
     }
 
@@ -559,7 +560,7 @@ public class PatternMine extends Mine {
 
     // ==================== Sprite ====================
 
-    public static class Sprite extends MineSprite {
+    public static class Sprite extends Mine.Sprite {
         public Sprite() {
             String tex = "cola/wang_chess.png";
             texture(tex);

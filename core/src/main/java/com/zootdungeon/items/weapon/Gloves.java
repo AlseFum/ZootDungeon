@@ -37,6 +37,8 @@ public class Gloves extends FastWeapon {
 		
 		bones = false;
 	}
-
-
+	@Override
+	public int hitCount(){
+		return 1;
+	}
 }
