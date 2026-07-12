@@ -262,6 +262,7 @@ public class Theme implements Bundlable {
         registerTheme("halls", HallsTheme);
         registerTheme("dev", DevTheme);
         HourOfAnAwakening.register();
+        com.zootdungeon.levels.themes.burningsun.BurningSun.register();
     }
 
     public static void registerTheme(String name, Theme theme) {
