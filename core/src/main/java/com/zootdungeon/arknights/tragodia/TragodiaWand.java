@@ -35,14 +35,9 @@ public class TragodiaWand extends Wand {
 
     private int charge = 0;
     private int chargeCap = 10;
-    static {
-		TextureRegistry.texture("sheet.cola.tragodia_wand", "cola/tragodia_wand.png")
-				.grid(64, 64)
-				.label("tragodia_wand");
-	}
 
     {
-        image = TextureRegistry.idByLabel("tragodia_wand");
+        image = TextureRegistry.once("sheet.cola.tragodia_wand", "cola/tragodia_wand.png",0,0,32,32);
 
         collisionProperties = Ballistica.MAGIC_BOLT;
     }

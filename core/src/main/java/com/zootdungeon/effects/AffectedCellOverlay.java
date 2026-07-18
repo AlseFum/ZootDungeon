@@ -8,7 +8,6 @@ package com.zootdungeon.effects;
 import com.zootdungeon.Dungeon;
 import com.zootdungeon.tiles.DungeonTilemap;
 import com.watabou.gltextures.TextureCache;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 

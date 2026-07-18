@@ -9,8 +9,6 @@ package com.zootdungeon.actors;
 
 import com.watabou.utils.Bundle;
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.actors.Actor;
-import com.zootdungeon.actors.Char;
 import com.zootdungeon.sprites.CellEntitySprite;
 import com.zootdungeon.levels.Level;
 import com.zootdungeon.messages.Messages;

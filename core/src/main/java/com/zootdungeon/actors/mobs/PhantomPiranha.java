@@ -27,7 +27,6 @@ import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.buffs.Corruption;
 import com.zootdungeon.actors.hero.spells.ClericSpell;
 import com.zootdungeon.items.food.PhantomMeat;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.messages.Messages;

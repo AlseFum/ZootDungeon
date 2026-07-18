@@ -50,7 +50,6 @@ import com.zootdungeon.effects.particles.SparkParticle;
 import com.zootdungeon.items.artifacts.DriedRose;
 import com.zootdungeon.items.artifacts.LloydsBeacon;
 import com.zootdungeon.items.quest.MetalShard;
-import com.zootdungeon.items.wands.WandOfBlastWave;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.levels.themes.caves.CavesBossLevel;
 import com.zootdungeon.levels.Level;

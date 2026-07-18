@@ -49,7 +49,6 @@ import com.zootdungeon.items.armor.glyphs.Viscosity;
 import com.zootdungeon.items.artifacts.DriedRose;
 import com.zootdungeon.items.artifacts.LloydsBeacon;
 import com.zootdungeon.items.rings.RingOfForce;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.wands.Wand;
 import com.zootdungeon.items.wands.WandOfLightning;

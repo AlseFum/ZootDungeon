@@ -32,7 +32,6 @@ import com.zootdungeon.effects.FloatingText;
 import com.zootdungeon.effects.Pushing;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.potions.PotionOfHealing;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.scenes.GameScene;

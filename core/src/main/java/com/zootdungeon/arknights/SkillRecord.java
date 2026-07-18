@@ -20,12 +20,6 @@ public class SkillRecord extends Item {
 
 	public static final String AC_INSTALL = "INSTALL";
 
-	static {
-		TextureRegistry.texture("sheet.cola.mod_unlock_token", "cola/skill_record_1.png")
-				.grid(32, 32)
-				.label("mod_unlock_token");
-	}
-
 	private String skillId;
 
 	public SkillRecord() {
@@ -34,7 +28,7 @@ public class SkillRecord extends Item {
 
 	public SkillRecord(SkillDef skill) {
 		this.skillId = skill != null ? skill.id : null;
-		image = TextureRegistry.idByLabel("mod_unlock_token");
+		image = TextureRegistry.once("sheet.cola.mod_unlock_token", "cola/skill_record_1.png",0,0,32,32);
 		levelKnown = true;
 		cursedKnown = true;
 	}

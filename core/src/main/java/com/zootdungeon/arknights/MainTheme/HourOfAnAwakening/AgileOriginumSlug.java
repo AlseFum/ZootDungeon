@@ -1,6 +1,5 @@
 package com.zootdungeon.arknights.MainTheme.HourOfAnAwakening;
 
-import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.items.material.Gold;
 import com.zootdungeon.sprites.MobSprite;

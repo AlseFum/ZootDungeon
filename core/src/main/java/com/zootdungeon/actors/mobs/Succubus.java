@@ -35,7 +35,6 @@ import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.scrolls.Scroll;
 import com.zootdungeon.items.scrolls.ScrollOfIdentify;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.scrolls.ScrollOfUpgrade;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.mechanics.Ballistica;

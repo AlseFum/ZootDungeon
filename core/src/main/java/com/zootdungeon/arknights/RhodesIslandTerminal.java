@@ -1,7 +1,6 @@
 package com.zootdungeon.arknights;
 
 import com.zootdungeon.Dungeon;
-import com.zootdungeon.actors.buffs.Buff;
 import com.zootdungeon.actors.hero.Hero;
 import com.zootdungeon.actors.hero.Talent;
 import com.zootdungeon.arknights.plugins.SkillSheet;

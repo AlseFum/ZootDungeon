@@ -31,7 +31,6 @@ import com.zootdungeon.items.Generator;
 import com.zootdungeon.items.LootRegistry;
 import com.zootdungeon.items.armor.Armor;
 import com.zootdungeon.items.Item;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.scenes.GameScene;
 import com.zootdungeon.sprites.GolemSprite;

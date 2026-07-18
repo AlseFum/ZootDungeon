@@ -35,7 +35,6 @@ import com.zootdungeon.items.Honeypot;
 import com.zootdungeon.items.Item;
 import com.zootdungeon.items.artifacts.Artifact;
 import com.zootdungeon.items.rings.Ring;
-import com.zootdungeon.items.scrolls.ScrollOfTeleportation;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.items.trinkets.MimicTooth;
 import com.zootdungeon.items.wands.Wand;

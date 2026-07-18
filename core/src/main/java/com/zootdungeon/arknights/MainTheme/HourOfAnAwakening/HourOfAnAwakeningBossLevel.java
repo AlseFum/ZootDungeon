@@ -16,7 +16,6 @@ import com.zootdungeon.levels.painters.Painter;
 import com.zootdungeon.levels.painters.SewerPainter;
 import com.zootdungeon.levels.rooms.Room;
 import com.zootdungeon.levels.rooms.standard.StandardRoom;
-import com.zootdungeon.levels.themes.sewer.SewerLevel;
 import com.zootdungeon.levels.themes.sewer.sewerboss.SewerBossEntranceRoom;
 import com.zootdungeon.levels.themes.sewer.sewerboss.SewerBossExitRoom;
 import com.zootdungeon.scenes.GameScene;

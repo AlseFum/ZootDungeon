@@ -1,7 +1,6 @@
 package com.zootdungeon.actors.mapDevice;
 
 import com.zootdungeon.Assets;
-import com.zootdungeon.actors.Actor;
 import com.zootdungeon.actors.Char;
 import com.zootdungeon.actors.mobs.Mob;
 import com.zootdungeon.sprites.MobSprite;
