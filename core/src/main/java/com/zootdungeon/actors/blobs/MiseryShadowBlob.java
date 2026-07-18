@@ -14,6 +14,7 @@ import com.zootdungeon.effects.particles.ShadowBlobParticle;
 import com.zootdungeon.messages.Messages;
 import com.zootdungeon.items.ItemEffects;
 import com.zootdungeon.scenes.GameScene;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 /**
@@ -29,14 +30,21 @@ public class MiseryShadowBlob extends Blob {
 		actPriority = HERO_PRIO;
 	}
 
-	/** One-time generation: cover the level with shadow cells (~25% of passable tiles). */
+	/** One-time generation: create continuous shadow rims along all walls. */
 	public static void generateForLevel() {
 		if (Dungeon.level == null) return;
 		MiseryShadowBlob blob = new MiseryShadowBlob();
 		Dungeon.level.blobs.put(MiseryShadowBlob.class, blob);
 		for (int cell = 0; cell < Dungeon.level.length(); cell++) {
-			if (Dungeon.level.passable[cell] && Random.Float() < 0.25f) {
-				blob.seed(Dungeon.level, cell, Random.Int(3, 8));
+			if (Dungeon.level.passable[cell]) continue;
+			// this is a wall — shade all of its passable neighbors (creates a continuous rim)
+			for (int n : PathFinder.NEIGHBOURS4) {
+				int neighbor = cell + n;
+				if (neighbor >= 0 && neighbor < Dungeon.level.length()
+						&& Dungeon.level.passable[neighbor]) {
+					// seed() uses +=, so cells touching multiple walls (corners, alcoves) get denser
+					blob.seed(Dungeon.level, neighbor, Random.Int(3, 8));
+				}
 			}
 		}
 		GameScene.add(blob);
